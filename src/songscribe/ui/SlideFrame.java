@@ -1,0 +1,599 @@
+/* 
+SongScribe song notation program
+Copyright (C) 2006-2007 Csaba Kavai
+
+This file is part of SongScribe.
+
+SongScribe is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+SongScribe is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Created on: 2006.03.11.
+*/
+package songscribe.ui;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.xml.sax.SAXException;
+
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.awt.event.*;
+import java.awt.*;
+import java.io.*;
+import java.util.Vector;
+import java.util.Date;
+
+import songscribe.data.MyAcceptFilter;
+import songscribe.data.PlatformFileDialog;
+import songscribe.data.FileExtensions;
+import songscribe.ui.playsubmenu.InstrumentDialog;
+import songscribe.IO.SliderIO;
+import com.apple.mrj.MRJApplicationUtils;
+
+/**
+ * @author Csaba Kávai
+ */
+public class SlideFrame extends MainFrame{
+    private static Logger logger = Logger.getLogger(SlideFrame.class);
+
+    private DefaultListModel listModel = new DefaultListModel();
+    private JList list = new JList(listModel);
+    private JComboBox instrumentCombo;
+    private JCheckBox playWithRepeatCheck;
+    private JCheckBox colorizeNoteCheck;
+
+    private WardAction forwardAction = new WardAction(1);
+    private WardAction backwardAction = new WardAction(-1);
+    private FirstAction firstAction = new FirstAction();
+    private LastAction lastAction = new LastAction();
+    private NewAction newAction = new NewAction();
+    private OpenAction openAction = new OpenAction();
+
+    private Vector<File> files = new Vector<File>(20, 10);
+    private FullScreenSheet fullScreenSheet;
+    private SAXParser saxParser;
+
+    public SlideFrame() {
+        PROGNAME = "Song Show";
+        lastWordForDoYouWannaSaveDialog = "list";
+        setTitle(PROGNAME);
+        setIconImage(getImage("ssicon.png"));
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                exitAction.actionPerformed(null);
+            }
+        });
+        try {
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+        } catch (Exception e) {
+            showErrorMessage(PROGNAME+" cannot start because of an initialization error.");
+            logger.error("SaxParser configuration", e);
+            System.exit(0);
+        }
+        init();
+        pack();
+        setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
+        setVisible(true);
+        MRJApplicationUtils.registerPrefsHandler(null);
+        MRJApplicationUtils.registerPrintDocumentHandler(null);
+        properties.setProperty(Constants.TEMPOCHANGEPROP, "100");
+        fireMusicChanged(this);
+        automaticCheckForUpdate();
+    }
+
+    private void initComponents() {
+        JButton addButton;
+        JButton addFolderButton;
+        JButton downButton;
+        JScrollPane listScroll;
+        JPanel playBackPanel;
+        JButton removeButton;
+        JLabel slideShowList;
+        JPanel southPanel;
+        JButton startButton;
+        JButton upButton;
+
+        slideShowList = new JLabel();
+        listScroll = new JScrollPane();
+        list = new JList();
+        addButton = new JButton();
+        addFolderButton = new JButton();
+        removeButton = new JButton();
+        upButton = new JButton();
+        downButton = new JButton();
+        playBackPanel = new JPanel();
+        playWithRepeatCheck = new JCheckBox();
+        colorizeNoteCheck = new JCheckBox();
+        instrumentCombo = new JComboBox();
+        southPanel = new JPanel();
+        startButton = new JButton();
+
+        slideShowList.setText("SlideShow List:");
+
+        list.setModel(listModel);
+        listScroll.setViewportView(list);
+
+        addButton.setAction(new AddAction());
+
+        addFolderButton.setAction(new AddFolderAction());
+
+        removeButton.setAction(new RemoveAction());
+
+        upButton.setAction(new UpAction());
+
+        downButton.setAction(new DownAction());
+
+        playBackPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Playback"));
+        playWithRepeatCheck.setText("Play with repeats");
+        playWithRepeatCheck.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        playWithRepeatCheck.setMargin(new Insets(0, 0, 0, 0));
+
+        colorizeNoteCheck.setText("<html>Colorize the currently played note<br>when playing the song back.<html>");
+        colorizeNoteCheck.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        colorizeNoteCheck.setMargin(new Insets(0, 0, 0, 0));
+
+        instrumentCombo.setModel(new DefaultComboBoxModel(InstrumentDialog.INSTRUMENTSTRING));
+
+        GroupLayout playBackPanelLayout = new GroupLayout(playBackPanel);
+        playBackPanel.setLayout(playBackPanelLayout);
+        playBackPanelLayout.setHorizontalGroup(
+            playBackPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(playBackPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(playBackPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(playWithRepeatCheck)
+                    .addComponent(colorizeNoteCheck)
+                    .addComponent(instrumentCombo, 0, 241, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        playBackPanelLayout.setVerticalGroup(
+            playBackPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(playBackPanelLayout.createSequentialGroup()
+                .addComponent(playWithRepeatCheck)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(colorizeNoteCheck)
+                .addGap(17, 17, 17)
+                .addComponent(instrumentCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+
+        startButton.setAction(new SlideAction());
+        southPanel.add(startButton);
+
+        GroupLayout layout = new GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                    .addComponent(slideShowList)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(listScroll, GroupLayout.PREFERRED_SIZE, 151, GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(upButton, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(downButton, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
+                            .addComponent(removeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(addFolderButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(addButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(playBackPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(southPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(slideShowList)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(addButton)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addFolderButton)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(removeButton)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(upButton)
+                            .addComponent(downButton)))
+                    .addComponent(listScroll, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(playBackPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(southPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+        pack();
+    }
+
+    private void init(){
+        musicSheet = new MusicSheet(this);
+        musicSheet.initComponent();
+        initComponents();
+        PlaybackChangeAction pca = new PlaybackChangeAction();
+        playWithRepeatCheck.setSelected(properties.getProperty(Constants.WITHREPEATPROP).equals(Constants.TRUEVALUE));
+        playWithRepeatCheck.addActionListener(pca);
+        colorizeNoteCheck.setSelected(properties.getProperty(Constants.COLORIZENOTE).equals(Constants.TRUEVALUE));
+        colorizeNoteCheck.addActionListener(pca);
+        instrumentCombo.setSelectedIndex(Integer.parseInt(properties.getProperty(Constants.INSTRUMENTPROP)));
+        instrumentCombo.addActionListener(pca);
+
+        //menu
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.add(new JMenuItem(newAction));
+        fileMenu.add(new JMenuItem(openAction));
+        fileMenu.addSeparator();
+        saveAction = new SaveAction();
+        fileMenu.add(new JMenuItem(saveAction));
+        saveAsAction = new SaveAsAction();
+        fileMenu.add(new JMenuItem(saveAsAction));
+        if(!Utilities.isMac()){
+            fileMenu.addSeparator();
+            fileMenu.add(new JMenuItem(exitAction));
+        }
+        JMenu helpMenu = new JMenu("Help");
+        makeCommonHelpMenu(helpMenu);
+
+        menuBar.add(fileMenu);
+        menuBar.add(helpMenu);
+        setJMenuBar(menuBar);
+    }
+
+    public void setMode(MusicSheet.Mode mode) {
+    }
+
+    private String getListName(String fileName){
+        if(fileName.endsWith(FileExtensions.SONGWRITER)){
+            return fileName.substring(0, fileName.length()-5);
+        }else{
+            return fileName;
+        }
+    }
+
+    private class AddAction extends AbstractAction{
+        private PlatformFileDialog pfd;
+
+        public AddAction() {
+            putValue(Action.NAME, "Add");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("add.png")));
+            pfd = new PlatformFileDialog(SlideFrame.this, "Open song", true, new MyAcceptFilter("SongScribe song files", FileExtensions.SONGWRITER.substring(1)));
+            pfd.setMultiSelectionEnabled(true);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(pfd.showDialog()){
+                File[] openFile = pfd.getFiles();
+                for(File of:openFile){
+                    files.add(of);
+                    listModel.addElement(getListName(of.getName()));
+                }
+                modifiedDocument();
+            }
+        }
+    }
+
+    private class AddFolderAction extends AbstractAction{
+        private PlatformFileDialog pfd;
+
+        public AddFolderAction() {
+            putValue(Action.NAME, "Add Folder");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("addfolder.png")));
+            pfd = new PlatformFileDialog(SlideFrame.this, "Open folder", true, new MyAcceptFilter("Folders"), true);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(pfd.showDialog()){
+                int answ = JOptionPane.showConfirmDialog(SlideFrame.this, "All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?",
+                        PROGNAME, JOptionPane.YES_NO_CANCEL_OPTION);
+                if(answ==JOptionPane.CANCEL_OPTION)return;
+                addSongFiles(pfd.getFile(), answ==JOptionPane.YES_OPTION);
+                modifiedDocument();
+            }
+        }
+
+        private void addSongFiles(File dir, boolean descend){
+            for(File file:dir.listFiles()){
+                if(file.isDirectory() && descend){
+                    addSongFiles(file, descend);
+                }else if(file.isFile() && file.getName().endsWith(FileExtensions.SONGWRITER)){
+                    files.add(file);
+                    listModel.addElement(getListName(file.getName()));
+                }
+            }
+        }
+    }
+
+    private class RemoveAction extends AbstractAction{
+        public RemoveAction() {
+            putValue(Action.NAME, "Remove");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("remove.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(list.getSelectedIndex()!=-1){
+                files.remove(list.getSelectedIndex());
+                listModel.remove(list.getSelectedIndex());
+                modifiedDocument();
+            }
+        }
+    }
+
+    private class UpAction extends AbstractAction{
+        public UpAction() {
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("1uparrow32.png")));
+            putValue(Action.SHORT_DESCRIPTION, "Move the selected item up in the list");
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            int sel = list.getSelectedIndex();
+            if(sel>0){
+                File f = files.get(sel);
+                files.set(sel, files.get(sel-1));
+                files.set(sel-1, f);
+                Object o = listModel.get(sel);
+                listModel.set(sel, listModel.get(sel-1));
+                listModel.set(sel-1, o);
+                list.setSelectedIndex(sel-1);
+                modifiedDocument();
+            }
+        }
+    }
+
+    private class DownAction extends AbstractAction{
+        public DownAction() {
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("1downarrow32.png")));
+            putValue(Action.SHORT_DESCRIPTION, "Move the selected item down in the list");
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            int sel = list.getSelectedIndex();
+            if(sel!=-1 && sel<listModel.size()-1){
+                File f = files.get(sel);
+                files.set(sel, files.get(sel+1));
+                files.set(sel+1, f);
+                Object o = listModel.get(sel);
+                listModel.set(sel, listModel.get(sel+1));
+                listModel.set(sel+1, o);
+                list.setSelectedIndex(sel+1);
+                modifiedDocument();
+            }
+        }
+    }
+
+    private class PlaybackChangeAction implements ActionListener{
+        public void actionPerformed(ActionEvent e) {
+            properties.setProperty(Constants.INSTRUMENTPROP, Integer.toString(instrumentCombo.getSelectedIndex()));
+            properties.setProperty(Constants.WITHREPEATPROP, playWithRepeatCheck.isSelected() ? Constants.TRUEVALUE : Constants.FALSEVALUE);
+            properties.setProperty(Constants.COLORIZENOTE, colorizeNoteCheck.isSelected() ? Constants.TRUEVALUE : Constants.FALSEVALUE);
+        }
+    }
+
+    private class SlideAction extends AbstractAction{
+        public SlideAction() {
+            putValue(Action.NAME, "Start slide show");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("player_play.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(listModel.size()>0){
+                if(currentSlide>=listModel.size()){
+                    currentSlide = 0;
+                }
+                openMusicSheet(files.get(currentSlide), false);
+                fullScreenSheet = new FullScreenSheet(SlideFrame.this, new SliderTempoChangeListener(), firstAction, backwardAction, forwardAction, lastAction);
+                fullScreenSheet.setVisible(true);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        showSplash("sssplash.png");
+        PropertyConfigurator.configure("conf/logger.properties");
+        logger.info("Song Show started at "+new Date());
+        openMidi();
+        new SlideFrame();
+        hideSplash();
+    }
+
+    private int currentSlide;
+
+    private class WardAction extends AbstractAction{
+        int direction;
+
+        public WardAction(int direction) {
+            this.direction = direction;
+            putValue(Action.SHORT_DESCRIPTION, direction==-1 ? "Previous song (Left Arrow, Page Up)" : "Next song (Space, Enter, Right Arrow, Page Down)");
+            putValue(Action.SMALL_ICON, new ImageIcon(SlideFrame.getImage(direction==-1?"back.png":"forward.png")));
+            putValue(Constants.ACCELERATOR_KEYS, direction==-1 ? new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0)} :
+              new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0)});
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            int next = currentSlide+direction;
+            if(next>=0 && next<listModel.size()){
+                openMusicSheet(files.get(next), false);
+                fullScreenSheet.setMusicSheet();
+                currentSlide = next;
+            }
+        }
+    }
+
+    private class FirstAction extends AbstractAction{
+        public FirstAction() {
+            putValue(Action.SHORT_DESCRIPTION, "First song (Home)");
+            putValue(Action.SMALL_ICON, new ImageIcon(SlideFrame.getImage("start.png")));
+            putValue(Constants.ACCELERATOR_KEYS, new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0)});
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            currentSlide = 0;
+            openMusicSheet(files.get(currentSlide), false);
+            fullScreenSheet.setMusicSheet();
+        }
+    }
+
+    private class LastAction extends AbstractAction{
+        public LastAction() {
+            putValue(Action.SHORT_DESCRIPTION, "Last song (End)");
+            putValue(Action.SMALL_ICON, new ImageIcon(SlideFrame.getImage("finish.png")));
+            putValue(Constants.ACCELERATOR_KEYS, new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_END, 0)});
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            currentSlide = listModel.size()-1;
+            openMusicSheet(files.get(currentSlide), false);
+            fullScreenSheet.setMusicSheet();
+        }
+    }
+
+    private class SliderTempoChangeListener implements ChangeListener{
+        public void stateChanged(ChangeEvent e) {
+            properties.setProperty(Constants.TEMPOCHANGEPROP, Integer.toString(((JSlider)e.getSource()).getValue()));
+            fireMusicChanged(SlideFrame.this);
+        }
+    }
+
+    private class NewAction extends AbstractAction {
+        public NewAction() {
+            putValue(Action.NAME, "New");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("filenew.png")));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(!showSaveDialog())return;
+            setSaveFile(null);
+            files.clear();
+            listModel.clear();
+            unmodifiedDocument();
+        }
+    }
+
+    private class SaveAction extends AbstractAction{
+        public SaveAction() {
+            putValue(Action.NAME, "Save");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("filesave.png")));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(saveFile==null){
+                saveAsAction.actionPerformed(e);
+                return;
+            }
+            try {
+                SliderIO.writeSlider(files.listIterator(), saveFile);
+                unmodifiedDocument();
+            } catch (IOException e1) {
+                showErrorMessage(COULDNOTSAVEMESSAGE);
+                logger.error("Saving slideframe", e1);
+            }
+        }
+    }
+
+    private class SaveAsAction extends AbstractAction {
+        private PlatformFileDialog pfd;
+        public SaveAsAction() {
+            putValue(Action.NAME, "Save as...");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("filesaveas.png")));
+            pfd = new PlatformFileDialog(SlideFrame.this, "Save As", false, new MyAcceptFilter("SongScribe Song Show files", FileExtensions.SONGSHOW.substring(1)));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(pfd.showDialog()){
+                File saveFile = pfd.getFile();
+                if(!saveFile.getName().toLowerCase().endsWith(FileExtensions.SONGSHOW)){
+                    saveFile = new File(saveFile.getAbsolutePath()+FileExtensions.SONGSHOW);
+                }
+                if(saveFile.exists()){
+                    int answ = JOptionPane.showConfirmDialog(SlideFrame.this, "The file "+saveFile.getName()+" already exists. Do you want to owerwrite it?",
+                            PROGNAME, JOptionPane.YES_NO_OPTION);
+                    if(answ==JOptionPane.NO_OPTION){
+                        return;
+                    }
+                }
+                previousDirectory = saveFile.getParentFile();
+                setSaveFile(saveFile);
+                saveAction.actionPerformed(e);
+            }
+        }
+    }
+
+    private class OpenAction extends AbstractAction {
+        private PlatformFileDialog pfd;
+
+        public OpenAction() {
+            putValue(Action.NAME, "Open...");
+            putValue(Action.SMALL_ICON, new ImageIcon(getImage("fileopen.png")));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+            pfd = new PlatformFileDialog(SlideFrame.this, "Open", true, new MyAcceptFilter("SongScribe Song Show files", FileExtensions.SONGSHOW.substring(1)));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(!showSaveDialog())return;
+            if(pfd.showDialog()){
+                openSlide(pfd.getFile());
+            }
+        }
+    }
+
+    private void openSlide(File openFile) {
+        previousDirectory = openFile.getParentFile();
+        try {
+            /*BufferedReader br = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(openFile), "UTF-8"));
+            files.clear();
+            listModel.clear();
+            String line;
+            while((line=br.readLine())!=null){
+                File f = new File(line);
+                if(f.exists()){
+                    listModel.addElement(getListName(f.getName()));
+                    files.addElement(f);
+                }
+            }*/
+            SliderIO.DocumentReader dr = new SliderIO.DocumentReader(this, openFile);
+            saxParser.parse(openFile, dr);
+            files = dr.getFiles();
+            listModel.clear();
+            for (File file : files) {
+                listModel.addElement(getListName(file.getName()));
+            }
+            unmodifiedDocument();
+        } catch (FileNotFoundException e1) {
+            showErrorMessage("Could not open the file. Check if you have the permission to open it.");
+            logger.error("SlideFrame open", e1);
+        } catch(IOException e1) {
+            showErrorMessage("Could not open the file. Check if you have the permission to open it.");
+            logger.error("SlideFrame open", e1);
+        } catch (SAXException e1) {
+            showErrorMessage(e1.getMessage());
+            logger.error("SlideFrame open", e1);
+        }
+    }
+
+
+    public void handleOpenFile(File file) {
+        if(!showSaveDialog())return;
+        openSlide(file);
+    }
+}

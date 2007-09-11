@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<publisher version="1.0">
+  <bookattributes>
+    <pagewidth>850</pagewidth>
+    <pageheight>1100</pageheight>
+    <leftinnermargin>75</leftinnermargin>
+    <rightoutermargin>75</rightoutermargin>
+    <topmargin>75</topmargin>
+    <bottommargin>75</bottommargin>
+  </bookattributes>
+  <page>
+    <song>
+      <position>0,0,700,448</position>
+      <resolution>0.9859154929577465</resolution>      
+      <relativefile>179 Amar Sakal Ahangkar.mssw</relativefile>
+    </song>
+    <song>
+      <position>0,488,700,462</position>
+      <resolution>1.0</resolution>      
+      <relativefile>180 Satya Swarup Sundar.mssw</relativefile>
+    </song>
+  </page>
+  <page>
+    <song>
+      <position>0,0,700,348</position>
+      <resolution>1.0</resolution>      
+      <relativefile>262 Jibaner Bholangsha Kalpanai Ghara.mssw</relativefile>
+    </song>
+    <song>
+      <position>0,374,700,576</position>
+      <resolution>1.0</resolution>      
+      <relativefile>263 Pran Star Hate Jato.mssw</relativefile>
+    </song>
+  </page>
+</publisher>

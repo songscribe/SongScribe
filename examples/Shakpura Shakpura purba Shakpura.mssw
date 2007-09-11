@@ -1,0 +1,1030 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<composition version="1.1">
+  <keys>4</keys>
+  <keytype>FLATS</keytype>
+  <tempo>
+    <visibletempo>132</visibletempo>
+    <tempotype>CROTCHET</tempotype>
+    <tempodescription>Moderate-fast</tempodescription>
+  </tempo>
+  <songtitle>Shakpura Shakpura Purbă Shakpura</songtitle>
+  <place>Kamakura, Japan</place>
+  <year>2006</year>
+  <month>7</month>
+  <day>12</day>
+  <lyrics>Shak-pu-ra Shak-pu-ra pur-bă Shak-pu-ra grām_____________
+Ā-mār jăn-mă dhām dhām dhām
+Chā-tră-lā Chā-tră-lā Chā-tră-lā_____ Chā__tră-grăm
+Pre-ră-nā e-shă-nā nă-yă-nā______bhi-rām
+Ā-mār mā-tā__ Băn-gă-desh Băn-gă-desh Băn-gă____
+desh__________
+Sne-her_ băn-yār năi je shesh nāi je shesh shesh__________
+Bhā-răt mā-tār pā-ye thā_mi thā_mi thā_mi
+Se-thāi mă-mă ăn-tă-rā-jyā___________mi_____</lyrics>
+  <rightinfo>Words and Music
+By Sri Chinmoy
+July 12, 2006
+Kamakura, Japan</rightinfo>
+  <topspace>102</topspace>
+  <rowheight>-9</rowheight>
+  <linewidth>705</linewidth>
+  <lines>
+    <line>
+      <notedistchange>0.75427884</notedistchange>
+      <tempochangeypos>-37</tempochangeypos>
+      <lyricsypos>49</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>1,2;4,5;9,10;11,12;14,15;17,18;19,20;21,23;</beamings>
+      <ties>23,24;</ties>
+      <notes>
+          <note type="CROTCHET">
+            <xpos>84</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>115</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>135</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>163</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>196</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>217</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>241</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>264</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>298</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>331</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>356</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>385</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>407</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>428</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>453</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>470</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>491</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>517</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>536</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>557</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>575</xpos>
+            <ypos>0</ypos>
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>594</xpos>
+            <ypos>-1</ypos>
+            <forcearticulation>ACCENT</forcearticulation>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>612</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>630</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>649</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>687</xpos>
+            <ypos>0</ypos>
+            <upper />
+            <annotation>
+              <name>fine</name>
+              <alignment>1.0</alignment>
+              <ypos>-24</ypos>
+            </annotation>
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.1946067</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>51</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>114</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>156</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>197</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>239</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>281</xpos>
+            <ypos>1</ypos>
+            <forcearticulation>ACCENT</forcearticulation>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>341</xpos>
+            <ypos>1</ypos>
+            <forcearticulation>ACCENT</forcearticulation>
+            <upper />
+          </note>
+          <note type="SEMIBREVE">
+            <xpos>401</xpos>
+            <ypos>1</ypos>
+            <forcearticulation>ACCENT</forcearticulation>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>484</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>0.97966665</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>44</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>2,3;5,6;9,10;13,14;17,18;19,20;</beamings>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>108</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>143</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>167</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>195</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>225</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>252</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>279</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>309</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>345</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>368</xpos>
+            <ypos>-4</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>393</xpos>
+            <ypos>-3</ypos>
+          </note>
+          <note type="QUAVERREST">
+            <xpos>416</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>443</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>465</xpos>
+            <ypos>-4</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>490</xpos>
+            <ypos>-3</ypos>
+          </note>
+          <note type="QUAVERREST">
+            <xpos>516</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>541</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>564</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>589</xpos>
+            <ypos>0</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>612</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="MINIM">
+            <xpos>650</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>687</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.1148404</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>1,2;7,8;10,11;13,14;15,16;</beamings>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>110</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>139</xpos>
+            <ypos>-2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>166</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>206</xpos>
+            <ypos>-2</ypos>
+            <dotted>1</dotted>
+          </note>
+          <note type="QUAVER">
+            <xpos>246</xpos>
+            <ypos>-3</ypos>
+          </note>
+          <note type="MINIM">
+            <xpos>272</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>328</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>358</xpos>
+            <ypos>-4</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>386</xpos>
+            <ypos>-3</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>424</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>452</xpos>
+            <ypos>-4</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>479</xpos>
+            <ypos>-3</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>519</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>546</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>575</xpos>
+            <ypos>0</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>600</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="MINIM">
+            <xpos>637</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>687</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>0.8780597</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>44</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>4,6;19,20;</beamings>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>105</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>140</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>175</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>212</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>233</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>256</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>290</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>319</xpos>
+            <ypos>-1</ypos>
+            <dotted>1</dotted>
+          </note>
+          <note type="QUAVER">
+            <xpos>347</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>374</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>405</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>426</xpos>
+            <ypos>-1</ypos>
+            <dotted>1</dotted>
+          </note>
+          <note type="QUAVER">
+            <xpos>465</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>502</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>527</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>551</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="GRACEQUAVER">
+            <xpos>581</xpos>
+            <ypos>2</ypos>
+            <glissando>1</glissando>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>614</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>644</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>666</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>689</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>0,1;5,6;7,9;</beamings>
+      <triplets>7,9;</triplets>
+      <notes>
+          <note type="QUAVER">
+            <xpos>100</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>125</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>150</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>185</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>210</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>245</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>270</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>295</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>320</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>345</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>370</xpos>
+            <ypos>4</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>420</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>0.75786155</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>42</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>14,15;19,20;21,23;2,3;</beamings>
+      <triplets>21,23;</triplets>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>103</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>131</xpos>
+            <ypos>4</ypos>
+            <glissando>6</glissando>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>155</xpos>
+            <ypos>6</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>182</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>209</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>248</xpos>
+            <ypos>-1</ypos>
+            <dotted>1</dotted>
+          </note>
+          <note type="QUAVER">
+            <xpos>273</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>309</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>335</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>354</xpos>
+            <ypos>-1</ypos>
+            <dotted>1</dotted>
+          </note>
+          <note type="QUAVER">
+            <xpos>376</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>408</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>435</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>463</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>481</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>503</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>528</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>547</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>572</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>593</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>612</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>629</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>648</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>667</xpos>
+            <ypos>4</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>687</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.0660999</notedistchange>
+      <tempochangeypos>-20</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>8,9;11,12;14,15;</beamings>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+            <tempo>
+              <visibletempo>100</visibletempo>
+              <tempotype>CROTCHET</tempotype>
+              <tempodescription>Moderate-slow</tempodescription>
+            </tempo>
+          </note>
+          <note type="QUAVERREST">
+            <xpos>110</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>134</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>163</xpos>
+            <ypos>2</ypos>
+            <dotted>2</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>202</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>228</xpos>
+            <ypos>2</ypos>
+            <dotted>2</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>265</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>291</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>347</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>372</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>399</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>452</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>478</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>505</xpos>
+            <ypos>0</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>560</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>585</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="SEMIBREVE">
+            <xpos>612</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>687</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>0.67838025</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>9,10;12,13;15,16;18,19;21,23;24,25;</beamings>
+      <triplets>21,23;</triplets>
+      <notes>
+          <note type="REPEATLEFT">
+            <xpos>84</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVERREST">
+            <xpos>100</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>114</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>142</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>174</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>201</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>227</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>251</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>275</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>302</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>317</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>332</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>358</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>375</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>392</xpos>
+            <ypos>0</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>415</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>432</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>450</xpos>
+            <ypos>-1</ypos>
+            <dotted>1</dotted>
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>473</xpos>
+            <ypos>0</ypos>
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>490</xpos>
+            <ypos>-1</ypos>
+          </note>
+          <note type="SEMIBREVE">
+            <xpos>507</xpos>
+            <ypos>-3</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>554</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>572</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>589</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>606</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>622</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIBREVE">
+            <xpos>639</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>687</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+  </lines>
+  <view>
+    <titlefont>Arial</titlefont>
+    <titlefontsize>26</titlefontsize>
+    <titlefontstyle>Plain</titlefontstyle>
+    <lyricsfont>Times New Roman</lyricsfont>
+    <lyricsfontsize>18</lyricsfontsize>
+    <lyricsfontstyle>Plain</lyricsfontstyle>
+    <generalfont>Arial</generalfont>
+    <generalfontsize>14</generalfontsize>
+  </view>
+</composition>

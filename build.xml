@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="songscribe" default="all">
+    <property name="output.dir" value="${basedir}/classes_temp"/>
+    <property name="jarfile" value="songscribe.jar"/>
+    <property name="dist" value="${basedir}/dist"/>
+    <property name="ss" value="${dist}/ss"/>
+
+    <path id="classpath">
+        <pathelement location="${basedir}/libs/log4j-1.2.9.jar"/>
+        <pathelement location="${basedir}/libs/itext-1.4.jar"/>
+        <pathelement location="${basedir}/libs/MRJToolkitStubs.zip"/>
+    </path>
+
+    <path id="sourcepath">
+        <dirset dir="${basedir}">
+            <include name="src"/>
+        </dirset>
+    </path>
+
+    <target name="init" description="Build initialization">        
+    </target>
+
+    <target name="clean" description="cleanup all">
+        <delete file="${jarfile}"/>
+    </target>
+
+    <target name="compile" description="compile module SongScribe production classes" depends="init, clean" >
+        <mkdir dir="${output.dir}"/>
+        <javac destdir="${output.dir}" target="1.6">
+            <classpath refid="classpath"/>
+            <src refid="sourcepath"/>
+        </javac>
+    </target>
+
+    <target name="jar" description="Jar the files" depends="compile" >
+        <jar destfile="${jarfile}" basedir="${output.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="songscribe.Runner"/>
+            </manifest>
+        </jar>
+        <delete dir="${output.dir}"/>
+    </target>
+
+    <target name="obfuscate" description="Obfuscate with yGuard" depends="jar" >        
+        <taskdef name="yguard"
+            classname="com.yworks.yguard.YGuardTask"
+            classpath="/windows/d/Java/yguard-2.0.1/lib/yguard.jar"/>
+        <yguard>
+            <inoutpair in="${jarfile}" out="${jarfile}"/>
+            <externalclasses refid="classpath"/>
+            <rename mainclass="songscribe.Runner" logfile="rename.log"/>
+        </yguard>
+    </target>
+
+    <target name="dist" depends="jar">
+        <copy todir="${ss}/conf">
+            <fileset dir="${basedir}/conf" excludes=".svn"/>
+        </copy>
+        <copy todir="${ss}/fonts">
+            <fileset dir="${basedir}/fonts" excludes=".svn"/>
+        </copy>
+	<copy todir="${ss}/examples">
+            <fileset dir="${basedir}/examples" excludes=".svn"/>
+        </copy>
+        <copy todir="${ss}/help">
+            <fileset dir="${basedir}/help" excludes=".svn"/>
+        </copy>
+        <copy todir="${ss}/images">
+            <fileset dir="${basedir}/images" excludes=".svn"/>
+        </copy>
+        <copy todir="${ss}/libs">
+            <fileset dir="${basedir}/libs" excludes=".svn"/>
+        </copy>
+        <copy todir="${ss}/profiles">
+            <fileset dir="${basedir}/profiles" excludes=".svn"/>            
+        </copy>
+        <copy todir="${ss}/thirdpartylicenses">
+            <fileset dir="${basedir}/thirdpartylicenses" excludes=".svn"/>
+        </copy>        
+        <copy todir="${ss}">
+            <fileset file="license.txt"/>
+            <fileset file="readme.html"/>
+	    <fileset file="launching.txt"/>
+            <fileset file="songscribe.jar"/>
+        </copy>
+        <java classname="songscribe.ChecksumMaker" dir="${ss}" fork="true">
+            <classpath refid="classpath"/>
+            <classpath location="${jarfile}"/>
+        </java>
+        <java classname="songscribe.VersionWriter" output="${ss}/version">
+            <classpath refid="classpath"/>
+            <classpath location="${jarfile}"/>
+            <arg value="full"/>
+        </java>
+        <java classname="songscribe.VersionWriter" outputproperty="updateversion">
+            <classpath refid="classpath"/>
+            <classpath location="${jarfile}"/>
+            <arg value="update"/>
+        </java>
+	
+	<!--Making the tar.gz platform independent file-->
+	
+	<property name="tarfile" value="${basedir}/songscribe_${updateversion}.tar"/>
+	<property name="temp_ss" value="${dist}/songscribe"/>
+	<move file="${ss}" tofile="${temp_ss}"/>
+	<tar destfile="${tarfile}" basedir="${dist}"/>	
+	<gzip src="${tarfile}" destfile="${tarfile}.gz"/>
+	<delete file="${tarfile}"/>
+	
+	<!--Making the tar.gz platform independent with sources file-->
+	
+	<property name="tarsrcfile" value="${basedir}/songscribe_src_${updateversion}.tar"/>
+	<copy todir="${temp_ss}/src">
+            <fileset dir="${basedir}/src" excludes=".svn"/>
+        </copy>
+	<copy file="${basedir}/build.xml" todir="${temp_ss}"/>
+	<tar destfile="${tarsrcfile}" basedir="${dist}"/>	
+	<gzip src="${tarsrcfile}" destfile="${tarsrcfile}.gz"/>
+	<delete file="${tarsrcfile}"/>
+	
+	<move file="${tarfile}.gz" todir="${dist}"/>
+	<move file="${tarsrcfile}.gz" todir="${dist}"/>
+	<delete dir="${temp_ss}/src"/>
+	<delete file="${temp_ss}/build.xml"/>
+	<move file="${temp_ss}" tofile="${ss}"/>
+	
+	<!--Making the update file-->
+        
+        <zip destfile="${dist}/ssupdate_${updateversion}.msu">
+            <fileset dir="${ss}"/>
+        </zip>
+    </target>
+    <target name="all" depends="init, clean, compile, jar, dist" description="build all"/>
+</project>

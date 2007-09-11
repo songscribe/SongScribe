@@ -1,0 +1,216 @@
+v1.1
+Toccata and Fughetta fonts
+
+Last Revision: December 9, 2004
+
+Toccata and Fughetta are two shareware music fonts designed to be used with MakeMusic! Software's Finale notation package, in conjunction with the "Petrucci" font. They will also work with the newer "Maestro" font. These fonts are the result of several months of work, and thanks are due to many people from the list for suggestions for symbols. The combined fonts include about 400 new glyphs to enhance your printed music created with Finale. 
+
+One of these fonts, "Fughetta", can be used as a default font in place of Petrucci or Maestro,  so that one can choose alternate noteheads, clefs, and other symbols from it  (early versions of Finale can select these symbols only from the default font).  Fughetta contains all basic musical symbols (i.e., clefs, accidentals, noteheads,
+ flags, etc.), in the same locations as in Petrucci (so no remapping is necessary),  and many new symbols as well. Additional Petrucci symbols to which you are  accustomed (expressions, articulations, etc.) are still accessible from Petrucci  through the usual dialog boxes, and all the libraries function normally even  when Petrucci is not the default font.
+
+(NOTE: if you have version 3.5 or later, you do not need to set Fughetta as your default font, due to an increased flexibility in Finale's font-handling abilities.)
+
+The second font, "Toccata", is designed to supplement the articulations and expressions available from Petrucci. Libraries can easily be created by accessing the Toccata font through font dialog boxes. Toccata contains 222 completely new symbols to be used with Finale. 
+
+The current files containing the fonts are:
+
+TOCFUG.ZIP  (Windows versions)
+TocFug2.sit.hqx  (Mac versions)
+
+These files, along with this readme (TocFugRead.txt) are available at my Web site,  http://www.efn.org/~bch/AboutFonts.html, where you can also see a .GIF image showing some samples of the fonts.
+
+(Two types of symbols are not treated in depth in these fonts: Medieval neumes and  ligatures, and percussion pictographs. I felt these two presented issues which could not be treated properly here, and have relegated these symbols to future projects. Also, fonts already exist that cover these items to a certain extent.)
+---------------------------------------------------------------------------
+WHAT'S IN THE FONTS:
+
+In "Fughetta" (Basic notational symbols):
+
+ACCIDENTALS:
+French "x" diese
+45-degree Renaissance sharp
+square ("hard") bemol
+cross-plus-dots doublesharp
+square-bracketed editorial accidentals (#,h,b,x,bb)
+
+NOTEHEADS:
+square augmentation dot
+white-note cluster symbols for intervals of a fourth, fifth, sixth, 
+   and octave, as well as components to construct other intervals
+slashed notehead (percussion)
+round notehead with left-arrow (brass)
+White(outline and shaded) and black versions of the following notehead shapes:
+   diamond (45-degree square) (suitable for harmonics)
+  diamond (narrow), Renaissance style
+  square
+  oblong
+  equilateral triangle (four orientations)
+  right triangle, diagonal hypotenuse (four orientations)
+  right triangle, horizontal hypotenuse (pointing up and down)
+  slightly narrower triangle (pointing up and down)
+  perfect circle
+  semicircle (four orientations)
+  crescent (fingernail) (three orientations)
+   v-shaped arrowheads (pointing up and down)
+  long (oblong notehead with stem on right)
+Renaissance breve (half-width)
+Renaissance long (half-width)
+x
+x in circle
+diamond in circle 
+double-sharp x in circle
+breve with single lines on sides
+three alternate shapes for standard black and white noteheads
+   (slightly larger, etc.)
+
+RESTS:
+reversed quarter-note rest
+double-tailed quarter-note rest
+long rest
+
+FLAGS:
+angled and flat beamlet-flags, including up and down stems with up to 
+   three flat broken beams
+Renaissance "loop" flags
+
+CLEFS & TIME:
+two-line percussion clef
+Renaissance "Ladder" C clef (two varieties)
+Medieval C and F clefs
+Baroque F and G clefs
+Treble clef with 8 and 15 above
+Bass clef with 8 above
+Bass clef with 15 below
+Time and Prolation signs (C C. O O. , as nearly as I can symbolize, as well as
+  C and O with diminution slashes and a reversed C)
+
+OTHER SYMBOLS:
+Eight additional arrowheads at angles supplementing those available in "Toccata"
+Digits 0-9 in a size and style suitable for MM markings or fingerings
+
+
+
+In "Toccata" (articulations and expressions):
+
+arpeggio marks with up- and down- arrows
+"Mozart carrot" accent mark
+parentheses to fit around notehead, notehead with accidental
+slide, glide, smear, doit, rise, fall-off articulations
+acute-accent, accent-grave, and breve articulations
+tenuto-accent, tenuto-staccato combinations
+thicker accent and tenuto marks
+tenuto + acute accent marking
+double-tonguing and triple-tonguing dots
+cello thumb-fingering mark
+string/fingering numbers 1-6 in circles
+string/fingering numbers 1-5 in squares
+harp dampening symbols (single notes, notes above, below, in range)
+harp P.D.L.T waves (horizontally cloneable)
+other harp symbols (fingernails, various esoterica, pedaling diagrams)
+organ heel and toe pedal markings
+Hauptstimme, Nebenstimme markings
+two varieties of Bartok pizz
+dynamic markings to match dynamics' font (dim., sub., cresc., poco, n)
+square and triangular fermata markings
+parenthetical small noteheads for marking enharmonics
+  (b, h, #, bb, x)
+arrows pointing in 8 compass directions
+trill signs with b, h, #
+short slurs to indicate "l.v."
+"tails" for repeat signs
+21 microtonal accidentals
+numerals 1-8 with circumflexes, for Schenkerian analysis
+"plectrum" symbol
+three additional "speeds" for trill-wavy-line
+Renaissance-style "eye-guide" for end-of-staff 
+tuning-key symbols
+six angles of cloneable glissandi
+two sizes of sinusoidal waves (horizontally cloneable)
+inverted cross
+Baroque ornament resembling Greek letter psi
+"8b" notation for those who dislike "8vb"
+"15mb" symbol
+"coll' " marking for use with 8va 
+blacked-in coda, plus coda 1 and coda 2 signs
+4 different mallet symbols for percussion
+straight arrows in 8 directions
+16 different curved arrows
+double-shafted arrows pointing left and right
+Beginning and ending repeat double-bars
+brass timbre symbols [a], [m], [u], [wa]
+editorially bracketed fermatas, accent, tenuto, staccato, bowings
+small (note-size) and large (staff-size) square brackets
+
+...and more symbols not described!
+ 
+----------------------------------------------------------------------------
+HOW DO I GET THESE FONTS?
+
+These fonts are currently available as shareware. The TrueType versions (Windows and Macintosh) are available at my Web site, http://www.efn.org/~bch/AboutFonts.html, where you can also see a .GIF image showing some samples of the fonts. You can access all of the fonts' features, including printing, with the TrueType fonts alone, although the screen display at smaller sizes may not be perfect. If you like the fonts and continue to use them, you are requested to register them. 
+
+For the $30 shareware fee, you will receive the following:
+
+PostScript versions  of the fonts (Type 1)
+Bitmap versions (24,48,72-pt) (Mac version only; improve screen display considerably)
+Finale Library files with automatic placements for most of the articulations and expressions.
+A file listing all the stem connections for alternate noteheads, in EVPU's. (EPS file)*
+Full character charts of the symbols available, with key combinations (EPS file). 
+
+*Unfortunately, a Finale 3.0 or 3.2 file will only hold 32 stem-connections settings, so it wasn't feasible to put all the alternate noteheads in one file. Stem connections can't be exported as libraries, either, so there isn't any way to move these settings from one file to another. Fortunately, they're very easy to enter from
+the list. I do have three Finale files with up to 32 stem-connection settings loaded into each each; these are available on request, but are perhaps of limited usefulness. Finale 3.5 will handle up to 128 stem-connections settings, but I haven't yet put together a file with that many in it; I'm not sure how useful it would be.
+
+The Finale Libraries are available in FinMac or FinWin versions (please specify). I will email the files to you on receipt of your order, or,  if you prefer, I will mail you a floppy diskette for only $1.50 additional to cover costs. (Note: shipping cost is $5.00 for overseas orders.)
+
+To order, email me at bch@efn.org, 
+or write:
+Blake Hodgetts
+Symantec Corp.
+555 International Way
+Springfield, OR 97477
+
+-----------------------------------------------------------------------------
+HOW DO I USE THESE FONTS?
+
+Install the fonts in whatever manner is normal to your operating System. You may use them with Suitcase on a Macintosh.
+
+(NOTE: the following two paragraphs apply only to versions of Finale prior to version 3.5. If you have version 3.5 or later, you do not need to install Fughetta as your default font in order to use it fully. You can select characters freely from Fughetta within any character font selection dialog.)
+
+To use Fughetta as your default font, go to the Options menu and choose Data Check , select "Switch Default Font", and click "Do Selected Action". Set the default font to 24-pt Fughetta. Then choose "Select Default Fonts" from the Options menu. In the pop-up menu at the bottom of the dialog, you can select the
+font for Music, Clef, Key, and Time (among other things).  You should now find that these are set to Fughetta as the default font. The default font is recognizable in Macintosh by being the first font in the list, out of order alphabetically; make sure you select this appearance of "Fughetta" and not the other one farther down in the list. In Windows, there is nothing special to distinguish it. If you find that stem connections look peculiar after doing this, you may not have done the steps in the correct order.
+
+After changing the default font, you may find that expressions and articulations are jumbled. This is because the existing expressions and articulations libraries in Finale are set to use the default font, which is, of course, usually Petrucci. Changing the default font to Fughetta changes all the libraries to Fughetta as well, with unattractive results. The complete package contains special libraries containing all the usual Petrucci symbols with their font set specifically to Petrucci. You can also edit your libraries yourself and
+change the fonts from the default font to Petrucci. Note that the latter is unavoidable if you intend to apply the Fughetta font as default to a file already containing articulations and expressions.
+
+Because changing the default font in a Finale document can sometimes be difficult to undo, it is recommended that you experiment with new files or backup copies of existing files until you are comfortable with the configuration. (Note, again, that this is not a problem if you are using Finale 3.5 or later, because you will not need to set Fughetta as the Default font.)
+
+Fughetta contains a great many alternative notehead shapes. Most of these will require adjustments to their stem connections. To adjust the stem connections for a notehead, choose "Stem Connections" from the Options menu, select the desired symbol from the Fughetta font, and enter the necessary offsets. Ideal
+offsets for all alternative noteheads are part of the package provided to registered owners, so you won't have to work it all out yourself. A Finale 3.0/3.2 file can hold only 32 stem connection settings at a time, but one will rarely need more alternative noteheads than that in a single piece.
+
+Articulations and expressions can be created easily by selecting characters from Toccata, Fughetta, or Petrucci. Registered owners will not need to do much to create articulation libraries for Toccata, as library files are included with the full package. Auto-positionings have been carefully designed for most of the Toccata articulations. 
+
+Note: I have noticed a peculiar behavior in FinMac 3.x when using articulation metatools. An articulation does not display correctly in magnified views if you insert it with a metatool immediately after setting it. (It displays at 100% instead of at the magnified size.) All you need do is redraw the screen and it will display correctly, as will all subsequent insertions of the same articulation.
+
+----------------------------------------------------------------------------
+WHAT IF THERE'S SOMETHING I NEED THAT'S MISSING?
+
+Tell me about it! As I mentioned above, I will be updating these fonts with improvements and corrections. You can reach me at:
+
+bch@efn.org
+
+When updates are available, an announcement will be emailed to all registered owners, and the updated materials will be posted to my web site. Updates of supplementary materials for registered owners will be emailed on request.
+
+I am currently working on a new font that includes alphabetic characters for creating customized dynamics expressions, as well as some metric modulation figures and other paraphernalia.
+
+Thanks for your interest!
+
+----------------------------------------------------------------------------
+CHANGES FROM V. 1.0:
+
+Corrected cello fingering symbol.
+Adjusted and thickened slightly "x" noteheads.
+Corrected and expanded section in ReadMe dealing with modifying default font.
+Added FTP information to ReadMe.
+
+----------------------------------------------------------------------------
+LEGAL STUFF:
+
+The TrueType fonts, Fughetta and Toccata, are shareware. Thwy may be freely distributed in this form; however, this ReadMe file must accompany any distribution of the TrueType fonts. If you find the fonts useful and use them, you are requested to register them. The PostScript fonts, bitmaps, and accompanying Finale Libraries and metrics information are not to be distributed in any form.  All rights reserved, Copyright C 1995, Blake Hodgetts.

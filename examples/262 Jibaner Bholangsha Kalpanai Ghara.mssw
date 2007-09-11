@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<composition version="1.1">
+  <keys>5</keys>
+  <keytype>FLATS</keytype>
+  <tempo>
+    <visibletempo>69</visibletempo>
+    <tempotype>CROTCHET</tempotype>
+    <tempodescription>Slow</tempodescription>
+  </tempo>
+  <number>262</number>
+  <songtitle>Jibăner Bholāngshă Kălpănāi Ghărā</songtitle>
+  <year>2006</year>
+  <month>1</month>
+  <day>9</day>
+  <lyrics>Ji-bă-ner bho-lāng-shă kăl-pă-nāi_ ghă-rā___
+Kăl-pă-nār stu-lă rup__ ā-mā-der___ dhă-rā</lyrics>
+  <underlyrics>Jibăner bholāngshă kălpănāi ghărā
+Kălpănār stulă rup āmāder dhărā</underlyrics>
+  <rightinfo>Words and Music
+By Sri Chinmoy
+January 9, 2006</rightinfo>
+  <linewidth>700</linewidth>
+  <lines>
+    <line>
+      <notedistchange>1.2639881</notedistchange>
+      <tempochangeypos>-40</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>11,13;0,1;</beamings>
+      <triplets>6,7;</triplets>
+      <notes>
+          <note type="QUAVER">
+            <xpos>100</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>132</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>163</xpos>
+            <ypos>3</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>207</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>239</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>283</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>346</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>391</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="GRACEQUAVER">
+            <xpos>422</xpos>
+            <ypos>3</ypos>
+            <glissando>1</glissando>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>475</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>523</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>568</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>595</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>618</xpos>
+            <ypos>1</ypos>
+            <glissando>2</glissando>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>665</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.1899279</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>11,13;8,10;6,7;3,5;</beamings>
+      <ties>10,11;5,6;</ties>
+      <triplets>0,1;</triplets>
+      <notes>
+          <note type="CROTCHET">
+            <xpos>100</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>142</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>171</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>213</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>243</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>273</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>302</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>332</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>362</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>392</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>421</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>451</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>481</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>511</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>540</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>570</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>612</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+  </lines>
+  <view>
+    <titlefont>Arial</titlefont>
+    <titlefontsize>26</titlefontsize>
+    <titlefontstyle>Plain</titlefontstyle>
+    <lyricsfont>Times New Roman</lyricsfont>
+    <lyricsfontsize>18</lyricsfontsize>
+    <lyricsfontstyle>Plain</lyricsfontstyle>
+    <generalfont>Arial</generalfont>
+    <generalfontsize>14</generalfontsize>
+  </view>
+</composition>

@@ -1,0 +1,17 @@
+Welcome to SongScribe. This program is designed for Maestro Sri Chinmoy's songs. It will help you to print and learn songs. These tips show you useful tricks on startup.
+You can edit songs much faster if you use keyboard input. You can switch between mouse and keyboard input in the Edit | Control menu or by double clicking on the contol field of the status bar.
+You can quickly beam the last two notes by pressing "B". Also you can unbeam the last two notes with "B"
+You can quickly triplet the last three or two notes by "T". Pressing again removes the triplet. CTRL+T is used for quick tie or untie.
+Use the F button to set the editing note flat. Use the N or S button for natural or sharp.
+When using the keyboard for input, you can find the function of all characters in the Help | Keymap menu.
+Before you type the song title in the composition settings dialog, it is advisable to type the syllabified lyrics first, because with one mouse click you can get the first few words for the title.
+The fastest way to get the lyrics under the song is to type the syllabified lyrics first, then with one mouse click you can get the lyrics.
+If you take the lyrics under the song from the syllabified lyrics, you can edit it afterwards if something is incorrect.
+Use the note adjustment mode to adjust the horizontal position of notes. You can switch between modes in Edit | Mode menu, on the toolbar or by double clicking on the proper field or status bar.
+In any adjustment mode, you can adjust a lot of things by dragging the little colorful rectangles.
+You can use the Copy, Cut, Paste operations as usual.
+Use the Composition | Annotation to add any text over a note or even a repeat (e.g. fine, soulfully etc.)
+Use Song Book to easily create music sheets and songbooks. You can find this program in the SongScribe package.
+The Song Book creates a PDF file, which you can see and print with Adobe Acrobat Reader.
+With Song Show you can make a slide-show of songs. This program is shipped with the SongScribe package.
+In the Song Show you can save and open the group of songs if you want show them later.

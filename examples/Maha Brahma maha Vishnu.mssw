@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<composition version="1.1">
+  <keys>5</keys>
+  <keytype>FLATS</keytype>
+  <tempo>
+    <visibletempo>80</visibletempo>
+    <tempotype>CROTCHET</tempotype>
+    <tempodescription>Moderate</tempodescription>
+  </tempo>
+  <songtitle>Maha Brahma Maha Vishnu</songtitle>
+  <lyrics>Ma-ha Brah-ma ma-ha Vish-nu ma-ha_ shib____
+Mo-re ka-ro ni-tya su-dha muk___ta jib</lyrics>
+  <underlyrics>Maha Brahma maha Vishnu maha shib
+More karo nitya sudha mukta jib</underlyrics>
+  <translatedlyrics>Lord Brahma, Lord Vishnu, Lord Shiva!
+Do make me even pure
+And ever liberated soul.</translatedlyrics>
+  <rightinfo>Words and Music
+By Sri Chinmoy
+</rightinfo>
+  <linewidth>700</linewidth>
+  <lines>
+    <line>
+      <notedistchange>1.535045</notedistchange>
+      <tempochangeypos>-40</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>13,14;11,12;8,10;6,7;4,5;2,3;0,1;</beamings>
+      <ties>14,15;</ties>
+      <notes>
+          <note type="SEMIQUAVER">
+            <xpos>100</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>138</xpos>
+            <ypos>3</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>177</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>216</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>253</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>292</xpos>
+            <ypos>4</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>330</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>368</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>407</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>446</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>484</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>522</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>560</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>599</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>637</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>676</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.568355</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>10,12;8,9;6,7;4,5;2,3;0,1;</beamings>
+      <notes>
+          <note type="QUAVER">
+            <xpos>100</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>139</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>179</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>218</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>257</xpos>
+            <ypos>4</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>296</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>336</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>375</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>413</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>453</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>492</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>531</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>570</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>609</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>682</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+  </lines>
+  <view>
+    <titlefont>Arial</titlefont>
+    <titlefontsize>26</titlefontsize>
+    <titlefontstyle>Plain</titlefontstyle>
+    <lyricsfont>Times New Roman</lyricsfont>
+    <lyricsfontsize>18</lyricsfontsize>
+    <lyricsfontstyle>Plain</lyricsfontstyle>
+    <generalfont>Arial</generalfont>
+    <generalfontsize>14</generalfontsize>
+  </view>
+</composition>

@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<composition version="1.1">
+  <keys>5</keys>
+  <keytype>FLATS</keytype>
+  <tempo>
+    <visibletempo>100</visibletempo>
+    <tempotype>CROTCHET</tempotype>
+    <tempodescription>Moderate</tempodescription>
+  </tempo>
+  <number>263</number>
+  <songtitle>Prān Stăr Hăte Jăto</songtitle>
+  <year>2006</year>
+  <month>1</month>
+  <day>9</day>
+  <lyrics>Prān stăr hă-te jă_to ā-dān prăn-dān____
+Shār_ther săm-băn-dhe__ kă_re bi-pă-de ā-how-băn
+Bi-dhā-tār sri chă-ră-ne_ pur_nă(y) āt_mā dān_
+Prān să-mă-syār_ mā-tro ek să_____mā___dhān___</lyrics>
+  <underlyrics>Prān stăr hăte jăto ādān prăndān
+Shārther sămbăndhe kăre bipăde āhowbăn
+Bidhātār sri chărăne purnă ātmā dān
+Prān sămăsyār mātro ek sămādhān</underlyrics>
+  <rightinfo>Words and Music
+By Sri Chinmoy
+January 9, 2006</rightinfo>
+  <linewidth>700</linewidth>
+  <lines>
+    <line>
+      <notedistchange>1.2943623</notedistchange>
+      <tempochangeypos>-40</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>11,12;4,5;2,3;</beamings>
+      <notes>
+          <note type="CROTCHET">
+            <xpos>98</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>143</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>189</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>219</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>253</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>286</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>330</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>377</xpos>
+            <ypos>5</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>415</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>456</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>493</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>538</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>565</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>598</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>635</xpos>
+            <ypos>2</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.0607035</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>15,16;11,12;8,9;5,6;0,1;</beamings>
+      <notes>
+          <note type="QUAVER">
+            <xpos>98</xpos>
+            <ypos>2</ypos>
+            <glissando>1</glissando>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>129</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>153</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>188</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>225</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>263</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>289</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>326</xpos>
+            <ypos>0</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>368</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>395</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>438</xpos>
+            <ypos>-1</ypos>
+            <dotted>1</dotted>
+            <prefix>FLAT</prefix>
+            <glissando>2</glissando>
+          </note>
+          <note type="QUAVER">
+            <xpos>489</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>516</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>543</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>580</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>616</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>650</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>677</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>1.1555761</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>8,9;4,5;0,1;</beamings>
+      <notes>
+          <note type="QUAVER">
+            <xpos>98</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>127</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>156</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>196</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>237</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>266</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="GRACEQUAVER">
+            <xpos>294</xpos>
+            <ypos>3</ypos>
+            <glissando>1</glissando>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>329</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>387</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>416</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>445</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>485</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>514</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>554</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>583</xpos>
+            <ypos>-2</ypos>
+            <glissando>-1</glissando>
+          </note>
+          <note type="MINIM">
+            <xpos>632</xpos>
+            <ypos>-1</ypos>
+            <prefix>FLAT</prefix>
+          </note>
+      </notes>
+    </line>
+    <line>
+      <notedistchange>0.79877216</notedistchange>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>19,21;15,16;13,14;11,12;9,10;</beamings>
+      <ties>21,22;</ties>
+      <notes>
+          <note type="CROTCHET">
+            <xpos>98</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="QUAVER">
+            <xpos>127</xpos>
+            <ypos>-2</ypos>
+          </note>
+          <note type="CROTCHET">
+            <xpos>155</xpos>
+            <ypos>-1</ypos>
+            <prefix>FLAT</prefix>
+          </note>
+          <note type="QUAVER">
+            <xpos>185</xpos>
+            <ypos>0</ypos>
+            <glissando>1</glissando>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>219</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>245</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>270</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>300</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>329</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>357</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>378</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>401</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>423</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>448</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>468</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>490</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>506</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>534</xpos>
+            <ypos>2</ypos>
+            <prefix>NATURAL</prefix>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>552</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>581</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>602</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>622</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="MINIM">
+            <xpos>654</xpos>
+            <ypos>1</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>682</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+  </lines>
+  <view>
+    <titlefont>Arial</titlefont>
+    <titlefontsize>26</titlefontsize>
+    <titlefontstyle>Plain</titlefontstyle>
+    <lyricsfont>Times New Roman</lyricsfont>
+    <lyricsfontsize>18</lyricsfontsize>
+    <lyricsfontstyle>Plain</lyricsfontstyle>
+    <generalfont>Arial</generalfont>
+    <generalfontsize>14</generalfontsize>
+  </view>
+</composition>

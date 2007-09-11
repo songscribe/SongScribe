@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<composition version="1.1">
+  <keys>6</keys>
+  <keytype>FLATS</keytype>
+  <tempo>
+    <visibletempo>60</visibletempo>
+    <tempotype>CROTCHETDOTTED</tempotype>
+    <tempodescription>Moderate</tempodescription>
+    <dontshowtempo />
+  </tempo>
+  <songtitle>My Lord I like Your sweet Requests</songtitle>
+  <year>2006</year>
+  <month>6</month>
+  <day>4</day>
+  <lyrics>My Lord I like Your sweet_ Re-quests,___ but I love Your
+Thun-der--Com-mands
+</lyrics>
+  <underlyrics>My Lord I like Your sweet Requests, but I love Your
+Thunder-Commands
+</underlyrics>
+  <translatedlyrics>Uram, szeretem édes Kéréseidet, de imádom
+Mennydörgés-Parancsaidat</translatedlyrics>
+  <rightinfo>Words and Music
+By Sri Chinmoy
+June 4, 2006</rightinfo>
+  <linewidth>700</linewidth>
+  <lines>
+    <line>
+      <notedistchange>0.94149303</notedistchange>
+      <tempochangeypos>-40</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <beamings>7,9;10,11;14,15;</beamings>
+      <ties>12,13;</ties>
+      <notes>
+          <note type="CROTCHETREST">
+            <xpos>100</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>127</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>165</xpos>
+            <ypos>3</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="CROTCHETREST">
+            <xpos>206</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>239</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>266</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>304</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>350</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>378</xpos>
+            <ypos>4</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>406</xpos>
+            <ypos>3</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>446</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>474</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>502</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>541</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>580</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="SEMIQUAVER">
+            <xpos>608</xpos>
+            <ypos>2</ypos>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>635</xpos>
+            <ypos>0</ypos>
+            <dotted>1</dotted>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>675</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+    <line>
+      <tempochangeypos>-16</tempochangeypos>
+      <lyricsypos>48</lyricsypos>
+      <fsendingypos>-25</fsendingypos>
+      <notes>
+          <note type="QUAVER">
+            <xpos>100</xpos>
+            <ypos>0</ypos>
+            <forcearticulation>ACCENT</forcearticulation>
+            <upper />
+          </note>
+          <note type="CROTCHET">
+            <xpos>145</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+          <note type="QUAVER">
+            <xpos>190</xpos>
+            <ypos>1</ypos>
+            <upper />
+          </note>
+          <note type="SEMIBREVE">
+            <xpos>247</xpos>
+            <ypos>-1</ypos>
+            <forcearticulation>ACCENT</forcearticulation>
+          </note>
+          <note type="REPEATRIGHT">
+            <xpos>289</xpos>
+            <ypos>0</ypos>
+            <upper />
+          </note>
+      </notes>
+    </line>
+  </lines>
+  <view>
+    <titlefont>Arial</titlefont>
+    <titlefontsize>26</titlefontsize>
+    <titlefontstyle>Plain</titlefontstyle>
+    <lyricsfont>Times New Roman</lyricsfont>
+    <lyricsfontsize>18</lyricsfontsize>
+    <lyricsfontstyle>Plain</lyricsfontstyle>
+    <generalfont>Arial</generalfont>
+    <generalfontsize>14</generalfontsize>
+  </view>
+</composition>
