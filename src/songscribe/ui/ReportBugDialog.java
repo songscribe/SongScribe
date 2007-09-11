@@ -30,13 +30,15 @@ import java.awt.*;
 import java.io.File;
 import java.net.URI;
 
+import songscribe.data.MyDesktop;
+
 /**
  * @author Csaba Kávai
  */
 public class ReportBugDialog extends MyDialog {
     private static final Logger logger = Logger.getLogger(ReportBugDialog.class);
     public static final String BUGEMAIL = "songscribe@vasudevaserver.org";
-    private Desktop desktop;
+    private MyDesktop desktop;
 
     public ReportBugDialog(MainFrame mainFrame) {
         super(mainFrame, "Bug report");
@@ -55,7 +57,7 @@ public class ReportBugDialog extends MyDialog {
         southPanel.remove(applyButton);
         southPanel.remove(cancelButton);
         final MainFrame mf = mainFrame;
-        if(Desktop.isDesktopSupported() && (desktop=Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)){
+        if(MyDesktop.isDesktopSupported() && (desktop= MyDesktop.getDesktop()).isSupported(MyDesktop.Action.MAIL)){
             JButton sendBug = new JButton("Send a report", new ImageIcon(MainFrame.getImage("mail_generic.png")));
             sendBug.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {

@@ -83,6 +83,7 @@ public class ExportPDFAction extends AbstractAction{
                 mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, resolution);
                 g2.dispose();
                 document.close();
+                Utilities.openExportFile(mainFrame, saveFile);
             } catch (DocumentException e1) {
                 mainFrame.showErrorMessage("An unexprected error occured and could not export into PDF.");
                 logger.error("PDF save", e1);

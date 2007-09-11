@@ -35,7 +35,10 @@ import java.security.KeyManagementException;
  * @author Csaba Kávai
  */
 public class Proba {
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    public static void main(String[] args) throws Exception {
+        for(Object c:Class.forName("java.awt.Desktop$Action").getEnumConstants()){
+            System.out.println(c.toString());
+        }
         /*Calendar c = Calendar.getInstance();
         c.set(2007, 11, 31, 23, 59, 59);
         System.out.println(c.getTimeInMillis());*/        

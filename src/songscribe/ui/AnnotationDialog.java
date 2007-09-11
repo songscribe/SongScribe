@@ -94,26 +94,26 @@ public class AnnotationDialog extends MyDialog{
         alignmentGroup.add(Alignment.center.button);
         alignmentGroup.add(Alignment.right.button);
 
-        GroupLayout xPanelLayout = new GroupLayout(xPanel);
+        org.jdesktop.layout.GroupLayout xPanelLayout = new org.jdesktop.layout.GroupLayout(xPanel);
         xPanel.setLayout(xPanelLayout);
         xPanelLayout.setHorizontalGroup(
-            xPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(xPanelLayout.createSequentialGroup()
+            xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(xPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(xPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(Alignment.left.button)
-                    .addComponent(Alignment.center.button)
-                    .addComponent(Alignment.right.button))
+                .add(xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(Alignment.left.button)
+                    .add(Alignment.center.button)
+                    .add(Alignment.right.button))
                 .addContainerGap(39, Short.MAX_VALUE))
         );
         xPanelLayout.setVerticalGroup(
-            xPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(xPanelLayout.createSequentialGroup()
-                .addComponent(Alignment.left.button)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Alignment.center.button)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Alignment.right.button))
+            xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(xPanelLayout.createSequentialGroup()
+                .add(Alignment.left.button)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(Alignment.center.button)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(Alignment.right.button))
         );
 
         verticalPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Vertical position"));
@@ -129,56 +129,56 @@ public class AnnotationDialog extends MyDialog{
         verticalGroup.add(aboveButton);
         verticalGroup.add(belowButton);
 
-        GroupLayout verticalPanelLayout = new GroupLayout(verticalPanel);
+        org.jdesktop.layout.GroupLayout verticalPanelLayout = new org.jdesktop.layout.GroupLayout(verticalPanel);
         verticalPanel.setLayout(verticalPanelLayout);
         verticalPanelLayout.setHorizontalGroup(
-            verticalPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(verticalPanelLayout.createSequentialGroup()
+            verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(verticalPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(verticalPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(belowButton)
-                    .addComponent(aboveButton))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(belowButton)
+                    .add(aboveButton))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         verticalPanelLayout.setVerticalGroup(
-            verticalPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, verticalPanelLayout.createSequentialGroup()
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(aboveButton)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(belowButton)
+            verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, verticalPanelLayout.createSequentialGroup()
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(aboveButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(belowButton)
                 .addContainerGap())
         );
 
-        GroupLayout layout = new GroupLayout(centerPanel);
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(centerPanel);
         centerPanel.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(xPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(verticalPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(annotationLabel)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(annotationCombo, 0, 190, Short.MAX_VALUE)))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .add(annotationLabel)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(annotationCombo, 0, 190, Short.MAX_VALUE)))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(annotationLabel)
-                    .addComponent(annotationCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(verticalPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(xPanel, GroupLayout.PREFERRED_SIZE, 88, Short.MAX_VALUE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(annotationLabel)
+                    .add(annotationCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 88, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );       
         dialogPanel.add(centerPanel);
 

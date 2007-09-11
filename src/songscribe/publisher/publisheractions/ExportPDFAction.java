@@ -24,6 +24,7 @@ package songscribe.publisher.publisheractions;
 import org.apache.log4j.Logger;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
+import songscribe.ui.Utilities;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.publisher.Publisher;
@@ -90,6 +91,7 @@ public class ExportPDFAction extends AbstractAction{
                     }
                 }
                 document.close();
+                Utilities.openExportFile(publisher, saveFile);
             } catch (DocumentException e1) {
                 publisher.showErrorMessage("An unexprected error occured and could not export into PDF.");
                 logger.error("PDF save", e1);

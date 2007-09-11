@@ -77,6 +77,7 @@ public class ExportMidiDialog extends MyDialog{
             mainFrame.getMusicSheet().getComposition().musicChanged(props);
             MidiSystem.write(mainFrame.getMusicSheet().getComposition().getSequence(), 1, saveFile);
             mainFrame.getMusicSheet().getComposition().musicChanged(mainFrame.getProperties());
+            Utilities.openExportFile(mainFrame, saveFile);
         } catch (IOException e1) {
             mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
             logger.error("Saving MIDI", e1);

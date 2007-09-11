@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.io.*;
 
+import songscribe.data.MyDesktop;
+
 /**
  * @author Csaba Kávai
  */
@@ -113,5 +115,19 @@ public class Utilities {
         }
         fis.close();
         fos.close();
+    }
+
+    public static void openExportFile(MainFrame mainFrame, File file){
+        if(MyDesktop.isDesktopSupported()){
+            MyDesktop desktop = MyDesktop.getDesktop();
+            if(desktop.isSupported(MyDesktop.Action.OPEN) &&
+                    JOptionPane.showConfirmDialog(mainFrame, "Do you want to open the file?", mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)==JOptionPane.YES_OPTION){
+                try {
+                    desktop.open(file);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(mainFrame, "Could not open the file.", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
     }
 }

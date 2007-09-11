@@ -8,6 +8,7 @@
     <path id="classpath">
         <pathelement location="${basedir}/libs/log4j-1.2.9.jar"/>
         <pathelement location="${basedir}/libs/itext-1.4.jar"/>
+        <pathelement location="${basedir}/libs/swing-layout.jar"/>
         <pathelement location="${basedir}/libs/MRJToolkitStubs.zip"/>
     </path>
 
@@ -26,7 +27,7 @@
 
     <target name="compile" description="compile module SongScribe production classes" depends="init, clean" >
         <mkdir dir="${output.dir}"/>
-        <javac destdir="${output.dir}" target="1.6">
+        <javac destdir="${output.dir}" target="1.5">
             <classpath refid="classpath"/>
             <src refid="sourcepath"/>
         </javac>

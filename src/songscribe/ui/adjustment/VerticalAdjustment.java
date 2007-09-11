@@ -148,7 +148,7 @@ public class VerticalAdjustment extends Adjustment{
         super.setEnabled(enabled);
         if(enabled){
             Composition c = musicSheet.getComposition();
-            if(!c.getRightInfo().isEmpty())adjustRects.add(new AdjustRect(-1, AdjustType.RIGHTINFO, -1));
+            if(c.getRightInfo().length()>0)adjustRects.add(new AdjustRect(-1, AdjustType.RIGHTINFO, -1));
             if(c.lineCount()>0)adjustRects.add(new AdjustRect(0, AdjustType.TOPSPACE, -1));
             if(c.lineCount()>1)adjustRects.add(new AdjustRect(1, AdjustType.ROWHEIGHT, -1));
             for(int l=0;l<c.lineCount();l++){

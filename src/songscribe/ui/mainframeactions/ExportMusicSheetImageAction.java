@@ -82,6 +82,7 @@ public class ExportMusicSheetImageAction extends AbstractAction{
             scale = (double)resolutionDialog.getResolution()/(double)MusicSheet.RESOLUTION;
             try {
                 ImageIO.write(mainFrame.getMusicSheet().createMusicSheetImageForExport(Color.white, scale), maf.getExtension(0), saveFile);
+                Utilities.openExportFile(mainFrame, saveFile);
             } catch (IOException e1) {
                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
                 logger.error("Saving image", e1);

@@ -918,9 +918,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public int getStartY(){
-        if(composition.getSongTitle().isEmpty()){
+        if(composition.getSongTitle().length()==0){
             int tempoStartY = middleLine + composition.getLine(0).getTempoChangeYPos()-LINEDIST*VISIBLELINENUM;
-            if(composition.getRightInfo().isEmpty()){
+            if(composition.getRightInfo().length()==0){
                 return tempoStartY;
             }else{
                 return Math.min(tempoStartY, composition.getRightInfoStartY());
