@@ -60,7 +60,7 @@
         <copy todir="${ss}/fonts">
             <fileset dir="${basedir}/fonts" excludes=".svn"/>
         </copy>
-	<copy todir="${ss}/examples">
+	    <copy todir="${ss}/examples">
             <fileset dir="${basedir}/examples" excludes=".svn"/>
         </copy>
         <copy todir="${ss}/help">
@@ -98,38 +98,45 @@
             <classpath location="${jarfile}"/>
             <arg value="update"/>
         </java>
+
+        <!--Making the tar.gz platform independent file-->
+
+        <property name="tarfile" value="${basedir}/songscribe_${updateversion}.tar"/>
+        <property name="temp_ss" value="${dist}/songscribe"/>
+        <move file="${ss}" tofile="${temp_ss}"/>
+        <tar destfile="${tarfile}" basedir="${dist}"/>
+        <gzip src="${tarfile}" destfile="${tarfile}.gz"/>
+        <delete file="${tarfile}"/>
+
+        <!--Making the tar.gz platform independent with sources file-->
+
+        <property name="tarsrcfile" value="${basedir}/songscribe_src_${updateversion}.tar"/>
+        <copy todir="${temp_ss}/src">
+                <fileset dir="${basedir}/src" excludes=".svn"/>
+            </copy>
+        <copy file="${basedir}/build.xml" todir="${temp_ss}"/>
+        <tar destfile="${tarsrcfile}" basedir="${dist}"/>
+        <gzip src="${tarsrcfile}" destfile="${tarsrcfile}.gz"/>
+        <delete file="${tarsrcfile}"/>
+
+        <move file="${tarfile}.gz" todir="${dist}"/>
+        <move file="${tarsrcfile}.gz" todir="${dist}"/>
+        <delete dir="${temp_ss}/src"/>
+        <delete file="${temp_ss}/build.xml"/>
+        <move file="${temp_ss}" tofile="${ss}"/>
 	
-	<!--Making the tar.gz platform independent file-->
-	
-	<property name="tarfile" value="${basedir}/songscribe_${updateversion}.tar"/>
-	<property name="temp_ss" value="${dist}/songscribe"/>
-	<move file="${ss}" tofile="${temp_ss}"/>
-	<tar destfile="${tarfile}" basedir="${dist}"/>	
-	<gzip src="${tarfile}" destfile="${tarfile}.gz"/>
-	<delete file="${tarfile}"/>
-	
-	<!--Making the tar.gz platform independent with sources file-->
-	
-	<property name="tarsrcfile" value="${basedir}/songscribe_src_${updateversion}.tar"/>
-	<copy todir="${temp_ss}/src">
-            <fileset dir="${basedir}/src" excludes=".svn"/>
-        </copy>
-	<copy file="${basedir}/build.xml" todir="${temp_ss}"/>
-	<tar destfile="${tarsrcfile}" basedir="${dist}"/>	
-	<gzip src="${tarsrcfile}" destfile="${tarsrcfile}.gz"/>
-	<delete file="${tarsrcfile}"/>
-	
-	<move file="${tarfile}.gz" todir="${dist}"/>
-	<move file="${tarsrcfile}.gz" todir="${dist}"/>
-	<delete dir="${temp_ss}/src"/>
-	<delete file="${temp_ss}/build.xml"/>
-	<move file="${temp_ss}" tofile="${ss}"/>
-	
-	<!--Making the update file-->
+	    <!--Making the update file-->
         
         <zip destfile="${dist}/ssupdate_${updateversion}.msu">
             <fileset dir="${ss}"/>
         </zip>
+
+        <!--Deleting the stuff for update-->
+        <java classname="songscribe.UpdateMaker">
+            <classpath refid="classpath"/>
+            <classpath location="${jarfile}"/>
+            <arg value="${ss}"/>
+        </java>
     </target>
     <target name="all" depends="init, clean, compile, jar, dist" description="build all"/>
 </project>

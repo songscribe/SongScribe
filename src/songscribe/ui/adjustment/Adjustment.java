@@ -39,10 +39,10 @@ public abstract class Adjustment implements MouseListener, MouseMotionListener{
     protected Point upLeftDragBounds = new Point();
     protected Point downRightDragBounds = new Point();
 
-    public Adjustment(MusicSheet parent) {
-        this.musicSheet = parent;
-        parent.addMouseListener(this);
-        parent.addMouseMotionListener(this);
+    public Adjustment(MusicSheet musicSheet) {
+        this.musicSheet = musicSheet;
+        musicSheet.addMouseListener(this);
+        musicSheet.addMouseMotionListener(this);
     }
 
     public void setEnabled(boolean enabled) {
@@ -54,11 +54,10 @@ public abstract class Adjustment implements MouseListener, MouseMotionListener{
 
     public void mousePressed(MouseEvent e) {
         if (!enabled) return;
-        if (!startedDrag) {
-            startedDrag = true;
-            startPoint = e.getPoint();
-            startedDrag();
-        }
+        startedDrag = true;
+        startPoint = e.getPoint();
+        startedDrag();
+        if(startedDrag)musicSheet.setDragDisabled(true);
     }
 
     public void mouseReleased(MouseEvent e) {
@@ -66,6 +65,7 @@ public abstract class Adjustment implements MouseListener, MouseMotionListener{
         if (startedDrag) {
             startedDrag = false;
             finishedDrag();
+            musicSheet.setDragDisabled(false);
         }
     }
 

@@ -33,8 +33,8 @@ public class BeamSelectionPanel extends SelectionPanel implements ActionListener
 
     public BeamSelectionPanel(MainFrame mainFrame) {
         super(mainFrame);
-        String[] images = {"beam.gif", "unbeam.gif", "triplet.gif", "untriplet.gif", "tie.gif", "untie.gif", "fsending.gif", "unfsending.gif"};
-        String[] toolTips = {"Beam", "Unbeam", "Triplet", "Untriplet", "Tie", "Untie", "First-second ending", "Remove first-second ending"};
+        String[] images = {"beam.gif", "unbeam.gif", "triplet.gif", "untriplet.gif", "tie.gif", "untie.gif"};
+        String[] toolTips = {"Beam", "Unbeam", "Triplet", "Untriplet", "Tie", "Untie"};
         buttons = new JButton[toolTips.length];
         for(int i=0;i<toolTips.length;i++){
             buttons[i] = new JButton(new ImageIcon(MainFrame.getImage(images[i])));
@@ -62,16 +62,12 @@ public class BeamSelectionPanel extends SelectionPanel implements ActionListener
             mainFrame.getMusicSheet().tieSelectedNotes(true);
         }else if(source==buttons[5]){
             mainFrame.getMusicSheet().tieSelectedNotes(false);
-        }else if(source==buttons[6]){
-            mainFrame.getMusicSheet().makeFsEndingOnSelectedNotes(true);
-        }else if(source==buttons[7]){
-            mainFrame.getMusicSheet().makeFsEndingOnSelectedNotes(false);
         }
     }
 
     public void setActive() {
         mainFrame.getMusicSheet().setActiveNote(null);
         if(mainFrame.getInsertMenu()!=null)mainFrame.getInsertMenu().updateState();
-        mainFrame.getMusicSheet().setSelectionType(null);
+        mainFrame.getMusicSheet().setInSelection(false);
     }
 }

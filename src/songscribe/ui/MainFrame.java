@@ -229,7 +229,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         westToggleButton = new WestToggleButton(Note.clipNoteImage(CrotchetRest.IMAGE, CrotchetRest.REALNOTERECT, OUTERSELECTIONIMAGEBORDERCOLOR, OUTERSELECTIONPANELIMAGEDIM), restSelectionPanel, "Rest addition");
         mainWestGroup.add(westToggleButton);
         mainWestTools.add(westToggleButton);
-        westToggleButton = new WestToggleButton(MainFrame.getImage("triplettab.gif"), beamSelectionPanel, "Beamings, triplets, ties, first-second endings");
+        westToggleButton = new WestToggleButton(MainFrame.getImage("triplettab.gif"), beamSelectionPanel, "Beamings, triplets, ties");
         mainWestGroup.add(westToggleButton);
         mainWestTools.add(westToggleButton);
         westToggleButton = new WestToggleButton(Note.clipNoteImage(RepeatLeft.IMAGE, RepeatLeft.REALNOTERECT, OUTERSELECTIONIMAGEBORDERCOLOR, OUTERSELECTIONPANELIMAGEDIM), otherSelectionPanel, "Others");
@@ -326,6 +326,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         lineMenu.add(new InsertLineAction(this, 1, "After the selected line"));
         insertMenu.addSeparator();
         insertMenu.add(lineMenu);
+
         JMenu compositionMenu = new JMenu("Composition");
         compositionMenu.add(compositionSettingsAction);
         compositionMenu.add(new DialogOpenAction(this, "Lyrics...", "edit.png", KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), LyricsDialog.class));
@@ -341,6 +342,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         menuBar.add(editMenu);
         menuBar.add(modeMenu);
         menuBar.add(insertMenu);
+        menuBar.add(new NotesMenu(this));
         menuBar.add(playMenu);
         menuBar.add(compositionMenu);
         menuBar.add(helpMenu);

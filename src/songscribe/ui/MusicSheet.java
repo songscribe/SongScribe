@@ -99,6 +99,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
     private Mode mode = Mode.NOTEEDIT;
+    private boolean dragDisabled;
 
     public enum Control{
         MOUSE("Mouse"),
@@ -118,8 +119,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     private boolean isActiveNoteIn;
 
     //selection fields
-    public static enum SelectionType{NOTE, LINE}
-    private SelectionType selectionType;
+    private boolean inSelection;
     private int selectedLine=-1;
     private int selectedNotesLine=-1;
     private int selectionBegin, selectionEnd;
@@ -411,7 +411,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 }
             }
             activeNote = null;
-            selectionType = SelectionType.NOTE;
+            inSelection = true;
             repaintImage = true;
             repaint();
             return true;
@@ -970,8 +970,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
-    public void setSelectionType(SelectionType selectionType) {
-        this.selectionType = selectionType;
+    public void setInSelection(boolean inSelection) {
+        this.inSelection = inSelection;
     }
 
     public void setControl(Control control) {
@@ -1044,6 +1044,10 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         return drawer;
     }
 
+    public void setDragDisabled(boolean dragDisabled) {
+        this.dragDisabled = dragDisabled;
+    }
+
     public void saveProperties(){
         Properties props = mainFrame.getProperties();
         props.setProperty(Constants.CONTROLPROP, control.name());
@@ -1100,17 +1104,16 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     ------------------------------------------------------------------------
     */
     public void mouseDragged(MouseEvent e) {
-        if(selectionType==SelectionType.NOTE && mode==Mode.NOTEEDIT){
-            if (!startedDrag) {
-                startedDrag = true;
-                startDrag.setLocation(e.getX(), e.getY());
-            }
-            int realX = e.getX() < 0 ? 0 : e.getX() >= getWidth() ? getWidth() - 1 : e.getX();
-            int realY = e.getY() < 0 ? 0 : e.getY() >= getHeight() ? getHeight() - 1 : e.getY();
-            dragRectangle.setBounds(Math.min(startDrag.x, realX), Math.min(startDrag.y, realY),
-                    Math.abs(startDrag.x - realX), Math.abs(startDrag.y - realY));
-            repaint();
+        if(dragDisabled)return;
+        if (!startedDrag) {
+            startedDrag = true;
+            startDrag.setLocation(e.getX(), e.getY());
         }
+        int realX = e.getX() < 0 ? 0 : e.getX() >= getWidth() ? getWidth() - 1 : e.getX();
+        int realY = e.getY() < 0 ? 0 : e.getY() >= getHeight() ? getHeight() - 1 : e.getY();
+        dragRectangle.setBounds(Math.min(startDrag.x, realX), Math.min(startDrag.y, realY),
+                Math.abs(startDrag.x - realX), Math.abs(startDrag.y - realY));
+        repaint();
     }
 
     public void mouseMoved(MouseEvent me) {
@@ -1188,17 +1191,16 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     ------------------------------------------------------------------------
     */
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1 && mode==Mode.NOTEEDIT) {
-            if (selectionType==SelectionType.NOTE) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            if (inSelection) {
                 unSetNoteSelections();
                 startDrag.setLocation(e.getX(), e.getY());
                 calculateSelection(false);
-                repaintImage = true;
-                repaint();
-            }else if(selectionType==SelectionType.LINE){
-                unSetNoteSelections();
-                selectedLine = (e.getY()-composition.getTopSpace())/rowHeight;
-                if(selectedLine<0 || selectedLine>=composition.lineCount())selectedLine=-1;
+                if(selectionBegin==-1 &&
+                        Math.abs(e.getY()-getNoteYPos(0, (e.getY()-composition.getTopSpace())/rowHeight))<=2*LINEDIST){
+                    selectedLine = (e.getY()-composition.getTopSpace())/rowHeight;
+                    if(selectedLine<0 || selectedLine>=composition.lineCount())selectedLine=-1;
+                }
                 updateEditActions();
                 repaintImage = true;
                 repaint();
@@ -1353,7 +1355,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                prevPasteControl = control;
                setActiveNote(Note.PASTENOTE);
                control = Control.MOUSE;
-               selectionType = null;
+               inSelection = false;
                repaint();
            }
         }

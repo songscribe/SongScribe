@@ -59,7 +59,7 @@ public abstract class SelectionPanel extends JToolBar implements ActionListener{
                 }
             }
         }
-        mainFrame.getMusicSheet().setSelectionType(null);
+        mainFrame.getMusicSheet().setInSelection(false);
         mainFrame.getMusicSheet().repaint();
     }
 

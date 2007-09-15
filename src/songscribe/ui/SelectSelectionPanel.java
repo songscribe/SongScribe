@@ -22,8 +22,6 @@ Created on 2005.02.03., 23:38:26
 
 package songscribe.ui;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
@@ -32,29 +30,12 @@ import java.awt.event.ActionListener;
  */
 public class SelectSelectionPanel extends SelectionPanel implements ActionListener {
     public SelectSelectionPanel(MainFrame mainFrame) {
-        super(mainFrame);
-        selectedNote = null;
-        String[] images = {"arrow.gif", "arrowLine.gif"};
-        String[] tooltips = {"Select notes", "Select line"};
-        MusicSheet.SelectionType[] selectionTypes = MusicSheet.SelectionType.values();
-        for (int i = 0; i < images.length; i++) {
-            JToggleButton jtg = new JToggleButton(new ImageIcon(MainFrame.getImage(images[i])));
-            jtg.addActionListener(this);
-            jtg.setToolTipText(tooltips[i]);
-            jtg.setActionCommand(selectionTypes[i].name());
-            addSelectionComponent(jtg);
-            selectionGroup.add(jtg);
-        }
-        ((AbstractButton)getComponent(0)).setSelected(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        mainFrame.getMusicSheet().setSelectionType(MusicSheet.SelectionType.valueOf(e.getActionCommand()));
+        super(mainFrame);     
     }
 
     public void setActive() {
         mainFrame.getMusicSheet().setActiveNote(null);
         if(mainFrame.getInsertMenu()!=null)mainFrame.getInsertMenu().updateState();
-        mainFrame.getMusicSheet().setSelectionType(MusicSheet.SelectionType.valueOf(selectionGroup.getSelection().getActionCommand()));
+        mainFrame.getMusicSheet().setInSelection(true);
     }
 }
