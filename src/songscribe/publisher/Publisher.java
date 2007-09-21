@@ -120,6 +120,7 @@ public class Publisher extends MainFrame{
         fileMenu.add(saveAction);
         saveAsAction = new SaveAsAction(this);
         fileMenu.add(saveAsAction);
+        fileMenu.addSeparator();
         ExportPDFAction exportPDFAction = new ExportPDFAction(this);
         fileMenu.add(exportPDFAction);
         fileMenu.add(new ExportPortableAction(this));

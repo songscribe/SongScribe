@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 
 /**
@@ -39,13 +41,19 @@ public class TipFrame extends JFrame {
     private int index;
     private StringBuilder tipBuffer = new StringBuilder(256);
 
-    private JTextPane tipPane = new JTextPane();
+    private JTextPane tipPane;
+    private JCheckBox showTip;
 
 
     public TipFrame(MainFrame mainFrame) throws IOException {
         super("Tip of the Day");
         this.mainFrame = mainFrame;
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);        
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+                closeWindow();
+            }
+        });
         index = Integer.parseInt(mainFrame.getProperties().getProperty(Constants.TIPINDEX));
         initComponents();
         showTip();
@@ -59,7 +67,6 @@ public class TipFrame extends JFrame {
         JButton nextButton;
         JButton previousButton;
         JScrollPane tipScroll;
-        JCheckBox showTip;
 
         didyouknowLabel = new JLabel();
         tipScroll = new JScrollPane();
@@ -69,8 +76,6 @@ public class TipFrame extends JFrame {
         nextButton = new JButton();
         previousButton = new JButton();
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Tip of the Day");
         didyouknowLabel.setFont(new Font("Arial", 0, 18));
         didyouknowLabel.setIcon(new ImageIcon(MainFrame.getImage("idea.png")));
         didyouknowLabel.setText("Did you know ... ?");
@@ -88,8 +93,7 @@ public class TipFrame extends JFrame {
         closeButton.setText("Close");
         closeButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                dispose();
+                closeWindow();
             }
         });
 
@@ -160,6 +164,12 @@ public class TipFrame extends JFrame {
                 .addContainerGap())
         );
         pack();
+    }
+
+    private void closeWindow() {
+        mainFrame.getProperties().setProperty(Constants.SHOWTIP, showTip.isSelected() ? Constants.TRUEVALUE : Constants.FALSEVALUE);
+        setVisible(false);
+        dispose();
     }
 
     private void showTip() throws IOException {

@@ -261,6 +261,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         fileMenu.add(saveAction);
         saveAsAction = new SaveAsAction(this);
         fileMenu.add(saveAsAction);
+        fileMenu.addSeparator();
         ExportMidiAction exportMidiAction = new ExportMidiAction(this);
         fileMenu.add(exportMidiAction);
         ExportMusicSheetImageAction exportMusicSheetImageAction = new ExportMusicSheetImageAction(this);
@@ -383,7 +384,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
     }
 
     protected void makeCommonHelpMenu(JMenu helpMenu) {
-        helpMenu.add(new DialogOpenAction(this, "Check for Update", new ImageIcon(getImage("download_manager.png")), UpdateDialog.class));
+        helpMenu.add(new DialogOpenAction(this, "Check for Update...", new ImageIcon(getImage("download_manager.png")), UpdateDialog.class));
         helpMenu.add(new DialogOpenAction(this, "Report a Bug", new ImageIcon(getImage("bug.png")), ReportBugDialog.class));
         if(!Utilities.isMac()) {
             helpMenu.add(aboutAction);
