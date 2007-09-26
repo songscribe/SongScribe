@@ -25,6 +25,8 @@ import songscribe.publisher.pagecomponents.PageComponent;
 import songscribe.publisher.publisheractions.KeyAction;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import java.util.Vector;
 import java.util.ListIterator;
 import java.awt.*;
@@ -85,6 +87,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
 
     //scrolling
     private JScrollPane scroll;
+    private ChangeListener currentPageWriter;
 
     public Book(Publisher publisher, int pageWidth, int pageHeight, int leftInnerMargin, int rightOuterMargin, int topMargin, int bottomMargin, boolean mirroredMargin) {
         this.publisher = publisher;
@@ -98,13 +101,19 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         borderPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
         borderPanel.add(this);
         borderPanel.setAlignmentX(0.5f);
-        scroll = new JScrollPane(borderPanel);
+        scroll = new JScrollPane(borderPanel);        
         int[] keyCodes = {KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT};
         for(int keyCode: keyCodes){
             Object o = new Object();
             getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(keyCode, 0), o);
             getActionMap().put(o, new KeyAction(this, keyCode));
         }
+        currentPageWriter = new ChangeListener(){
+            public void stateChanged(ChangeEvent e) {
+                Book.this.publisher.getPStatusBar().setCurrentPage(getPage(scroll.getViewport().getViewPosition().y+scroll.getViewport().getExtentSize().height/2)+1);
+            }
+        };
+        scroll.getViewport().addChangeListener(currentPageWriter);
     }
 
     public void setPageSize(int pageWidth, int pageHeight, int leftInnerMargin, int rightOuterMargin, int topMargin, int bottomMargin, boolean mirroredMargin){
@@ -221,6 +230,15 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         repaint();
     }
 
+    public void goToPage(int page){
+        page = Math.min(pages.size(), Math.max(1, page));
+        JViewport viewport = scroll.getViewport();
+        scroll.getViewport().removeChangeListener(currentPageWriter);
+        viewport.setViewPosition(new Point(viewport.getViewPosition().x, Math.max(0, Math.min(getHeight()-viewport.getExtentSize().height, getScreenY(page-1, 0)))));
+        scroll.getViewport().addChangeListener(currentPageWriter);
+        publisher.getPStatusBar().setCurrentPage(page);
+    }
+
      public void repaintSelectedComponent() {
         setSelectionRects();
         repaintRect.add(selectionRect);
@@ -307,6 +325,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         Page page = new Page(this);
         pages.add(index, page);
         sizeChanged(null);
+        publisher.getPStatusBar().setTotalPage(pages.size());
         return page;
     }
 
@@ -402,6 +421,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
             pages.remove(selectedPage);
             selectedPage = -1;
             sizeChanged(null);
+            publisher.getPStatusBar().setTotalPage(pages.size());
             publisher.modifiedDocument();
         }
     }

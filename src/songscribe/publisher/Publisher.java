@@ -21,9 +21,9 @@ Created on Sep 21, 2006
 */
 package songscribe.publisher;
 
+import songscribe.ui.mainframeactions.DialogOpenAction;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
-import songscribe.ui.mainframeactions.DialogOpenAction;
 import songscribe.publisher.publisheractions.*;
 import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.newsteps.PaperSizeDialog;
@@ -48,13 +48,14 @@ import com.apple.mrj.MRJApplicationUtils;
 /**
  * @author Csaba Kávai
  */
-public class Publisher extends MainFrame{
+public class Publisher extends MainFrame {
     private static Logger logger = Logger.getLogger(Publisher.class);
     private SAXParser saxParser;
 
     private JComboBox zoomCombo = new JComboBox(new String[]{"25%", "50%", "75%", "100%", "150%", "200%"});
 
     private Book book;
+    private StatusBar statusBar;
     private static Graphics graphics;
 
     private RaiseComponentAction raiseComponentAction = new RaiseComponentAction(this);
@@ -175,6 +176,10 @@ public class Publisher extends MainFrame{
         getContentPane().add(BorderLayout.NORTH, toolBar);
 
         getContentPane().add(BorderLayout.WEST, new WestTools(this));
+
+        //SOUTH
+        statusBar = new StatusBar(this);
+        getContentPane().add(BorderLayout.SOUTH, statusBar);
     }
 
     public JMenu insertMenuFactory() {
@@ -286,6 +291,10 @@ public class Publisher extends MainFrame{
 
     public JPopupMenu getDefaultPopup() {
         return defaultPopup;
+    }
+
+    public StatusBar getPStatusBar() {
+        return statusBar;
     }
 
     public static FontMetrics getStaticFontMetrics(Font font){
