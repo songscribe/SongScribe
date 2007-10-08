@@ -188,7 +188,7 @@ public abstract class BaseMsDrawer {
                 }
                 if(lyricsDrawn<=n && (note.a.syllableRelation!=Note.SyllableRelation.NO || n==0 && line.beginRelation!=Note.SyllableRelation.NO)){
                     Note.SyllableRelation relation = note.a.syllableRelation!=Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
-                    int c=0;
+                    int c;
                     if(relation==Note.SyllableRelation.DASH){
                         for(c=n+1;c<line.noteCount() && line.getNote(c).a.syllable==Constants.UNDERSCORE;c++);
                     }else{
@@ -265,16 +265,14 @@ public abstract class BaseMsDrawer {
                 int ly = ms.getNoteYPos(firstNote.getYPos(), l)-Note.HOTSPOT.y+upper*firstNote.a.lengthening;
                 ly-=5;
 
-                int cx, cy;
+                int cx;
                 if(odd){
                     Note centerNote = line.getNote((iv.getB()-iv.getA())/2+iv.getA());
                     cx = centerNote.getXPos()+(int)crotchetWidth;
-                    cy = ms.getNoteYPos(centerNote.getYPos(),l)-Note.HOTSPOT.y+upper*centerNote.a.lengthening;
                 }else{
                     Note cn1 = line.getNote((iv.getB()-iv.getA())/2+iv.getA());
                     Note cn2 = line.getNote((iv.getB()-iv.getA())/2+iv.getA()+1);
                     cx = (cn2.getXPos()-cn1.getXPos())/2+cn1.getXPos()+(int)crotchetWidth;
-                    cy = ms.getNoteYPos((cn2.getYPos()-cn1.getYPos())/2+cn1.getYPos(), l)-Note.HOTSPOT.y;
                 }
 
                 Note lastNote = line.getNote(iv.getB());
@@ -286,22 +284,25 @@ public abstract class BaseMsDrawer {
                     lx-=(int)crotchetWidth/2;
                     ly+=Note.HOTSPOT.y-3;
                     cx-=(int)crotchetWidth/2;
-                    cy+=Note.HOTSPOT.y-3;
                     rx-=(int)crotchetWidth/2;
                     ry+=Note.HOTSPOT.y-3;
                 }
                 g2.setStroke(lineStroke);
-                CubicCurve2D triplet = new CubicCurve2D.Float(lx, ly, (float)(cx-lx)/4+lx, ly-10, (float)(rx-cx)*3/4+cx, ry-10, rx, ry);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                TripletCalc tc = new TripletCalc(lx, ly, rx, ry);
+
+                g2.draw(new QuadCurve2D.Float(lx, ly, (float)(cx-lx)/4+lx, tc.getRate((cx-lx)/4+lx)-10, cx-7, tc.getRate(cx-7)-8));
+                g2.draw(new QuadCurve2D.Float(cx+7, tc.getRate(cx+7)-8, (float)(rx-cx)*3/4+cx, tc.getRate((rx-cx)*3/4+cx)-10, rx, ry));
+                /*CubicCurve2D triplet = new CubicCurve2D.Float(lx, ly, (float)(cx-lx)/4+lx, ly-10, (float)(rx-cx)*3/4+cx, ry-10, rx, ry);
                 Shape clip = g2.getClip();
                 g2.setClip(lx, 0, cx-7-lx, Integer.MAX_VALUE);
                 g2.draw(triplet);
                 g2.setClip(cx+7, 0, rx-cx-7, Integer.MAX_VALUE);
                 g2.draw(triplet);
-                g2.setClip(clip);
+                g2.setClip(clip);                                   */
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 g2.setFont(tripletFont);
-                drawAntialiasedString(g2, "3", cx-3, cy-8);
+                drawAntialiasedString(g2, "3", cx-3, tc.getRate(cx-3)-5);
 
                 /*g2.setColor(Color.red);
                 g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
@@ -346,6 +347,21 @@ public abstract class BaseMsDrawer {
                     drawEndings(g2, l, line.getNote(repeatRightPos).getXPos()+10, line.getNote(iv.getB()).getXPos()+2*(int)crotchetWidth, "2.");
                 }
             }
+        }
+    }
+
+    private class TripletCalc {
+        int lx, ly, rx, ry;
+
+        public TripletCalc(int lx, int ly, int rx, int ry) {
+            this.lx = lx;
+            this.ly = ly;
+            this.rx = rx;
+            this.ry = ry;
+        }
+
+        float getRate(int x) {
+            return (float)(ry-ly)*(x-lx)/(rx-lx)+ly;
         }
     }
 
