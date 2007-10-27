@@ -58,7 +58,6 @@ public class UpdateDialog extends MyDialog{
             this.temp = temp;
         }
     }
-    private Vector<TempFilePair> tempFilePairs;
 
     public UpdateDialog(MainFrame mainFrame) {
         super(mainFrame, "Update", true);
@@ -140,7 +139,7 @@ public class UpdateDialog extends MyDialog{
             String updateBaseURL = mainFrame.getProperties().getProperty(Constants.UPDATEURL);
             if(updateBaseURL.charAt(updateBaseURL.length()-1)!='/')updateBaseURL+="/";
             UpdateProcessDialog upd = null;
-            tempFilePairs = new Vector<TempFilePair>(20, 20);
+            Vector<TempFilePair> tempFilePairs = new Vector<TempFilePair>(20, 20);
             int fileSum = 0;
             try {
                 //determining the files to update and calculating the the size
@@ -156,6 +155,13 @@ public class UpdateDialog extends MyDialog{
                         if(localCS!=remoteCS){
                             tempFilePairs.add(new TempFilePair(file, File.createTempFile("gss", "upd")));
                             fileSum+=Integer.parseInt(line.substring(spacePos2+1, spacePos1));
+                            if(localCS==remoteCS-1){
+                                System.out.println("New file: "+file.getName());
+                            }else{
+                                System.out.println("Update file ("+localCS+", "+remoteCS+"): "+file.getName());
+                            }
+                        }else{
+                            System.out.println("No change: "+file.getName());
                         }
                     }
                     br.close();
@@ -187,9 +193,9 @@ public class UpdateDialog extends MyDialog{
 
                 //downloading the files into temp files
                 try {
-                    for(TempFilePair tfp:tempFilePairs){
+                    for(TempFilePair tfp: tempFilePairs){
                         FileOutputStream fos = new FileOutputStream(tfp.temp);
-                        InputStream urlIs = new URL(updateBaseURL+tfp.file.getPath().replace('\\', '/')).openStream();
+                        InputStream urlIs = new URL(updateBaseURL+tfp.file.getPath().replace('\\', '/').replace(" ", "%20")).openStream();
                         int read;
                         while((read=urlIs.read(buf))>0){
                             upd.nextValue(read);
@@ -204,6 +210,7 @@ public class UpdateDialog extends MyDialog{
                         }
                         fos.close();
                         urlIs.close();
+                        System.out.println("Downloaded: "+tfp.file.getName());
                     }
                 } catch (IOException e) {
                     mainFrame.showErrorMessage("Some input or output error occured.");
@@ -213,13 +220,14 @@ public class UpdateDialog extends MyDialog{
 
                 //copying
                 try {
-                    for(TempFilePair tfp:tempFilePairs){
+                    for(TempFilePair tfp: tempFilePairs){
                         int read;
                         FileInputStream fis = new FileInputStream(tfp.temp);
                         FileOutputStream fos = new FileOutputStream(tfp.file);
                         while((read=fis.read(buf))>0)fos.write(buf, 0, read);
                         fis.close();
                         fos.close();
+                        System.out.println("Copied: "+tfp.file.getName());
                     }
                 } catch (IOException e) {
                     mainFrame.showErrorMessage("Some error occured that made your program instabile.\nPlease reinstall the software.");

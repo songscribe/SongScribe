@@ -173,6 +173,8 @@ public class Publisher extends MainFrame {
         zoomCombo.setSelectedItem("100%");
         zoomCombo.addActionListener(new ZoomAction(this));
         zoomCombo.setToolTipText("Zoom");
+        toolBar.addSeparator();
+        addActionToToolBarToShowShortDescription(toolBar, new AlignToCenter(this));
         getContentPane().add(BorderLayout.NORTH, toolBar);
 
         getContentPane().add(BorderLayout.WEST, new WestTools(this));

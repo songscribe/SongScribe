@@ -23,6 +23,7 @@ package songscribe;
 
 import java.io.*;
 import java.util.zip.Adler32;
+import java.util.zip.CRC32;
 
 /**
  * @author Csaba Kávai
@@ -31,7 +32,6 @@ public class ChecksumMaker {
 
     private static final String outFile = "checksums";
 
-    private static Adler32 adler32 = new Adler32();
     private static byte[] buf = new byte[1024];
 
     public static void main(String[] args) throws IOException {
@@ -58,11 +58,12 @@ public class ChecksumMaker {
 
     public static long getChecksum(File file) throws IOException {        
         FileInputStream fis = new FileInputStream(file);
-        adler32.reset();
+        CRC32 adler32 = new CRC32();
         int read;
         while((read=fis.read(buf))>0){
             adler32.update(buf, 0, read);
         }
+        fis.close();
         return adler32.getValue();
     }
 }

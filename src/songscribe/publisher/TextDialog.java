@@ -37,7 +37,7 @@ public class TextDialog extends MyDialog {
     SpinnerNumberModel fontSizeSpinner;
     JToggleButton boldToggle, italicToggle;
     JToggleButton leftAlign, centerAlign, rightAlign;
-    JTextArea textArea = new MyJTextArea(5, 15);
+    JTextArea textArea = new MyJTextArea(15, 35);
 
     public TextDialog(Publisher publisher, boolean isInsert) {
         super(publisher, isInsert ? "Insert text" : "Text properties");
