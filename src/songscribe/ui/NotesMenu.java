@@ -35,14 +35,28 @@ public class NotesMenu extends JMenu implements ActionListener {
     public NotesMenu(MainFrame mainFrame) {
         super("Notes");
         this.mainFrame = mainFrame;
-        String[] images = {"beam_menu.gif", "unbeam_menu.gif", "triplet_menu.gif", "untriplet_menu.gif", "tie_menu.gif", "untie_menu.gif", "fsending_menu.gif", "unfsending_menu.gif"};
-        String[] names = {"Beam", "Unbeam", "Triplet", "Untriplet", "Tie", "Untie", "First-second ending", "Remove first-second ending"};
+        String[] images = {"beam_menu.gif", "unbeam_menu.gif", "triplet_menu.gif", "untriplet_menu.gif", "tie_menu.gif", "untie_menu.gif", "fsending_menu.gif", "unfsending_menu.gif", "blank.png", "blank.png"};
+        String[] names = {"Beam", "Unbeam", "Triplet", "Untuplet", "Tie", "Untie", "First-second ending", "Remove first-second ending", "Trill", "Remove trill"};
+        String[] tuplets = {"Duplet (2)", "Quadruplet (4)", "Quintuplet (5)", "Sextuplet (6)", "Septuplet (7)"};
+        int[] tupletValues = new int[]{2, 4, 5, 6, 7};
         buttons = new JMenuItem[names.length];
         for(int i=0;i<names.length;i++){
             buttons[i] = new JMenuItem(names[i], new ImageIcon(MainFrame.getImage(images[i])));
             buttons[i].addActionListener(this);
             add(buttons[i]);
             if(i%2==1 && i<names.length-1)addSeparator();
+            if(i==2){
+                JMenu tupletMenu = new JMenu("Other tuplets");
+                tupletMenu.setIcon(mainFrame.blankIcon);
+                TupletAction tupletAction = new TupletAction();
+                for(int j=0;j<tuplets.length;j++){
+                    JMenuItem tupletButton = new JMenuItem(tuplets[j], mainFrame.blankIcon);
+                    tupletButton.addActionListener(tupletAction);
+                    tupletButton.setActionCommand(Integer.toString(tupletValues[j]));
+                    tupletMenu.add(tupletButton);
+                }
+                add(tupletMenu);
+            }
         }
     }
 
@@ -53,9 +67,9 @@ public class NotesMenu extends JMenu implements ActionListener {
         }else if(e.getSource()==buttons[1]){
             musicSheet.beamSelectedNotes(false);
         }else if(e.getSource()==buttons[2]){
-            musicSheet.tripletSelectedNotes(true);
+            musicSheet.tupletSelectedNotes(3);
         }else if(e.getSource()==buttons[3]){
-            musicSheet.tripletSelectedNotes(false);
+            musicSheet.untupletSelectedNotes();
         }else if(e.getSource()==buttons[4]){
             musicSheet.tieSelectedNotes(true);
         }else if(e.getSource()==buttons[5]){
@@ -64,6 +78,16 @@ public class NotesMenu extends JMenu implements ActionListener {
             musicSheet.makeFsEndingOnSelectedNotes(true);
         }else if(e.getSource()==buttons[7]){
             musicSheet.makeFsEndingOnSelectedNotes(false);
+        }else if(e.getSource()==buttons[8]){
+            musicSheet.makeTrillOnSelectedNotes(true);
+        }else if(e.getSource()==buttons[9]){
+            musicSheet.makeTrillOnSelectedNotes(false);
+        }
+    }
+
+    private class TupletAction implements ActionListener{
+        public void actionPerformed(ActionEvent e) {
+            mainFrame.getMusicSheet().tupletSelectedNotes(Integer.parseInt(e.getActionCommand()));
         }
     }
 }

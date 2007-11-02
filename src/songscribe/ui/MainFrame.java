@@ -317,6 +317,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         insertMenu = new InsertMenu(this);
         insertMenu.addSeparator();
         insertMenu.add(new TempoChangeAction(this));
+        insertMenu.add(new BeatChangeAction(this));
         insertMenu.add(new AnnotationAction(this));
         insertMenu.add(new KeySignatureChangeAction(this));
         AddLineAction addLineAction =  new AddLineAction(this);

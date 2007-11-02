@@ -42,15 +42,17 @@ public class Line {
 
     private final IntervalSet beamings = new IntervalSet();
     private final IntervalSet ties = new IntervalSet();
-    private final IntervalSet triplets = new IntervalSet();
+    private final IntervalSet tuplets = new IntervalSet();
     private final IntervalSet fsEndings = new IntervalSet();
 
-    private final IntervalSet[] intervalSets = {beamings, ties, triplets, fsEndings};
+    private final IntervalSet[] intervalSets = {beamings, ties, tuplets, fsEndings};
 
     //view properties
     private int tempoChangeYPos;
+    private int beatChangeYPos = -24;
     private int lyricsYPos = 48;
     private int fsEndingYPos = -25;
+    private int trillYPos = -27;
     private float noteDistChangeRatio = 1f;
 
     //acceleration
@@ -146,6 +148,15 @@ public class Line {
         modifiedComposition();
     }
 
+    public int getBeatChangeYPos() {
+        return beatChangeYPos;
+    }
+
+    public void setBeatChangeYPos(int beatChangeYPos) {
+        this.beatChangeYPos = beatChangeYPos;
+        modifiedComposition();
+    }
+
     public int getLyricsYPos() {
         return lyricsYPos;
     }
@@ -161,6 +172,15 @@ public class Line {
 
     public void setFsEndingYPos(int fsEndingYPos) {
         this.fsEndingYPos = fsEndingYPos;
+        modifiedComposition();
+    }
+
+    public int getTrillYPos() {
+        return trillYPos;
+    }
+
+    public void setTrillYPos(int trillYPos) {
+        this.trillYPos = trillYPos;
         modifiedComposition();
     }
 
@@ -181,8 +201,8 @@ public class Line {
         return ties;
     }
 
-    public IntervalSet getTriplets() {
-        return triplets;
+    public IntervalSet getTuplets() {
+        return tuplets;
     }
 
     public IntervalSet getFsEndings() {
@@ -209,7 +229,7 @@ public class Line {
         for(int i=0;i<intervalSets.length;i++){
             for(ListIterator<Interval> li=copyIntervalSets[i].listIterator();li.hasNext();){
                 Interval iv = li.next();
-                intervalSets[i].addInterval(iv.getA(), iv.getB());
+                intervalSets[i].addInterval(iv.getA(), iv.getB(), iv.getData());
             }
         }
         shiftIntervals(copyIntervalSets, 0, -xIndex);

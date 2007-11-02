@@ -38,7 +38,7 @@ public final class Composition{
 
     public static final int PPQ = 96;
 
-    public static final int[] VELOCITY = {64, 98};
+    public static final int[] VELOCITY = {98, 127};
 
     //music data
     private Tempo tempo;
@@ -395,7 +395,7 @@ public final class Composition{
             line.setKeyType(defaultKeyType);
         }
         if(line.getTempoChangeYPos()==0){
-            line.setTempoChangeYPos((index==0?-5:-2)*MusicSheet.LINEDIST);
+            line.setTempoChangeYPos((index==0?-5:-3)*MusicSheet.LINEDIST);
         }
         modifiedComposition();
     }

@@ -379,7 +379,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
         if(activeNote.getNoteType()==NoteType.PASTE){
             //if the user tries to insert into triplet, he will get an error message
-            Interval iv = line.getTriplets().findInterval(xIndex-1);
+            Interval iv = line.getTuplets().findInterval(xIndex-1);
             if(iv!=null && xIndex-1<iv.getB()){
                 mainFrame.showErrorMessage("Cannot insert into a triplet.");
                 return true;
@@ -473,7 +473,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
             //deciding automatic beaming
             if(activeNote.getNoteType().isBeamable() &&
-                    line.noteCount()>=2 && line.getTriplets().findInterval(line.noteCount()-2)==null){
+                    line.noteCount()>=2 && line.getTuplets().findInterval(line.noteCount()-2)==null){
                 int sum=0;
                 for(int i = line.noteCount()-2;i>=0;i--){
                     if(line.getNote(i).getNoteType()==NoteType.QUAVER){
@@ -503,7 +503,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         if (activeNote != null) {
             if(commonAddInsertModifyActiveNoteCommands(xIndex, line))return;
             //if the user tries to insert into triplet, he will get an error message
-            Interval iv = line.getTriplets().findInterval(xIndex-1);
+            Interval iv = line.getTuplets().findInterval(xIndex-1);
             if(iv!=null && xIndex-1<iv.getB()){
                 mainFrame.showErrorMessage("Cannot insert into a triplet.");
                 return;
@@ -524,7 +524,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         if (activeNote != null) {
             if(commonAddInsertModifyActiveNoteCommands(xIndex, line))return;
             Note oldNote = line.getNote(xIndex);
-            if(line.getTriplets().findInterval(xIndex)!=null && oldNote.getNoteType()!=activeNote.getNoteType()){
+            if(line.getTuplets().findInterval(xIndex)!=null && oldNote.getNoteType()!=activeNote.getNoteType()){
                 mainFrame.showErrorMessage("Cannot modify a triplet with different note type.");
                 return;
             }
@@ -595,9 +595,30 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         repaint();
     }
 
-    public void tripletSelectedNotes(boolean triplet){
+    public void untupletSelectedNotes(){
         if(selectedNotesLine==-1 || selectionBegin==selectionEnd){
-            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to "+(triplet?"triplet":"untriplet")+" them.",
+            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to remove a tuplet.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Line line = composition.getLine(selectedNotesLine);
+        Interval begin = line.getTuplets().findInterval(selectionBegin);
+        Interval end = line.getTuplets().findInterval(selectionEnd);
+        if(begin==null || begin!=end){
+            JOptionPane.showMessageDialog(mainFrame, "You must select exactly the notes that are in one tuplet to remove it.",
+                mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        line.getTuplets().removeInterval(selectionBegin, selectionEnd);
+        composition.modifiedComposition();
+        repaintImage = true;
+        repaint();
+    }
+
+    public void tupletSelectedNotes(int numeral){
+        if(selectedNotesLine==-1 || selectionBegin==selectionEnd){
+            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to make a tuplet.",
                     mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
@@ -607,14 +628,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         boolean canBeamed = true;
         for(int i=selectionBegin;i<=selectionEnd;i++){
             Note note = line.getNote(i);
-            Interval iv = line.getTriplets().findInterval(i);
-            if(!triplet && iv==null){
-                JOptionPane.showMessageDialog(mainFrame, "One ore more selected note is not triplet.",
-                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            if(triplet && iv!=null){
-                JOptionPane.showMessageDialog(mainFrame, "You cannot triplet notes that already are triplet.",
+            Interval iv = line.getTuplets().findInterval(i);
+            if(iv!=null){
+                JOptionPane.showMessageDialog(mainFrame, "You cannot tuplet notes that already are tuplet.",
                     mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -627,23 +643,18 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             }
         }
 
-        if(minL*3!=sumL){
-            JOptionPane.showMessageDialog(mainFrame, "Unappliable "+(triplet?"tripleting":"untripleting")+".",
+        if(minL*numeral!=sumL){
+            JOptionPane.showMessageDialog(mainFrame, "Unappliable tupleting.",
                     mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        if(triplet && canBeamed){
+        if(canBeamed){
             beamSelectedNotes(true);
-        }else if(!triplet && canBeamed){
-            beamSelectedNotes(false);
         }
 
-        if(triplet){
-            line.getTriplets().addInterval(selectionBegin, selectionEnd);
-        }else{
-            line.getTriplets().removeInterval(selectionBegin, selectionEnd);
-        }
+        line.getTuplets().addInterval(selectionBegin, selectionEnd, Integer.toString(numeral));
+
         composition.modifiedComposition();
         repaintImage = true;
         repaint();
@@ -704,6 +715,24 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }else{
             line.getFsEndings().removeInterval(selectionBegin, selectionEnd);
         }
+        composition.modifiedComposition();
+        repaintImage = true;
+        repaint();
+    }
+
+    public void makeTrillOnSelectedNotes(boolean trill){
+        if(selectedNotesLine==-1){
+            JOptionPane.showMessageDialog(mainFrame, "You must select at least one note first to "+(trill?"make a":"remove")+" trill.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        Line line = composition.getLine(selectedNotesLine);
+
+        for(int i=selectionBegin;i<=selectionEnd;i++){
+            line.getNote(i).setTrill(trill);
+        }
+
         composition.modifiedComposition();
         repaintImage = true;
         repaint();
@@ -1479,7 +1508,12 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                     if(sumL==minL*3){
                         selectionBegin = i;
                         selectionEnd =line.noteCount()-1;
-                        tripletSelectedNotes(line.getTriplets().findInterval(selectionEnd)==null);
+                        Interval tupletInterval = line.getTuplets().findInterval(selectionEnd);
+                        if(tupletInterval==null){
+                            tupletSelectedNotes(3);
+                        }else if(tupletInterval.getData().equals("3")){
+                            untupletSelectedNotes();
+                        }
                     }
                 }
             }else if(type==2 && line.noteCount()>=2){

@@ -55,9 +55,9 @@ public class BeamSelectionPanel extends SelectionPanel implements ActionListener
         }else if(source==buttons[1]){
             mainFrame.getMusicSheet().beamSelectedNotes(false);
         }else if(source==buttons[2]){
-            mainFrame.getMusicSheet().tripletSelectedNotes(true);
+            mainFrame.getMusicSheet().tupletSelectedNotes(3);
         }else if(source==buttons[3]){
-            mainFrame.getMusicSheet().tripletSelectedNotes(false);
+            mainFrame.getMusicSheet().untupletSelectedNotes();
         }else if(source==buttons[4]){
             mainFrame.getMusicSheet().tieSelectedNotes(true);
         }else if(source==buttons[5]){

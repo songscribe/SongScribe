@@ -40,7 +40,8 @@ public class VerticalAdjustment extends Adjustment{
         ROWHEIGHT(Color.orange),
         TEMPOCHANGE(Color.red),
         FSENDING(Color.green),
-        ANNOTATION(Color.magenta);
+        ANNOTATION(Color.magenta),
+        TRILL(Color.pink);
 
         private Color color;
 
@@ -94,7 +95,7 @@ public class VerticalAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.ROWHEIGHT){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, 0));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, Integer.MAX_VALUE);
-            }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE || draggingRect.adjustType==AdjustType.FSENDING){
+            }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE || draggingRect.adjustType==AdjustType.FSENDING || draggingRect.adjustType==AdjustType.TRILL){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-4, draggingRect.line));
             }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
@@ -123,6 +124,9 @@ public class VerticalAdjustment extends Adjustment{
         }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
             Annotation a = musicSheet.getComposition().getLine(draggingRect.line).getNote(draggingRect.xIndex).getAnnotation();
             a.setyPos(a.getyPos()+endPoint.y-diffY);
+        }else if(draggingRect.adjustType==AdjustType.TRILL){
+            Line line = musicSheet.getComposition().getLine(draggingRect.line);
+            line.setTrillYPos(line.getTrillYPos()+endPoint.y-diffY);
         }
         musicSheet.viewChanged();
         musicSheet.getComposition().modifiedComposition();
@@ -167,6 +171,12 @@ public class VerticalAdjustment extends Adjustment{
                 if(!line.getFsEndings().isEmpty()){
                     adjustRects.add(new AdjustRect(l, AdjustType.FSENDING, line.getFsEndings().listIterator().next().getA()));
                 }
+                for(int n=0;n<line.noteCount();n++){
+                    if(line.getNote(n).isTrill()){
+                        adjustRects.add(new AdjustRect(l, AdjustType.TRILL, n));
+                        break;
+                    }
+                }
             }
 
         }else{
@@ -191,6 +201,9 @@ public class VerticalAdjustment extends Adjustment{
             Note note = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex);
             ar.rectangle.x = Math.round(musicSheet.getDrawer().getAnnotationXPos((Graphics2D)musicSheet.getGraphics(), note))-8;
             ar.rectangle.y = musicSheet.getDrawer().getAnnotationYPos(ar.line, note)-8;
+        }else if(ar.adjustType==AdjustType.TRILL){
+            ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-12;
+            ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getTrillYPos()-8;
         }
         ar.rectangle.width = ar.rectangle.height = 8;
     }

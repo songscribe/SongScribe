@@ -26,10 +26,12 @@ package songscribe.data;
  */
 public class Interval {
     int a,b;
+    String data;
 
-    public Interval(int a, int b) {
+    public Interval(int a, int b, String data) {
         this.a = a;
         this.b = b;
+        this.data = data;
     }
 
     public int getA() {
@@ -38,5 +40,13 @@ public class Interval {
 
     public int getB() {
         return b;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

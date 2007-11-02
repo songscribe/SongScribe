@@ -30,25 +30,30 @@ import java.util.ListIterator;
 public class IntervalSet {
     private LinkedList<Interval> is = new LinkedList<Interval>();
 
-    public void addInterval(int a, int b){
-        if(a>=b)return;
+    public Interval addInterval(int a, int b){
+        return addInterval(a, b, null);
+    }
+
+    public Interval addInterval(int a, int b, String data){
+        if(a>=b)return null;
         //determining the new interval
         Interval ai = findInterval(a);
         Interval bi = findInterval(b);
-        Interval newInterval = new Interval(ai!=null ? ai.a : a, bi!=null ? bi.b : b);
+        Interval newInterval = new Interval(ai!=null ? ai.a : a, bi!=null ? bi.b : b, data);
 
         //removing overlaps
         removeOverlaps(newInterval);
 
         //adding the new interval
         is.addFirst(newInterval);
+        return newInterval;
     }
 
     public void removeInterval(int a, int b){
         Interval ai = findInterval(a);
         Interval bi = findInterval(b);
         if(ai!=null && ai==bi){
-            bi = new Interval(bi.a, bi.b);
+            bi = new Interval(bi.a, bi.b, bi.data);
             is.addFirst(bi);
         }
         if(ai!=null)ai.b=a;
@@ -92,7 +97,7 @@ public class IntervalSet {
     public IntervalSet copyInterval(int a, int b){
         IntervalSet retIs = new IntervalSet();
         for(Interval i:is){
-            retIs.is.addFirst(new Interval(i.a, i.b));
+            retIs.is.addFirst(new Interval(i.a, i.b, i.data));
         }
         retIs.removeInterval(Integer.MIN_VALUE, a);
         retIs.removeInterval(b, Integer.MAX_VALUE);

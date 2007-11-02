@@ -23,10 +23,12 @@ Created on 2005.01.06., 21:49:39
 package songscribe.music;
 
 import songscribe.ui.MainFrame;
+import songscribe.data.Interval;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
+import java.util.HashMap;
 
 /**
  * @author Csaba Kávai
@@ -37,6 +39,15 @@ public abstract class Note implements Cloneable {
     public static final Dimension IMAGEDIM = new Dimension(19, 56);
     private static final int[] PITCHES = {71, 72, 74, 76, 77, 79, 81};
     private static final float[] DOTTEDLONGITUDE = {1.0f, 1.5f, 1.75f};
+    private static final HashMap<Integer, Float> TUPLETMODIFIER = new HashMap<Integer, Float>();
+    static{
+        TUPLETMODIFIER.put(2, 3f/4f);
+        TUPLETMODIFIER.put(3, 2f/3f);
+        TUPLETMODIFIER.put(4, 3f/4f);
+        TUPLETMODIFIER.put(5, 4f/5f);
+        TUPLETMODIFIER.put(6, 2f/3f);
+        TUPLETMODIFIER.put(7, 6f/7f);
+    }
 
     public static final Rectangle[] REALNATURALFLATSHARPRECT = {
         new Rectangle(0, 17, 6, 22), new Rectangle(0, 15, 7, 19), new Rectangle(0, 17, 8, 22), new Rectangle(0, 23, 9, 10)
@@ -70,7 +81,7 @@ public abstract class Note implements Cloneable {
     /**
      * Stores how many dots the note has. Possible values are 0, 1, 2.
      */
-    protected int dotted = 0;
+    protected int dotted;
 
     //prefixes
     public enum Accidental {
@@ -84,8 +95,8 @@ public abstract class Note implements Cloneable {
 
         Accidental(int nb, int firstComponent, int secondComponent) {
             this.nb = nb;
-            this.components[0] = firstComponent;
-            this.components[1] = secondComponent;
+            components[0] = firstComponent;
+            components[1] = secondComponent;
         }
 
         public int getNb() {
@@ -95,7 +106,8 @@ public abstract class Note implements Cloneable {
         public int getComponent(int i) {
             return components[i];
         }
-    };
+    }
+
     private static final int[] PREFIXMODIFIER = {0, 0, -1, 1, 0, -2, 2, -1, 1};
 
     protected Accidental accidental = Accidental.NONE;
@@ -108,6 +120,9 @@ public abstract class Note implements Cloneable {
     //tempochange
     protected Tempo tempoChange;
 
+    //beatchange
+    protected BeatChange beatChange;
+
     //annotation
     protected Annotation annotation;
 
@@ -117,6 +132,9 @@ public abstract class Note implements Cloneable {
     //articulations
     protected ForceArticulation forceArticulation;
     protected DurationArticulation durationArticulation;
+
+    //trill
+    protected boolean trill;
 
     protected int syllableMovement;
 
@@ -147,11 +165,13 @@ public abstract class Note implements Cloneable {
         isAccidentalInParenthesis = note.isAccidentalInParenthesis;
         line = note.line;
         tempoChange = note.tempoChange;
+        beatChange = note.beatChange;
         upper = note.upper;
         glissando = note.glissando;
         forceArticulation = note.forceArticulation;
         durationArticulation = note.durationArticulation;
         annotation = note.annotation;
+        trill = note.trill;
         syllableMovement = note.syllableMovement;
     }
 
@@ -226,6 +246,14 @@ public abstract class Note implements Cloneable {
         this.tempoChange = tempoChange;
     }
 
+    public BeatChange getBeatChange() {
+        return beatChange;
+    }
+
+    public void setBeatChange(BeatChange beatChange) {
+        this.beatChange = beatChange;
+    }
+
     public boolean isUpper() {
         return upper;
     }
@@ -256,6 +284,14 @@ public abstract class Note implements Cloneable {
 
     public void setDurationArticulation(DurationArticulation durationArticulation) {
         this.durationArticulation = durationArticulation;
+    }
+
+    public boolean isTrill() {
+        return trill;
+    }
+
+    public void setTrill(boolean trill) {
+        this.trill = trill;
     }
 
     public int getSyllableMovement() {
@@ -306,7 +342,8 @@ public abstract class Note implements Cloneable {
     }
 
     public int getDuration(){
-        return Math.round(getDefaultDuration()*DOTTEDLONGITUDE[dotted]*(line!=null && line.getTriplets().findInterval(line.getNoteIndex(this))!=null ? 2f/3f : 1f));
+        Interval tupletInt = line!=null ? line.getTuplets().findInterval(line.getNoteIndex(this)) : null;
+        return Math.round(getDefaultDuration()*DOTTEDLONGITUDE[dotted]*(tupletInt!=null ? TUPLETMODIFIER.get(Integer.parseInt(tupletInt.getData())) : 1f));
     }
 
     public void setLine(Line line) {

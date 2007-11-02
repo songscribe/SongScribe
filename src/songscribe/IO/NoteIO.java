@@ -48,6 +48,8 @@ public class NoteIO {
     private static final String XMLFORCEARTICULATION = "forcearticulation";
     private static final String XMLDURATIONARTICULATION = "durationarticulation";
     private static final String XMLSYLLABLEMOVEMENT = "syllablemovement";
+    private static final String XMLTRILL = "trill";
+    private static final String XMLBEATCHANGE = "beatchange";
 
     public static void writeNote(Note n, PrintWriter pw) throws IOException {
         pw.println("          <"+XMLNOTE+" "+XMLTYPE+"=\""+n.getNoteType().name()+"\">");
@@ -64,6 +66,8 @@ public class NoteIO {
         if(n.getSyllableMovement()!=0)XML.writeValue(pw, XMLSYLLABLEMOVEMENT, Integer.toString(n.getSyllableMovement()));
         if(n.getTempoChange()!=null)TempoIO.writeTempo(n.getTempoChange(), pw, 12);
         if(n.getAnnotation()!=null)AnnotationIO.writeAnnotation(n.getAnnotation(), pw, 12);
+        if(n.isTrill())XML.writeEmptyTag(pw, XMLTRILL);
+        if(n.getBeatChange()!=null)XML.writeValue(pw, XMLBEATCHANGE, n.getBeatChange().name());
         pw.println("          </"+XMLNOTE+">");
     }
 
@@ -166,6 +170,10 @@ public class NoteIO {
                         note.setUpper(true);
                     }else if(lastTag.equals(XMLSYLLABLEMOVEMENT)){
                         note.setSyllableMovement(Integer.valueOf(str));
+                    }else if(lastTag.equals(XMLTRILL)){
+                        note.setTrill(true);
+                    }else if(lastTag.equals(XMLBEATCHANGE)){
+                        note.setBeatChange(BeatChange.valueOf(str));
                     }
                 }
             }

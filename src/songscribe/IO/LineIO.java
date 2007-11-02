@@ -44,9 +44,12 @@ public class LineIO {
     private static final String XMLLYRICSYPOS = "lyricsypos";
     private static final String XMLFSENDINGYPOS = "fsendingypos";
     private static final String XMLTEMPOCHANGEYPOS = "tempochangeypos";
+    private static final String XMLBEATCHANGEYPOS = "beatchangeypos";
+    private static final String XMLTRILLYPOS = "trillypos";
     private static final String XMLBEAMINGS = "beamings";
     private static final String XMLTIES = "ties";
-    private static final String XMLTRIPLETS = "triplets";
+    private static final String XMLTRIPLETS = "triplets";// the old version of triplets
+    private static final String XMLTUPLETS = "tuplets";
     private static final String XMLFSENDINGS = "fsendings";
     private static final String XMLNOTES = "notes";
 
@@ -60,11 +63,13 @@ public class LineIO {
         }
         if(l.getNoteDistChangeRatio()!=1f)XML.writeValue(pw, XMLNOTEDISTCHANGE, Float.toString(l.getNoteDistChangeRatio()));
         XML.writeValue(pw, XMLTEMPOCHANGEYPOS, Integer.toString(l.getTempoChangeYPos()));
+        XML.writeValue(pw, XMLBEATCHANGEYPOS, Integer.toString(l.getBeatChangeYPos()));
         XML.writeValue(pw, XMLLYRICSYPOS, Integer.toString(l.getLyricsYPos()));
         XML.writeValue(pw, XMLFSENDINGYPOS , Integer.toString(l.getFsEndingYPos()));
+        XML.writeValue(pw, XMLTRILLYPOS , Integer.toString(l.getTrillYPos()));
         if(!l.getBeamings().isEmpty())XML.writeValue(pw, XMLBEAMINGS, intervalToString(l.getBeamings()));
         if(!l.getTies().isEmpty())XML.writeValue(pw, XMLTIES, intervalToString(l.getTies()));
-        if(!l.getTriplets().isEmpty())XML.writeValue(pw, XMLTRIPLETS, intervalToString(l.getTriplets()));
+        if(!l.getTuplets().isEmpty())XML.writeValue(pw, XMLTUPLETS, intervalToString(l.getTuplets()));
         if(!l.getFsEndings().isEmpty())XML.writeValue(pw, XMLFSENDINGS, intervalToString(l.getFsEndings()));
         pw.println("      <"+XMLNOTES+">");
         for(int i=0;i<l.noteCount();i++){
@@ -81,6 +86,10 @@ public class LineIO {
             sb.append(i.getA());
             sb.append(',');
             sb.append(i.getB());
+            if(i.getData()!=null){
+                sb.append(',');
+                sb.append(i.getData());
+            }
             sb.append(';');
         }
         return sb.toString();
@@ -97,9 +106,15 @@ public class LineIO {
 
         private void stringToIntervalSet(IntervalSet is, String str){
             int begin = 0;
-            while(str.indexOf(';', begin)!=-1){
-                is.addInterval(Integer.parseInt(str.substring(begin, str.indexOf(',', begin))),
-                        Integer.parseInt(str.substring(str.indexOf(',', begin)+1, str.indexOf(';', begin))));
+            int end;
+            while((end=str.indexOf(';', begin))!=-1){
+                int firstComma = str.indexOf(',', begin);
+                int secondComma = str.indexOf(',', firstComma+1);
+                if(secondComma>end)secondComma = -1;
+                int a = Integer.parseInt(str.substring(begin, firstComma));
+                int b = Integer.parseInt(str.substring(firstComma+1, secondComma==-1?end:secondComma));
+                String data = secondComma==-1 ? null : str.substring(secondComma+1, end);
+                is.addInterval(a, b, data);
                 begin = str.indexOf(';', begin)+1;
             }
         }
@@ -150,12 +165,18 @@ public class LineIO {
                         line.setLyricsYPos(Integer.parseInt(str));
                     }else if(lastTag.equals(XMLFSENDINGYPOS)){
                         line.setFsEndingYPos(Integer.parseInt(str));
+                    }else if(lastTag.equals(XMLTRILLYPOS)){
+                        line.setTrillYPos(Integer.parseInt(str));
                     }else if(lastTag.equals(XMLBEAMINGS)){
                         stringToIntervalSet(line.getBeamings(), str);
                     }else if(lastTag.equals(XMLTIES)){
                         stringToIntervalSet(line.getTies(), str);
-                    }else if(lastTag.equals(XMLTRIPLETS)){
-                        stringToIntervalSet(line.getTriplets(), str);
+                    }else if(lastTag.equals(XMLTUPLETS) || lastTag.equals(XMLTRIPLETS)){
+                        stringToIntervalSet(line.getTuplets(), str);
+                        for(ListIterator<Interval> li = line.getTuplets().listIterator();li.hasNext();){
+                            Interval interval = li.next();
+                            if(interval.getData()==null)interval.setData("3");
+                        }
                     }else if(lastTag.equals(XMLFSENDINGS)){
                         stringToIntervalSet(line.getFsEndings(), str);
                     }

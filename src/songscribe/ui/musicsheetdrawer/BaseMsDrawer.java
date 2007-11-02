@@ -51,10 +51,11 @@ public abstract class BaseMsDrawer {
     private static final Ellipse2D.Float staccatoEllipse = new Ellipse2D.Float(0f, 0f, 3.5f, 3.5f);
     private static final Color selectionColor = new Color(254, 45, 125);
     private static final float beamTranslateY = 7;
-    private static final Font tripletFont = new Font("Times New Roman", Font.BOLD, 14);
+    private static final Font tupletFont = new Font("Times New Roman", Font.BOLD, 14);
     private static final Font fsEndingFont = new Font("Times New Roman", Font.BOLD, 14);
     protected static Font fughetta;
     private static final String GLISSANDO = "\uf07e";
+    private static final String TRILL = "\uf0d9";
     private static final double glissandoLength = size/2.6666667;
     private static final float longDashWidth = 7f;
     protected static final double tempoChangeZoom = 0.8;
@@ -133,7 +134,6 @@ public abstract class BaseMsDrawer {
             }
 
             g2.drawLine(0, ms.getNoteYPos(-4, l), 0, ms.getNoteYPos(4, l));
-            //g2.drawLine(ms.getLineWidth()-1, ms.getMiddleLine() + (-2 * LINEDIST) + l * ms.getRowHeight(), ms.getLineWidth()-1, ms.getMiddleLine() + (2 * LINEDIST) + l * ms.getRowHeight());
 
             g2.setPaint(Color.black);
 
@@ -148,6 +148,11 @@ public abstract class BaseMsDrawer {
                 //drawing the tempochange
                 if(note.getTempoChange()!=null){
                     drawTempoChange(g2, note.getTempoChange(), l, n);
+                }
+
+                //drawing th beat change
+                if(note.getBeatChange()!=null){
+                    drawBeatChange(g2, l, note);
                 }
 
                 //drawing the note
@@ -224,6 +229,20 @@ public abstract class BaseMsDrawer {
                     g2.setFont(getAnnotationFont());
                     drawAntialiasedString(g2, note.getAnnotation().getAnnotation(), getAnnotationXPos(g2, note), getAnnotationYPos(l, note));
                 }
+
+                //drawing the trill                
+                if(note.isTrill() && (n==0 || !line.getNote(n-1).isTrill())){
+                    int trillEnd=n+1;
+                    while(trillEnd<line.noteCount() && line.getNote(trillEnd).isTrill())trillEnd++;
+                    trillEnd--;
+                    int x = note.getXPos();
+                    int y = ms.getNoteYPos(0, l)+line.getTrillYPos();
+                    g2.setFont(fughetta);
+                    g2.drawString(TRILL, x, y);
+                    if(n<trillEnd){
+                        drawGlissando(g2, x+18, y-3, Math.round(line.getNote(trillEnd).getXPos()+crotchetWidth), y-3);
+                    }
+                }
             }
 
             //drawing beamings
@@ -255,8 +274,8 @@ public abstract class BaseMsDrawer {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
-            //drawing the triplets
-            for(ListIterator<Interval> li = line.getTriplets().listIterator();li.hasNext();){
+            //drawing the tuplets
+            for(ListIterator<Interval> li = line.getTuplets().listIterator();li.hasNext();){
                 Interval iv = li.next();
                 boolean odd = (iv.getB()-iv.getA()+1)%2==1;
                 Note firstNote = line.getNote(iv.getA());
@@ -289,20 +308,13 @@ public abstract class BaseMsDrawer {
                 }
                 g2.setStroke(lineStroke);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                TripletCalc tc = new TripletCalc(lx, ly, rx, ry);
+                TupletCalc tc = new TupletCalc(lx, ly, rx, ry);
 
                 g2.draw(new QuadCurve2D.Float(lx, ly, (float)(cx-lx)/4+lx, tc.getRate((cx-lx)/4+lx)-10, cx-7, tc.getRate(cx-7)-8));
                 g2.draw(new QuadCurve2D.Float(cx+7, tc.getRate(cx+7)-8, (float)(rx-cx)*3/4+cx, tc.getRate((rx-cx)*3/4+cx)-10, rx, ry));
-                /*CubicCurve2D triplet = new CubicCurve2D.Float(lx, ly, (float)(cx-lx)/4+lx, ly-10, (float)(rx-cx)*3/4+cx, ry-10, rx, ry);
-                Shape clip = g2.getClip();
-                g2.setClip(lx, 0, cx-7-lx, Integer.MAX_VALUE);
-                g2.draw(triplet);
-                g2.setClip(cx+7, 0, rx-cx-7, Integer.MAX_VALUE);
-                g2.draw(triplet);
-                g2.setClip(clip);                                   */
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                g2.setFont(tripletFont);
-                drawAntialiasedString(g2, "3", cx-3, tc.getRate(cx-3)-5);
+                g2.setFont(tupletFont);
+                drawAntialiasedString(g2, iv.getData(), cx-3, tc.getRate(cx-3)-5);
 
                 /*g2.setColor(Color.red);
                 g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
@@ -350,10 +362,10 @@ public abstract class BaseMsDrawer {
         }
     }
 
-    private class TripletCalc {
+    private class TupletCalc {
         int lx, ly, rx, ry;
 
-        public TripletCalc(int lx, int ly, int rx, int ry) {
+        public TupletCalc(int lx, int ly, int rx, int ry) {
             this.lx = lx;
             this.ly = ly;
             this.rx = rx;
@@ -523,6 +535,16 @@ public abstract class BaseMsDrawer {
         drawAntialiasedString(g2, tempoBuilder.toString(),
                 n.getXPos()+(tempo.isShowTempo()?crotchetWidth+5+tempo.getTempoType().getNote().getDotted()*6:0),
                         yPos);        
+    }
+
+    private void drawBeatChange(Graphics2D g2, int line, Note note){
+        BeatChange beatChange = note.getBeatChange();
+        int yPos = ms.getNoteYPos(0, line)+ms.getComposition().getLine(line).getBeatChangeYPos();
+        drawTempoChangeNote(g2, beatChange.getFirstNote(), note.getXPos(), yPos);
+        g2.setFont(ms.getComposition().getGeneralFont());
+        float eqXPos = note.getXPos() + crotchetWidth + 7;
+        drawAntialiasedString(g2, "=", eqXPos, yPos);
+        drawTempoChangeNote(g2, beatChange.getSecondNote(), Math.round(eqXPos+12), yPos);
     }
 
     private void drawEndings(Graphics2D g2, int line, int x1, int x2, String str){
