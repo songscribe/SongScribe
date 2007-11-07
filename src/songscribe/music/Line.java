@@ -242,4 +242,41 @@ public class Line {
             is.removeInterval(notes.size()-1, Integer.MAX_VALUE);
         }
     }
+
+    public int getFirstTempoChange(){
+        if(composition.indexOfLine(this)==0)return 0;
+        for(int n=0;n<noteCount();n++){
+            if(getNote(n).getTempoChange()!=null){
+                return n;
+            }
+        }
+        return -1;
+    }
+
+    public boolean isAnnotation(){
+        for(int n=0;n<noteCount();n++){
+            if(getNote(n).getAnnotation()!=null){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getFirstTrill(){
+        for(int n=0;n<noteCount();n++){
+            if(getNote(n).isTrill()){
+                return n;
+            }
+        }
+        return -1;
+    }
+
+    public int getFirstBeatChange(){
+        for(int n=0;n<noteCount();n++){
+            if(getNote(n).getBeatChange()!=null){
+                return n;
+            }
+        }
+        return -1;
+    }
 }

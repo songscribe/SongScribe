@@ -39,6 +39,7 @@ public class VerticalAdjustment extends Adjustment{
         TOPSPACE(Color.cyan),
         ROWHEIGHT(Color.orange),
         TEMPOCHANGE(Color.red),
+        BEATCHANGE(Color.pink),
         FSENDING(Color.green),
         ANNOTATION(Color.magenta),
         TRILL(Color.pink);
@@ -95,7 +96,7 @@ public class VerticalAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.ROWHEIGHT){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, 0));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, Integer.MAX_VALUE);
-            }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE || draggingRect.adjustType==AdjustType.FSENDING || draggingRect.adjustType==AdjustType.TRILL){
+            }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE || draggingRect.adjustType==AdjustType.FSENDING || draggingRect.adjustType==AdjustType.TRILL || draggingRect.adjustType==AdjustType.BEATCHANGE){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-4, draggingRect.line));
             }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
@@ -118,6 +119,9 @@ public class VerticalAdjustment extends Adjustment{
         }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
             line.setTempoChangeYPos(line.getTempoChangeYPos()+endPoint.y-diffY);
+        }else if(draggingRect.adjustType==AdjustType.BEATCHANGE){
+            Line line = musicSheet.getComposition().getLine(draggingRect.line);
+            line.setBeatChangeYPos(line.getBeatChangeYPos()+endPoint.y-diffY);
         }else if(draggingRect.adjustType==AdjustType.FSENDING){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
             line.setFsEndingYPos(line.getFsEndingYPos()+endPoint.y-diffY);
@@ -157,26 +161,25 @@ public class VerticalAdjustment extends Adjustment{
             if(c.lineCount()>1)adjustRects.add(new AdjustRect(1, AdjustType.ROWHEIGHT, -1));
             for(int l=0;l<c.lineCount();l++){
                 Line line = c.getLine(l);
-                for(int n=0;n<line.noteCount();n++){
-                    if(l==0 || line.getNote(n).getTempoChange()!=null){
-                        adjustRects.add(new AdjustRect(l, AdjustType.TEMPOCHANGE, n));
-                        break;
-                    }
-                }
+
+                int firstTempoChange = line.getFirstTempoChange();
+                if(firstTempoChange>-1)adjustRects.add(new AdjustRect(l, AdjustType.TEMPOCHANGE, firstTempoChange));
+
                 for(int n=0;n<line.noteCount();n++){
                     if(line.getNote(n).getAnnotation()!=null){
                         adjustRects.add(new AdjustRect(l, AdjustType.ANNOTATION, n));
                     }
                 }
+
                 if(!line.getFsEndings().isEmpty()){
                     adjustRects.add(new AdjustRect(l, AdjustType.FSENDING, line.getFsEndings().listIterator().next().getA()));
                 }
-                for(int n=0;n<line.noteCount();n++){
-                    if(line.getNote(n).isTrill()){
-                        adjustRects.add(new AdjustRect(l, AdjustType.TRILL, n));
-                        break;
-                    }
-                }
+
+                int firstTrill = line.getFirstTrill();
+                if(firstTrill>-1)adjustRects.add(new AdjustRect(l, AdjustType.TRILL, firstTrill));
+
+                int firstBeatChange = line.getFirstBeatChange();
+                if(firstBeatChange>-1)adjustRects.add(new AdjustRect(l, AdjustType.BEATCHANGE, firstBeatChange));
             }
 
         }else{
@@ -194,6 +197,9 @@ public class VerticalAdjustment extends Adjustment{
         }else if(ar.adjustType==AdjustType.TEMPOCHANGE){
             ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-8;
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getTempoChangeYPos()-8;
+        }else if(ar.adjustType==AdjustType.BEATCHANGE){
+            ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-8;
+            ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getBeatChangeYPos()-8;
         }else if(ar.adjustType==AdjustType.FSENDING){
             ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-12;
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getFsEndingYPos()-8;

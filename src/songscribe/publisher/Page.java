@@ -64,10 +64,29 @@ public class Page {
             g2.draw(new Line2D.Float(4f/scale, pageSize.height+1f/scale, pageSize.width+1/scale, pageSize.height+1f/scale));
         }
         //g2.drawRect(0, startY, pageSize.width, (endY-startY));
+
+        g2.translate(margin.x, margin.y);
+
+        //drawing the page numbers
+        PageNumber pn = book.getPageNumber();
+        if(pn!=null && pn.getFromPage()<=pageNumber+1){
+            g2.setFont(pn.getFont());
+            int width = g2.getFontMetrics().stringWidth(Integer.toString(pageNumber+1));
+            int pnX = 0;
+            if(pn.getAlignment()==PageNumber.Alignment.CENTER){
+                pnX = (margin.width-width)/2;
+            }else if(pn.getAlignment()==PageNumber.Alignment.RIGHT ||
+                    pn.getAlignment()==PageNumber.Alignment.BOOKINNER && pageNumber%2==1 ||
+                    pn.getAlignment()==PageNumber.Alignment.BOOKOUTER && pageNumber%2==0){
+                pnX = margin.width-width;
+            }            
+            int pnY = pn.getPlacement()==PageNumber.Placement.BOTTOM ? margin.height+pn.getSpaceFromMargin()+pn.getFont().getSize() : -pn.getSpaceFromMargin();
+            g2.drawString(Integer.toString(pageNumber+1), pnX, pnY);
+        }
+
         //drawing the songs
         startY-=margin.y;
         endY-=margin.y;
-        g2.translate(margin.x, margin.y);
         paintPageComponents(g2, startY, endY);
         g2.translate(-margin.x, -margin.y);
         g2.setClip(clip);

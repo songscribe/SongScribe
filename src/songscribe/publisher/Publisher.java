@@ -148,6 +148,11 @@ public class Publisher extends MainFrame {
         insertMenu.setIcon(null);
         menuBar.add(insertMenu);
 
+        //tools menu
+        JMenu toolsMenu = new JMenu("Tools");
+        toolsMenu.add(new DialogOpenAction(this, "Page number...", PageNumberDialog.class));
+        menuBar.add(toolsMenu);
+
         //help menu
         JMenu helpMenu = new JMenu("Help");
         makeCommonHelpMenu(helpMenu);

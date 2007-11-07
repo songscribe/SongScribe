@@ -62,11 +62,11 @@ public class LineIO {
             XML.writeValue(pw, XMLKEYTYPE, l.getKeyType().name());
         }
         if(l.getNoteDistChangeRatio()!=1f)XML.writeValue(pw, XMLNOTEDISTCHANGE, Float.toString(l.getNoteDistChangeRatio()));
-        XML.writeValue(pw, XMLTEMPOCHANGEYPOS, Integer.toString(l.getTempoChangeYPos()));
-        XML.writeValue(pw, XMLBEATCHANGEYPOS, Integer.toString(l.getBeatChangeYPos()));
+        if(l.getFirstTempoChange()>-1)XML.writeValue(pw, XMLTEMPOCHANGEYPOS, Integer.toString(l.getTempoChangeYPos()));
+        if(l.getFirstBeatChange()>-1)XML.writeValue(pw, XMLBEATCHANGEYPOS, Integer.toString(l.getBeatChangeYPos()));
         XML.writeValue(pw, XMLLYRICSYPOS, Integer.toString(l.getLyricsYPos()));
-        XML.writeValue(pw, XMLFSENDINGYPOS , Integer.toString(l.getFsEndingYPos()));
-        XML.writeValue(pw, XMLTRILLYPOS , Integer.toString(l.getTrillYPos()));
+        if(!l.getFsEndings().isEmpty())XML.writeValue(pw, XMLFSENDINGYPOS , Integer.toString(l.getFsEndingYPos()));
+        if(l.getFirstTrill()>-1)XML.writeValue(pw, XMLTRILLYPOS , Integer.toString(l.getTrillYPos()));
         if(!l.getBeamings().isEmpty())XML.writeValue(pw, XMLBEAMINGS, intervalToString(l.getBeamings()));
         if(!l.getTies().isEmpty())XML.writeValue(pw, XMLTIES, intervalToString(l.getTies()));
         if(!l.getTuplets().isEmpty())XML.writeValue(pw, XMLTUPLETS, intervalToString(l.getTuplets()));
@@ -161,6 +161,8 @@ public class LineIO {
                         line.mulNoteDistChange(Float.parseFloat(str));
                     }else if(lastTag.equals(XMLTEMPOCHANGEYPOS)){
                         line.setTempoChangeYPos(Integer.parseInt(str));
+                    }else if(lastTag.equals(XMLBEATCHANGEYPOS)){
+                        line.setBeatChangeYPos(Integer.parseInt(str));
                     }else if(lastTag.equals(XMLLYRICSYPOS)){
                         line.setLyricsYPos(Integer.parseInt(str));
                     }else if(lastTag.equals(XMLFSENDINGYPOS)){

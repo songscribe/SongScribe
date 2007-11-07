@@ -49,6 +49,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
     private Rectangle oddMargin, evenMargin;
     private boolean mirroredMargin;
     private Dimension size = new Dimension();
+    private PageNumber pageNumber;
 
     private double scale = 1d;
 
@@ -333,6 +334,10 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         return pages.listIterator();
     }
 
+    public int getTotalPage(){
+        return pages.size();
+    }
+    
     private class BorderPanel extends JPanel implements Scrollable{
         public Dimension getPreferredScrollableViewportSize() {
             return size;
@@ -426,7 +431,13 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         }
     }
 
+    public PageNumber getPageNumber() {
+        return pageNumber;
+    }
 
+    public void setPageNumber(PageNumber pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 
     //------------------mouselistener interface-------------------------
     public void mouseClicked(MouseEvent e) {
