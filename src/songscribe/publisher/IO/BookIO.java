@@ -24,12 +24,14 @@ package songscribe.publisher.IO;
 import songscribe.publisher.Book;
 import songscribe.publisher.Page;
 import songscribe.publisher.Publisher;
+import songscribe.publisher.PageNumber;
 import songscribe.IO.XML;
 
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.File;
 import java.util.ListIterator;
+import java.awt.*;
 
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
@@ -54,6 +56,16 @@ public class BookIO {
     private static final String XMLMIRROREDMARGIN = "mirroredmargin";
     private static final String XMLPAGE = "page";
 
+    //pagenumber properties
+    private static final String XMLPAGENUMBER = "pagenumber";
+    private static final String XMLFONTNAME = "fontname";
+    private static final String XMLFONTSTYLE = "fontstyle";
+    private static final String XMLFONTSIZE = "fontsize";
+    private static final String XMLALIGNMENT = "alignment";
+    private static final String XMLPLACEMENT = "placement";
+    private static final String XMLFROMPAGE = "frompage";
+    private static final String XMLSPACEFROMMARGIN = "spacefrommargin";
+
     static File file;
 
     public static void writeBook(Book b, File file, boolean writeAbsolute) throws IOException {
@@ -62,6 +74,8 @@ public class BookIO {
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         pw.println("<"+ XMLPUBLISHER +" "+XMLVERSION+"=\""+IOMAJORVERSION+"."+IOMINORVERSION+"\">");
         XML.indent = 2;
+
+        //bookattributes
         XML.writeBeginTag(pw, XMLBOOKATTRIBUTES);
         XML.indent = 4;
         XML.writeValue(pw, XMLPAGEWIDTH, Integer.toString(b.getPageSize().width));
@@ -70,9 +84,26 @@ public class BookIO {
         XML.writeValue(pw, XMLRIGHTOUTERMARGIN, Integer.toString(b.getRightOuterMargin()));
         XML.writeValue(pw, XMLTOPMARGIN, Integer.toString(b.getTopMargin()));
         XML.writeValue(pw, XMLBOTTOMMARGIN, Integer.toString(b.getBottomMargin()));
+        if(b.isMirroredMargin())XML.writeEmptyTag(pw, XMLMIRROREDMARGIN);
         XML.indent = 2;
         XML.writeEndTag(pw, XMLBOOKATTRIBUTES);
-        if(b.isMirroredMargin())XML.writeEmptyTag(pw, XMLMIRROREDMARGIN);
+
+        //pagenumber
+        PageNumber pn = b.getPageNumber();
+        if(pn!=null){
+            XML.writeBeginTag(pw, XMLPAGENUMBER);
+            XML.indent = 4;
+            XML.writeValue(pw, XMLFONTNAME, pn.getFont().getName());
+            XML.writeValue(pw, XMLFONTSTYLE, Integer.toString(pn.getFont().getStyle()));
+            XML.writeValue(pw, XMLFONTSIZE, Integer.toString(pn.getFont().getSize()));
+            XML.writeValue(pw, XMLALIGNMENT, pn.getAlignment().name());
+            XML.writeValue(pw, XMLPLACEMENT, pn.getPlacement().name());
+            XML.writeValue(pw, XMLFROMPAGE, Integer.toString(pn.getFromPage()));
+            XML.writeValue(pw, XMLSPACEFROMMARGIN, Integer.toString(pn.getSpaceFromMargin()));
+            XML.indent = 2;
+            XML.writeEndTag(pw, XMLPAGENUMBER);
+        }
+
         for(ListIterator<Page> li = b.pageIterator();li.hasNext();){
             XML.writeBeginTag(pw, XMLPAGE);
             PageIO.writePage(li.next(), pw, writeAbsolute);
@@ -95,6 +126,10 @@ public class BookIO {
         private Book book;
         private int majorVersion, minorVersion;
         private Publisher publisher;
+        private PageNumber pageNumber = new PageNumber();
+        private String fontName;
+        private int fontStyle, fontSize;
+
 
         public DocumentReader(Publisher publisher, File file) {
             this.publisher = publisher;
@@ -165,10 +200,27 @@ public class BookIO {
                         bottomMargin = Integer.parseInt(str);
                     }else if(lastTag.equals(XMLMIRROREDMARGIN)){
                         mirroredMargin = true;
+                    }else if(lastTag.equals(XMLFONTNAME)){
+                        fontName = str;
+                    }else if(lastTag.equals(XMLFONTSIZE)){
+                        fontSize = Integer.parseInt(str);
+                    }else if(lastTag.equals(XMLFONTSTYLE)){
+                        fontStyle = Integer.parseInt(str);
+                    }else if(lastTag.equals(XMLALIGNMENT)){
+                        pageNumber.setAlignment(PageNumber.Alignment.valueOf(str));
+                    }else if(lastTag.equals(XMLPLACEMENT)){
+                        pageNumber.setPlacement(PageNumber.Placement.valueOf(str));
+                    }else if(lastTag.equals(XMLFROMPAGE)){
+                        pageNumber.setFromPage(Integer.parseInt(str));
+                    }else if(lastTag.equals(XMLSPACEFROMMARGIN)){
+                        pageNumber.setSpaceFromMargin(Integer.parseInt(str));
                     }
                 }else if(qName.equals(XMLBOOKATTRIBUTES)){
                     book = new Book(publisher, pageWidth, pageHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin, mirroredMargin);
-                }
+                }else if(qName.equals(XMLPAGENUMBER)){
+                   pageNumber.setFont(new Font(fontName, fontStyle, fontSize));
+                   book.setPageNumber(pageNumber);
+               }
             }
 
             value.delete(0, value.length());

@@ -24,7 +24,6 @@ package songscribe.ui;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.CannotUpdateException;
-import songscribe.ChecksumMaker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,12 +49,14 @@ public class UpdateDialog extends MyDialog{
     private static final String VERSIONFILE = "version";
     private boolean downloadCancelled;
 
-    private class TempFilePair{
-        File file; File temp;
+    public static final String CHECKSUMSFILENAME = "checksums2";
 
-        public TempFilePair(File original, File temp) {
-            this.file = original;
-            this.temp = temp;
+    private class TempFilePair{
+        File originalFile; File tempFile;
+
+        public TempFilePair(File originalFile, File tempFile) {
+            this.originalFile = originalFile;
+            this.tempFile = tempFile;
         }
     }
 
@@ -99,7 +100,7 @@ public class UpdateDialog extends MyDialog{
                         return;
                     }
                     for(Enumeration e = zipFile.entries();e.hasMoreElements();){
-                        ZipEntry ze = ((ZipEntry)e.nextElement());
+                        ZipEntry ze = (ZipEntry) e.nextElement();
                         if(ze.getName().equals(VERSIONFILE))continue;
                         if(!ze.isDirectory()){
                             BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(ze));
@@ -144,24 +145,22 @@ public class UpdateDialog extends MyDialog{
             try {
                 //determining the files to update and calculating the the size
                 try {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(new URL(updateBaseURL+"checksums").openStream()));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(new URL(updateBaseURL+ CHECKSUMSFILENAME).openStream()));
                     String line;
                     while((line=br.readLine())!=null){
                         int spacePos1 = line.lastIndexOf(' ');
-                        int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
-                        File file = new File(line.substring(0, spacePos2));
-                        long remoteCS = Long.parseLong(line.substring(spacePos1+1));
-                        long localCS = file.exists() ? ChecksumMaker.getChecksum(file) : remoteCS-1;
-                        if(localCS!=remoteCS){
+                        //int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
+                        File file = new File(line.substring(0, spacePos1).replace('\\', '/'));
+                        long remoteSize = Long.parseLong(line.substring(spacePos1+1));
+                        long localSize = file.exists() ? file.length() : -1;
+                        if(localSize!=remoteSize){
                             tempFilePairs.add(new TempFilePair(file, File.createTempFile("gss", "upd")));
-                            fileSum+=Integer.parseInt(line.substring(spacePos2+1, spacePos1));
-                            if(localCS==remoteCS-1){
+                            fileSum+=remoteSize;
+                            if(localSize==-1){
                                 System.out.println("New file: "+file.getName());
                             }else{
-                                System.out.println("Update file ("+localCS+", "+remoteCS+"): "+file.getName());
+                                System.out.println("Update file ("+localSize+", "+remoteSize+"): "+file.getName());
                             }
-                        }else{
-                            System.out.println("No change: "+file.getName());
                         }
                     }
                     br.close();
@@ -194,8 +193,8 @@ public class UpdateDialog extends MyDialog{
                 //downloading the files into temp files
                 try {
                     for(TempFilePair tfp: tempFilePairs){
-                        FileOutputStream fos = new FileOutputStream(tfp.temp);
-                        InputStream urlIs = new URL(updateBaseURL+tfp.file.getPath().replace('\\', '/').replace(" ", "%20")).openStream();
+                        FileOutputStream fos = new FileOutputStream(tfp.tempFile);
+                        InputStream urlIs = new URL(updateBaseURL+tfp.originalFile.getPath().replace('\\', '/').replace(" ", "%20")).openStream();
                         int read;
                         while((read=urlIs.read(buf))>0){
                             upd.nextValue(read);
@@ -210,7 +209,7 @@ public class UpdateDialog extends MyDialog{
                         }
                         fos.close();
                         urlIs.close();
-                        System.out.println("Downloaded: "+tfp.file.getName());
+                        System.out.println("Downloaded: "+tfp.originalFile.getName());
                     }
                 } catch (IOException e) {
                     mainFrame.showErrorMessage("Some input or output error occured.");
@@ -222,12 +221,12 @@ public class UpdateDialog extends MyDialog{
                 try {
                     for(TempFilePair tfp: tempFilePairs){
                         int read;
-                        FileInputStream fis = new FileInputStream(tfp.temp);
-                        FileOutputStream fos = new FileOutputStream(tfp.file);
+                        FileInputStream fis = new FileInputStream(tfp.tempFile);
+                        FileOutputStream fos = new FileOutputStream(tfp.originalFile);
                         while((read=fis.read(buf))>0)fos.write(buf, 0, read);
                         fis.close();
                         fos.close();
-                        System.out.println("Copied: "+tfp.file.getName());
+                        System.out.println("Copied: "+tfp.originalFile.getName());
                     }
                 } catch (IOException e) {
                     mainFrame.showErrorMessage("Some error occured that made your program instabile.\nPlease reinstall the software.");

@@ -21,6 +21,8 @@ Created on Jan 10, 2007
 */
 package songscribe;
 
+import songscribe.ui.UpdateDialog;
+
 import java.io.*;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
@@ -30,12 +32,10 @@ import java.util.zip.CRC32;
  */
 public class ChecksumMaker {
 
-    private static final String outFile = "checksums";
-
     private static byte[] buf = new byte[1024];
 
     public static void main(String[] args) throws IOException {
-        PrintWriter pw = new PrintWriter(outFile);
+        PrintWriter pw = new PrintWriter(UpdateDialog.CHECKSUMSFILENAME);
         writeCheckSum(pw, new File("."));
         pw.close();
     }
@@ -43,20 +43,20 @@ public class ChecksumMaker {
     private static void writeCheckSum(PrintWriter pw, File file) throws IOException {
         if(file.isDirectory()){
             for(String df:file.list()){
-                if(!df.equals(outFile))writeCheckSum(pw, new File(file, df));
+                if(!df.equals(UpdateDialog.CHECKSUMSFILENAME))writeCheckSum(pw, new File(file, df));
             }
         }else{
             String path = file.getPath();
             if(path.startsWith("./"))path = path.substring(2);
             pw.print(path);
             pw.print(' ');
-            pw.print(file.length());
-            pw.print(' ');
-            pw.println(getChecksum(file));
+            pw.println(file.length());
+            //pw.print(' ');
+            //pw.println(getChecksum(file));
         }
     }
 
-    public static long getChecksum(File file) throws IOException {        
+    /*public static long getChecksum(File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
         CRC32 adler32 = new CRC32();
         int read;
@@ -65,5 +65,5 @@ public class ChecksumMaker {
         }
         fis.close();
         return adler32.getValue();
-    }
+    }*/
 }

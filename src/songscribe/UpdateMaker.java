@@ -22,6 +22,7 @@ Created on Sep 12, 2007
 package songscribe;
 
 import songscribe.ui.Constants;
+import songscribe.ui.UpdateDialog;
 
 import java.util.Properties;
 import java.io.*;
@@ -38,15 +39,15 @@ public class UpdateMaker {
         props.load(new FileInputStream("conf/defprops"));
         String updateBaseURL = props.getProperty(Constants.UPDATEURL);
         if(updateBaseURL.charAt(updateBaseURL.length()-1)!='/')updateBaseURL+="/";
-        BufferedReader br = new BufferedReader(new InputStreamReader(new URL(updateBaseURL+"checksums").openStream()));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new URL(updateBaseURL+ UpdateDialog.CHECKSUMSFILENAME).openStream()));
         String line;
         while((line=br.readLine())!=null){
             int spacePos1 = line.lastIndexOf(' ');
             int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
-            File file = new File(base, line.substring(0, spacePos2));
-            long remoteCS = Long.parseLong(line.substring(spacePos1+1));
-            long localCS = file.exists() ? ChecksumMaker.getChecksum(file) : remoteCS-1;
-            if(localCS==remoteCS){
+            File file = new File(base, line.substring(0, spacePos2).replace('\\', '/'));
+            long remoteSize = Long.parseLong(line.substring(spacePos2+1, spacePos1));
+            long localSize = file.exists() ? file.length() : -1;
+            if(localSize==remoteSize){
                 file.delete();
             }
         }

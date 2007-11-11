@@ -57,6 +57,11 @@ public class PageIO {
     private static final String XMLFONTSIZE = "fontsize";
     private static final String XMLALIGNMENT = "alignment";
     private static final String XMLSTRING = "string";
+    //pagenumber properties
+    private static final String XMLPAGENUMBER = "pagenumber";
+    private static final String XMLPLACEMENT = "placement";
+    private static final String XMLFROMPAGE = "frompage";
+    private static final String XMLSPACEFROMMARGIN = "spacefrommargin";
 
     public static void writePage(Page p, PrintWriter pw, boolean writeAbsolute) throws IOException {
         for(ListIterator<PageComponent> li = p.getPageComponentIterator();li.hasNext();){

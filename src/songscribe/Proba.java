@@ -36,9 +36,12 @@ import java.security.KeyManagementException;
  */
 public class Proba {
     public static void main(String[] args) throws Exception {
-        for(Object c:Class.forName("java.awt.Desktop$Action").getEnumConstants()){
-            System.out.println(c.toString());
-        }
+        /*DAVRepositoryFactory.setup();
+        SVNUpdateClient updateClient = SVNClientManager.newInstance().getUpdateClient();
+        updateClient.setIgnoreExternals(false);
+        updateClient.setEventHandler(new UpdateEventHandler());        
+        updateClient.doUpdate(new File("/home/csaba/IdeaProjects/SongScribeTest"), SVNRevision.HEAD, true);*/
+
         /*Calendar c = Calendar.getInstance();
         c.set(2007, 11, 31, 23, 59, 59);
         System.out.println(c.getTimeInMillis());*/        
