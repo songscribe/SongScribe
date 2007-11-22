@@ -1,6 +1,6 @@
 Launching SongScribe
 
-SongScribe needs Java 6 to run.
+SongScribe needs Java 5 to run.
 If you want to launch SongScribe from command line there are two ways.
 If you just type java -jar songscribe.jar, a window will appear where you
 can select which application you want to start.

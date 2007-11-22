@@ -25,7 +25,6 @@ import songscribe.ui.UpdateDialog;
 
 import java.io.*;
 import java.util.zip.Adler32;
-import java.util.zip.CRC32;
 
 /**
  * @author Csaba Kávai
@@ -33,9 +32,11 @@ import java.util.zip.CRC32;
 public class ChecksumMaker {
 
     private static byte[] buf = new byte[1024];
+    public static final String HEADER = "SongScribe update";
 
     public static void main(String[] args) throws IOException {
         PrintWriter pw = new PrintWriter(UpdateDialog.CHECKSUMSFILENAME);
+        pw.println(HEADER);
         writeCheckSum(pw, new File("."));
         pw.close();
     }
@@ -46,24 +47,24 @@ public class ChecksumMaker {
                 if(!df.equals(UpdateDialog.CHECKSUMSFILENAME))writeCheckSum(pw, new File(file, df));
             }
         }else{
-            String path = file.getPath();
+            String path = file.getPath().replace('\\', '/');
             if(path.startsWith("./"))path = path.substring(2);
             pw.print(path);
             pw.print(' ');
-            pw.println(file.length());
-            //pw.print(' ');
-            //pw.println(getChecksum(file));
+            pw.print(file.length());
+            pw.print(' ');
+            pw.println(getChecksum(file));
         }
     }
 
-    /*public static long getChecksum(File file) throws IOException {
+    public static long getChecksum(File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
-        CRC32 adler32 = new CRC32();
+        Adler32 adler32 = new Adler32();
         int read;
         while((read=fis.read(buf))>0){
             adler32.update(buf, 0, read);
         }
         fis.close();
         return adler32.getValue();
-    }*/
+    }
 }

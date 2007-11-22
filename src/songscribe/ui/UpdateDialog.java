@@ -24,6 +24,7 @@ package songscribe.ui;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.CannotUpdateException;
+import songscribe.ChecksumMaker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,10 +36,12 @@ import java.util.zip.ZipException;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.io.*;
-import java.net.URL;
 import java.text.DecimalFormat;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.Header;
 
 /**
  * @author Csaba Kávai
@@ -49,7 +52,8 @@ public class UpdateDialog extends MyDialog{
     private static final String VERSIONFILE = "version";
     private boolean downloadCancelled;
 
-    public static final String CHECKSUMSFILENAME = "checksums2";
+    public static final String CHECKSUMSFILENAME = "checksums";
+    public static final Header MAXAGEHEADER = new Header("Cache-Control", "max-age=0");
 
     private class TempFilePair{
         File originalFile; File tempFile;
@@ -137,33 +141,57 @@ public class UpdateDialog extends MyDialog{
 
         public void run() {
             byte buf[] = new byte[1024];
-            String updateBaseURL = mainFrame.getProperties().getProperty(Constants.UPDATEURL);
-            if(updateBaseURL.charAt(updateBaseURL.length()-1)!='/')updateBaseURL+="/";
+
+            String[] updateBaseURLs = { mainFrame.getProperties().getProperty(Constants.UPDATEURL1),
+                                        mainFrame.getProperties().getProperty(Constants.UPDATEURL2)};
             UpdateProcessDialog upd = null;
             Vector<TempFilePair> tempFilePairs = new Vector<TempFilePair>(20, 20);
             int fileSum = 0;
+            HttpClient httpClient = new HttpClient();
             try {
+                int updateNumber = 0;
                 //determining the files to update and calculating the the size
                 try {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(new URL(updateBaseURL+ CHECKSUMSFILENAME).openStream()));
+                    InputStream checksumStream=null;
+                    GetMethod getChecksum = null;
+                    BufferedReader br=null;
+                    for(;updateNumber<updateBaseURLs.length;updateNumber++){
+                        getChecksum = new GetMethod(updateBaseURLs[updateNumber]+CHECKSUMSFILENAME);
+                        getChecksum.addRequestHeader(MAXAGEHEADER);
+                        httpClient.executeMethod(getChecksum);
+                        checksumStream = getChecksum.getResponseBodyAsStream();
+                        if(checksumStream!=null){
+                            br = new BufferedReader(new InputStreamReader(checksumStream));
+                            if(!br.readLine().equals(ChecksumMaker.HEADER)){
+                                checksumStream.close();
+                                checksumStream=null;
+                            }
+                        }
+                        if(checksumStream==null){
+                            getChecksum.releaseConnection();
+                        }else break;
+                    }
+                    if(checksumStream==null)throw new IOException("Cannot download checksums");                    
                     String line;
                     while((line=br.readLine())!=null){
                         int spacePos1 = line.lastIndexOf(' ');
-                        //int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
-                        File file = new File(line.substring(0, spacePos1).replace('\\', '/'));
-                        long remoteSize = Long.parseLong(line.substring(spacePos1+1));
-                        long localSize = file.exists() ? file.length() : -1;
-                        if(localSize!=remoteSize){
+                        int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
+                        File file = new File(line.substring(0, spacePos2));
+                        long remoteChecksum = Long.parseLong(line.substring(spacePos1+1));
+                        long localChecksum = file.exists() ? ChecksumMaker.getChecksum(file) : -1;
+                        if(localChecksum!=remoteChecksum){
                             tempFilePairs.add(new TempFilePair(file, File.createTempFile("gss", "upd")));
-                            fileSum+=remoteSize;
-                            if(localSize==-1){
+                            long size = Long.parseLong(line.substring(spacePos2+1, spacePos1));
+                            fileSum+=size;
+                            if(localChecksum==-1){
                                 System.out.println("New file: "+file.getName());
                             }else{
-                                System.out.println("Update file ("+localSize+", "+remoteSize+"): "+file.getName());
+                                System.out.println("Update file ("+file.length()+", "+size+"): "+file.getName());
                             }
                         }
                     }
                     br.close();
+                    getChecksum.releaseConnection();
                 } catch (IOException e) {
                     logger.error("Internet update checksums", e);
                     if(!automatic){
@@ -194,7 +222,11 @@ public class UpdateDialog extends MyDialog{
                 try {
                     for(TempFilePair tfp: tempFilePairs){
                         FileOutputStream fos = new FileOutputStream(tfp.tempFile);
-                        InputStream urlIs = new URL(updateBaseURL+tfp.originalFile.getPath().replace('\\', '/').replace(" ", "%20")).openStream();
+                        GetMethod getFile = new GetMethod(updateBaseURLs[updateNumber]+tfp.originalFile.getPath().replace('\\', '/').replace(" ", "%20"));
+                        getFile.addRequestHeader(MAXAGEHEADER);
+                        httpClient.executeMethod(getFile);
+                        InputStream urlIs = getFile.getResponseBodyAsStream();
+                        if(urlIs==null) throw new IOException("Cannot download file: "+tfp.originalFile.getPath());
                         int read;
                         while((read=urlIs.read(buf))>0){
                             upd.nextValue(read);
@@ -209,10 +241,11 @@ public class UpdateDialog extends MyDialog{
                         }
                         fos.close();
                         urlIs.close();
+                        getFile.releaseConnection();
                         System.out.println("Downloaded: "+tfp.originalFile.getName());
                     }
                 } catch (IOException e) {
-                    mainFrame.showErrorMessage("Some input or output error occured.");
+                    mainFrame.showErrorMessage("Some error occured during download.");
                     logger.error("Internet update download", e);
                     throw new CannotUpdateException();
                 }
@@ -229,7 +262,7 @@ public class UpdateDialog extends MyDialog{
                         System.out.println("Copied: "+tfp.originalFile.getName());
                     }
                 } catch (IOException e) {
-                    mainFrame.showErrorMessage("Some error occured that made your program instabile.\nPlease reinstall the software.");
+                    mainFrame.showErrorMessage("You may not have permission to overwrite the program code during updating.\nPlease ask the system administrator to do it.");
                     logger.error("Internet update copy", e);
                     throw new CannotUpdateException();
                 }

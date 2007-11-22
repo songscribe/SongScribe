@@ -10,6 +10,7 @@
         <pathelement location="${basedir}/libs/itext-1.4.jar"/>
         <pathelement location="${basedir}/libs/swing-layout.jar"/>
         <pathelement location="${basedir}/libs/MRJToolkitStubs.zip"/>
+        <pathelement location="${basedir}/libs/commons-httpclient-3.1.jar"/>
     </path>
 
     <path id="sourcepath">

@@ -45,9 +45,11 @@ public class Constants {
     public static final String UNDERSCORE = "_";
     public static final String SHOWMEMUSEAGE = "showmemusage";
     public static final String SHOWPUBLISHERNEWINFO = "showpublishernewinfo";
-    public static final String UPDATEURL = "updateurl";
+    public static final String UPDATEURL1 = "updateurl1";
+    public static final String UPDATEURL2 = "updateurl2";
     public static final String LASTAUTOUPDATE = "lastautoupdate";
     public static final String AUTOUPDATEPERIOD = "autoupdateperiod";
     public static final String METRIC = "metric";
     public static final String FIRSTRUN = "firstrun";
+    
 }

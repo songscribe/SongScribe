@@ -26,32 +26,43 @@ import songscribe.ui.UpdateDialog;
 
 import java.util.Properties;
 import java.io.*;
-import java.net.URL;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * @author Csaba Kávai
  */
 public class UpdateMaker {
     public static void main(String[] args) throws IOException {
-        if(args.length==0)return;
-        File base = new File(args[0]);
+        if(args.length!=1)return;
+        File base = new File(args[0]);        
         Properties props = new Properties();
         props.load(new FileInputStream("conf/defprops"));
-        String updateBaseURL = props.getProperty(Constants.UPDATEURL);
-        if(updateBaseURL.charAt(updateBaseURL.length()-1)!='/')updateBaseURL+="/";
-        BufferedReader br = new BufferedReader(new InputStreamReader(new URL(updateBaseURL+ UpdateDialog.CHECKSUMSFILENAME).openStream()));
+        String updateBaseURL = props.getProperty(Constants.UPDATEURL1);
+        HttpClient httpClient = new HttpClient();
+        GetMethod getChecksum = new GetMethod(updateBaseURL+ UpdateDialog.CHECKSUMSFILENAME);
+        getChecksum.addRequestHeader(UpdateDialog.MAXAGEHEADER);
+        httpClient.executeMethod(getChecksum);
+        BufferedReader br = new BufferedReader(new InputStreamReader(getChecksum.getResponseBodyAsStream()));
+        if(!br.readLine().equals(ChecksumMaker.HEADER)){
+            System.out.println("Hiba");
+            return;
+        }
         String line;
         while((line=br.readLine())!=null){
             int spacePos1 = line.lastIndexOf(' ');
             int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
-            File file = new File(base, line.substring(0, spacePos2).replace('\\', '/'));
-            long remoteSize = Long.parseLong(line.substring(spacePos2+1, spacePos1));
-            long localSize = file.exists() ? file.length() : -1;
-            if(localSize==remoteSize){
+            File file = new File(base, line.substring(0, spacePos2));
+            long remoteChecksum = Long.parseLong(line.substring(spacePos1+1));
+            long localChecksum = file.exists() ? ChecksumMaker.getChecksum(file) : -1;
+            if(localChecksum==remoteChecksum){
                 file.delete();
             }
+            System.out.println(file.getPath()+", "+file.length()+", "+line.substring(spacePos2+1, spacePos1));
         }
         br.close();
+        getChecksum.releaseConnection();        
         deleteIfEmpty(base);
     }
 
