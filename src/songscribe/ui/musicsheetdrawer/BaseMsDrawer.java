@@ -540,9 +540,13 @@ public abstract class BaseMsDrawer {
     private void drawBeatChange(Graphics2D g2, int line, Note note){
         BeatChange beatChange = note.getBeatChange();
         int yPos = ms.getNoteYPos(0, line)+ms.getComposition().getLine(line).getBeatChangeYPos();
-        drawTempoChangeNote(g2, beatChange.getFirstNote(), note.getXPos(), yPos);
+        drawBeatChange(g2, beatChange, note.getXPos(), yPos);
+    }
+
+    public void drawBeatChange(Graphics2D g2, BeatChange beatChange, int xPos, int yPos){
+        drawTempoChangeNote(g2, beatChange.getFirstNote(), xPos, yPos);
         g2.setFont(ms.getComposition().getGeneralFont());
-        float eqXPos = note.getXPos() + crotchetWidth + 7;
+        float eqXPos = xPos + crotchetWidth + 7;
         drawAntialiasedString(g2, "=", eqXPos, yPos);
         drawTempoChangeNote(g2, beatChange.getSecondNote(), Math.round(eqXPos+12), yPos);
     }

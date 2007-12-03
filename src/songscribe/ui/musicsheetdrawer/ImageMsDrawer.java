@@ -144,7 +144,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
         g2.setPaint(Color.black);
      }
 
-    protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {
+    protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {        
         AffineTransform at = g2.getTransform();
         g2.translate(x, y-Note.HOTSPOT.y);
         g2.scale(tempoChangeZoom, tempoChangeZoom);

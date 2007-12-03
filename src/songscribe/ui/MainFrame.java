@@ -302,6 +302,26 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         if(!Utilities.isMac()) {
             editMenu.add(prefAction);
         }
+        JMenu renderMenu = new JMenu("Rendering");
+        renderMenu.setIcon(new ImageIcon(getImage("looknfeel.png")));
+        ButtonGroup renderGroup = new ButtonGroup();
+        for(final MusicSheet.DrawerType dt:MusicSheet.DrawerType.values()){
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(dt.getMenuName());            
+            item.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    musicSheet.setDrawer(dt);
+                    properties.setProperty(Constants.RENDERING, dt.name());
+                    musicSheet.setRepaintImage(true);
+                    musicSheet.repaint();
+                }
+            });
+            renderGroup.add(item);
+            renderMenu.add(item);
+            if(dt.name().equals(properties.getProperty(Constants.RENDERING))){
+                item.setSelected(true);
+            }
+        }
+        editMenu.add(renderMenu);
 
         JMenu modeMenu = new JMenu("Mode");
         bg = new ButtonGroup();

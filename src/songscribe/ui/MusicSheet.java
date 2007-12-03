@@ -164,7 +164,17 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     PasteAction pasteAction;
 
     //rendering
-    public enum DrawerType{IMAGE, FUGHETTA}
+    public enum DrawerType{
+        IMAGE("Draft"),
+        FUGHETTA("Enhanced");
+        private String menuName;
+        DrawerType(String menuName) {
+            this.menuName = menuName;
+        }
+        public String getMenuName() {
+            return menuName;
+        }
+    }
     private BaseMsDrawer drawer;
     private BaseMsDrawer[] drawers = new BaseMsDrawer[2];
 
@@ -183,7 +193,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         } catch (Exception e) {
             drawers[1] = null;
         }
-        drawer = drawers[0];
+        drawer = drawers[1];
     }
 
     public void initComponent(){
@@ -1066,7 +1076,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public BaseMsDrawer getBestDrawer(){
-        return drawers[drawers[1]==null ? 0 : 1]; 
+        return drawers[drawers[1]==null ? 0 : 1];
     }
 
     public BaseMsDrawer getDrawer() {
@@ -1537,11 +1547,12 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         Graphics2D g2 = image.createGraphics();
         g2.setPaint(background);
         g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+        BaseMsDrawer origDrawer = drawer;
         setDrawer(DrawerType.FUGHETTA);
         Point point = new Point((int)(image.getWidth()-getSheetWidth()*scale)/2, (int)(image.getHeight()-getSheetHeight()*scale)/2);
         g2.translate(point.x, point.y);
         drawer.drawMusicSheet(g2, false, scale);
-        setDrawer(DrawerType.IMAGE);
+        drawer = origDrawer;
         g2.dispose();
         return point;
     }

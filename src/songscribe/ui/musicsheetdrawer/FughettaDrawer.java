@@ -232,7 +232,9 @@ public class FughettaDrawer extends BaseMsDrawer{
         NoteType nt = note.getNoteType();
         String headStr = noteHead.get(nt);
         //drawing the notehead
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(headStr, 0, 0);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         //drawing the stem
         g2.setStroke(stemStroke);
         if(nt.isNote() && nt!=NoteType.SEMIBREVE){
@@ -246,6 +248,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         }
         //drawing the flag(s)
         if(!beamed && nt.isBeamable()){
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             if(upper){
                 g2.drawString(mainUpperFlag, upperFlagX, upperFlagY);
                 if(nt!=NoteType.QUAVER){
@@ -263,6 +266,7 @@ public class FughettaDrawer extends BaseMsDrawer{
                     }
                 }
             }
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
 
         //drawing the dottes
@@ -271,7 +275,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         for(int i=0;i<note.getDotted();i++){
             g2.fill(noteDots[i]);
         }
-        g2.setTransform(at);
+        g2.setTransform(at);        
     }
 
     private void drawBarLine(Graphics2D g2, NoteType nt){

@@ -28,6 +28,8 @@ import songscribe.music.Note;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.awt.*;
 import java.util.Enumeration;
 
@@ -46,11 +48,22 @@ public class BeatChangeDialog extends MyDialog{
         center.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         bg = new ButtonGroup();
         for(BeatChange bc:BeatChange.values()){
-            JRadioButton rb = new JRadioButton(bc.name());
+            final JRadioButton rb = new JRadioButton();
             rb.setActionCommand(bc.name());
             bg.add(rb);
             JPanel panel = new JPanel();
             panel.add(rb);
+            JComponent component = getBeatChangeComponent(bc);
+            component.addMouseListener(new MouseListener() {
+                public void mouseClicked(MouseEvent e) {
+                    bg.setSelected(rb.getModel(), true);
+                }                   
+                public void mousePressed(MouseEvent e) {}
+                public void mouseReleased(MouseEvent e) {}
+                public void mouseEntered(MouseEvent e) {}
+                public void mouseExited(MouseEvent e) {}
+            });
+            panel.add(component);
             center.add(panel);
         }
         dialogPanel.add(center);
@@ -103,5 +116,23 @@ public class BeatChangeDialog extends MyDialog{
             return;
         }
         selectedNote.setBeatChange(BeatChange.valueOf(bg.getSelection().getActionCommand()));
+    }
+
+    private JComponent getBeatChangeComponent(final BeatChange beatChange){
+        return new JComponent() {
+            Dimension size = new Dimension(50, 30);
+
+            public Dimension getPreferredSize() {
+                return size;                
+            }
+
+            public Dimension getSize() {
+                return size;
+            }
+
+            protected void paintComponent(Graphics g) {
+                mainFrame.getMusicSheet().getBestDrawer().drawBeatChange((Graphics2D)g, beatChange, 2, 27);
+            }
+        };
     }
 }
