@@ -55,7 +55,7 @@ public abstract class Note implements Cloneable {
     public static final Image[] NATURALFLATSHARPIMAGE = {MainFrame.getImage("natural.gif"), MainFrame.getImage("flat.gif"), MainFrame.getImage("sharp.gif"), MainFrame.getImage("doublesharp.gif")};
     public static final Image DOTIMAGE = MainFrame.getImage("dot.gif");
 
-    public static final Note GLISSANDONOTE = new Glissando();
+    public static final Note GLISSANDONOTE = new GlissandoNote();
     public static final Note PASTENOTE = new PasteNote();
 
     /**
@@ -114,8 +114,15 @@ public abstract class Note implements Cloneable {
     protected boolean isAccidentalInParenthesis;
 
     //glissando
-    public static final int NOGLISSANDO = Integer.MAX_VALUE;
-    protected int glissando = NOGLISSANDO;
+    public static class Glissando{
+        public int pitch, x1Translate, x2Translate;
+
+        public Glissando(int pitch) {
+            this.pitch = pitch;
+        }
+    }
+    public static final Glissando NOGLISSANDO = new Glissando(Integer.MAX_VALUE);
+    protected Glissando glissando = NOGLISSANDO;
 
     //tempochange
     protected Tempo tempoChange;
@@ -230,12 +237,13 @@ public abstract class Note implements Cloneable {
         isAccidentalInParenthesis = getAccidental()!=Accidental.NONE && accidentalInParenthesis;
     }
 
-    public int getGlissando() {
+    public Glissando getGlissando() {
         return glissando;
     }
 
-    public void setGlissando(int glissando) {
-        this.glissando = glissando;
+    public void setGlissando(int pitch) {
+        if(glissando==NOGLISSANDO)glissando = new Glissando(pitch);
+        else glissando.pitch=pitch;
     }
 
     public Tempo getTempoChange() {
@@ -366,7 +374,7 @@ public abstract class Note implements Cloneable {
                     line.getKeyType()==KeyType.FLATS ? Accidental.FLAT : Accidental.SHARP;
     }
 
-    public static final Image getImage(NoteType noteType, boolean upImage) {
+    public static Image getImage(NoteType noteType, boolean upImage) {
         return upImage ? noteType.getInstance().getUpImage() : noteType.getInstance().getDownImage();
     }
 

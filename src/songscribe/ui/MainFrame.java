@@ -302,7 +302,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         if(!Utilities.isMac()) {
             editMenu.add(prefAction);
         }
-        JMenu renderMenu = new JMenu("Rendering");
+        /*JMenu renderMenu = new JMenu("Rendering");
         renderMenu.setIcon(new ImageIcon(getImage("looknfeel.png")));
         ButtonGroup renderGroup = new ButtonGroup();
         for(final MusicSheet.DrawerType dt:MusicSheet.DrawerType.values()){
@@ -321,7 +321,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
                 item.setSelected(true);
             }
         }
-        editMenu.add(renderMenu);
+        editMenu.add(renderMenu);    */
 
         JMenu modeMenu = new JMenu("Mode");
         bg = new ButtonGroup();

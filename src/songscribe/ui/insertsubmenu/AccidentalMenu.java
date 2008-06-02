@@ -104,10 +104,10 @@ public class AccidentalMenu extends InsertSubMenu{
         }
 
         public void actionPerformed(ActionEvent e) {
-            resetButtons();
             Note activeNote = mainFrame.getMusicSheet().getActiveNote();
             if(activeNote==null)return;
             activeNote.setAccidentalInParenthesis(parenthesisButton.isSelected());
+            resetButtons();
             updateState(activeNote);
             mainFrame.getMusicSheet().repaint();
         }

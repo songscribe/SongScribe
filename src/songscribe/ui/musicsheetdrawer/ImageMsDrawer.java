@@ -90,9 +90,11 @@ public class ImageMsDrawer extends BaseMsDrawer{
         g2.setStroke(lineStroke);
         //drawing the stave-longitude
         if (Math.abs(note.getYPos()) > 5  && note.getNoteType().drawStaveLongitude()) {
-            for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1)); Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2)
-                g2.drawLine(xPos + Note.HOTSPOT.x - 9, ms.getNoteYPos(i, line),
-                        xPos + Note.HOTSPOT.x + 9, ms.getNoteYPos(i, line));
+            for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1)); Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2){
+                int y1 = ms.getNoteYPos(i, line);
+                g2.drawLine(xPos+Note.HOTSPOT.x-8, y1, xPos + Note.HOTSPOT.x+(note.getNoteType()!=NoteType.SEMIBREVE ? 8 : 12), y1);
+            }
+
         }
 
         g2.setPaint(color);
@@ -103,20 +105,24 @@ public class ImageMsDrawer extends BaseMsDrawer{
                     xPos+i*4, note.getYPos()%2==0 ? yPos+(note.isUpper()?-1:1)*(int)MusicSheet.HALFLINEDIST: yPos, null);            
         }
 
-        //drawing prefixes
+        //drawing accidentals
         Note.Accidental accidental = note.getAccidental();
-        int prefXPos = xPos-(int)spaceBtwNoteAndAccidental;
+        float prefXPos = xPos-(int)spaceBtwNoteAndAccidental;
         if(note.isAccidentalInParenthesis()){
             prefXPos-=4;
-            g2.drawImage(ENDPARENTHESISIMAGE, prefXPos, yPos, null);
-            g2.drawImage(BEGINPARENTHESISIMAGE, Math.round(xPos-spaceBtwNoteAndAccidental-accidentalParenthesisWidths[accidental.ordinal()]), yPos, null);
-            prefXPos--;
+            g2.drawImage(ENDPARENTHESISIMAGE, Math.round(prefXPos), yPos, null);
+            float startX = xPos - spaceBtwNoteAndAccidental - FughettaDrawer.getAccidentalWidth(note);
+            g2.drawImage(BEGINPARENTHESISIMAGE, Math.round(startX), yPos, null);
+            float width = Note.REALNATURALFLATSHARPRECT[accidental.getComponent(0)].width;
+            if(accidental.getNb()==2)width+=spaceBtwTwoAccidentals+Note.REALNATURALFLATSHARPRECT[accidental.getComponent(1)].width;
+            prefXPos = (prefXPos-startX)/2f+width/2f+startX+2.5f;
         }
         for(int i=accidental.getNb()-1;i>=0;i--){
             prefXPos-=Note.REALNATURALFLATSHARPRECT[accidental.getComponent(i)].width;
             Image prefixImg = color==Color.black ? Note.NATURALFLATSHARPIMAGE[accidental.getComponent(i)] :
                     Note.getColoredImage(Note.NATURALFLATSHARPIMAGE[accidental.getComponent(i)], color);
-            g2.drawImage(prefixImg, prefXPos, yPos, null);
+            g2.drawImage(prefixImg, Math.round(prefXPos), yPos, null);
+            prefXPos-=spaceBtwTwoAccidentals;
         }
 
         /*Rectangle r1 = new Rectangle(note.getRealUpNoteRect()), r2 = new Rectangle(note.getRealDownNoteRect());

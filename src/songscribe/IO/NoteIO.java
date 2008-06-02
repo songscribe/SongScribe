@@ -50,6 +50,8 @@ public class NoteIO {
     private static final String XMLSYLLABLEMOVEMENT = "syllablemovement";
     private static final String XMLTRILL = "trill";
     private static final String XMLBEATCHANGE = "beatchange";
+    private static final String XMLGLISSANDOX1TRANSLATE = "glissandox1translate";
+    private static final String XMLGLISSANDOX2TRANSLATE = "glissandox2translate";
 
     public static void writeNote(Note n, PrintWriter pw) throws IOException {
         pw.println("          <"+XMLNOTE+" "+XMLTYPE+"=\""+n.getNoteType().name()+"\">");
@@ -61,7 +63,11 @@ public class NoteIO {
         if(n.isAccidentalInParenthesis())XML.writeEmptyTag(pw, XMLPREFIXINPARENTHESIS);
         if(n.getForceArticulation()!=null)XML.writeValue(pw, XMLFORCEARTICULATION, n.getForceArticulation().name());
         if(n.getDurationArticulation()!=null)XML.writeValue(pw, XMLDURATIONARTICULATION, n.getDurationArticulation().name());
-        if(n.getGlissando()!=Note.NOGLISSANDO)XML.writeValue(pw, XMLGLISSANDO, Integer.toString(n.getGlissando()));
+        if(n.getGlissando()!=Note.NOGLISSANDO){
+            XML.writeValue(pw, XMLGLISSANDO, Integer.toString(n.getGlissando().pitch));
+            if(n.getGlissando().x1Translate!=0)XML.writeValue(pw, XMLGLISSANDOX1TRANSLATE, Integer.toString(n.getGlissando().x1Translate));
+            if(n.getGlissando().x2Translate!=0)XML.writeValue(pw, XMLGLISSANDOX2TRANSLATE, Integer.toString(n.getGlissando().x2Translate));
+        }
         if(n.isUpper())XML.writeEmptyTag(pw, XMLUPPER);
         if(n.getSyllableMovement()!=0)XML.writeValue(pw, XMLSYLLABLEMOVEMENT, Integer.toString(n.getSyllableMovement()));
         if(n.getTempoChange()!=null)TempoIO.writeTempo(n.getTempoChange(), pw, 12);
@@ -166,6 +172,10 @@ public class NoteIO {
                         note.setDurationArticulation(DurationArticulation.valueOf(str));
                     }else if(lastTag.equals(XMLGLISSANDO)){
                         note.setGlissando(Integer.valueOf(str));
+                    }else if(lastTag.equals(XMLGLISSANDOX1TRANSLATE)){
+                        note.getGlissando().x1Translate=Integer.valueOf(str);
+                    }else if(lastTag.equals(XMLGLISSANDOX2TRANSLATE)){
+                        note.getGlissando().x2Translate=Integer.valueOf(str);
                     }else if(lastTag.equals(XMLUPPER)){
                         note.setUpper(true);
                     }else if(lastTag.equals(XMLSYLLABLEMOVEMENT)){

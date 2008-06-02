@@ -20,7 +20,6 @@ metric=false
 updateurl1=http://www.songscribe.org/files/update/ss/
 updateurl2=http://www.vasudevaservice.com/c_/contributors/csaba_kavai/ss/
 lastautoupdate=0
-autoupdateperiod=2592000000
+autoupdateperiod=604800000
 firstrun=true
-rendering=IMAGE
 

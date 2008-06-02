@@ -232,7 +232,6 @@ public class Publisher extends MainFrame {
     public static void main(String[] args) {
         showSplash("sbsplash.png");
         PropertyConfigurator.configure("conf/logger.properties");
-        logger.info("Song Book started at "+new Date());
         new Publisher();
         hideSplash();
     }

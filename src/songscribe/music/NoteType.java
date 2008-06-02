@@ -46,7 +46,7 @@ public enum NoteType {
     DEMISEMIQUAVERREST(new DemisemiquaverRest(), "Thirtysecond rest", KeyStroke.getKeyStroke(KeyEvent.VK_1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
 
     GRACEQUAVER(new GraceQuaver(), "Grace note", KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)),
-    GLISSANDO(Note.GLISSANDONOTE, "Glissando", KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.SHIFT_MASK)),
+    GLISSANDO(Note.GLISSANDONOTE, "GlissandoNote", KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.SHIFT_MASK)),
     REPEATLEFT(new RepeatLeft(), "Repeat left", KeyStroke.getKeyStroke(KeyEvent.VK_L, 0)),
     REPEATRIGHT(new RepeatRight(), "Repeat right", KeyStroke.getKeyStroke(KeyEvent.VK_R, 0)),
     REPEATLEFTRIGHT(new RepeatLeftRight(), null, null),

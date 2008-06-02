@@ -60,10 +60,9 @@ public abstract class BaseMsDrawer {
     private static final float longDashWidth = 7f;
     protected static final double tempoChangeZoom = 0.8;
 
-    protected static final float spaceBtwNoteAndAccidental = 1.139f;
-    protected static final float[] accidentalWidths = {0f, size/5.8850574f, size/4.571429f, size/4.740741f, size/2.737968f, size/2.485437f, size/3.9689922f, size/2.4150944f, size/2.4615386f};
-    protected static final float[] accidentalParenthesisWidths = {0f, size/1.5657493f, size/1.6f, size/1.5753846f, size/1.2929293f, size/1.343832f, size/1.8754579f, size/1.3950953f, size/1.2736318f};
-
+    protected static final float spaceBtwNoteAndAccidental = 2.7f;//1.139f;
+    protected static final float spaceBtwTwoAccidentals = 1.3f;
+    protected static final float spaceBtwAccidentalAndParenthesis = 0f;
 
     private static final NoteType[] BEAMLEVELS = {NoteType.DEMISEMIQUAVER, NoteType.SEMIQUAVER, NoteType.QUAVER};
 
@@ -85,6 +84,7 @@ public abstract class BaseMsDrawer {
     }
 
     public void drawMusicSheet(Graphics2D g2, boolean drawEditingComponents, double scale){
+        FughettaDrawer.calculateAccidentalWidths(g2);
         Composition composition = ms.getComposition();
         if(scale!=1d) g2.scale(scale, scale);
         if(!drawEditingComponents)g2.translate(0, -ms.getStartY());        
@@ -162,15 +162,21 @@ public abstract class BaseMsDrawer {
                 //drawing the tie if any
                 Interval tieVal = line.getTies().findInterval(n);
                 if(tieVal!=null && n!=tieVal.getB()){
-                    int yPos = ms.getNoteYPos(note.getYPos(), l)+(note.isUpper() ? MusicSheet.LINEDIST/2+2 : -MusicSheet.LINEDIST/2-2);
+                    boolean tieUpper = note.isUpper();
                     int xPos = note.getXPos()+getHalfNoteWidthForTie(note)+2;
                     int gap = line.getNote(n+1).getXPos()+getHalfNoteWidthForTie(line.getNote(n+1))-xPos-3;
+                    if(note.isUpper()!=line.getNote(n+1).isUpper() && note.isUpper()){
+                        tieUpper = false;
+                        xPos+=7;
+                        gap-=5;
+                    }
+                    int yPos = ms.getNoteYPos(note.getYPos(), l)+(tieUpper ? MusicSheet.LINEDIST/2+2 : -MusicSheet.LINEDIST/2-2);
                     g2.setStroke(lineStroke);
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
                     tie.moveTo(xPos, yPos);
-                    tie.quadTo(xPos+gap/2, yPos+(note.isUpper()?6:-6), xPos+gap, yPos);
-                    tie.quadTo(xPos+gap/2, yPos+(note.isUpper()?8:-8), xPos, yPos);
+                    tie.quadTo(xPos+gap/2, yPos+(tieUpper?6:-6), xPos+gap, yPos);
+                    tie.quadTo(xPos+gap/2, yPos+(tieUpper?8:-8), xPos, yPos);
                     tie.closePath();
                     g2.draw(tie);
                     g2.fill(tie);
@@ -472,34 +478,48 @@ public abstract class BaseMsDrawer {
         }
     }
 
-    public void drawGlissando(Graphics2D g2, int xIndex, int yPos, int l){
+    public void drawGlissando(Graphics2D g2, int xIndex, Note.Glissando glissando, int l){
         Line line = ms.getComposition().getLine(l);
-        int x1 = line.getNote(xIndex).getXPos()+15;
-        int x2;
-        if(xIndex+1<line.noteCount()){
-            x2 = line.getNote(xIndex+1).getXPos()-3;
-            int accNum = line.getNote(xIndex+1).getAccidental().ordinal();
-            x2-=line.getNote(xIndex+1).isAccidentalInParenthesis() ? accidentalParenthesisWidths[accNum] : accidentalWidths[accNum];
-        }else{
-            x2 = x1 + 30;
+        int x1 = getGlissandoX1Pos(xIndex, glissando, l);
+        int x2 = getGlissandoX2Pos(xIndex, glissando, l);
+        drawGlissando(g2, x1, ms.getNoteYPos(line.getNote(xIndex).getYPos(),l), x2, ms.getNoteYPos(glissando.pitch, l));
+
+        g2.setStroke(lineStroke);
+        //drawing the stave-longitude
+        if (Math.abs(glissando.pitch) > 5 && (xIndex+1==line.noteCount() ||
+                Math.abs(line.getNote(xIndex+1).getYPos())<Math.abs(glissando.pitch))) {
+            for (int i = glissando.pitch + (glissando.pitch % 2 == 0 ? 0 : glissando.pitch > 0 ? -1 : 1); Math.abs(i) > 5; i += glissando.pitch > 0 ? -2 : 2)
+                g2.drawLine(x2-5, ms.getNoteYPos(i, l),
+                        x2+5, ms.getNoteYPos(i, l));
         }
+    }
+
+    public int getGlissandoX1Pos(int xIndex, Note.Glissando glissando, int l){
+        Line line = ms.getComposition().getLine(l);
+        int x1 = line.getNote(xIndex).getXPos()+15+glissando.x1Translate;
         if(line.getNote(xIndex).getNoteType()==NoteType.SEMIBREVE){
             x1+=3;
         }else if(line.getNote(xIndex).getNoteType()==NoteType.GRACEQUAVER){
             x1-=3;
         }
         x1+=line.getNote(xIndex).getDotted()*6;
+        return x1;
+    }
 
-        drawGlissando(g2, x1, ms.getNoteYPos(line.getNote(xIndex).getYPos(),l), x2, ms.getNoteYPos(yPos, l));
-
-        g2.setStroke(lineStroke);
-        //drawing the stave-longitude
-        if (Math.abs(yPos) > 5 && (xIndex+1==line.noteCount() ||
-                Math.abs(line.getNote(xIndex+1).getYPos())<Math.abs(yPos))) {
-            for (int i = yPos + (yPos % 2 == 0 ? 0 : yPos > 0 ? -1 : 1); Math.abs(i) > 5; i += yPos > 0 ? -2 : 2)
-                g2.drawLine(x2-5, ms.getNoteYPos(i, l),
-                        x2+5, ms.getNoteYPos(i, l));
+    public int getGlissandoX2Pos(int xIndex, Note.Glissando glissando, int l){
+        Line line = ms.getComposition().getLine(l);
+        float x2 = -glissando.x2Translate;
+        if(xIndex+1<line.noteCount()){
+            x2+=line.getNote(xIndex+1).getXPos()-3;
+            int accNum = line.getNote(xIndex+1).getAccidental().ordinal();
+            if(accNum>0){
+                x2-=FughettaDrawer.getAccidentalWidth(line.getNote(xIndex+1));
+                x2-=1.6;
+            }
+        }else{
+            x2+= line.getNote(xIndex).getXPos() + 45;
         }
+        return Math.round(x2);
     }
 
     private void drawGlissando(Graphics2D g2, int x1, int y1, int x2, int y2){
@@ -648,7 +668,7 @@ public abstract class BaseMsDrawer {
         }
         x+=xTranslate;
         for(int i=0;i<rightVector.size();i++){
-            drawAntialiasedString(g2, rightVector.get(i), x, y+i*g2.getFontMetrics().getAscent());
+            drawAntialiasedString(g2, rightVector.get(i), x, y+i*Math.round(g2.getFontMetrics().getHeight()*0.9f));
         }
     }
 

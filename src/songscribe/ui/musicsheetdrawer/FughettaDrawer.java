@@ -80,10 +80,8 @@ public class FughettaDrawer extends BaseMsDrawer{
     private static final double graceNoteScale = 0.6;
 
     private static final String trebleclef = "\uf026";    
-    private static final String[] accidentals = {"", "\uf06e", "\uf062", "\uf023", "\uf06e\uf06e", "\uf0ba", "\uf0dc", "\uf06e\uf062", "\uf06e\uf023"};
-    private static final String[] accidentalParenthesis = {"", "\uf04e", "\uf041", "\uf061", "\uf06e\uf06e", "\uf08c", "\uf081", "\uf06e\uf062", "\uf06e\uf023"};
-    private static final float manualParenthesisX1 = size/4.923077f;
-    private static final float manualParenthesisWidth = size/5.12f;
+    private static final String[] accidentals = {"", "\uf06e", "\uf062", "\uf023", "\uf06e\uf06e", "\uf062\uf062", "\uf0dc", "\uf06e\uf062", "\uf06e\uf023"};
+    private static final String[] accidentalParenthesis = {"", "\uf04e", "\uf041", "\uf061", "\uf06e\uf06e", "\uf062\uf062", "\uf081", "\uf06e\uf062", "\uf06e\uf023"};
     private static final float manualParenthesisY = size/3.5068493f;
     private static final String beginParenthesis = "\uf028";
     private static final String endParenthesis = "\uf029";
@@ -196,23 +194,28 @@ public class FughettaDrawer extends BaseMsDrawer{
         g2.setStroke(lineStroke);
         //drawing the stave-longitude
         if (Math.abs(note.getYPos()) > 5 && note.getNoteType().drawStaveLongitude()) {
-            for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1)); Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2)
-                g2.drawLine(Note.HOTSPOT.x - 9, (i-note.getYPos())*(int)size/8, Note.HOTSPOT.x + 9, (i-note.getYPos())*(int)size/8);
+            for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1)); Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2){
+                int y1 = (i - note.getYPos()) * (int) size / 8;
+                float x2 = Note.HOTSPOT.x + 8;
+                if(note.getNoteType()==NoteType.SEMIBREVE)x2+=3.4f;
+                else if(note.getNoteType()==NoteType.MINIM)x2+=0.7f;
+                g2.draw(new Line2D.Float(Note.HOTSPOT.x-8, y1, x2, y1));
+            }
+
         }
 
         //drawing accidental
         int accidental = note.getAccidental().ordinal();
         if(accidental>0){
-            if(!note.isAccidentalInParenthesis()){
-                drawAntialiasedString(g2, accidentals[accidental], -spaceBtwNoteAndAccidental-accidentalWidths[accidental], 0f);
+            if(!note.isAccidentalInParenthesis() || !accidentals[accidental].equals(accidentalParenthesis[accidental])){
+                drawSimpleAccidental(g2, note, -spaceBtwNoteAndAccidental-getAccidentalWidth(note));
             }else{
-                if(accidental==4 || accidental>6){ //drawing the parenthesis manually
-                    drawAntialiasedString(g2, beginParenthesis, -spaceBtwNoteAndAccidental-accidentalParenthesisWidths[accidental], manualParenthesisY);
-                    drawAntialiasedString(g2, accidentalParenthesis[accidental], -spaceBtwNoteAndAccidental-accidentalParenthesisWidths[accidental]+manualParenthesisX1, 0f);
-                    drawAntialiasedString(g2, endParenthesis, -spaceBtwNoteAndAccidental-manualParenthesisWidth, manualParenthesisY);
-                }else{
-                    drawAntialiasedString(g2, accidentalParenthesis[accidental], -spaceBtwNoteAndAccidental-accidentalParenthesisWidths[accidental], 0f);
-                }
+                float xPos = -spaceBtwNoteAndAccidental-getAccidentalWidth(note);
+                drawAntialiasedString(g2, beginParenthesis, xPos, manualParenthesisY);
+                xPos+=beginParenthesisWidth+spaceBtwAccidentalAndParenthesis;
+                if(note.getAccidental().getComponent(1)==1)xPos+=0.5f;
+                drawSimpleAccidental(g2, note, xPos);
+                drawAntialiasedString(g2, endParenthesis, -spaceBtwNoteAndAccidental-endParenthesisWidth, manualParenthesisY);
             }
         }
 
@@ -226,6 +229,17 @@ public class FughettaDrawer extends BaseMsDrawer{
         drawArticulation(g2, note, line);
 
         g2.setPaint(Color.black);
+    }
+
+    private void drawSimpleAccidental(Graphics2D g2, Note note, float startX) {
+        int accidental = note.getAccidental().ordinal();
+        String str = note.isAccidentalInParenthesis() ? accidentalParenthesis[accidental] : accidentals[accidental];
+        if(str.length()==1){
+            drawAntialiasedString(g2, str, startX, 0f);
+        }else{
+            drawAntialiasedString(g2, str.substring(0,1), startX, 0f);
+            drawAntialiasedString(g2, str.substring(1), startX+getAccidentalComponentWidth(note, 0)+spaceBtwTwoAccidentals, 0f);
+        }
     }
 
     private void paintSimpleNote(Graphics2D g2, Note note, boolean beamed, boolean upper) {
@@ -348,5 +362,44 @@ public class FughettaDrawer extends BaseMsDrawer{
         g2.scale(tempoChangeZoom, tempoChangeZoom);
         paintSimpleNote(g2, tempoNote, false, true);
         g2.setTransform(at);        
+    }
+
+    private static float[] baseAccidentalWidths=null;
+    private static float[] baseAccidentalParenthesisWidths=null;
+    private static float beginParenthesisWidth, endParenthesisWidth;
+
+    public static void calculateAccidentalWidths(Graphics2D g2){
+        if(baseAccidentalWidths==null){//firstcall
+            FontMetrics fm = g2.getFontMetrics(fughetta);
+            Note.Accidental[] accArray = Note.Accidental.values();
+            baseAccidentalWidths = new float[accidentals.length];
+            for(int i=0;i<baseAccidentalWidths.length;i++){
+                baseAccidentalWidths[i] = accidentals[i].length()==1 ? fm.stringWidth(accidentals[i]) : 0f;
+            }
+            for(int i=0;i<baseAccidentalWidths.length;i++){
+                if(baseAccidentalWidths[i]==0f && accidentals[i].length()==2){
+                    baseAccidentalWidths[i] = baseAccidentalWidths[accArray[i].getComponent(0)+1];
+                    baseAccidentalWidths[i]+=spaceBtwTwoAccidentals;
+                    baseAccidentalWidths[i]+= baseAccidentalWidths[accArray[i].getComponent(1)+1];
+                }
+            }
+
+            baseAccidentalParenthesisWidths = new float[accidentalParenthesis.length];
+            beginParenthesisWidth = fm.stringWidth(beginParenthesis);
+            endParenthesisWidth = fm.stringWidth(endParenthesis);
+            for(int i=0;i<baseAccidentalParenthesisWidths.length;i++){
+                baseAccidentalParenthesisWidths[i] = !accidentals[i].equals(accidentalParenthesis[i]) ? fm.stringWidth(accidentalParenthesis[i]) :
+                        baseAccidentalWidths[i]+spaceBtwAccidentalAndParenthesis+beginParenthesisWidth+endParenthesisWidth;
+            }
+        }
+    }
+
+    public static float getAccidentalWidth(Note note){
+        return note.isAccidentalInParenthesis() ? baseAccidentalParenthesisWidths[note.getAccidental().ordinal()] : baseAccidentalWidths[note.getAccidental().ordinal()];
+    }
+
+    public static float getAccidentalComponentWidth(Note note, int component){
+        if(baseAccidentalWidths==null)getAccidentalWidth(note);
+        return baseAccidentalWidths[note.getAccidental().getComponent(component)+1];
     }
 }

@@ -412,7 +412,6 @@ public class SlideFrame extends MainFrame{
     public static void main(String[] args) {
         showSplash("sssplash.png");
         PropertyConfigurator.configure("conf/logger.properties");
-        logger.info("Song Show started at "+new Date());
         openMidi();
         new SlideFrame();
         hideSplash();

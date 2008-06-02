@@ -193,7 +193,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         } catch (Exception e) {
             drawers[1] = null;
         }
-        drawer = drawers[1];
+        drawer = drawers[0];
     }
 
     public void initComponent(){
@@ -292,7 +292,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                     activeNote.setXPos(actX);
                 }else if(activeNotePoint.xIndex>0){
                     g2.setPaint(activeNoteColor);
-                    drawer.drawGlissando(g2, activeNotePoint.xIndex-1, activeNote.getYPos(), activeNotePoint.line);
+                    drawer.drawGlissando(g2, activeNotePoint.xIndex-1, new Note.Glissando(activeNote.getYPos()), activeNotePoint.line);
                 }
             }
         }else if(mode==Mode.NOTEADJUSTMENT){
@@ -976,7 +976,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         int height = composition.lineCount()*rowHeight+composition.getTopSpace()+composition.getLyricsFont().getSize()*2/3;
         if(composition.getUnderLyrics().length()!=0 || composition.getTranslatedLyrics().length()!=0){
             height+=rowHeight/2+underLyricsYPos;
-            height+=(Utilities.lineCount(composition.getUnderLyrics())+Utilities.lineCount(composition.getTranslatedLyrics())-1)*composition.getLyricsFont().getSize();
+            height+=(Utilities.lineCount(composition.getUnderLyrics())+Utilities.lineCount(composition.getTranslatedLyrics())-1)*composition.getLyricsFont().getSize()*1.5;
             if(composition.getTranslatedLyrics().length()!=0){
                 height+=composition.getLyricsFont().getSize();
             }

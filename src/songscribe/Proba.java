@@ -22,7 +22,9 @@ Created on 2005.10.18.
 package songscribe;
 
 import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.geom.*;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
@@ -36,11 +38,6 @@ import java.security.KeyManagementException;
  */
 public class Proba {
     public static void main(String[] args) throws Exception {
-        /*DAVRepositoryFactory.setup();
-        SVNUpdateClient updateClient = SVNClientManager.newInstance().getUpdateClient();
-        updateClient.setIgnoreExternals(false);
-        updateClient.setEventHandler(new UpdateEventHandler());        
-        updateClient.doUpdate(new File("/home/csaba/IdeaProjects/SongScribeTest"), SVNRevision.HEAD, true);*/
 
         /*Calendar c = Calendar.getInstance();
         c.set(2007, 11, 31, 23, 59, 59);
@@ -53,13 +50,11 @@ public class Proba {
         frame.pack();
         frame.setVisible(true);*/
 
-        /*JFrame frame = new JFrame();
+        JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JTextArea area = new JTextArea(50, 10);
-        frame.getContentPane().add(new JScrollPane(area));
-        for(int i=0x0500;i<0x1000;i++){
-            area.append(Integer.toHexString(i)+" "+new Character((char)i)+"\n");
-        }
+        MyComponent comp = new MyComponent();
+        frame.add(comp);
+        frame.addKeyListener(comp);
         frame.pack();
         frame.setVisible(true);
 
@@ -89,10 +84,10 @@ public class Proba {
     private static final String[] accidentalParenthesis = {"\uf028\uf06e\uf06e\uf029", "\uf028\uf06e\uf062\uf029", "\uf028\uf06e\uf023\uf029"};
 
     private static class MyComponent extends JComponent implements KeyListener{
-        int s = 512;
+        int s = 32;
 
         final Font maestro = new Font("Maestro", 0, s);
-        final Font fughetta = new Font("Fughetta", 0, s);
+        Font fughetta;
         final Font toccata = new Font("Toccata", 0, s);
 
         int s8 = (int)Math.ceil(s/8.0);
@@ -104,6 +99,11 @@ public class Proba {
 
         public MyComponent() {
             setPreferredSize(new Dimension(600, 600));
+            try {
+                fughetta = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/fughetta.ttf")).deriveFont(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         protected void paintComponent(Graphics g) {
@@ -119,7 +119,9 @@ public class Proba {
             }
             g2.setStroke(new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
             g2.draw(new Line2D.Float(x+s/3.6056337f, 0, x+s/3.6056337f, 500));
-            g2.drawString("\uf06a", xv, y);
+            String s1 = accidentals[5];
+            g2.drawString(s1, xv, yv);
+            g2.drawRect(xv, yv-s, g2.getFontMetrics().stringWidth(s1), s);
         }
 
         public void keyTyped(KeyEvent e) {

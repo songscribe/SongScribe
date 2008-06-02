@@ -37,7 +37,9 @@ public class NoteXPosAdjustment extends Adjustment{
         ONENOTE(Color.white,  -1),
         WHOLENOTE(Color.blue, -4),
         STRETCH(Color.yellow, -4),
-        FIRSTXPOS(Color.green, -2);
+        FIRSTXPOS(Color.green, -2),
+        GLISSANDOX1(Color.magenta, -2),
+        GLISSANDOX2(Color.magenta, -2);
 
         private Color color;
         private int yPos;
@@ -108,6 +110,12 @@ public class NoteXPosAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.FIRSTXPOS){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.width, draggingRect.rectangle.y);
                 downRightDragBounds.setLocation(draggingRect.rectangle.x-draggingRect.rectangle.width+musicSheet.getComposition().getLineWidth()-line.getNote(line.noteCount()-1).getXPos(), draggingRect.rectangle.y);
+            }else if(draggingRect.adjustType==AdjustType.GLISSANDOX1){
+                upLeftDragBounds.setLocation(line.getNote(draggingRect.xIndex).getXPos(), draggingRect.rectangle.y);
+                downRightDragBounds.setLocation(adjustRects.get(adjustRects.indexOf(draggingRect)+1).rectangle.x, draggingRect.rectangle.y);
+            }else if(draggingRect.adjustType==AdjustType.GLISSANDOX2){
+                upLeftDragBounds.setLocation(adjustRects.get(adjustRects.indexOf(draggingRect)-1).rectangle.x+draggingRect.rectangle.width, draggingRect.rectangle.y);
+                downRightDragBounds.setLocation(musicSheet.getComposition().getLineWidth(), draggingRect.rectangle.y);
             }
         }
     }
@@ -146,6 +154,11 @@ public class NoteXPosAdjustment extends Adjustment{
                     }
                 }
             }
+        }else if(draggingRect.adjustType==AdjustType.GLISSANDOX1){
+            note.getGlissando().x1Translate+=endPoint.x-diffX;
+
+        }else if(draggingRect.adjustType==AdjustType.GLISSANDOX2){
+            note.getGlissando().x2Translate-=endPoint.x-diffX;
         }
         musicSheet.getComposition().modifiedComposition();
         revalidateRects();
@@ -172,14 +185,27 @@ public class NoteXPosAdjustment extends Adjustment{
             Composition c = musicSheet.getComposition();
             for(int l=0;l<c.lineCount();l++){
                 Line line = c.getLine(l);
+                //adding ONENOTE and WHOLENOTE
                 for(int n=1;n<line.noteCount();n++){
                     adjustRects.add(new AdjustRect(l, n, AdjustType.ONENOTE));
                     if(n!=line.noteCount()-1){
                         adjustRects.add(new AdjustRect(l, n, AdjustType.WHOLENOTE));
                     }
                 }
+
+                //adding GLISSANDO
+                for(int n=0;n<line.noteCount();n++){
+                    if(line.getNote(n).getGlissando()!=Note.NOGLISSANDO){
+                        adjustRects.add(new AdjustRect(l, n, AdjustType.GLISSANDOX1));
+                        adjustRects.add(new AdjustRect(l, n, AdjustType.GLISSANDOX2));
+                    }
+                }
+
+                //adding STRETCH
                 if(line.noteCount()>0)adjustRects.add(new AdjustRect(l, line.noteCount()-1, AdjustType.STRETCH));
             }
+
+            //adding FIRSTNOTE
             if(c.getLine(0).noteCount()>0)adjustRects.add(new AdjustRect(0, 0, AdjustType.FIRSTXPOS));
         }else{
             adjustRects.clear();
@@ -187,7 +213,16 @@ public class NoteXPosAdjustment extends Adjustment{
     }
 
     private void getRectangle(AdjustRect ar){
-        ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()+1;
+        switch(ar.adjustType){
+            case GLISSANDOX1:
+                ar.rectangle.x = musicSheet.getDrawer().getGlissandoX1Pos(ar.xIndex, musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getGlissando(), ar.line)-4;
+                break;
+            case GLISSANDOX2:
+                ar.rectangle.x = musicSheet.getDrawer().getGlissandoX2Pos(ar.xIndex, musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getGlissando(), ar.line)-4;
+                break;
+            default:
+                ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()+1;
+        }
         ar.rectangle.y = musicSheet.getNoteYPos(ar.adjustType.getyPos(), ar.line)-Note.HOTSPOT.y;
         ar.rectangle.width = ar.rectangle.height = 8;
     }
