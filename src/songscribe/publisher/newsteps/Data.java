@@ -22,6 +22,7 @@ Created on Aug 4, 2006
 package songscribe.publisher.newsteps;
 
 import songscribe.publisher.Publisher;
+import songscribe.ui.MainFrame;
 
 import java.io.File;
 import java.util.Vector;
@@ -29,10 +30,10 @@ import java.util.Vector;
 /**
  * @author Csaba Kávai
  */
-class Data {
-    Vector<File> files;
-    int paperWidth, paperHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin;
-    boolean mirrored;
-    int songsPerPage = 2;
-    Publisher publisher;
+public class Data {
+    public Vector<File> files;
+    public int paperWidth, paperHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin;
+    public boolean mirrored;
+    public int songsPerPage = 2;
+    public MainFrame mainFrame;
 }

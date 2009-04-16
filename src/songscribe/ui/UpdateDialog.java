@@ -290,6 +290,7 @@ public class UpdateDialog extends MyDialog{
 
         public UpdateProcessDialog(MainFrame mainFrame, int total) throws HeadlessException {
             super(mainFrame, "Update progress", total);
+            setModal(false);
 
             JPanel south = new JPanel(new BorderLayout());
 

@@ -48,7 +48,7 @@ class LayoutStep extends Step{
         layoutCombo.addActionListener(new LayoutComboAction());
         layoutCombo.setAlignmentX(0f);
         mainPanel.add(layoutCombo);
-        layoutCombo.setSelectedIndex(1);
+        layoutCombo.setSelectedIndex(4);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
         add(mainPanel);

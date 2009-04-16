@@ -26,9 +26,12 @@ import songscribe.data.PlatformFileDialog;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.Utilities;
+import songscribe.ui.ExportPDFDialog;
+import songscribe.publisher.newsteps.Data;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,11 +51,13 @@ public class ExportPDFAction extends AbstractAction{
     private static Logger logger = Logger.getLogger(ExportPDFAction.class);
     private PlatformFileDialog pfd;
     private MainFrame mainFrame;
+    private ExportPDFDialog exportPDFDialog;
 
     public ExportPDFAction(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         putValue(Action.NAME, "Export as PDF...");
         putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("pdf.png")));
+        putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         pfd = new PlatformFileDialog(mainFrame, "Export as PDF", false, new MyAcceptFilter("Portable Document Format", "pdf"));
     }
 
@@ -70,16 +75,29 @@ public class ExportPDFAction extends AbstractAction{
                     return;
                 }
             }
-            Document document = new Document(PageSize.A4);
+
+            if(exportPDFDialog==null){
+                exportPDFDialog = new ExportPDFDialog(mainFrame);
+            }
+            exportPDFDialog.setVisible(true);
+            Data data = exportPDFDialog.getPaperSizeData();
+            if(data==null)return;
+
+            float msres = 72f/ MusicSheet.RESOLUTION;
+            float paperWidth = data.paperWidth * msres;
+            float paperHeight = data.paperHeight * msres;
+            Document document = new Document(new com.lowagie.text.Rectangle(0, 0, paperWidth, paperHeight), 0, 0, 0, 0);
             document.addCreator(mainFrame.PROGNAME);
             document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
-            double resolution = 72d/MusicSheet.RESOLUTION;
+            int sheetWidth = mainFrame.getMusicSheet().getSheetWidth();
+            int sheetHeight = mainFrame.getMusicSheet().getSheetHeight();
+            double resolution = Math.min((double)msres, Math.min((double)(paperWidth-(data.leftInnerMargin+data.rightOuterMargin)*msres)/sheetWidth, (double)(paperHeight-(data.topMargin+data.bottomMargin)*msres)/sheetHeight));
             try {
                 PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(saveFile));
                 document.open();
                 PdfContentByte cb = writer.getDirectContent();
-                Graphics2D g2 = cb.createGraphicsShapes(PageSize.A4.width(), PageSize.A4.height());
-                g2.translate(50*resolution, 50*resolution);
+                Graphics2D g2 = cb.createGraphicsShapes(paperWidth, paperHeight);
+                g2.translate(data.leftInnerMargin*msres, data.topMargin*msres);
                 mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, resolution);
                 g2.dispose();
                 document.close();

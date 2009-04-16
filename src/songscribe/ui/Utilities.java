@@ -35,7 +35,12 @@ public class Utilities {
     private static Logger logger = Logger.getLogger(Utilities.class);
     public static String getSongTitleFileNameForFileChooser(MusicSheet musicSheet){
         StringBuilder sb = new StringBuilder(musicSheet.getComposition().getSongTitle().length()+10);
-        sb.append(musicSheet.getComposition().getNumber());
+        try{
+            int number = Integer.parseInt(musicSheet.getComposition().getNumber());
+            sb.append(String.format("%03d", number));
+        }catch(NumberFormatException nfe){
+            sb.append(musicSheet.getComposition().getNumber());
+        }
         if(musicSheet.getComposition().getNumber().length()>0)sb.append(' ');
         outer:
         for(char c : musicSheet.getComposition().getSongTitle().toCharArray()){

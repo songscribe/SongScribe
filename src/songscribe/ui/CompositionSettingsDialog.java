@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 public class CompositionSettingsDialog extends MyDialog{
     private static Logger logger = Logger.getLogger(CompositionSettingsDialog.class);
     JTextField numberField = new JTextField(3);
-    JTextField titleField = new JTextField(25);
+    JTextArea titleField = new JTextArea(2, 25);
     SpinnerModel takeFirstWordsSpinner = new SpinnerNumberModel(4, 1, 10, 1);
     JTextField placeField = new JTextField(10);
     JComboBox monthCombo = new JComboBox(new String[]{"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
@@ -88,7 +88,8 @@ public class CompositionSettingsDialog extends MyDialog{
         titlePanel.add(Box.createRigidArea(small));
         MyDialog.addLabelToBox(titlePanel, "Title:", 2);
         titleField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        titlePanel.add(titleField);
+        titleField.setFont(numberField.getFont());
+        titlePanel.add(new JScrollPane(titleField));
         tempPanel = new JPanel();
         tempPanel.add(new JLabel("Take the first"));
         tempPanel.add(new JSpinner(takeFirstWordsSpinner));
@@ -121,7 +122,7 @@ public class CompositionSettingsDialog extends MyDialog{
         //information on right side
         JPanel informationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         informationPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Information on right side"));
-        rightInfoArea.setFont(titleField.getFont());
+        rightInfoArea.setFont(numberField.getFont());
         informationPanel.add(new JScrollPane(rightInfoArea));
         JPanel addPlaceAndOrDatePanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

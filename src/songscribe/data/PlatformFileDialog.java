@@ -29,13 +29,17 @@ import javax.swing.plaf.basic.BasicFileChooserUI;
 import java.awt.*;
 import java.io.File;
 
+import com.jtechlabs.ui.widget.directorychooser.JDirectoryChooser;
+import com.jtechlabs.ui.widget.directorychooser.DirectoryChooserDefaults;
+
 /**
  * @author Csaba Kávai
  */
 public class PlatformFileDialog {
     private JFileChooser jfc;
-    private MainFrame mainFrame;
     private FileDialog fd;
+    private File selectedDirectory;
+    private MainFrame mainFrame;
     private boolean isOpen;
     private boolean directoriesOnly;
     private MyAcceptFilter[] mafs;
@@ -71,8 +75,13 @@ public class PlatformFileDialog {
         if(Utilities.isMac()){
             fd = new FileDialog(mainFrame, title, isOpen ? FileDialog.LOAD : FileDialog.SAVE);
         }else{
-            jfc = new JFileChooser();
-            jfc.setDialogTitle(title);
+            if(!directoriesOnly){
+                jfc = new JFileChooser();
+                jfc.setDialogTitle(title);
+            }else{
+                DirectoryChooserDefaults.putOption(DirectoryChooserDefaults.PROP_DIALOG_TEXT, title);
+                DirectoryChooserDefaults.putOption(DirectoryChooserDefaults.PROP_ACCESS, JDirectoryChooser.ACCESS_NEW|JDirectoryChooser.ACCESS_RENAME);
+            }
         }
     }
 
@@ -80,7 +89,7 @@ public class PlatformFileDialog {
         if(Utilities.isMac()){
             fd.setFilenameFilter(maf);
         }else{
-            jfc.setFileFilter(maf);
+            if(!directoriesOnly) jfc.setFileFilter(maf);
         }
     }
 
@@ -105,9 +114,14 @@ public class PlatformFileDialog {
             if(directoriesOnly)System.setProperty("apple.awt.fileDialogForDirectories", "false");
             return fd.getFile()!=null;
         }else{
-            jfc.setCurrentDirectory(mainFrame.getPreviousDirectory());
-            if(directoriesOnly)jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            return (isOpen ? jfc.showOpenDialog(mainFrame) : jfc.showSaveDialog(mainFrame))==JFileChooser.APPROVE_OPTION;
+            if(!directoriesOnly){
+                jfc.setCurrentDirectory(mainFrame.getPreviousDirectory());
+                return (isOpen ? jfc.showOpenDialog(mainFrame) : jfc.showSaveDialog(mainFrame))==JFileChooser.APPROVE_OPTION;
+            }else{
+                DirectoryChooserDefaults.putOption(DirectoryChooserDefaults.PROP_INITIAL_DIRECTORY, mainFrame.getPreviousDirectory());   
+                selectedDirectory = JDirectoryChooser.showDialog(mainFrame);
+                return selectedDirectory!=null;
+            }
         }
     }
 
@@ -116,7 +130,7 @@ public class PlatformFileDialog {
         if(Utilities.isMac()){
             file = !directoriesOnly ? new File(fd.getDirectory(), fd.getFile()) : new File(fd.getDirectory());
         }else{
-            file =  jfc.getSelectedFile();
+            file = !directoriesOnly ? jfc.getSelectedFile() : selectedDirectory;
         }
         mainFrame.setPreviousDirectory(!directoriesOnly ? file.getParentFile() : file);
         return file;
@@ -126,6 +140,7 @@ public class PlatformFileDialog {
         if(Utilities.isMac()){
             return new File[]{getFile()};
         }else{
+            if(directoriesOnly)return new File[]{getFile()};
             File[] files = jfc.getSelectedFiles();
             mainFrame.setPreviousDirectory(!directoriesOnly ? files[0].getParentFile() : files[0]);
             return files;
@@ -136,13 +151,15 @@ public class PlatformFileDialog {
         if(Utilities.isMac()) {
             fd.setFile(file);
         }else{
-            if(jfc.getUI() instanceof BasicFileChooserUI){
-                ((BasicFileChooserUI)jfc.getUI()).setFileName(file);
+            if(!directoriesOnly){
+                if(jfc.getUI() instanceof BasicFileChooserUI){
+                    ((BasicFileChooserUI)jfc.getUI()).setFileName(file);
+                }
             }
         }
     }
 
     public void setMultiSelectionEnabled(boolean enabled){
-        if(!Utilities.isMac())jfc.setMultiSelectionEnabled(enabled);
+        if(!Utilities.isMac() && !directoriesOnly)jfc.setMultiSelectionEnabled(enabled);
     }
 }

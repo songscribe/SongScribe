@@ -32,6 +32,7 @@ import java.awt.image.BufferedImage;
 import songscribe.music.Line;
 import songscribe.music.NoteType;
 import songscribe.ui.playsubmenu.PlaybackListener;
+import songscribe.data.MyBorder;
 
 /**
  * @author Csaba Kávai
@@ -52,7 +53,8 @@ public class FullScreenSheet extends JFrame implements MetaEventListener, Playba
         this.mainFrame = mainFrame;
         setUndecorated(true);
         getContentPane().add(BorderLayout.CENTER, musicSheetComponent);
-        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
+        Rectangle rec = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+        setBounds(rec.x, rec.y, rec.width, rec.height);
         init(sliderChangeListener, actions);
         setMusicSheet();
         if(MainFrame.sequencer!=null){
@@ -127,7 +129,9 @@ public class FullScreenSheet extends JFrame implements MetaEventListener, Playba
         if(zoomedImage==null || zoomedImage.getWidth()<getWidth() || zoomedImage.getHeight()<getHeight()){
             zoomedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         }
-        musicSheetComponent.translate = musicSheet.createMusicSheetImageForExport(zoomedImage, getBackground(), zoom);
+        MyBorder border = new MyBorder((int)(zoomedImage.getWidth()-musicSheet.getSheetWidth()*zoom)/2, (int)(zoomedImage.getHeight()-musicSheet.getSheetHeight()*zoom)/2);
+        musicSheetComponent.translate = new Point(border.getLeft(), border.getTop());
+        musicSheet.createMusicSheetImageForExport(zoomedImage, getBackground(), zoom, border);
         musicSheetComponent.setPreferredSize(new Dimension(zoomedImage.getWidth(), zoomedImage.getHeight()));
         repaint();
     }
@@ -205,7 +209,6 @@ public class FullScreenSheet extends JFrame implements MetaEventListener, Playba
                 MainFrame.sequencer.addMetaEventListener(mainFrame.getMusicSheet());
             }
             FullScreenSheet.this.setVisible(false);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);
             mainFrame.getPlayMenu().removePlaybackListener(FullScreenSheet.this);
         }
     }

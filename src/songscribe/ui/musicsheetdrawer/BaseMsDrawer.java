@@ -87,20 +87,21 @@ public abstract class BaseMsDrawer {
         FughettaDrawer.calculateAccidentalWidths(g2);
         Composition composition = ms.getComposition();
         if(scale!=1d) g2.scale(scale, scale);
-        if(!drawEditingComponents)g2.translate(0, -ms.getStartY());        
+        if(!drawEditingComponents)g2.translate(0, -ms.getStartY());
         //drawing the title
         g2.setPaint(Color.black);
         if(composition.getSongTitle().length()>0){
             g2.setFont(composition.getSongTitleFont());
-            StringBuilder title = new StringBuilder(composition.getSongTitle().length()+10);
-            if(composition.getNumber().length()>0){
-                title.append(composition.getNumber());
-                title.append(". ");
+            int i=0;
+            for(String titleLine:composition.getSongTitle().split("\n")){
+                if(i==0 && composition.getNumber().length()>0){
+                    titleLine = composition.getNumber()+". "+titleLine;
+                }
+
+                int titleWidth = g2.getFontMetrics().stringWidth(titleLine);
+                drawAntialiasedString(g2, titleLine, (composition.getLineWidth()-titleWidth)/2, (i+1)*composition.getSongTitleFont().getSize());
+                i++;
             }
-            title.append(composition.getSongTitle());
-            String titleString = title.toString();
-            int titleWidth = g2.getFontMetrics().stringWidth(titleString);
-            drawAntialiasedString(g2, titleString, (composition.getLineWidth()-titleWidth)/2, composition.getSongTitleFont().getSize());
         }
 
         //drawing the rightInfo
@@ -109,8 +110,8 @@ public abstract class BaseMsDrawer {
             drawTextBox(g2, composition.getRightInfo(), composition.getRightInfoStartY()+composition.getGeneralFont().getSize(), Component.RIGHT_ALIGNMENT, -20);
         }
 
-        g2.setFont(composition.getLyricsFont());
         //drawing the under lyrics and the translated lyrics
+        g2.setFont(composition.getLyricsFont());
         if(composition.getUnderLyrics().length()>0){
             drawTextBox(g2, composition.getUnderLyrics(), ms.getUnderLyricsYPos(), Component.CENTER_ALIGNMENT, 0);
         }
@@ -200,7 +201,7 @@ public abstract class BaseMsDrawer {
                 if(lyricsDrawn<=n && (note.a.syllableRelation!=Note.SyllableRelation.NO || n==0 && line.beginRelation!=Note.SyllableRelation.NO)){
                     Note.SyllableRelation relation = note.a.syllableRelation!=Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
                     int c;
-                    if(relation==Note.SyllableRelation.DASH){
+                    if(relation==Note.SyllableRelation.DASH || relation==Note.SyllableRelation.ONEDASH){
                         for(c=n+1;c<line.noteCount() && line.getNote(c).a.syllable==Constants.UNDERSCORE;c++);
                     }else{
                         for(c=n;c<line.noteCount() && line.getNote(c).a.syllableRelation==relation;c++);
@@ -209,7 +210,7 @@ public abstract class BaseMsDrawer {
                     int startX = n==0 && line.beginRelation!=Note.SyllableRelation.NO ? note.getXPos()-10 : note.getXPos()+Note.HOTSPOT.x+syllableWidth/2+note.getSyllableMovement()+2;
                     int endX;
                     if(c==line.noteCount() || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO){
-                        endX = composition.getLineWidth();
+                        endX = relation==Note.SyllableRelation.ONEDASH ? startX+(int)(longDashWidth*2f) : composition.getLineWidth();
                     }else{
                         endX = relation==Note.SyllableRelation.EXTENDER ? line.getNote(c).getXPos()+12 :
                                 line.getNote(c).getXPos()+Note.HOTSPOT.x-g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable)/2+line.getNote(c).getSyllableMovement()-2;
@@ -358,11 +359,11 @@ public abstract class BaseMsDrawer {
                         break;
                     }
                 }
-                if(repeatRightPos!=iv.getA()){
-                    drawEndings(g2, l, line.getNote(iv.getA()).getXPos(), repeatRightPos!=-1 ? line.getNote(repeatRightPos).getXPos() : line.getNote(iv.getB()).getXPos()+2*(int)crotchetWidth, "1.");
+                if(iv.getA()<repeatRightPos || repeatRightPos==-1){
+                    drawEndings(g2, l, line.getNote(iv.getA()).getXPos(), (repeatRightPos!=-1 ? line.getNote(repeatRightPos-1).getXPos() : line.getNote(iv.getB()).getXPos())+2*(int)crotchetWidth, "1.");
                 }
                 if(iv.getB()>repeatRightPos && repeatRightPos!=-1){
-                    drawEndings(g2, l, line.getNote(repeatRightPos).getXPos()+10, line.getNote(iv.getB()).getXPos()+2*(int)crotchetWidth, "2.");
+                    drawEndings(g2, l, line.getNote(repeatRightPos+1).getXPos(), line.getNote(iv.getB()).getXPos()+2*(int)crotchetWidth, "2.");
                 }
             }
         }
@@ -415,13 +416,21 @@ public abstract class BaseMsDrawer {
         }
     }
 
-    private boolean isNoteTypeInLevel(NoteType nt, int level){
-        for(int i=0;i<BEAMLEVELS.length;i++){
-            if(BEAMLEVELS[i]==nt){
-                return i<=level;
+    private boolean isNoteTypeInLevel(Line line, int noteIndex, int level){
+        NoteType nt = line.getNote(noteIndex).getNoteType();
+        if(nt!=NoteType.GRACEQUAVER){
+            for(int i=0;i<BEAMLEVELS.length;i++){
+                if(BEAMLEVELS[i]==nt){
+                    return i<=level;
+                }
             }
+            return false;
+        }else{
+            int begin=noteIndex-1, end=noteIndex+1;
+            while(begin>0 && line.getNote(begin).getNoteType()==NoteType.GRACEQUAVER)begin--;
+            while(end<line.noteCount() && line.getNote(end).getNoteType()==NoteType.GRACEQUAVER)end++;
+            return begin>=0 && isNoteTypeInLevel(line, begin, level) && end<line.noteCount() && isNoteTypeInLevel(line, end, level); 
         }
-        return nt==NoteType.GRACEQUAVER;
     }
 
     private void drawBeaming(int level, int begin, int end, Line line, Line2D.Float beamLine, Graphics2D g2, int prevBegin, int prevEnd, boolean isPrevLeft){
@@ -466,7 +475,7 @@ public abstract class BaseMsDrawer {
         Line2D.Float subBeamLine = new Line2D.Float(beamLine.x1, beamLine.y1+trans, beamLine.x2, beamLine.y2+trans);
         int startSubBeam = -1;
         for(int i=begin;i<=end+1;i++){
-            if(i<=end && isNoteTypeInLevel(line.getNote(i).getNoteType(), level-1)){
+            if(i<=end && isNoteTypeInLevel(line, i, level-1)){
                 if(startSubBeam==-1){
                     startSubBeam = i;
                 }
@@ -544,8 +553,9 @@ public abstract class BaseMsDrawer {
         Note n = l.getNote(note);
         int yPos = ms.getMiddleLine()+l.getTempoChangeYPos()+line*ms.getRowHeight();
         StringBuilder tempoBuilder = new StringBuilder(25);
+        Note tempoTypeNote = tempo.getTempoType().getNote();
         if(tempo.isShowTempo()){
-            drawTempoChangeNote(g2, tempo.getTempoType().getNote(), n.getXPos(), yPos);            
+            drawTempoChangeNote(g2, tempoTypeNote, n.getXPos(), yPos);
             tempoBuilder.append("= ");
             tempoBuilder.append(tempo.getVisibleTempo());
             tempoBuilder.append(' ');
@@ -553,7 +563,7 @@ public abstract class BaseMsDrawer {
         tempoBuilder.append(tempo.getTempoDescription());
         g2.setFont(ms.getComposition().getGeneralFont());
         drawAntialiasedString(g2, tempoBuilder.toString(),
-                n.getXPos()+(tempo.isShowTempo()?crotchetWidth+5+tempo.getTempoType().getNote().getDotted()*6:0),
+                n.getXPos()+(tempo.isShowTempo()?crotchetWidth+5+(tempoTypeNote.getDotted()==1 || tempoTypeNote.getNoteType()==NoteType.QUAVER ? 6 : 0) : 0),
                         yPos);        
     }
 

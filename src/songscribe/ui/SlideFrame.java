@@ -34,7 +34,6 @@ import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
 import java.util.Vector;
-import java.util.Date;
 
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;

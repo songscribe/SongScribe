@@ -78,6 +78,7 @@ public final class Composition{
     private boolean userSetTopSpace;
 
     private MainFrame mainFrame;
+    private static final double LOG2 = Math.log(2);
 
     public Composition(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -260,7 +261,7 @@ public final class Composition{
             Interval interval = line.getTies().findInterval(n);
             if(interval==null || interval.getA()==n){
                 ShortMessage down = new ShortMessage();
-                down.setMessage(0x90, pitch, VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
+                 down.setMessage(0x90, pitch, VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
                 track.add(new MidiEvent(down, ticks));
                 //System.out.print("Pitch: " +note.getPitch()+"    Duration: "+ticks);
             }
@@ -268,11 +269,15 @@ public final class Composition{
                 ShortMessage up = new ShortMessage();
                 up.setMessage(0x80, pitch, VELOCITY[note.getForceArticulation()==ForceArticulation.ACCENT ? 1 : 0]);
                 int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
-                track.add(new MidiEvent(up, (int)(ticks+note.getDuration()*currDuration/100f)));
+                track.add(new MidiEvent(up, (int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)));
                 //System.out.println("-" +(ticks+note.getDuration()*durationShortitude)+", "+note.getPitch());
             }
         }
-        return ticks+note.getDuration();
+        return ticks+getNoteDurationWithTuplet(line, note, n);
+    }
+
+    private int getNoteDurationWithTuplet(Line line, Note note, int n){
+        return Math.round(note.getDuration()*getTupletFactor(line, n));
     }
 
     private MetaMessage getMidiTempoMessage(int realTempo) throws InvalidMidiDataException {
@@ -280,6 +285,42 @@ public final class Composition{
         int midiTempo = 60000000/(realTempo*manualTempoChange/100);
         tempoMessage.setMessage(0x51, new byte[]{(byte)(midiTempo>>16), (byte)(midiTempo>>8), (byte) midiTempo}, 3);
         return tempoMessage;
+    }
+
+    public Tempo getLastTempo(Line line, int noteIndex){
+        //finding the last tempochange
+        boolean lastLine = true;
+        for(int lineIndex = lines.indexOf(line);lineIndex>=0;lineIndex--){
+            Line currentLine = lines.get(lineIndex);
+            for(int n = lastLine?noteIndex:currentLine.noteCount()-1;n>=0;n--){
+                if(currentLine.getNote(n).getTempoChange()!=null)return currentLine.getNote(n).getTempoChange();
+            }
+            lastLine = false;
+        }
+        return getTempo();
+    }
+
+    private float getTupletFactor(Line line, int noteIndex){
+        Interval tupletInt = line.getTuplets().findInterval(noteIndex);
+        if(tupletInt!=null){
+            Tempo lastTempo = getLastTempo(line, noteIndex);
+            float duration = 0f;
+            for (int i = tupletInt.getA();i<=tupletInt.getB();i++){
+               duration += line.getNote(i).getDuration();
+            }
+            duration/=lastTempo.getTempoType().getNote().getDuration();
+            float newDuration;
+            if(duration>=1){
+                newDuration = (float) Math.floor(duration);
+                if(newDuration==duration && newDuration>1)newDuration--;
+            }else{
+                newDuration = (float)Math.pow(2, Math.floor(Math.log(duration)/ LOG2));
+            }
+            
+            return newDuration / duration;
+        }else{
+            return 1;
+        }
     }
 
     public String getSongTitle() {

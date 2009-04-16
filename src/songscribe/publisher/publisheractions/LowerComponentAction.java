@@ -35,7 +35,7 @@ public class LowerComponentAction extends AbstractAction{
 
     public LowerComponentAction(Publisher publisher) {
         this.publisher = publisher;
-        putValue(Action.NAME, "Lower Component");
+        putValue(Action.NAME, "Move down");
         putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("1downarrow.png")));
     }
 

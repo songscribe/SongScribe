@@ -53,7 +53,8 @@ public class NewDialog extends JDialog{
 
     public NewDialog(Publisher publisher) {
         super(publisher, "New document");
-        this.publisher = data.publisher = publisher;
+        this.publisher = publisher;
+        data.mainFrame = publisher;
         steps = new Step[]{new InfoStep(data), new SongSelectStep(data), new PaperSizeStep(data), new LayoutStep(data)};
         setLayout(new BorderLayout());
         JPanel northCenter = new JPanel();
@@ -115,22 +116,23 @@ public class NewDialog extends JDialog{
     }
 
     private class GenerateAction extends AbstractAction implements Runnable{
+        private ProcessDialog processDialog;
         public GenerateAction() {
             putValue(Action.NAME, "Generate");
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("apply.png")));
         }
 
         public void actionPerformed(ActionEvent e) {
+            processDialog = new ProcessDialog(NewDialog.this, "Creating the document...", steps.length*2);
+            processDialog.packAndPos();
             new Thread(this).start();
+            processDialog.setVisible(true);
         }
 
         public void run() {
             steps[currentStep].end();
             Book book = new Book(publisher, data.paperWidth, data.paperHeight, data.leftInnerMargin, data.rightOuterMargin, data.topMargin, data.bottomMargin, data.mirrored);
             Page page = book.addPage();
-            ProcessDialog processDialog = new ProcessDialog(NewDialog.this, "Creating the document...", steps.length*2);
-            processDialog.packAndPos();
-            processDialog.setVisible(true);
             int drawableWidth = data.paperWidth-data.leftInnerMargin-data.rightOuterMargin;
             int drawableHeight = data.paperHeight-data.topMargin-data.bottomMargin;
             int currentHeight = 0;

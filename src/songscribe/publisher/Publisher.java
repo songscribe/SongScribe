@@ -39,7 +39,6 @@ import org.xml.sax.SAXException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.*;
-import java.util.Date;
 import java.io.File;
 import java.io.IOException;
 
@@ -151,6 +150,8 @@ public class Publisher extends MainFrame {
         //tools menu
         JMenu toolsMenu = new JMenu("Tools");
         toolsMenu.add(new DialogOpenAction(this, "Page number ...", blankIcon, PageNumberDialog.class));
+        toolsMenu.add(new ExportBatchSongsImages(this));
+        toolsMenu.add(new ExportBatchSongsMidi(this));
         menuBar.add(toolsMenu);
 
         //help menu
@@ -232,6 +233,7 @@ public class Publisher extends MainFrame {
     public static void main(String[] args) {
         showSplash("sbsplash.png");
         PropertyConfigurator.configure("conf/logger.properties");
+        openMidi();
         new Publisher();
         hideSplash();
     }

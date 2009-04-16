@@ -30,7 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 
 /**
- * @author Csaba Kávai
+ * @author Csaba KÃ¡vai
  */
 public class AlignToCenter extends AbstractAction {
     private Publisher publisher;

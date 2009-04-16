@@ -35,8 +35,8 @@ public class NotesMenu extends JMenu implements ActionListener {
     public NotesMenu(MainFrame mainFrame) {
         super("Notes");
         this.mainFrame = mainFrame;
-        String[] images = {"beam_menu.gif", "unbeam_menu.gif", "triplet_menu.gif", "untriplet_menu.gif", "tie_menu.gif", "untie_menu.gif", "fsending_menu.gif", "unfsending_menu.gif", "blank.png", "blank.png"};
-        String[] names = {"Beam", "Unbeam", "Triplet", "Untuplet", "Tie", "Untie", "First-second ending", "Remove first-second ending", "Trill", "Remove trill"};
+        String[] images = {"beam_menu.gif", "unbeam_menu.gif", "triplet_menu.gif", "untriplet_menu.gif", "tie_menu.gif", "untie_menu.gif", "fsending_menu.gif", "unfsending_menu.gif", "trill_menu.gif", "blank.png", "upsidedown.gif"};
+        String[] names = {"Beam", "Unbeam", "Triplet", "Untuplet", "Tie", "Untie", "First-second ending", "Remove first-second ending", "Trill", "Remove Trill", "Invert Stem Direction"};
         String[] tuplets = {"Duplet (2)", "Quadruplet (4)", "Quintuplet (5)", "Sextuplet (6)", "Septuplet (7)"};
         int[] tupletValues = new int[]{2, 4, 5, 6, 7};
         buttons = new JMenuItem[names.length];
@@ -82,6 +82,8 @@ public class NotesMenu extends JMenu implements ActionListener {
             musicSheet.makeTrillOnSelectedNotes(true);
         }else if(e.getSource()==buttons[9]){
             musicSheet.makeTrillOnSelectedNotes(false);
+        }else if(e.getSource()==buttons[10]){
+            musicSheet.invertStemDirectionOnSelectedNotes();
         }
     }
 

@@ -241,6 +241,7 @@ public class AnnotationDialog extends MyDialog{
         if(!oldVerticalButton.isSelected()){
             if(aboveButton.isSelected())selectedNote.getAnnotation().setyPos(Annotation.ABOVE);
             else selectedNote.getAnnotation().setyPos(Annotation.BELOW);
+            oldVerticalButton = selectedNote.getAnnotation().getyPos()<0 ? aboveButton : belowButton;
         }
         mainFrame.modifiedDocument();
     }

@@ -40,25 +40,28 @@ public class PaperSizeDialog extends MyDialog {
 
     public PaperSizeDialog(MainFrame publisher) {
         super(publisher, "Paper size");
+        assert publisher instanceof Publisher;
         paperSizeData = new Data();
-        paperSizeData.publisher = (Publisher)publisher;
+        paperSizeData.mainFrame = publisher;
         paperSizePanel = new PaperSizeStep(paperSizeData);
         dialogPanel.add(BorderLayout.CENTER, paperSizePanel);
         dialogPanel.add(BorderLayout.SOUTH, southPanel);
     }
 
     protected void getData() throws DoNotShowException{
-        if(paperSizeData.publisher.isBookNull())throw new DoNotShowException();
-        Book book = paperSizeData.publisher.getBook();
+        Publisher publisher = (Publisher)mainFrame;
+        if(publisher.isBookNull())throw new DoNotShowException();
+        Book book = publisher.getBook();
         paperSizePanel.setValues(book.getPageSize().width, book.getPageSize().height, book.getLeftInnerMargin(),
                 book.getRightOuterMargin(), book.getTopMargin(), book.getBottomMargin(), book.isMirroredMargin());
     }
 
     protected void setData() {
+        Publisher publisher = (Publisher)mainFrame;
         paperSizePanel.end();
-        paperSizeData.publisher.getBook().setPageSize(paperSizeData.paperWidth, paperSizeData.paperHeight, paperSizeData.leftInnerMargin,
+        publisher.getBook().setPageSize(paperSizeData.paperWidth, paperSizeData.paperHeight, paperSizeData.leftInnerMargin,
                 paperSizeData.rightOuterMargin, paperSizeData.topMargin, paperSizeData.bottomMargin, paperSizeData.mirrored);
-        paperSizeData.publisher.modifiedDocument();
-        paperSizeData.publisher.getBook().repaintWhole();
+        paperSizeData.mainFrame.modifiedDocument();
+        publisher.getBook().repaintWhole();
     }
 }

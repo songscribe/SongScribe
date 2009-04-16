@@ -27,14 +27,20 @@ package songscribe.music;
 public class Tempo {
     public static enum Type{
         SEMIBREVE(new Semibreve()),
+        MINIMDOTTED(new Minim()),
         MINIM(new Minim()),
         CROTCHETDOTTED(new Crotchet()),
         CROTCHET(new Crotchet()),
+        QUAVERDOTTED(new Quaver()),
         QUAVER(new Quaver());
 
         static{
+            MINIMDOTTED.getNote().setDotted(1);
+            MINIMDOTTED.getNote().setYPos(1);//beacuse of the dot to be in the right place
             CROTCHETDOTTED.getNote().setDotted(1);
             CROTCHETDOTTED.getNote().setYPos(1);//beacuse of the dot to be in the right place
+            QUAVERDOTTED.getNote().setDotted(1);
+            QUAVERDOTTED.getNote().setYPos(1);//beacuse of the dot to be in the right place
         }
 
         private Note note;

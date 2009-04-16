@@ -26,6 +26,7 @@ import songscribe.music.*;
 import songscribe.data.PropertyChangeListener;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
+import songscribe.data.MyBorder;
 import songscribe.ui.musicsheetdrawer.BaseMsDrawer;
 import songscribe.ui.musicsheetdrawer.ImageMsDrawer;
 import songscribe.ui.musicsheetdrawer.FughettaDrawer;
@@ -35,6 +36,9 @@ import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.mainframeactions.PlayActiveNoteThread;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import java.awt.*;
@@ -178,6 +182,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     private BaseMsDrawer drawer;
     private BaseMsDrawer[] drawers = new BaseMsDrawer[2];
 
+    //paging
+    private int pageNum;
+
     public MusicSheet(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         control = Control.valueOf(mainFrame.getProperties().getProperty(Constants.CONTROLPROP));
@@ -198,8 +205,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void initComponent(){
         composition = new Composition(mainFrame);
-        viewChanged();
         msImage = new BufferedImage((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH), BufferedImage.TYPE_INT_RGB);
+        viewChanged();
         noteXPosAdjustment = new NoteXPosAdjustment(this);
         verticalAdjustment = new VerticalAdjustment(this);
         lyricsAdjustment = new LyricsAdjustment(this);
@@ -416,7 +423,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             for(int i=xIndex;i<xIndex+copySize;i++){
                 Interval interval=line.getBeamings().findInterval(i);
                 if(interval!=null){
-                    calculateLenghtenings(i, line);
+                    calculateLenghtenings(i, line, true);
                     i=interval.getB();
                 }
             }
@@ -443,7 +450,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }else{
             activeNote.setXPos(line.getNote(activeNotePoint.xIndex).getXPos()+activeNotePoint.movement);
         }
-
     }
 
     public void setActiveNotePositionToEnd(){
@@ -503,7 +509,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                     line.getBeamings().addInterval(line.noteCount()-2, line.noteCount()-1);
                     //activeNote.setXPos(activeNote.getXPos()-(ND-BEAMEDNOTEDIST));
                 }
-                calculateLenghtenings(line.noteCount()-1, line);
+                calculateLenghtenings(line.noteCount()-1, line, true);
             }
             postCommonAddInsertModifyActiveNoteCommands(line);
         }
@@ -548,10 +554,10 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             //arranging to beaming
             if(oldNote.getNoteType()!=activeNote.getNoteType()){
                 line.removeInterval(xIndex-1, xIndex+1);
-                calculateLenghtenings(xIndex-1, line);
-                calculateLenghtenings(xIndex+1, line);
+                calculateLenghtenings(xIndex-1, line, true);
+                calculateLenghtenings(xIndex+1, line, true);
             }else{
-                calculateLenghtenings(xIndex, line);
+                calculateLenghtenings(xIndex, line, true);
             }
 
             //arranging the ties
@@ -593,11 +599,11 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
         if(beam){
             line.getBeamings().addInterval(selectionBegin, selectionEnd);
-            calculateLenghtenings(selectionBegin, line);
+            calculateLenghtenings(selectionBegin, line, true);
         }else{
             line.getBeamings().removeInterval(selectionBegin, selectionEnd);
-            calculateLenghtenings(selectionBegin, line);
-            calculateLenghtenings(selectionEnd, line);
+            calculateLenghtenings(selectionBegin, line, true);
+            calculateLenghtenings(selectionEnd, line, true);
         }
 
         composition.modifiedComposition();
@@ -634,7 +640,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
 
         Line line = composition.getLine(selectedNotesLine);
-        int minL=Integer.MAX_VALUE, sumL=0;
         boolean canBeamed = true;
         for(int i=selectionBegin;i<=selectionEnd;i++){
             Note note = line.getNote(i);
@@ -644,19 +649,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                     mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-            if(note.getDuration()<minL && note.getDuration()>0){
-                minL=note.getDuration();
-            }
-            sumL+=note.getDuration();
             if(!note.getNoteType().isBeamable()){
                 canBeamed = false;
             }
-        }
-
-        if(minL*numeral!=sumL){
-            JOptionPane.showMessageDialog(mainFrame, "Unappliable tupleting.",
-                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
-            return;
         }
 
         if(canBeamed){
@@ -748,6 +743,34 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         repaint();
     }
 
+    public void invertStemDirectionOnSelectedNotes(){
+        if(selectedNotesLine==-1){
+            JOptionPane.showMessageDialog(mainFrame, "You must select at least one note to invert its/their stem direction.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        Line line = composition.getLine(selectedNotesLine);
+
+        for(int i=selectionBegin;i<=selectionEnd;i++){
+            Note note = line.getNote(i);
+            note.setUpper(!note.isUpper());
+        }
+
+        Interval lastInterval = null;
+        for(int i=selectionBegin;i<=selectionEnd;i++){
+            Interval inverval = line.getBeamings().findInterval(i);
+            if(inverval!=null && inverval!=lastInterval){
+                calculateLenghtenings(i, line, false);
+                lastInterval = inverval;
+            }
+        }
+
+        composition.modifiedComposition();
+        repaintImage = true;
+        repaint();
+    }
+
     private void calculateSelection(boolean fromRectangle) {
         Rectangle helper = new Rectangle();
         selectedLine = selectedNotesLine = selectionBegin = selectionEnd = -1;
@@ -776,8 +799,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
         updateEditActions();
     }
-    
-    private void calculateLenghtenings(int xIndex, Line line){
+
+    private void calculateLenghtenings(int xIndex, Line line, boolean automaticStemDirection){
         //determining startindex, endindex
         Interval interval = line.getBeamings().findInterval(xIndex);
         if(interval==null){
@@ -788,7 +811,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         //decide wheater beaming should be upside or downside
         int sumY=0;
         for(int i=startIndex;i<=endIndex;i++){
-            sumY+=line.getNote(i).getYPos();
+            Note note = line.getNote(i);
+            sumY+=automaticStemDirection ? note.getYPos() : (note.isUpper() ? 1 : -1);
         }
         //+1: upper
         //-1: lower
@@ -846,7 +870,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         for(int l=0;l<composition.lineCount();l++){
             Line line = composition.getLine(l);
             for(ListIterator<Interval> li = line.getBeamings().listIterator();li.hasNext();){
-                calculateLenghtenings(li.next().getA(), line);
+                calculateLenghtenings(li.next().getA(), line, false);
             }
         }
         for(int i=0;i<composition.lineCount();i++){
@@ -1330,10 +1354,10 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 for (int i=selectionEnd;i>=selectionBegin;i--) {
                     deleteNote(i, line);
                 }
-                calculateLenghtenings(selectionBegin-1, line);
-                calculateLenghtenings(selectionBegin, line);
+                calculateLenghtenings(selectionBegin-1, line, true);
+                calculateLenghtenings(selectionBegin, line, true);
                 spellLyrics(line);
-            }else if(selectedLine!=-1){
+            }else if(selectedLine!=-1 && composition.lineCount()>1){
                 composition.removeLine(selectedLine);
                 spellLyrics();
             }
@@ -1413,9 +1437,12 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                Line line = composition.getLine(activeNotePoint.line);
                if(code==KeyEvent.VK_LEFT){
                    if(activeNotePoint.xIndex==0 && (activeNotePoint.movement!=0 || line.noteCount()==0)){
-                        return;
-                   }
-                   if(activeNotePoint.movement==0 && activeNotePoint.xIndex<line.noteCount()){
+                        if(activeNotePoint.line>0){
+                            activeNotePoint.line--;
+                            activeNotePoint.xIndex=composition.getLine(activeNotePoint.line).noteCount();
+                            activeNotePoint.movement=0;
+                        }else return;
+                   }else if(activeNotePoint.movement==0 && activeNotePoint.xIndex<line.noteCount()){
                        activeNotePoint.movement = activeNotePoint.xIndex!=0 ?
                                (line.getNote(activeNotePoint.xIndex-1).getXPos()-line.getNote(activeNotePoint.xIndex).getXPos())/2 : FIRSTNOTEINLINEMOVEMENT;
                    }else{
@@ -1424,9 +1451,12 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                    }
                }else if(code==KeyEvent.VK_RIGHT){
                    if(activeNotePoint.xIndex==line.noteCount()){
-                       return;
-                   }
-                   if(activeNotePoint.movement==0){
+                       if(activeNotePoint.line<composition.lineCount()-1){
+                           activeNotePoint.line++;
+                           activeNotePoint.xIndex=0;
+                           activeNotePoint.movement=composition.getLine(activeNotePoint.line).noteCount()==0 ? 0 : FIRSTNOTEINLINEMOVEMENT;      
+                       }else return;
+                   }else if(activeNotePoint.movement==0){
                        activeNotePoint.xIndex++;
                        if(activeNotePoint.xIndex<line.noteCount()){
                            activeNotePoint.movement = activeNotePoint.xIndex!=0 ?
@@ -1537,24 +1567,22 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
-    public BufferedImage createMusicSheetImageForExport(Color background, double scale){
-        BufferedImage image = new BufferedImage((int)(getSheetWidth()*scale), (int)(getSheetHeight()*scale), BufferedImage.TYPE_INT_RGB);
-        createMusicSheetImageForExport(image, background, scale);
+    public BufferedImage createMusicSheetImageForExport(Color background, double scale, MyBorder border){
+        BufferedImage image = new BufferedImage((int)((getSheetWidth()+border.getWidth())*scale), (int)((getSheetHeight()+border.getHeight())*scale), BufferedImage.TYPE_INT_RGB);
+        createMusicSheetImageForExport(image, background, scale, border);
         return image;
     }
 
-    public Point createMusicSheetImageForExport(BufferedImage image, Color background, double scale){
+    public void createMusicSheetImageForExport(BufferedImage image, Color background, double scale, MyBorder border){
         Graphics2D g2 = image.createGraphics();
         g2.setPaint(background);
-        g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g2.fillRect(0, 0, image.getWidth()+border.getWidth(), image.getHeight()+border.getHeight());
         BaseMsDrawer origDrawer = drawer;
         setDrawer(DrawerType.FUGHETTA);
-        Point point = new Point((int)(image.getWidth()-getSheetWidth()*scale)/2, (int)(image.getHeight()-getSheetHeight()*scale)/2);
-        g2.translate(point.x, point.y);
+        g2.translate(border.getLeft(), border.getTop());
         drawer.drawMusicSheet(g2, false, scale);
         drawer = origDrawer;
         g2.dispose();
-        return point;
     }
 
     public void meta(MetaMessage meta) {

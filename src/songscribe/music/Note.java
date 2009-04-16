@@ -350,8 +350,7 @@ public abstract class Note implements Cloneable {
     }
 
     public int getDuration(){
-        Interval tupletInt = line!=null ? line.getTuplets().findInterval(line.getNoteIndex(this)) : null;
-        return Math.round(getDefaultDuration()*DOTTEDLONGITUDE[dotted]*(tupletInt!=null ? TUPLETMODIFIER.get(Integer.parseInt(tupletInt.getData())) : 1f));
+        return (int)(getDefaultDuration()*DOTTEDLONGITUDE[dotted]);
     }
 
     public void setLine(Line line) {

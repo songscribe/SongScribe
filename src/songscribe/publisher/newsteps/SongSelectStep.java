@@ -122,7 +122,7 @@ class SongSelectStep extends Step{
         public AddAction() {
             putValue(Action.NAME, "Add");
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("add.png")));
-            pfd = new PlatformFileDialog(data.publisher, "Open song", true, new MyAcceptFilter("SongScribe song files", FileExtensions.SONGWRITER.substring(1)));
+            pfd = new PlatformFileDialog(data.mainFrame, "Open song", true, new MyAcceptFilter("SongScribe song files", FileExtensions.SONGWRITER.substring(1)));
             pfd.setMultiSelectionEnabled(true);
         }
 
@@ -143,14 +143,24 @@ class SongSelectStep extends Step{
         public AddFolderAction() {
             putValue(Action.NAME, "Add Folder");
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("addfolder.png")));
-            pfd = new PlatformFileDialog(data.publisher, "Open folder", true, new MyAcceptFilter("Folders"), true);
+            pfd = new PlatformFileDialog(data.mainFrame, "Open folder", true, new MyAcceptFilter("Folders"), true);
         }
 
         public void actionPerformed(ActionEvent e) {
             if(pfd.showDialog()){
-                int answ = JOptionPane.showConfirmDialog(data.publisher, "All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?",
-                        data.publisher.PROGNAME, JOptionPane.YES_NO_CANCEL_OPTION);
-                if(answ==JOptionPane.CANCEL_OPTION)return;
+                boolean isThereDir = false;
+                for(File file:pfd.getFile().listFiles()){
+                    if(file.isDirectory()){
+                        isThereDir=true;
+                        break;
+                    }
+                }
+                int answ=JOptionPane.NO_OPTION;
+                if(isThereDir){
+                    answ = JOptionPane.showConfirmDialog(data.mainFrame, "All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?",
+                            data.mainFrame.PROGNAME, JOptionPane.YES_NO_CANCEL_OPTION);
+                    if(answ==JOptionPane.CANCEL_OPTION)return;
+                }
                 addSongFiles(pfd.getFile(), answ==JOptionPane.YES_OPTION);
             }
         }
@@ -175,9 +185,10 @@ class SongSelectStep extends Step{
         }
 
         public void actionPerformed(ActionEvent e) {
-            if(list.getSelectedIndex()!=-1){
-                files.remove(list.getSelectedIndex());
-                listModel.remove(list.getSelectedIndex());
+            int[] sel = list.getSelectedIndices();
+            for(int i=sel.length-1;i>=0;i--){
+                files.remove(sel[i]);
+                listModel.remove(sel[i]);
             }
         }
     }
@@ -189,15 +200,20 @@ class SongSelectStep extends Step{
         }
 
         public void actionPerformed(ActionEvent e) {
-            int sel = list.getSelectedIndex();
-            if(sel>0){
-                File f = files.get(sel);
-                files.set(sel, files.get(sel-1));
-                files.set(sel-1, f);
-                Object o = listModel.get(sel);
-                listModel.set(sel, listModel.get(sel-1));
-                listModel.set(sel-1, o);
-                list.setSelectedIndex(sel-1);
+            int[] sels = list.getSelectedIndices();
+            if(sels.length>0 && sels[0]>0){
+                for(int sel:sels){
+                    File f = files.get(sel);
+                    files.set(sel, files.get(sel-1));
+                    files.set(sel-1, f);
+                    Object o = listModel.get(sel);
+                    listModel.set(sel, listModel.get(sel-1));
+                    listModel.set(sel-1, o);
+                }
+                for(int i=0;i<sels.length;i++){
+                    sels[i]=sels[i]-1;
+                }
+                list.setSelectedIndices(sels);
             }
         }
     }
@@ -209,15 +225,21 @@ class SongSelectStep extends Step{
         }
 
         public void actionPerformed(ActionEvent e) {
-            int sel = list.getSelectedIndex();
-            if(sel!=-1 && sel<listModel.size()-1){
-                File f = files.get(sel);
-                files.set(sel, files.get(sel+1));
-                files.set(sel+1, f);
-                Object o = listModel.get(sel);
-                listModel.set(sel, listModel.get(sel+1));
-                listModel.set(sel+1, o);
-                list.setSelectedIndex(sel+1);
+            int[] sels = list.getSelectedIndices();
+            if(sels.length>0 && sels[sels.length-1]<listModel.size()-1){
+                for (int i=sels.length-1;i>=0;i--) {
+                    int sel = sels[i];
+                    File f = files.get(sel);
+                    files.set(sel, files.get(sel + 1));
+                    files.set(sel + 1, f);
+                    Object o = listModel.get(sel);
+                    listModel.set(sel, listModel.get(sel + 1));
+                    listModel.set(sel + 1, o);
+                }
+                for(int i=0;i<sels.length;i++){
+                    sels[i]=sels[i]+1;
+                }
+                list.setSelectedIndices(sels);
             }
         }
     }

@@ -35,7 +35,7 @@ public class ToTopComponentAction extends AbstractAction{
 
     public ToTopComponentAction(Publisher publisher) {
         this.publisher = publisher;
-        putValue(Action.NAME, "Component To Top");
+        putValue(Action.NAME, "Move to Top");
         putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("2uparrow.png")));
     }
 

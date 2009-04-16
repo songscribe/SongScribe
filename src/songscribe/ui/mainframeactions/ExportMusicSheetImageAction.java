@@ -58,6 +58,7 @@ public class ExportMusicSheetImageAction extends AbstractAction{
     }
 
     public void actionPerformed(ActionEvent e) {
+        pfd.setFile(Utilities.getSongTitleFileNameForFileChooser(mainFrame.getMusicSheet()));
         if(pfd.showDialog()){
             MyAcceptFilter maf = pfd.getFileFilter();
             mainFrame.getProperties().setProperty(Constants.IMAGEEXPORTFILTERPROP, Integer.toString(Utilities.arrayIndexOf(myAcceptFilters, maf)));
@@ -80,14 +81,25 @@ public class ExportMusicSheetImageAction extends AbstractAction{
                 return;
             }
             scale = (double)resolutionDialog.getResolution()/(double)MusicSheet.RESOLUTION;
+            String underLyrics = mainFrame.getMusicSheet().getComposition().getUnderLyrics();
+            String transletedLyrics = mainFrame.getMusicSheet().getComposition().getTranslatedLyrics();
+            if(resolutionDialog.isWithoutLyrics()){
+                mainFrame.getMusicSheet().getComposition().setUnderLyrics("");
+                mainFrame.getMusicSheet().getComposition().setTranslatedLyrics("");
+            }
             try {
-                ImageIO.write(mainFrame.getMusicSheet().createMusicSheetImageForExport(Color.white, scale), maf.getExtension(0), saveFile);
+                ImageIO.write(mainFrame.getMusicSheet().createMusicSheetImageForExport(Color.white, scale, resolutionDialog.getBorder()), maf.getExtension(0), saveFile);
                 Utilities.openExportFile(mainFrame, saveFile);
             } catch (IOException e1) {
                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
                 logger.error("Saving image", e1);
             } catch(OutOfMemoryError e1){
-                mainFrame.showErrorMessage("There is no enough memory for this resolution.");
+                mainFrame.showErrorMessage("There is not enough memory for this resolution.");
+            }finally{
+                if(resolutionDialog.isWithoutLyrics()){
+                    mainFrame.getMusicSheet().getComposition().setUnderLyrics(underLyrics);
+                    mainFrame.getMusicSheet().getComposition().setTranslatedLyrics(transletedLyrics);
+                }
             }
         }
     }

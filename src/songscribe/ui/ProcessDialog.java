@@ -31,13 +31,15 @@ public class ProcessDialog extends JDialog{
     protected JProgressBar progressBar = new JProgressBar();
 
     public ProcessDialog(JDialog owner, String label, int maximum) throws HeadlessException {
-        super(owner, "Progress");
+        super(owner, "Progress", true);
         init(maximum, label);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
     public ProcessDialog(JFrame owner, String label, int maximum) throws HeadlessException {
-        super(owner, "Progress");
+        super(owner, "Progress", true);
         init(maximum, label);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
      public void packAndPos() {

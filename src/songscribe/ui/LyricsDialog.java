@@ -142,14 +142,19 @@ public class LyricsDialog extends MyDialog{
     private class TakeUnderSongLyricsFromSyllabifiedLyricsAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             char[] lyricsChars = lyricsArea.getText().toCharArray();
+            boolean inParanthesis = false;
             StringBuilder sb = new StringBuilder(lyricsArea.getText().length());
             for(int i=0;i<lyricsChars.length;i++){
                 char c = lyricsChars[i];
-                if(c!='-' && c!='_'){
-                    sb.append(c);
-                }else if(c=='-' && i<lyricsChars.length-1 && lyricsChars[i+1]=='-'){
-                    sb.append('-');
+                if(c=='(')inParanthesis=true;
+                if(!inParanthesis){
+                    if(c!='-' && c!='_'){
+                        sb.append(c);
+                    }else if(c=='-' && i<lyricsChars.length-1 && lyricsChars[i+1]=='-'){
+                        sb.append('-');
+                    }
                 }
+                if(c==')')inParanthesis=false;
             }
             underSongArea.setText(sb.toString());
         }

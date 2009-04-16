@@ -35,7 +35,7 @@ public class ToBottomComponentAction extends AbstractAction {
 
     public ToBottomComponentAction(Publisher publisher) {
         this.publisher = publisher;
-        putValue(Action.NAME, "Component To Bottom");
+        putValue(Action.NAME, "Move to Bottom");
         putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("2downarrow.png")));
     }
 

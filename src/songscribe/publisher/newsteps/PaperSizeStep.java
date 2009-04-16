@@ -38,7 +38,7 @@ import songscribe.ui.Constants;
 /**
  * @author Csaba Kávai
  */
-class PaperSizeStep extends Step{
+public class PaperSizeStep extends Step{
     private static Logger logger = Logger.getLogger(PaperSizeStep.class);
     private static final String INFO = "<html>Set the outcoming paper size and margins</html>";
 
@@ -158,7 +158,7 @@ class PaperSizeStep extends Step{
     }
 
     public void start() {
-        boolean metric = data.publisher.getProperties().getProperty(Constants.METRIC).equals(Constants.TRUEVALUE);
+        boolean metric = data.mainFrame.getProperties().getProperty(Constants.METRIC).equals(Constants.TRUEVALUE);
         for(int i=0;i<templates.getSize();i++){
             if(((TemplateObject)templates.getElementAt(i)).metric==metric){
                 templates.setSelectedItem(templates.getElementAt(i));
@@ -177,9 +177,9 @@ class PaperSizeStep extends Step{
         data.bottomMargin = getInPixel(bottomSpinnerModel);
         data.mirrored = mirroredCheck.isSelected();
         if(unitsCombo.getSelectedItem() instanceof TemplateObject){
-            data.publisher.getProperties().setProperty(Constants.METRIC, ((TemplateObject)unitsCombo.getSelectedItem()).metric?Constants.TRUEVALUE:Constants.FALSEVALUE);
+            data.mainFrame.getProperties().setProperty(Constants.METRIC, ((TemplateObject)unitsCombo.getSelectedItem()).metric?Constants.TRUEVALUE:Constants.FALSEVALUE);
         }else{
-            data.publisher.getProperties().setProperty(Constants.METRIC, unitsCombo.getSelectedIndex()==0?Constants.FALSEVALUE:Constants.TRUEVALUE);
+            data.mainFrame.getProperties().setProperty(Constants.METRIC, unitsCombo.getSelectedIndex()==0?Constants.FALSEVALUE:Constants.TRUEVALUE);
         }
     }
 
@@ -188,7 +188,7 @@ class PaperSizeStep extends Step{
     }
 
     public void setValues(int pageWidth, int pageHeight, int leftInnerMargin, int rightOuterMargin, int topMargin, int bottomMargin, boolean mirroredMargin){
-        int metric = data.publisher.getProperties().getProperty(Constants.METRIC).equals(Constants.FALSEVALUE) ? 0 : 1;
+        int metric = data.mainFrame.getProperties().getProperty(Constants.METRIC).equals(Constants.FALSEVALUE) ? 0 : 1;
         unitsCombo.setSelectedIndex(metric);
         widthSpinnerModel.setValue(Utilities.convertFromPixels(pageWidth, metric));
         heightSpinnerModel.setValue(Utilities.convertFromPixels(pageHeight, metric));
@@ -206,6 +206,10 @@ class PaperSizeStep extends Step{
         topSpinnerModel.setValue(Utilities.convertFromPixels(topMargin, metric));
         bottomSpinnerModel.setValue(Utilities.convertFromPixels(bottomMargin, metric));
         mirroredCheck.setSelected(mirroredMargin);
+    }
+
+    public void setMirroredCheckInvisible(){
+        mirroredCheck.setVisible(false);
     }
 
     private class TemplateObject{

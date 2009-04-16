@@ -35,7 +35,7 @@ public class RaiseComponentAction extends AbstractAction {
 
     public RaiseComponentAction(Publisher publisher) {
         this.publisher = publisher;
-        putValue(Action.NAME, "Raise Component");
+        putValue(Action.NAME, "Move up");
         putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("1uparrow.png")));
     }
 

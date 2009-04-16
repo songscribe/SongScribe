@@ -30,7 +30,7 @@ import java.awt.*;
  * @author Csaba Kávai
  */
 class InfoStep extends Step{
-    private static final String INFO = "<html><h2>Welcome to the New Document Wizard!</h2>You will be asked to select the songs you want to publish, set the layout etc. Naturally you can add songs and modify the paper size later, but you cannon change the layout strategy after the wizard creates the new document. Then you will be able move the songs manually on and across pages.</html>";
+    private static final String INFO = "<html><h2>Welcome to the New Document Wizard!</h2>You will be asked to select the songs you want to publish, set the layout etc. Naturally you can add songs and modify the paper size later, but you cannot change the layout strategy after the wizard creates the new document. Then you will be able move the songs manually on and across pages.</html>";
     private JCheckBox dontshowCheck;
 
     public InfoStep(Data data) {
@@ -49,6 +49,6 @@ class InfoStep extends Step{
     }
 
     public void end() {
-        data.publisher.getProperties().setProperty(Constants.SHOWPUBLISHERNEWINFO, dontshowCheck.isSelected()?Constants.FALSEVALUE:Constants.TRUEVALUE);
+        data.mainFrame.getProperties().setProperty(Constants.SHOWPUBLISHERNEWINFO, dontshowCheck.isSelected()?Constants.FALSEVALUE:Constants.TRUEVALUE);
     }
 }

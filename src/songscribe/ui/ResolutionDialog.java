@@ -21,51 +21,43 @@ Created on Jun 26, 2006
 */
 package songscribe.ui;
 
+import songscribe.data.MyBorder;
+import songscribe.music.Composition;
+
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * @author Csaba Kávai
  */
 public class ResolutionDialog extends MyDialog implements ChangeListener{
-    private SpinnerModel resModel = new SpinnerNumberModel(300, 30, 1200, 1);
     private boolean approved;
     private MainFrame mainFrame;
-    private JTextField widthField = new JTextField(5);
-    private JTextField heightField = new JTextField(5);
-    private int msWidth, msHeight;
+    private JPanel mainPanel;
+    private JTextField widthField;
+    private JTextField heightField;
+    private JCheckBox withoutLyricsCheck;
+    private JSpinner resolutionSpinner;
+    private BorderPanel borderPanel;
+    private int msWidth, msHeight, msHeightWL;
 
     public ResolutionDialog(MainFrame mainFrame) {
-        super(mainFrame, "Resolution");
+        super(mainFrame, "Image properties");
         this.mainFrame = mainFrame;
-        JPanel north = new JPanel();
-        north.add(new JLabel("Enter the resolution of the image: "));
-        JSpinner spinner = new JSpinner(resModel);
-        spinner.addChangeListener(this);
-        north.add(spinner);
-        north.add(new JLabel("DPI"));
-        JPanel center = new JPanel(new GridBagLayout());
-        center.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "The size of the outcoming image:"));
-        GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 0.5, 0.5, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0);
-        center.add(new JLabel("Width:"), c);
-        c.gridy=1;
-        center.add(new JLabel("Height:"), c);
-        c.gridx=2;c.gridy=0;
-        widthField.setEditable(false);
-        center.add(widthField, c);
-        c.gridy=1;
-        heightField.setEditable(false);
-        center.add(heightField, c);
-        c.gridx=3;c.gridy=0;
-        center.add(new JLabel("pt"), c);
-        c.gridy=1;
-        center.add(new JLabel("pt"), c);
-        dialogPanel.add(BorderLayout.NORTH, north);
-        JPanel realCenter = new JPanel();
-        realCenter.add(center);
-        dialogPanel.add(BorderLayout.CENTER, realCenter);
+        borderPanel.setPackListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pack();
+            }
+        });
+        borderPanel.addChangeListener(this);
+        resolutionSpinner.addChangeListener(this);
+        withoutLyricsCheck.addChangeListener(this);
+        resolutionSpinner.setModel(new SpinnerNumberModel(300, 30, 1200, 1));
+        dialogPanel.add(BorderLayout.CENTER, mainPanel);
         southPanel = new JPanel();
         southPanel.add(okButton);
         southPanel.add(cancelButton);
@@ -74,15 +66,32 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
 
     protected void getData() {
         approved = false;
-        resModel.setValue(Integer.parseInt(mainFrame.getProperties().getProperty(Constants.DPIPROP)));
-        msWidth = mainFrame.getMusicSheet().getSheetWidth();
-        msHeight = mainFrame.getMusicSheet().getSheetHeight();
+        resolutionSpinner.setValue(Integer.parseInt(mainFrame.getProperties().getProperty(Constants.DPIPROP)));
+        MusicSheet musicSheet = mainFrame.getMusicSheet();
+        Composition composition = musicSheet.getComposition();
+        msWidth = musicSheet.getSheetWidth();
+        msHeight = musicSheet.getSheetHeight();
+
+        String underLyrics = composition.getUnderLyrics();
+        String transletedLyrics = composition.getTranslatedLyrics();
+        composition.setUnderLyrics("");
+        composition.setTranslatedLyrics("");
+        msHeightWL = musicSheet.getSheetHeight();
+        composition.setUnderLyrics(underLyrics);
+        composition.setTranslatedLyrics(transletedLyrics);
+
+        if(underLyrics.length()==0 && transletedLyrics.length()==0){
+            withoutLyricsCheck.setSelected(false);
+            withoutLyricsCheck.setEnabled(false);
+        }else withoutLyricsCheck.setEnabled(true);
+
+        borderPanel.setExpertBorder(false);
         stateChanged(null);
     }
 
     protected void setData() {
         approved = true;
-        mainFrame.getProperties().setProperty(Constants.DPIPROP, resModel.getValue().toString());
+        mainFrame.getProperties().setProperty(Constants.DPIPROP, resolutionSpinner.getValue().toString());
     }
 
     public boolean isApproved() {
@@ -90,12 +99,21 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
     }
 
     public int getResolution(){
-        return (Integer)resModel.getValue();
+        return (Integer)resolutionSpinner.getValue();
+    }
+
+    public boolean isWithoutLyrics(){
+        return withoutLyricsCheck.isSelected();
+    }
+
+    public MyBorder getBorder(){
+        return borderPanel.getMyBorder();
     }
 
     public void stateChanged(ChangeEvent e) {
         float scale = (float)getResolution()/(float)MusicSheet.RESOLUTION;
-        widthField.setText(Integer.toString(Math.round(scale*msWidth)));
-        heightField.setText(Integer.toString(Math.round(scale*msHeight)));
+        MyBorder myBorder = borderPanel.getMyBorder();
+        widthField.setText(Integer.toString(Math.round(scale*msWidth)+myBorder.getWidth()));
+        heightField.setText(Integer.toString(Math.round(scale*(withoutLyricsCheck.isSelected() ? msHeightWL : msHeight))+myBorder.getHeight()));
     }
 }

@@ -118,6 +118,10 @@ public abstract class MyDialog {
         box.add(label);
         if(gapHeight>0)box.add(Box.createVerticalStrut(gapHeight));
     }
+
+    protected void pack(){
+        dialog.pack();
+    }
     
     protected abstract void getData() throws DoNotShowException;
     protected abstract void setData();

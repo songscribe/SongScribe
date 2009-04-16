@@ -37,7 +37,7 @@ public class NoteXPosAdjustment extends Adjustment{
         ONENOTE(Color.white,  -1),
         WHOLENOTE(Color.blue, -4),
         STRETCH(Color.yellow, -4),
-        FIRSTXPOS(Color.green, -2),
+        FIRSTXPOS(Color.green, -4),
         GLISSANDOX1(Color.magenta, -2),
         GLISSANDOX2(Color.magenta, -2);
 
@@ -93,7 +93,7 @@ public class NoteXPosAdjustment extends Adjustment{
         }else{
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
             if(draggingRect.adjustType==AdjustType.ONENOTE){
-                upLeftDragBounds.setLocation(line.getNote(draggingRect.xIndex-1).getXPos()+draggingRect.rectangle.width*2, draggingRect.rectangle.y);
+                upLeftDragBounds.setLocation((draggingRect.xIndex>0 ? line.getNote(draggingRect.xIndex-1).getXPos() : 20)+draggingRect.rectangle.width*2, draggingRect.rectangle.y);
                 downRightDragBounds.setLocation(draggingRect.xIndex<line.noteCount()-1 ? line.getNote(draggingRect.xIndex+1).getXPos() : musicSheet.getComposition().getLineWidth(), draggingRect.rectangle.y);
             }else if(draggingRect.adjustType==AdjustType.WHOLENOTE){
                 upLeftDragBounds.setLocation(line.getNote(draggingRect.xIndex-1).getXPos()+draggingRect.rectangle.width*2, draggingRect.rectangle.y);
@@ -185,12 +185,14 @@ public class NoteXPosAdjustment extends Adjustment{
             Composition c = musicSheet.getComposition();
             for(int l=0;l<c.lineCount();l++){
                 Line line = c.getLine(l);
-                //adding ONENOTE and WHOLENOTE
-                for(int n=1;n<line.noteCount();n++){
+                //adding ONENOTE
+                for(int n=0;n<line.noteCount();n++){
                     adjustRects.add(new AdjustRect(l, n, AdjustType.ONENOTE));
-                    if(n!=line.noteCount()-1){
-                        adjustRects.add(new AdjustRect(l, n, AdjustType.WHOLENOTE));
-                    }
+                }
+                
+                //adding WHOLENOTE
+                for(int n=1;n<line.noteCount()-1;n++){
+                    adjustRects.add(new AdjustRect(l, n, AdjustType.WHOLENOTE));
                 }
 
                 //adding GLISSANDO
