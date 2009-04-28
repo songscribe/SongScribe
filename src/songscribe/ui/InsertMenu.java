@@ -31,6 +31,7 @@ import javax.swing.*;
  */
 public class InsertMenu extends JMenu{
     private InsertSubMenu[] subMenus;
+    private FermataMenuItem fermataMenuItem;
     private MainFrame mainFrame;
 
     public InsertMenu(MainFrame mainFrame) {
@@ -43,6 +44,7 @@ public class InsertMenu extends JMenu{
             }
             add(im);
         }
+        add(fermataMenuItem = new FermataMenuItem(mainFrame));
     }
 
     public void updateState(){
@@ -55,6 +57,7 @@ public class InsertMenu extends JMenu{
                 im.updateState(activeNote);
             }
         }
+        fermataMenuItem.setSelected(activeNote!=null && activeNote.isFermata());
     }
 
     public void doClickNote(String action){

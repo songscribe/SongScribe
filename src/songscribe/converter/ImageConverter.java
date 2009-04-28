@@ -1,34 +1,72 @@
 package songscribe.converter;
 
-import java.util.Vector;
+import songscribe.ui.MainFrame;
+import songscribe.ui.MusicSheet;
+import songscribe.data.MyBorder;
+
+import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.awt.*;
 
 public class ImageConverter {
 
-    static class A{
-        @ArgumentDescribe("The type of resulting image. Values: [ GIF | JPG | PNG | BMP ]")
-        public String type="GIF";
+    @ArgumentDescribe("The type of resulting image. Values: [ GIF | JPG | PNG | BMP ]")
+    public String type="GIF";
 
-        @ArgumentDescribe("Resolution in DPI")
-        public int resolution=100;
+    @ArgumentDescribe("Resolution in DPI")
+    public int resolution=100;
 
-        @ArgumentDescribe("Export image without lyrics under the song")
-        public boolean withoutLyrics;
-        
-        public Vector<File> files;
-    }
+    @ArgumentDescribe("Export image without lyrics under the song")
+    public boolean withoutLyrics;
+
+    @ArgumentDescribe("Margin around the image in pixels.")
+    public int margin=10;
+
+    @ArgumentDescribe("Top margin. If not present, the size of margin parameter is applied.")
+    @NoDefault
+    public int topmargin=-1;
+
+    @ArgumentDescribe("Left margin. If not present, the size of margin parameter is applied.")
+    @NoDefault
+    public int leftmargin=-1;
+
+    @ArgumentDescribe("Bottom margin. If not present, the size of margin parameter is applied.")
+    @NoDefault
+    public int bottommargin=-1;
+    
+    @ArgumentDescribe("Right margin. If not present, the size of margin parameter is applied.")
+    @NoDefault
+    public int rightmargin=-1;
+
+    @FileArgument
+    public File[] files;
 
     public static void main(String[] args) {
-        ArgumentumReader ar = new ArgumentumReader(args, A.class);
-        Object o = ar.getObj();
-        A a = (A) o;
-        System.out.println(a.type);
-        System.out.println(a.resolution);
-        System.out.println(a.withoutLyrics);
-        for(File f:a.files){
-            System.out.println(f.getAbsolutePath());
+        ArgumentumReader ar = new ArgumentumReader(args, ImageConverter.class);
+        ((ImageConverter) ar.getObj()).convert();
+    }
+
+    private void convert(){
+        MainFrame mf = new MainFrame();
+        mf.setMusicSheet(new MusicSheet(mf));
+        MyBorder myBorder = new MyBorder(margin);
+        if(topmargin>-1)myBorder.setTop(topmargin);
+        if(leftmargin>-1)myBorder.setLeft(leftmargin);
+        if(bottommargin>-1)myBorder.setBottom(bottommargin);
+        if(rightmargin>-1)myBorder.setRight(rightmargin);
+        for(File file:files){
+            mf.openMusicSheet(file, false);
+            BufferedImage image = mf.getMusicSheet().createMusicSheetImageForExport(Color.WHITE, (double)resolution/MusicSheet.RESOLUTION, myBorder);
+            String fileName = file.getName();
+            int dotPos = fileName.indexOf('.');
+            if(dotPos>0)fileName=fileName.substring(0, dotPos);
+            try {
+                ImageIO.write(image, type, new File(fileName+"."+type.toLowerCase()));
+            } catch (IOException e) {
+                System.out.println("Could not convert "+file.getName());
+            }
         }
-
-
     }
 }

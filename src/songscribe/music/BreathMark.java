@@ -29,7 +29,7 @@ import java.awt.*;
  * @author Csaba Kávai
  */
 public class BreathMark extends NotNote{
-    public static final Image IMAGE = MainFrame.getImage("breathmark.gif");
+    public static final Image IMAGE = MainFrame.getImage("breathmark.png");
     public static final Rectangle REALNOTERECT = new Rectangle(1, 24, 6, 11);
 
     public BreathMark() {

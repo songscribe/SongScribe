@@ -50,34 +50,13 @@ public class Proba {
         frame.pack();
         frame.setVisible(true);*/
 
-        JFrame frame = new JFrame();
+        /*JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MyComponent comp = new MyComponent();
         frame.add(comp);
         frame.addKeyListener(comp);
         frame.pack();
-        frame.setVisible(true);
-
-        /*double[] ret = new double[6];
-        for(PathIterator pi=outline.getPathIterator(null);!pi.isDone();pi.next()){
-            int i = pi.currentSegment(ret);
-            switch(i){
-                case PathIterator.SEG_MOVETO:
-                    System.out.printf("MOVETO: (%f, %f)\n", ret[0], ret[1]);
-                    break;
-                case PathIterator.SEG_LINETO:
-                    System.out.printf("LINETO: (%f, %f)\n", ret[0], ret[1]);
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    System.out.printf("QUADTO: (%f, %f); (%f, %f)\n", ret[0], ret[1], ret[2], ret[3]);
-                    break;
-                case PathIterator.SEG_CUBICTO:
-                    System.out.printf("CUBICTO: (%f, %f); (%f, %f); (%f, %f)\n", ret[0], ret[1], ret[2], ret[3], ret[4], ret[5]);
-                    break;
-                case PathIterator.SEG_CLOSE:
-                    System.out.println("CLOSE");
-            }
-        }*/
+        frame.setVisible(true);*/
     }
 
     private static final String[] accidentals = {"", "\uf06e", "\uf062", "\uf023", "\uf06e\uf06e", "\uf0ba", "\uf0dc", "\uf06e\uf062", "\uf06e\uf023"};

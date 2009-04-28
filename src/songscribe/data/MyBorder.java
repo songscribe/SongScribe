@@ -43,6 +43,22 @@ public class MyBorder {
         return right;
     }
 
+    public void setTop(int top) {
+        this.top = top;
+    }
+
+    public void setBottom(int bottom) {
+        this.bottom = bottom;
+    }
+
+    public void setLeft(int left) {
+        this.left = left;
+    }
+
+    public void setRight(int right) {
+        this.right = right;
+    }
+
     public int getWidth(){
         return left+right;
     }

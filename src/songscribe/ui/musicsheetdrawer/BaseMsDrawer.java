@@ -531,6 +531,14 @@ public abstract class BaseMsDrawer {
         return Math.round(x2);
     }
 
+    protected int getFermataYPos(Note note){
+        if(note.isUpper() && note.getYPos()<2){
+            return note.getYPos()-11;
+        }else if(!note.isUpper() && note.getYPos()<-4){
+            return note.getYPos()-5;
+        }else return -9;
+    }
+
     private void drawGlissando(Graphics2D g2, int x1, int y1, int x2, int y2){
         double l = Math.sqrt(Math.abs(x1-x2)*Math.abs(x1-x2)+Math.abs(y1-y2)*Math.abs(y1-y2));
         int m = (int)Math.round(l/glissandoLength);

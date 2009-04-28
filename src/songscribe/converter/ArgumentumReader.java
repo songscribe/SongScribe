@@ -8,6 +8,9 @@ public class ArgumentumReader {
     private String[] args;
     private Class clazz;
     private Object obj;
+    private enum FileType {NONE, SINGLE, MANY}
+    private FileType fileType=FileType.NONE;
+    private Field fileField;
 
     public ArgumentumReader(String[] args, Class clazz) {
         this.args = args;
@@ -21,10 +24,23 @@ public class ArgumentumReader {
 
     public String infoBuilder(){
         StringBuilder sb = new StringBuilder();
-        sb.append("Usage: [options] file1 [file2] ...\n");
+        sb.append("Usage: [options] ");
+        switch(fileType){
+            case SINGLE:
+                sb.append("file");
+                break;
+            case MANY:
+                sb.append("file1 [file2] [file3] ...");
+                break;
+        }
+        sb.append('\n');
         for(Field f:clazz.getFields()){
             if(f.isAnnotationPresent(ArgumentDescribe.class)){
-                sb.append('-').append(f.getName()).append(' ').append(f.getAnnotation(ArgumentDescribe.class).value()).append('\n');
+                sb.append('-').append(f.getName()).append("= ").append(f.getAnnotation(ArgumentDescribe.class).value());
+                if(!f.isAnnotationPresent(NoDefault.class)){
+                    try{sb.append(" (default=").append(f.get(obj)).append(')');}catch(IllegalAccessException e){assert false;}
+                }
+                sb.append('\n');
             }
         }
         return sb.toString();
@@ -33,6 +49,21 @@ public class ArgumentumReader {
     public void parseArguments(){
         try {
             obj = clazz.newInstance();
+
+            //determining the file argument type
+            for(Field f:clazz.getFields()){
+                if(f.isAnnotationPresent(FileArgument.class)){
+                    if(f.getType().equals(File.class)){
+                        fileType=FileType.SINGLE;
+                    }
+                    if(f.getType().equals((new File[]{}).getClass())){
+                        fileType=FileType.MANY;
+                    }
+                    fileField=f;
+                    break;
+                }
+            }
+
             //reading the parameters
             for(String arg:args){
                 if(arg.charAt(0)!='-')break;
@@ -52,8 +83,7 @@ public class ArgumentumReader {
             }
 
             //reading the files
-            Field filesField = findField("files");
-            if(filesField!=null && filesField.getType().getSimpleName().equals("Vector")){
+            if(fileType!=FileType.NONE){
                 Vector<File> files = new Vector<File>();
                 for(String arg:args){
                     if(arg.charAt(0)=='-')continue;
@@ -63,8 +93,17 @@ public class ArgumentumReader {
                         System.out.println("File not found: "+arg);
                         System.exit(-1);
                     }
+                    if(fileType==FileType.SINGLE)break;
                 }
-                filesField.set(obj, files);
+                if(files.size()==0){
+                    System.out.println("No file specified");
+                    System.exit(-1);
+                }
+                if(fileType==FileType.SINGLE){
+                    fileField.set(obj, files.get(0));
+                }else{
+                    fileField.set(obj, files.toArray(new File[files.size()]));
+                }
             }
         } catch (InstantiationException e) {
             e.printStackTrace();

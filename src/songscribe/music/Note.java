@@ -23,12 +23,10 @@ Created on 2005.01.06., 21:49:39
 package songscribe.music;
 
 import songscribe.ui.MainFrame;
-import songscribe.data.Interval;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
-import java.util.HashMap;
 
 /**
  * @author Csaba Kávai
@@ -39,15 +37,6 @@ public abstract class Note implements Cloneable {
     public static final Dimension IMAGEDIM = new Dimension(19, 56);
     private static final int[] PITCHES = {71, 72, 74, 76, 77, 79, 81};
     private static final float[] DOTTEDLONGITUDE = {1.0f, 1.5f, 1.75f};
-    private static final HashMap<Integer, Float> TUPLETMODIFIER = new HashMap<Integer, Float>();
-    static{
-        TUPLETMODIFIER.put(2, 3f/4f);
-        TUPLETMODIFIER.put(3, 2f/3f);
-        TUPLETMODIFIER.put(4, 3f/4f);
-        TUPLETMODIFIER.put(5, 4f/5f);
-        TUPLETMODIFIER.put(6, 2f/3f);
-        TUPLETMODIFIER.put(7, 6f/7f);
-    }
 
     public static final Rectangle[] REALNATURALFLATSHARPRECT = {
         new Rectangle(0, 17, 6, 22), new Rectangle(0, 15, 7, 19), new Rectangle(0, 17, 8, 22), new Rectangle(0, 23, 9, 10)
@@ -143,6 +132,9 @@ public abstract class Note implements Cloneable {
     //trill
     protected boolean trill;
 
+    //fermata
+    protected boolean fermata;
+
     protected int syllableMovement;
 
     public enum SyllableRelation{NO, EXTENDER, DASH, ONEDASH}
@@ -179,6 +171,7 @@ public abstract class Note implements Cloneable {
         durationArticulation = note.durationArticulation;
         annotation = note.annotation;
         trill = note.trill;
+        fermata = note.fermata;
         syllableMovement = note.syllableMovement;
     }
 
@@ -302,6 +295,14 @@ public abstract class Note implements Cloneable {
         this.trill = trill;
     }
 
+    public boolean isFermata() {
+        return fermata;
+    }
+
+    public void setFermata(boolean fermata) {
+        this.fermata = fermata;
+    }
+
     public int getSyllableMovement() {
         return syllableMovement;
     }
@@ -350,7 +351,7 @@ public abstract class Note implements Cloneable {
     }
 
     public int getDuration(){
-        return (int)(getDefaultDuration()*DOTTEDLONGITUDE[dotted]);
+        return (int)(getDefaultDuration()*DOTTEDLONGITUDE[dotted]*(fermata?1.5f:1.0f));
     }
 
     public void setLine(Line line) {

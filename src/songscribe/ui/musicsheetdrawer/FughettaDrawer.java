@@ -27,6 +27,7 @@ import songscribe.music.NoteType;
 import songscribe.music.KeyType;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.MainFrame;
+import songscribe.data.FileGeneralPath;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +38,7 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.FileInputStream;
+import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -111,26 +113,13 @@ public class FughettaDrawer extends BaseMsDrawer{
     private static final Ellipse2D.Float[] noteDots = {new Ellipse2D.Float(13.1f, -dotWidth/2, dotWidth, dotWidth),
         new Ellipse2D.Float(15.878f+dotWidth, -dotWidth/2, dotWidth, dotWidth)};
 
-    private static final GeneralPath breathMark = new GeneralPath(1);
-    static{
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("fonts/bm"));
-            int length = ois.readInt();
-            breathMark.moveTo(ois.readFloat(), ois.readFloat());
-            for(int i=0;i<(length-2)/4;i++){
-                breathMark.quadTo(ois.readFloat(), ois.readFloat(), ois.readFloat(), ois.readFloat());
-            }
-            breathMark.closePath();
-            ois.close();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "The breath marks will not be visible. The program is damaged. Please reinstall it.", MainFrame.PACKAGENAME, JOptionPane.ERROR_MESSAGE);
-            logger.error("Breath mark", e);
-        }
-    }
+    private GeneralPath breathMark, fermata;
 
     public FughettaDrawer(MusicSheet ms) throws FontFormatException, IOException {
         super(ms);
         crotchetWidth = upperCrotchetStemX;
+        breathMark = FileGeneralPath.readGeneralPath(new File("fonts/bm"));
+        fermata = FileGeneralPath.readGeneralPath(new File("fonts/fm"));
     }
 
     public void paintNote(Graphics2D g2, Note note, int line, boolean beamed, Color color) {
@@ -184,7 +173,9 @@ public class FughettaDrawer extends BaseMsDrawer{
                     break;
                 case BREATHMARK:
                     g2.scale(0.0625, 0.0625);
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.fill(breathMark);
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                     g2.scale(16, 16);
                     break;
 
@@ -227,6 +218,18 @@ public class FughettaDrawer extends BaseMsDrawer{
 
         //drawing the articulations
         drawArticulation(g2, note, line);
+
+        //drawing the fermata
+        if(note.isFermata()){
+            at = g2.getTransform();
+            g2.translate(note.getXPos()-5, ms.getNoteYPos(getFermataYPos(note), line)+12);
+            g2.scale(0.0625, 0.0625);
+            g2.scale(0.9, 0.8);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.fill(fermata);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            g2.setTransform(at);
+        }
 
         g2.setPaint(Color.black);
     }

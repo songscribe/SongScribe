@@ -36,7 +36,8 @@ public class ImageMsDrawer extends BaseMsDrawer{
     private static final Image TREBLECLEFIMAGE = MainFrame.getImage("trebleClef.gif");
     private static final Image BEGINPARENTHESISIMAGE = MainFrame.getImage("beginparenthesis.gif");
     private static final Image ENDPARENTHESISIMAGE = MainFrame.getImage("endparenthesis.gif");
-    private static final Dimension crotchetDim = new Dimension(Crotchet.REALUPNOTERECT.width-1, Note.IMAGEDIM.height);;
+    private static final Image FERMATAIMAGE = MainFrame.getImage("fermata32.png");
+    private static final Dimension crotchetDim = new Dimension(Crotchet.REALUPNOTERECT.width-1, Note.IMAGEDIM.height);
 
     public ImageMsDrawer(MusicSheet ms) throws FontFormatException, IOException {
         super(ms);
@@ -147,6 +148,11 @@ public class ImageMsDrawer extends BaseMsDrawer{
 
         //drawing the articulations
         drawArticulation(g2, note, line);
+
+        //drawing the fermata
+        if(note.isFermata()){
+            g2.drawImage(FERMATAIMAGE, xPos-5, ms.getNoteYPos(getFermataYPos(note), line), null);
+        }
 
         g2.setPaint(Color.black);
      }

@@ -22,9 +22,12 @@ Created on Apr 22, 2006
 package songscribe;
 
 import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Csaba Kávai
@@ -80,6 +83,12 @@ public class FontLister {
             g2.drawLine(0, image.getHeight()-1, image.getWidth(), image.getHeight()-1);
             g2.drawLine(image.getWidth()-1, 0, image.getWidth()-1, image.getHeight());
             g2.dispose();
+
+            try {
+                ImageIO.write(image, "png", new File("font.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
         }

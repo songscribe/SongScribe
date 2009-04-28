@@ -30,7 +30,6 @@ import songscribe.ui.playsubmenu.PlayMenu;
 
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
@@ -56,7 +55,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
     public static final int MAJORVERSION = 1;
-    public static final int MINORVERSION = 7;
+    public static final int MINORVERSION = 8;
 
     private static Logger logger = Logger.getLogger(MainFrame.class);
 
@@ -462,6 +461,10 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         return musicSheet;
     }
 
+    public void setMusicSheet(MusicSheet musicSheet) {
+        this.musicSheet = musicSheet;
+    }
+
     public SelectSelectionPanel getSelectSelectionPanel() {
         return selectSelectionPanel;
     }
@@ -643,8 +646,8 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
                 g.setFont(new Font("Serif", Font.BOLD, 24));
                 ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.drawString(Utilities.getVersion(), 75, 500);
-                g.setFont(new Font("Serif", Font.BOLD, 13));
-                g.drawString("©2006-2009 Csaba Kavai", 350, 500);
+                g.drawImage(getImage("years.png"), 322, 488, null);
+                g.drawImage(getImage("name.png"), 419, 485, null);
             }
         });
         splashWindow.getRootPane().getGlassPane().setVisible(true);
@@ -673,7 +676,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         try {
             mt.addImage(img, 0);
             mt.waitForID(0);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignored) {}
         return img;
     }
 
@@ -686,7 +689,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         try {
             mt.addImage(img, 0);
             mt.waitForID(0);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignored) {}
         return img;
     }
 
