@@ -21,6 +21,9 @@ public class ImageConverter {
     @ArgumentDescribe("Export image without lyrics under the song")
     public boolean withoutLyrics;
 
+    @ArgumentDescribe("Export image without song title")
+    public boolean withoutSongTitle;
+
     @ArgumentDescribe("Margin around the image in pixels.")
     public int margin=10;
 
@@ -58,6 +61,13 @@ public class ImageConverter {
         if(rightmargin>-1)myBorder.setRight(rightmargin);
         for(File file:files){
             mf.openMusicSheet(file, false);
+            if(withoutLyrics){
+                mf.getMusicSheet().getComposition().setUnderLyrics("");
+                mf.getMusicSheet().getComposition().setTranslatedLyrics("");
+            }
+            if(withoutSongTitle){
+                mf.getMusicSheet().getComposition().setSongTitle("");
+            }
             BufferedImage image = mf.getMusicSheet().createMusicSheetImageForExport(Color.WHITE, (double)resolution/MusicSheet.RESOLUTION, myBorder);
             String fileName = file.getName();
             int dotPos = fileName.indexOf('.');

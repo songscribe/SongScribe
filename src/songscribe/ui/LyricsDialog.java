@@ -26,7 +26,6 @@ import songscribe.music.Composition;
 import songscribe.data.MyJTextArea;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.event.*;
 import java.awt.*;
 
@@ -34,9 +33,14 @@ import java.awt.*;
  * @author Csaba Kávai
  */
 public class LyricsDialog extends MyDialog{
-    JTextArea lyricsArea = new MyJTextArea(6, 30);
-    JTextArea underSongArea = new MyJTextArea(6, 30);
-    JTextArea translatedArea = new MyJTextArea(6, 30);
+    private MyJTextArea lyricsArea;
+    private MyJTextArea underSongArea;
+    private MyJTextArea translatedArea;
+    private JPanel centerPanel;
+    private JPanel charsPanel;
+    private JButton moreButton;
+    private JButton takeButton;
+    private JPanel morePanel;
 
     final static char[][] specChars = {{'\u0103', '\u0101', '\u00f1', '\u00e2'},{'\u0102', '\u0100', '\u00d1', '\u00c2'}};
     final static char[][] specCharsMap = {{'a', 'a', 'n', 'a'}, {'A', 'A', 'N', 'A'}};
@@ -47,21 +51,7 @@ public class LyricsDialog extends MyDialog{
     public LyricsDialog(MainFrame mainFrame) {
         super(mainFrame, "Lyrics");
 
-        JPanel center = new JPanel();
-        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-        center.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JPanel syllabifiedLyricsPanel = new JPanel();
-
-        Border etchedEmpty = BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5 ));
-        syllabifiedLyricsPanel.setBorder(BorderFactory.createTitledBorder(etchedEmpty, "Syllabified lyrics"));
-        syllabifiedLyricsPanel.setLayout(new BoxLayout(syllabifiedLyricsPanel, BoxLayout.Y_AXIS));
-        lyricsArea.setToolTipText("This text is shown under the notes");
-        JScrollPane lyricsScrollPane = new JScrollPane(lyricsArea);
-        lyricsScrollPane.setAlignmentX(0.0f);
-        syllabifiedLyricsPanel.add(lyricsScrollPane);
-        syllabifiedLyricsPanel.add(Box.createVerticalStrut(10));
-
-        JPanel charsPanel = new JPanel(new GridLayout(2, specChars[0].length, 5, 5));
+        charsPanel.setLayout(new GridLayout(2, specChars[0].length, 5, 5));
         for(int i=0;i<2;i++){
             for(int j=0;j<specChars[i].length;j++){
                 JButton button = new JButton(Character.toString(specChars[i][j]));
@@ -69,11 +59,11 @@ public class LyricsDialog extends MyDialog{
                 final int k = i;
                 final int l = j;
                 AbstractAction action = new AbstractAction(){
-                                    public void actionPerformed(ActionEvent e) {
-                                        lyricsArea.insert(Character.toString(specChars[k][l]), lyricsArea.getCaretPosition());
-                                        lyricsArea.requestFocusInWindow();
-                                    }
-                                };
+                    public void actionPerformed(ActionEvent e) {
+                        lyricsArea.insert(Character.toString(specChars[k][l]), lyricsArea.getCaretPosition());
+                        lyricsArea.requestFocusInWindow();
+                    }
+                };
                 button.addActionListener(action);
                 if(specCharStroke[i][j]!=null){
                     button.setToolTipText(NoteType.getCompoundName("", specCharStroke[i][j]));
@@ -82,44 +72,19 @@ public class LyricsDialog extends MyDialog{
                 }
                 charsPanel.add(button);
             }
-            JPanel charsPanelHelper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-            charsPanelHelper.setAlignmentX(0.0f);
-            charsPanelHelper.add(charsPanel);
-            syllabifiedLyricsPanel.add(charsPanelHelper);
         }
-        syllabifiedLyricsPanel.setAlignmentX((0f));
-        center.add(syllabifiedLyricsPanel);
 
-        JPanel underSongLyricsPanel = new JPanel();
-        underSongLyricsPanel.setBorder(BorderFactory.createTitledBorder(etchedEmpty, "Lyrics under the song"));
-        underSongLyricsPanel.setLayout(new BoxLayout(underSongLyricsPanel, BoxLayout.Y_AXIS));
-        underSongArea.setToolTipText("This text is shown under the song");
-        JScrollPane underSongLyricsScrollPane = new JScrollPane(underSongArea);
-        underSongLyricsScrollPane.setAlignmentX(0f);
-        underSongLyricsPanel.add(underSongLyricsScrollPane);
-        underSongLyricsPanel.add(Box.createVerticalStrut(10));
-        JPanel takePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        JButton takeButton = new JButton("Take from syllabified lyrics");
         takeButton.addActionListener(new TakeUnderSongLyricsFromSyllabifiedLyricsAction());
-        takePanel.add(takeButton);
-        takePanel.setAlignmentX(0f);
-        underSongLyricsPanel.add(takePanel);
-        underSongLyricsPanel.setAlignmentX(0f);
-        center.add(Box.createVerticalStrut(15));
-        center.add(underSongLyricsPanel);
+        morePanel.setVisible(false);
+        moreButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                morePanel.setVisible(!morePanel.isVisible());
+                moreButton.setText(morePanel.isVisible() ? "<< Less" : "More >>");
+                pack();
+            }
+        });
 
-        JPanel translatedLyricsPanel = new JPanel();
-        translatedLyricsPanel.setBorder(BorderFactory.createTitledBorder(etchedEmpty, "Translated lyrics"));
-        translatedLyricsPanel.setLayout(new BoxLayout(translatedLyricsPanel, BoxLayout.Y_AXIS));
-        translatedArea.setToolTipText("This text is shown under the song as translation");
-        JScrollPane translatedScrollPane = new JScrollPane(translatedArea);
-        translatedScrollPane.setAlignmentX(0f);
-        translatedLyricsPanel.add(translatedScrollPane);
-        translatedLyricsPanel.setAlignmentX(0f);
-        center.add(Box.createVerticalStrut(15));
-        center.add(translatedLyricsPanel);
-
-        dialogPanel.add(BorderLayout.CENTER, center);
+        dialogPanel.add(BorderLayout.CENTER, centerPanel);
         dialogPanel.add(BorderLayout.SOUTH, southPanel);
     }
 

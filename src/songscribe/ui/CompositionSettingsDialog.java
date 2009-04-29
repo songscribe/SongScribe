@@ -272,7 +272,7 @@ public class CompositionSettingsDialog extends MyDialog{
         yearField.setText(c.getYear());
         rightInfoArea.setText(c.getRightInfo());
         tempoTypeCombo.setSelectedItem(c.getTempo().getTempoType());
-        tempoSpinner.setValue(new Integer(c.getTempo().getVisibleTempo()));
+        tempoSpinner.setValue(c.getTempo().getVisibleTempo());
         tempoDescriptionCombo.setSelectedItem(c.getTempo().getTempoDescription());
         showOnlyDescriptionCheckBox.setSelected(!c.getTempo().isShowTempo());
         keysCombo.setSelectedItem(c.getDefaultKeyType());
@@ -394,7 +394,7 @@ public class CompositionSettingsDialog extends MyDialog{
         }
 
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            return labels[(KeyType)value==KeyType.FLATS ? 0 : 1];
+            return labels[value ==KeyType.FLATS ? 0 : 1];
         }
     }
 
@@ -408,19 +408,26 @@ public class CompositionSettingsDialog extends MyDialog{
             StringBuilder words = new StringBuilder(50);
             int wordsCount=0;
             boolean firstLetter = false;
+            boolean lastHyphen = false;
             goThruString:
             for(int i=0;i<lyrics.length();i++){
                 switch(lyrics.charAt(i)){
                     case ' ':
                     case '\n':
                         wordsCount++;
-                        if(wordsCount==((Number)takeFirstWordsSpinner.getValue()).intValue()){
+                        if(wordsCount>=((Number)takeFirstWordsSpinner.getValue()).intValue()){
                            break goThruString;
                         }
                         words.append(' ');
                         firstLetter = true;
                         break;
                     case '-':
+                        if(lastHyphen){
+                            words.append('-');
+                            wordsCount++;
+                            firstLetter=true;
+                        }
+                        lastHyphen = !lastHyphen;
                     case '_':
                         break;
                     default:
@@ -430,9 +437,13 @@ public class CompositionSettingsDialog extends MyDialog{
                         }else{
                             words.append(lyrics.charAt(i));
                         }
+                        lastHyphen = false;
                 }
-                titleField.setText(words.toString());
             }
+            if(!Character.isLetter(words.charAt(words.length()-1))){
+                words.deleteCharAt(words.length()-1);
+            }
+            titleField.setText(words.toString());
         }
     }
 

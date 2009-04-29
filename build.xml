@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="songscribe" default="all">
+<project name="songscribe" default="dist">
     <property name="output.dir" value="${basedir}/classes_temp"/>
     <property name="jarfile" value="songscribe.jar"/>
     <property name="dist" value="${basedir}/dist"/>
@@ -11,51 +11,12 @@
         <pathelement location="${basedir}/libs/swing-layout.jar"/>
         <pathelement location="${basedir}/libs/MRJToolkitStubs.zip"/>
         <pathelement location="${basedir}/libs/commons-httpclient-3.1.jar"/>
+        <pathelement location="${basedir}/libs/commons-logging-1.1.jar"/>
+        <pathelement location="${basedir}/libs/commons-codec-1.3.jar"/>
         <pathelement location="${basedir}/libs/jdc.jar"/>
     </path>
 
-    <path id="sourcepath">
-        <dirset dir="${basedir}">
-            <include name="src"/>
-        </dirset>
-    </path>
-
-    <target name="init" description="Build initialization">        
-    </target>
-
-    <target name="clean" description="cleanup all">
-        <delete file="${jarfile}"/>
-    </target>
-
-    <target name="compile" description="compile module SongScribe production classes" depends="init, clean" >
-        <mkdir dir="${output.dir}"/>
-        <javac destdir="${output.dir}" target="1.5">
-            <classpath refid="classpath"/>
-            <src refid="sourcepath"/>
-        </javac>
-    </target>
-
-    <target name="jar" description="Jar the files" depends="compile" >
-        <jar destfile="${jarfile}" basedir="${output.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="songscribe.Runner"/>
-            </manifest>
-        </jar>
-        <delete dir="${output.dir}"/>
-    </target>
-
-    <target name="obfuscate" description="Obfuscate with yGuard" depends="jar" >        
-        <taskdef name="yguard"
-            classname="com.yworks.yguard.YGuardTask"
-            classpath="/windows/d/Java/yguard-2.0.1/lib/yguard.jar"/>
-        <yguard>
-            <inoutpair in="${jarfile}" out="${jarfile}"/>
-            <externalclasses refid="classpath"/>
-            <rename mainclass="songscribe.Runner" logfile="rename.log"/>
-        </yguard>
-    </target>
-
-    <target name="dist" depends="jar">
+    <target name="dist">
         <copy todir="${ss}/conf">
             <fileset dir="${basedir}/conf" excludes=".svn"/>
         </copy>
@@ -83,7 +44,7 @@
         <copy todir="${ss}">
             <fileset file="license.txt"/>
             <fileset file="readme.html"/>
-	    <fileset file="launching.txt"/>
+	        <fileset file="launching.txt"/>
             <fileset file="songscribe.jar"/>
         </copy>
         <java classname="songscribe.ChecksumMaker" dir="${ss}" fork="true">
@@ -140,5 +101,4 @@
             <arg value="${ss}"/>
         </java>
     </target>
-    <target name="all" depends="init, clean, compile, jar, dist" description="build all"/>
 </project>

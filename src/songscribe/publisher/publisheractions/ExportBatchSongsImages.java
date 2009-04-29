@@ -53,10 +53,14 @@ public class ExportBatchSongsImages extends AbstractAction {
                 MusicSheet ms = song.getMusicSheet();
                 String lyrics = ms.getComposition().getUnderLyrics();
                 String translatedLyrics = ms.getComposition().getTranslatedLyrics();
+                String songTitle = ms.getComposition().getSongTitle();
                 try {
                     if(exportBatchSongsImagesDialog.exportWithoutLyricsCheckBox.isSelected()){
                         ms.getComposition().setUnderLyrics("");
                         ms.getComposition().setTranslatedLyrics("");
+                    }
+                    if(exportBatchSongsImagesDialog.exportWithoutSongTitlesCheckBox.isSelected()){
+                        ms.getComposition().setSongTitle("");
                     }
                     BufferedImage bi = ms.createMusicSheetImageForExport(Color.white, ((Number)exportBatchSongsImagesDialog.resolutionSpinner.getValue()).doubleValue()/(double) MusicSheet.RESOLUTION, exportBatchSongsImagesDialog.borderPanel.getMyBorder());
                     String fileName = song.getSongFile().getName();
@@ -75,6 +79,9 @@ public class ExportBatchSongsImages extends AbstractAction {
                         ms.getComposition().setUnderLyrics(lyrics);
                         ms.getComposition().setTranslatedLyrics(translatedLyrics);
                     }
+                    if(exportBatchSongsImagesDialog.exportWithoutSongTitlesCheckBox.isSelected()){
+                        ms.getComposition().setSongTitle(songTitle);
+                    }
                 }
                 processDialog.nextValue();
             }
@@ -84,7 +91,7 @@ public class ExportBatchSongsImages extends AbstractAction {
             }else if(successFul>0){
                 JOptionPane.showMessageDialog(publisher, "Successfully exported "+successFul+" songs,\nbut could not export "+(songs.size()-successFul)+" songs.", publisher.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
             }else{
-                publisher.showErrorMessage("No songs were exported!");
+                publisher.showErrorMessage("No song was exported!");
             }
         }
     }
@@ -97,6 +104,7 @@ public class ExportBatchSongsImages extends AbstractAction {
         private JButton chooseFolderButton;
         private JComboBox formatCombo;
         private BorderPanel borderPanel;
+        private JCheckBox exportWithoutSongTitlesCheckBox;
         private PlatformFileDialog directoryChooser;
         private File directory;
 

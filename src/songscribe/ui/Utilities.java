@@ -114,7 +114,7 @@ public class Utilities {
         FileInputStream fis  = new FileInputStream(in);
         FileOutputStream fos = new FileOutputStream(out);
         byte[] buf = new byte[1024];
-        int i = 0;
+        int i;
         while((i=fis.read(buf))!=-1) {
             fos.write(buf, 0, i);
         }

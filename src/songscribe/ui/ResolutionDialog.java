@@ -43,7 +43,8 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
     private JCheckBox withoutLyricsCheck;
     private JSpinner resolutionSpinner;
     private BorderPanel borderPanel;
-    private int msWidth, msHeight, msHeightWL;
+    private JCheckBox exportWithoutTitleCheckBox;
+    private int msWidth, msHeight, msHeightWL, msHeightWT;
 
     public ResolutionDialog(MainFrame mainFrame) {
         super(mainFrame, "Image properties");
@@ -56,6 +57,7 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
         borderPanel.addChangeListener(this);
         resolutionSpinner.addChangeListener(this);
         withoutLyricsCheck.addChangeListener(this);
+        exportWithoutTitleCheckBox.addChangeListener(this);
         resolutionSpinner.setModel(new SpinnerNumberModel(300, 30, 1200, 1));
         dialogPanel.add(BorderLayout.CENTER, mainPanel);
         southPanel = new JPanel();
@@ -76,14 +78,24 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
         String transletedLyrics = composition.getTranslatedLyrics();
         composition.setUnderLyrics("");
         composition.setTranslatedLyrics("");
-        msHeightWL = musicSheet.getSheetHeight();
+        msHeightWL = msHeight-musicSheet.getSheetHeight();
         composition.setUnderLyrics(underLyrics);
         composition.setTranslatedLyrics(transletedLyrics);
+
+        String songTitle = composition.getSongTitle();
+        composition.setSongTitle("");
+        msHeightWT = msHeight-musicSheet.getSheetHeight();
+        composition.setSongTitle(songTitle);
 
         if(underLyrics.length()==0 && transletedLyrics.length()==0){
             withoutLyricsCheck.setSelected(false);
             withoutLyricsCheck.setEnabled(false);
         }else withoutLyricsCheck.setEnabled(true);
+
+        if(composition.getSongTitle().length()==0){
+            exportWithoutTitleCheckBox.setSelected(false);
+            exportWithoutTitleCheckBox.setEnabled(false);
+        }else exportWithoutTitleCheckBox.setEnabled(true);
 
         borderPanel.setExpertBorder(false);
         stateChanged(null);
@@ -106,6 +118,10 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
         return withoutLyricsCheck.isSelected();
     }
 
+    public boolean isWithoutTitle(){
+        return exportWithoutTitleCheckBox.isSelected();
+    }
+
     public MyBorder getBorder(){
         return borderPanel.getMyBorder();
     }
@@ -114,6 +130,9 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
         float scale = (float)getResolution()/(float)MusicSheet.RESOLUTION;
         MyBorder myBorder = borderPanel.getMyBorder();
         widthField.setText(Integer.toString(Math.round(scale*msWidth)+myBorder.getWidth()));
-        heightField.setText(Integer.toString(Math.round(scale*(withoutLyricsCheck.isSelected() ? msHeightWL : msHeight))+myBorder.getHeight()));
+        int height = msHeight;
+        if(withoutLyricsCheck.isSelected())height-=msHeightWL;
+        if(exportWithoutTitleCheckBox.isSelected())height-=msHeightWT;
+        heightField.setText(Integer.toString(Math.round(scale*height)+myBorder.getHeight()));
     }
 }

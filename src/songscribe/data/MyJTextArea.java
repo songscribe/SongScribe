@@ -34,7 +34,12 @@ public class MyJTextArea extends JTextArea {
     static{
         isWindows = System.getProperty("os.name").toLowerCase().indexOf("windows")!=-1;
     }
-                         
+
+    public MyJTextArea() {
+        super();
+        if(isWindows)setFont(fontField);
+    }
+
     public MyJTextArea(int rows, int columns) {
         super(rows, columns);
         if(isWindows)setFont(fontField);

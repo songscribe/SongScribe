@@ -24,6 +24,7 @@ package songscribe.ui.mainframeactions;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.ui.*;
+import songscribe.music.Composition;
 
 import javax.swing.*;
 import javax.imageio.ImageIO;
@@ -81,11 +82,16 @@ public class ExportMusicSheetImageAction extends AbstractAction{
                 return;
             }
             scale = (double)resolutionDialog.getResolution()/(double)MusicSheet.RESOLUTION;
-            String underLyrics = mainFrame.getMusicSheet().getComposition().getUnderLyrics();
-            String transletedLyrics = mainFrame.getMusicSheet().getComposition().getTranslatedLyrics();
+            Composition composition = mainFrame.getMusicSheet().getComposition();
+            String underLyrics = composition.getUnderLyrics();
+            String transletedLyrics = composition.getTranslatedLyrics();
+            String songTitle = composition.getSongTitle();
             if(resolutionDialog.isWithoutLyrics()){
-                mainFrame.getMusicSheet().getComposition().setUnderLyrics("");
-                mainFrame.getMusicSheet().getComposition().setTranslatedLyrics("");
+                composition.setUnderLyrics("");
+                composition.setTranslatedLyrics("");
+            }
+            if(resolutionDialog.isWithoutTitle()){
+                composition.setSongTitle("");
             }
             try {
                 ImageIO.write(mainFrame.getMusicSheet().createMusicSheetImageForExport(Color.white, scale, resolutionDialog.getBorder()), maf.getExtension(0), saveFile);
@@ -97,9 +103,14 @@ public class ExportMusicSheetImageAction extends AbstractAction{
                 mainFrame.showErrorMessage("There is not enough memory for this resolution.");
             }finally{
                 if(resolutionDialog.isWithoutLyrics()){
-                    mainFrame.getMusicSheet().getComposition().setUnderLyrics(underLyrics);
-                    mainFrame.getMusicSheet().getComposition().setTranslatedLyrics(transletedLyrics);
+                    composition.setUnderLyrics(underLyrics);
+                    composition.setTranslatedLyrics(transletedLyrics);
                 }
+                if(resolutionDialog.isWithoutTitle()){
+                    composition.setSongTitle(songTitle);
+                }
+                mainFrame.getMusicSheet().setRepaintImage(true);
+                mainFrame.getMusicSheet().repaint();
             }
         }
     }
