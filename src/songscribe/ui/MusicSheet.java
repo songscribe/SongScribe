@@ -862,8 +862,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public void setComposition(Composition composition){
-        mainFrame.getPlayMenu().getStopAction().actionPerformed(null);
         this.composition = composition;
+        if (composition == null) return;
+        mainFrame.getPlayMenu().getStopAction().actionPerformed(null);
         selectedNotesLine = -1;
         setLineWidth(composition.getLineWidth());
         //global calculate lenghenings

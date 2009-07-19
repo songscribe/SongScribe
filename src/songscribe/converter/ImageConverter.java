@@ -52,7 +52,12 @@ public class ImageConverter {
     }
 
     private void convert(){
-        MainFrame mf = new MainFrame();
+        MainFrame mf = new MainFrame(){
+            @Override
+            public void showErrorMessage(String message) {
+                System.out.println(message);
+            }
+        };
         mf.setMusicSheet(new MusicSheet(mf));
         MyBorder myBorder = new MyBorder(margin);
         if(topmargin>-1)myBorder.setTop(topmargin);
@@ -60,6 +65,7 @@ public class ImageConverter {
         if(bottommargin>-1)myBorder.setBottom(bottommargin);
         if(rightmargin>-1)myBorder.setRight(rightmargin);
         for(File file:files){
+            mf.getMusicSheet().setComposition(null);
             mf.openMusicSheet(file, false);
             if(withoutLyrics){
                 mf.getMusicSheet().getComposition().setUnderLyrics("");

@@ -25,6 +25,7 @@ import songscribe.ui.MainFrame;
 import songscribe.ui.SlideFrame;
 import songscribe.publisher.Publisher;
 import songscribe.converter.ImageConverter;
+import songscribe.converter.MidiConverter;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -54,11 +55,12 @@ public class Runner {
 
         //launching ss
         String ss = System.getProperty("songscribe");
-        if(ss ==null)startFrame(args);
+        if(ss == null)startFrame(args);
         else if(ss.equals("sw"))MainFrame.main(args);
         else if(ss.equals("ss"))SlideFrame.main(args);
         else if(ss.equals("sb"))Publisher.main(args);
         else if(ss.equals("image_converter")) ImageConverter.main(args);
+        else if(ss.equals("midi_converter")) MidiConverter.main(args);
         else startFrame(args);
     }
 

@@ -37,7 +37,7 @@ public class MidiLister {
     static final JFrame frame = new JFrame("MidiLister");
     static JTextField inputFileField = new JTextField(60);
     static JButton openButton = new JButton("Megnyit");
-    static JButton listButton = new JButton("ListĂĄz");
+    static JButton listButton = new JButton("Listáz");
     static JTextArea listArea = new JTextArea(30, 80);
     static File previousFile = new File(".");
 

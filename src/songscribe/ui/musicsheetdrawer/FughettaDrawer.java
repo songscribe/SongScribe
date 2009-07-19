@@ -288,7 +288,7 @@ public class FughettaDrawer extends BaseMsDrawer{
 
         //drawing the dots
         AffineTransform at = g2.getTransform();
-        if(note.getYPos()%2==0)g2.translate(0, (note.isUpper()?-1:1)*size/8);
+        if(note.getYPos()%2==0)g2.translate(0, -size/8);
         if(note.getNoteType()==NoteType.SEMIBREVE)g2.translate(3.5, 0);
         for(int i=0;i<note.getDotted();i++){
             g2.fill(noteDots[i]);

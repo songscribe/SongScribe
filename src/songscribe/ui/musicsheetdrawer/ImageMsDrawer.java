@@ -104,7 +104,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
         for(int i=0;i<note.getDotted();i++){
             g2.drawImage(color==Color.black ? Note.DOTIMAGE : Note.getColoredImage(Note.DOTIMAGE, color),
                     xPos+i*4+(note.getNoteType()==NoteType.SEMIBREVE ? 4 : 0), 
-                    note.getYPos()%2==0 ? yPos+(note.isUpper()?-1:1)*(int)MusicSheet.HALFLINEDIST: yPos, null);
+                    note.getYPos()%2==0 ? yPos-(int)MusicSheet.HALFLINEDIST: yPos, null);
         }
 
         //drawing accidentals
