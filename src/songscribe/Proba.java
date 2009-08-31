@@ -22,7 +22,6 @@ Created on 2005.10.18.
 package songscribe;
 
 import javax.swing.*;
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.geom.*;

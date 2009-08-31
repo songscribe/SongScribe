@@ -3,12 +3,10 @@ package songscribe.publisher.publisheractions;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.imageio.ImageIO;
 import javax.sound.midi.MidiSystem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.ListIterator;
 import java.util.Properties;

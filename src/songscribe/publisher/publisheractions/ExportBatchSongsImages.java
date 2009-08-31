@@ -4,16 +4,12 @@ import songscribe.publisher.Publisher;
 import songscribe.publisher.Page;
 import songscribe.publisher.pagecomponents.Song;
 import songscribe.publisher.pagecomponents.PageComponent;
-import songscribe.ui.MyDialog;
-import songscribe.ui.ProcessDialog;
-import songscribe.ui.MusicSheet;
-import songscribe.ui.BorderPanel;
+import songscribe.ui.*;
 import songscribe.data.DoNotShowException;
 import songscribe.data.FileExtensions;
 import songscribe.data.PlatformFileDialog;
 
 import javax.swing.*;
-import javax.imageio.ImageIO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
@@ -67,9 +63,12 @@ public class ExportBatchSongsImages extends AbstractAction {
                     if(fileName.endsWith(FileExtensions.SONGWRITER))fileName = fileName.substring(0, fileName.length()-FileExtensions.SONGWRITER.length());
                     String extension = exportBatchSongsImagesDialog.formatCombo.getSelectedItem().toString().toLowerCase();
                     fileName+="."+extension;
-                    ImageIO.write(bi, extension, new File(exportBatchSongsImagesDialog.directory, fileName));
+                    Utilities.writeImage(bi, extension, new File(exportBatchSongsImagesDialog.directory, fileName));
                     successFul++;
                 } catch (IOException e) {
+                    publisher.showErrorMessage(Publisher.COULDNOTSAVEMESSAGE+"\n"+song.getSongFile().getName());
+                    logger.error("Saving image", e);
+                } catch (AWTException e) {
                     publisher.showErrorMessage(Publisher.COULDNOTSAVEMESSAGE+"\n"+song.getSongFile().getName());
                     logger.error("Saving image", e);
                 } catch (OutOfMemoryError e){

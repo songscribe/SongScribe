@@ -27,6 +27,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 import songscribe.data.MyDesktop;
 
@@ -126,7 +128,7 @@ public class AboutDialog extends MyDialog{
         copyrightLabel.setText("Copyright:");
 
         copyRight1.setFont(new java.awt.Font("Arial", 0, 14));
-        copyRight1.setText("\u00a9 2006-2007 Csaba Kavai");
+        copyRight1.setText("\u00a9 2006-" + new GregorianCalendar().get(Calendar.YEAR) + " Csaba Kavai");
 
         copyRight2.setFont(new java.awt.Font("Arial", 0, 14));
         copyRight2.setText("All rights reserved.");

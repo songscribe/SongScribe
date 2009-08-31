@@ -24,8 +24,8 @@ package songscribe;
 import songscribe.ui.MainFrame;
 import songscribe.ui.SlideFrame;
 import songscribe.publisher.Publisher;
-import songscribe.converter.ImageConverter;
-import songscribe.converter.MidiConverter;
+import songscribe.commandconverter.ImageConverter;
+import songscribe.commandconverter.MidiConverter;
 
 import java.net.URL;
 import java.net.URLClassLoader;

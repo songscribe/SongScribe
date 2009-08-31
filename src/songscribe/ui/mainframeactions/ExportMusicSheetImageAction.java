@@ -27,9 +27,9 @@ import songscribe.ui.*;
 import songscribe.music.Composition;
 
 import javax.swing.*;
-import javax.imageio.ImageIO;
 import java.awt.event.ActionEvent;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -64,9 +64,10 @@ public class ExportMusicSheetImageAction extends AbstractAction{
             MyAcceptFilter maf = pfd.getFileFilter();
             mainFrame.getProperties().setProperty(Constants.IMAGEEXPORTFILTERPROP, Integer.toString(Utilities.arrayIndexOf(myAcceptFilters, maf)));
             File saveFile = pfd.getFile();
-            if(!(saveFile.getName().toLowerCase().endsWith(maf.getExtension(0)) ||
-                    maf.getExtension(0).equals("jpg") && saveFile.getName().toLowerCase().endsWith(".jpeg"))){
-                saveFile = new File(saveFile.getAbsolutePath()+"."+maf.getExtension(0));
+            String extension = maf.getExtension(0);
+            if(!(saveFile.getName().toLowerCase().endsWith(extension) ||
+                    extension.equals("jpg") && saveFile.getName().toLowerCase().endsWith(".jpeg"))){
+                saveFile = new File(saveFile.getAbsolutePath()+"."+ extension);
             }
             if(saveFile.exists()){
                 int answ = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to owerwrite it?",
@@ -94,11 +95,22 @@ public class ExportMusicSheetImageAction extends AbstractAction{
                 composition.setSongTitle("");
             }
             try {
-                ImageIO.write(mainFrame.getMusicSheet().createMusicSheetImageForExport(Color.white, scale, resolutionDialog.getBorder()), maf.getExtension(0), saveFile);
-                Utilities.openExportFile(mainFrame, saveFile);
+                BufferedImage sheetImageForExport = mainFrame.getMusicSheet().createMusicSheetImageForExport(Color.white,
+                        scale, resolutionDialog.getBorder());
+                boolean successful = Utilities.writeImage(sheetImageForExport, extension, saveFile);
+                if (!successful) {
+                    mainFrame.showErrorMessage("Could not export the image file.\n" +
+                        "The " + extension + " image type might not be supported in your Java version.\n" +
+                        "Try to upgrade your Java version.");
+                } else {
+                    Utilities.openExportFile(mainFrame, saveFile);
+                }
             } catch (IOException e1) {
                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
                 logger.error("Saving image", e1);
+            } catch (AWTException e1) {
+                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
+                 logger.error("Saving image", e1);
             } catch(OutOfMemoryError e1){
                 mainFrame.showErrorMessage("There is not enough memory for this resolution.");
             }finally{

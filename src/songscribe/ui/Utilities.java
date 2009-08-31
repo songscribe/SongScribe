@@ -24,9 +24,13 @@ package songscribe.ui;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.io.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import songscribe.data.MyDesktop;
+import songscribe.data.GifEncoder;
 
 /**
  * @author Csaba Kávai
@@ -103,11 +107,11 @@ public class Utilities {
     }
 
     public static int getFileVersion(){
-        return MainFrame.MAJORVERSION*10000+MainFrame.MINORVERSION*100;
+        return MainFrame.MAJORVERSION * 10000 + MainFrame.MINORVERSION * 100;
     }
 
     public static String getVersion() {
-        return MainFrame.MAJORVERSION +"."+ MainFrame.MINORVERSION;
+        return MainFrame.MAJORVERSION + "." + MainFrame.MINORVERSION;
     }
 
     public static void copyFile(File in, File out) throws IOException {
@@ -134,5 +138,14 @@ public class Utilities {
                 }
             }
         }
+    }
+
+    public static boolean writeImage(BufferedImage image, String extension, File file) throws IOException, AWTException {
+        boolean successful = ImageIO.write(image, extension, file);
+        if (!successful && extension.equalsIgnoreCase("gif")) {
+            GifEncoder.writeFile(image, file);
+            successful = true;
+        }
+        return successful;
     }
 }

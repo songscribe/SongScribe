@@ -55,7 +55,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
     public static final int MAJORVERSION = 1;
-    public static final int MINORVERSION = 8;
+    public static final int MINORVERSION = 9;
 
     private static Logger logger = Logger.getLogger(MainFrame.class);
 
