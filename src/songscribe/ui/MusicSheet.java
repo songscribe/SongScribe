@@ -1569,7 +1569,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public BufferedImage createMusicSheetImageForExport(Color background, double scale, MyBorder border){
-        BufferedImage image = new BufferedImage((int)((getSheetWidth()+border.getWidth())*scale), (int)((getSheetHeight()+border.getHeight())*scale), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage((int)((getSheetWidth())*scale)+border.getWidth(), (int)((getSheetHeight())*scale)+border.getHeight(), BufferedImage.TYPE_INT_RGB);
         createMusicSheetImageForExport(image, background, scale, border);
         return image;
     }
@@ -1577,7 +1577,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     public void createMusicSheetImageForExport(BufferedImage image, Color background, double scale, MyBorder border){
         Graphics2D g2 = image.createGraphics();
         g2.setPaint(background);
-        g2.fillRect(0, 0, image.getWidth()+border.getWidth(), image.getHeight()+border.getHeight());
+        g2.fillRect(0, 0, image.getWidth(), image.getHeight());
         BaseMsDrawer origDrawer = drawer;
         setDrawer(DrawerType.FUGHETTA);
         g2.translate(border.getLeft(), border.getTop());

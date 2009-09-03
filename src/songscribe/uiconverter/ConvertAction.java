@@ -20,11 +20,17 @@ public class ConvertAction extends AbstractAction {
     private UIConverter uiConverter;
     private JTextField songsDirectory;
 
+    public static final int[] GIF_WIDTH = {640, 2240};
+    public static final int[] LEFT_RIGHT_MARGIN = {13, 39};
+    public static final String[] GIF_NAME_POSSIX = {"-normal", "-large"};
+
     public ConvertAction(UIConverter uiConverter, JTextField songsDirectory) {
         this.uiConverter = uiConverter;
         this.songsDirectory = songsDirectory;
         putValue(NAME, "Convert");
         putValue(Action.SMALL_ICON, new ImageIcon(UIConverter.getImage("ok.png")));
+        assert GIF_WIDTH.length == GIF_NAME_POSSIX.length;
+        assert GIF_WIDTH.length == LEFT_RIGHT_MARGIN.length;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -46,7 +52,7 @@ public class ConvertAction extends AbstractAction {
             uiConverter.showErrorMessage("No files in this folder to convert.");
             return;
         }
-        ProcessDialog pd = new ProcessDialog(uiConverter, "Converting...", songFiles.length * 3);
+        ProcessDialog pd = new ProcessDialog(uiConverter, "Converting...", songFiles.length * (2 + GIF_WIDTH.length));
         pd.packAndPos();
         new ConvertThread(songDirectoryFile, songFiles, pd).start();
         pd.setVisible(true);
@@ -57,7 +63,6 @@ public class ConvertAction extends AbstractAction {
         private File songDirectory;
         private File[] songFiles;
         private ProcessDialog processDialog;
-        private static final int DPI = 100;
         private static final String IMAGETYPE = "GIF";
 
         private ConvertThread(File songDirectory, File[] songFiles, ProcessDialog processDialog) {
@@ -68,7 +73,12 @@ public class ConvertAction extends AbstractAction {
 
         @Override
         public void run() {
-            MyBorder myBorder = new MyBorder(10);
+            MyBorder[] myBorders = new MyBorder[LEFT_RIGHT_MARGIN.length];
+            for (int i = 0; i < LEFT_RIGHT_MARGIN.length; i++) {
+                myBorders[i] = new MyBorder();
+                myBorders[i].setLeft(LEFT_RIGHT_MARGIN[i]);
+                myBorders[i].setRight(LEFT_RIGHT_MARGIN[i]);
+            }
 
             Properties props = new Properties(uiConverter.getProperties());
             props.setProperty(Constants.WITHREPEATPROP, Constants.FALSEVALUE);
@@ -82,24 +92,31 @@ public class ConvertAction extends AbstractAction {
                 processDialog.nextValue();
 
                 // producing gif
-                uiConverter.getMusicSheet().getComposition().setUnderLyrics("");
-                uiConverter.getMusicSheet().getComposition().setTranslatedLyrics("");
-                uiConverter.getMusicSheet().getComposition().setSongTitle("");
-                BufferedImage image = uiConverter.getMusicSheet().createMusicSheetImageForExport(Color.WHITE, (double) DPI / MusicSheet.RESOLUTION, myBorder);
+                MusicSheet musicSheet = uiConverter.getMusicSheet();
+                musicSheet.getComposition().setUnderLyrics("");
+                musicSheet.getComposition().setTranslatedLyrics("");
+                musicSheet.getComposition().setSongTitle("");
+                musicSheet.getComposition().setRightInfo("");
+
                 String fileName = songFile.getName();
                 int dotPos = fileName.lastIndexOf('.');
                 if (dotPos > 0) fileName = fileName.substring(0, dotPos);
-                try {
-                    Utilities.writeImage(image, IMAGETYPE, new File(songDirectory, fileName + "." + IMAGETYPE.toLowerCase()));
-                } catch (Exception e) {
-                    uiConverter.showErrorMessage("Could not convert image for " + songFile.getName());
+
+                for(int i = 0; i < GIF_WIDTH.length; i++) {
+                    double scale = (double)(GIF_WIDTH[i] - 2 * LEFT_RIGHT_MARGIN[i]) / musicSheet.getSheetWidth();
+                    BufferedImage image = musicSheet.createMusicSheetImageForExport(Color.WHITE, scale, myBorders[i]);
+                    try {
+                        Utilities.writeImage(image, IMAGETYPE, new File(songDirectory, fileName + GIF_NAME_POSSIX[i] + "." + IMAGETYPE.toLowerCase()));
+                    } catch (Exception e) {
+                        uiConverter.showErrorMessage("Could not convert image for " + songFile.getName());
+                    }
+                    processDialog.nextValue();
                 }
-                processDialog.nextValue();
 
                 // producing MIDI
-                uiConverter.getMusicSheet().getComposition().musicChanged(props);
+                musicSheet.getComposition().musicChanged(props);
                 try {
-                    MidiSystem.write(uiConverter.getMusicSheet().getComposition().getSequence(), 1, new File(songDirectory, fileName + ".midi"));
+                    MidiSystem.write(musicSheet.getComposition().getSequence(), 1, new File(songDirectory, fileName + ".midi"));
                 } catch (IOException e) {
                     uiConverter.showErrorMessage("Could not convert MIDI for " + songFile.getName());
                 }

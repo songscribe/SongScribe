@@ -2,11 +2,16 @@ package songscribe.uiconverter;
 
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
+import songscribe.data.FileExtensions;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
 
 import com.apple.mrj.MRJApplicationUtils;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Logger;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,14 +22,19 @@ import java.beans.PropertyChangeEvent;
 import java.io.File;
 
 public class UIConverter extends MainFrame {
+    private static Logger LOGGER = Logger.getLogger(UIConverter.class);
+
     private JPanel mainPanel;
     private JTextField songsFolder;
     private JButton chooseButton;
     private JButton convertButton;
-    private JPanel countPanel;
-    private JTextField countField;
-    private JButton listOfSongsButton;
-    private JButton helpForSongFileButton;
+    private JPanel songsSummaryPanel;
+    private JTable acceptedTable;
+    private JButton numberSongButton;
+    private JList rejectList;
+    private DefaultTableModel acceptedTableModel = new DefaultTableModel();
+    private DefaultListModel rejectListModel = new DefaultListModel();
+    private File currentDir;
 
     public UIConverter() {
         PROGNAME = "Song Converter";
@@ -51,13 +61,19 @@ public class UIConverter extends MainFrame {
         chooseDirectoryAction.addPropertyChangeListener(new DirectorySelectionChangeListener());
         chooseButton.setAction(chooseDirectoryAction);
         convertButton.setAction(new ConvertAction(this, songsFolder));
-        countPanel.setVisible(false);
+        songsSummaryPanel.setVisible(false);
         convertButton.setEnabled(false);
-        helpForSongFileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                showLegalNamingMessage();
+        acceptedTableModel.addColumn("Number");
+        acceptedTableModel.addColumn("Title");
+        acceptedTable.setModel(acceptedTableModel);
+        acceptedTable.getColumnModel().getColumn(0).setMaxWidth(60);
+        acceptedTableModel.addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                convertButton.setEnabled(acceptedTableModel.getRowCount() > 0);
             }
         });
+        rejectList.setModel(rejectListModel);
+        numberSongButton.addActionListener(new NumberSongAction());
         getContentPane().add(mainPanel);
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
@@ -68,13 +84,22 @@ public class UIConverter extends MainFrame {
         public void propertyChange(PropertyChangeEvent evt) {
             if(evt.getPropertyName().equals("directorychange")){
                 File newDir = (File) evt.getNewValue();
+                currentDir = newDir;
                 songsFolder.setText(newDir.getAbsolutePath());
-                int legalSongsCount = getLegalSongs(newDir);
-                countField.setText(Integer.toString(legalSongsCount));
-                listOfSongsButton.setEnabled(legalSongsCount > 0);
-                convertButton.setEnabled(legalSongsCount > 0);
-                countPanel.setVisible(true);
+                acceptedTableModel.setRowCount(0);
+                rejectListModel.clear();
+                for(File file: newDir.listFiles()) {
+                    String fileName = file.getName();
+                    if(isLegalFileName(fileName)) {
+                        acceptedTableModel.addRow(new Object[]{fileName.substring(0, 3), fileName.substring(4, fileName.length() - FileExtensions.SONGWRITER.length())});
+                    } else if(fileName.endsWith(FileExtensions.SONGWRITER)){
+                        rejectListModel.addElement(fileName.substring(0, fileName.length() - FileExtensions.SONGWRITER.length()));
+                    }
+                }
+
+                songsSummaryPanel.setVisible(true);
                 pack();
+                setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
             }
         }
     }
@@ -87,31 +112,53 @@ public class UIConverter extends MainFrame {
 
     public boolean isLegalFileName(String fileName) {
         return fileName.length() >= 10 &&
-                fileName.endsWith(".mssw") &&
+                fileName.endsWith(FileExtensions.SONGWRITER) &&
                 Character.isDigit(fileName.charAt(0)) &&
                 Character.isDigit(fileName.charAt(1)) &&
                 Character.isDigit(fileName.charAt(2)) &&
                 (fileName.charAt(3)==' ' || fileName.charAt(3)=='-');
     }
 
-    private void showLegalNamingMessage() {
-        JOptionPane.showMessageDialog(this,
-                "The songs files are accepted for batch coversion that meets the following requirements:\n" +
-                "1. The extension of file must be '.mssw'\n" +
-                "2. The first three character must be a digit indicating the number of song in the songbook.\n" +
-                "3. The first three digits must be followed by a space or dash\n" +
-                "E.g. a good name is '008 Minati Janabo.mssw'");
-    }
-
-    private int getLegalSongs(File dir) {
-        int count = 0;
-        for(File file: dir.listFiles()) {
-            String fileName = file.getName();
-            if(isLegalFileName(fileName)) {
-                count++;
+    private class NumberSongAction implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String selectedSong = (String) rejectList.getSelectedValue();
+            if (selectedSong ==null) {
+                showErrorMessage("No rejected song is selected.");
+                return;
             }
-        }
-        return count;
-    }
+            String numberStr = JOptionPane.showInputDialog(UIConverter.this, "Enter the number of song:");
+            if (numberStr ==null) {
+                return;
+            }
+            int number;
+            try{
+                number = Integer.parseInt(numberStr);
+            }catch(NumberFormatException nfe){
+                showErrorMessage("The value could not be recognized as a number");
+                return;
+            }
+            if (number<1 || number>999) {
+                showErrorMessage("The number must be between 1 and 999");
+                return;
+            }
+            numberStr = String.format("%03d", number);
+            File originalSongFile = new File(currentDir, selectedSong + FileExtensions.SONGWRITER);
+            File renamedSongFile = new File(currentDir, numberStr + " " + selectedSong + FileExtensions.SONGWRITER);
 
+            if(!isLegalFileName(renamedSongFile.getName())){
+                showErrorMessage("An inner problem occured. Numbering failed. Contact the developer!");
+                LOGGER.error("The renamed file did not pass the isLegalFileName method: " + renamedSongFile.getName());
+                return;
+            }
+
+            boolean renameSuccessful = originalSongFile.renameTo(renamedSongFile);
+            if(!renameSuccessful) {
+                showErrorMessage("Numbering the song was not successful, because the file-rename failed.\nTry to rename the corresponding file manually.");
+                return;
+            }
+
+            rejectListModel.removeElement(selectedSong);
+            acceptedTableModel.addRow(new Object[]{numberStr, selectedSong});
+        }
+    }
 }
