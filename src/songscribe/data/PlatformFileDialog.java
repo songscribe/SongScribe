@@ -31,6 +31,7 @@ import java.io.File;
 
 import com.jtechlabs.ui.widget.directorychooser.JDirectoryChooser;
 import com.jtechlabs.ui.widget.directorychooser.DirectoryChooserDefaults;
+import org.apache.log4j.Logger;
 
 /**
  * @author Csaba Kávai
@@ -44,6 +45,8 @@ public class PlatformFileDialog {
     private boolean directoriesOnly;
     private MyAcceptFilter[] mafs;
     private int initial;
+
+    private static Logger LOG = Logger.getLogger(PlatformFileDialog.class);
 
     public PlatformFileDialog(MainFrame mainFrame, String title, boolean isOpen, MyAcceptFilter maf) {
         this(mainFrame, title, isOpen, false);
@@ -128,7 +131,7 @@ public class PlatformFileDialog {
     public File getFile(){
         File file;
         if(Utilities.isMac()){
-            file = !directoriesOnly ? new File(fd.getDirectory(), fd.getFile()) : new File(fd.getDirectory());
+            file = new File(fd.getDirectory(), fd.getFile());
         }else{
             file = !directoriesOnly ? jfc.getSelectedFile() : selectedDirectory;
         }

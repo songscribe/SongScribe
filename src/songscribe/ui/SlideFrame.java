@@ -70,12 +70,6 @@ public class SlideFrame extends MainFrame{
         lastWordForDoYouWannaSaveDialog = "list";
         setTitle(PROGNAME);
         setIconImage(getImage("ssicon.png"));
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                exitAction.actionPerformed(null);
-            }
-        });
         try {
             saxParser = SAXParserFactory.newInstance().newSAXParser();
         } catch (Exception e) {

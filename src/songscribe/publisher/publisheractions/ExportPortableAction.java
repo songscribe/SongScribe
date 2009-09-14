@@ -34,6 +34,7 @@ import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.pagecomponents.PageComponent;
 import songscribe.publisher.pagecomponents.Song;
 import songscribe.publisher.pagecomponents.PImage;
+import songscribe.ui.Utilities;
 
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -138,13 +139,7 @@ public class ExportPortableAction extends AbstractAction {
             int lastdotIndex = fileName.lastIndexOf('.');
             fileName = fileName.substring(0, lastdotIndex)+"_"+value.toString()+fileName.substring(lastdotIndex);
         }
-        zos.putNextEntry(new ZipEntry(fileName));
-        FileInputStream fis = new FileInputStream(file);
-        int read;
-        while((read=fis.read(buf))>0){
-            zos.write(buf, 0, read);
-        }
-        fis.close();
+        Utilities.zipFile(zos, file, fileName, buf);
         return fileName;
     }
 }

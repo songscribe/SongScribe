@@ -81,14 +81,8 @@ public class Publisher extends MainFrame {
         lastWordForDoYouWannaSaveDialog = "song book";
         setTitle(PROGNAME);
         setIconImage(getImage("sbicon.png"));
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         Rectangle maximumWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         setPreferredSize(new Dimension(maximumWindowBounds.width*3/4, maximumWindowBounds.height));
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                exitAction.actionPerformed(null);
-            }
-        });
         try {
             saxParser = SAXParserFactory.newInstance().newSAXParser();
         } catch (Exception e) {

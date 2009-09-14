@@ -39,21 +39,19 @@ public class UIConverter extends MainFrame {
     public UIConverter() {
         PROGNAME = "Song Converter";
         lastWordForDoYouWannaSaveDialog = null;
-        MRJApplicationUtils.registerPrefsHandler(null);
-        MRJApplicationUtils.registerOpenDocumentHandler(null);
-        MRJApplicationUtils.registerOpenApplicationHandler(null);
-        MRJApplicationUtils.registerPrintDocumentHandler(null);
+
+        MRJApplicationUtils.registerAboutHandler(this);
+        MRJApplicationUtils.registerQuitHandler(this);
 
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
+
+        exitAction = new ExitAction() {
+            public void actionPerformed(ActionEvent e) {
                 closeMidi();
                 System.exit(0);
             }
-        });
+        };
 
         musicSheet = new MusicSheet(this);
 

@@ -38,12 +38,12 @@ public class MyDesktop {
     private static Class clazz;
     private Object desktop;
 
-    public MyDesktop(Object desktop) {
+    private MyDesktop(Object desktop) {
         this.desktop = desktop;
     }
 
     public void browse(URI uri) {
-        if(supported){
+        if(isSupported(Action.BROWSE)){
             try{
                 clazz.getMethod("browse", URI.class).invoke(desktop, uri);
             }catch(Exception e){
@@ -53,7 +53,7 @@ public class MyDesktop {
     }
 
     public void mail(URI uri) {
-        if(supported){
+        if(isSupported(Action.MAIL)){
             try{
                 clazz.getMethod("mail", URI.class).invoke(desktop, uri);
             }catch(Exception e){
@@ -63,7 +63,7 @@ public class MyDesktop {
     }
 
     public void open(File file) throws Exception {
-        if(supported){
+        if(isSupported(Action.OPEN)){
             try{
                 clazz.getMethod("open", File.class).invoke(desktop, file);
             }catch(NoSuchMethodException e){
@@ -97,7 +97,7 @@ public class MyDesktop {
 
 
     public static MyDesktop getDesktop() {
-        if(supported){
+        if(isDesktopSupported()){
             try{
                 return new MyDesktop(clazz.getMethod("getDesktop").invoke(null));
             }catch(Exception e){
@@ -107,8 +107,8 @@ public class MyDesktop {
         }else return null;
     }
 
-    public boolean isSupported(Action p) {
-        if(supported){
+    private boolean isSupported(Action p) {
+        if(isDesktopSupported()){
             try {                
                 Class actionClass = Class.forName("java.awt.Desktop$Action");
                 Object action = actionClass.getMethod("valueOf", String.class).invoke(null, p.name());

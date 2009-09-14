@@ -51,4 +51,5 @@ public class Constants {
     public static final String AUTOUPDATEPERIOD = "autoupdateperiod";
     public static final String METRIC = "metric";
     public static final String FIRSTRUN = "firstrun";
+    public static final String BOOKUPLOADURL = "bookuploadurl";
 }

@@ -28,6 +28,9 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipEntry;
+import java.net.URI;
 
 import songscribe.data.MyDesktop;
 import songscribe.data.GifEncoder;
@@ -129,13 +132,34 @@ public class Utilities {
     public static void openExportFile(MainFrame mainFrame, File file){
         if(MyDesktop.isDesktopSupported()){
             MyDesktop desktop = MyDesktop.getDesktop();
-            if(desktop.isSupported(MyDesktop.Action.OPEN) &&
-                    JOptionPane.showConfirmDialog(mainFrame, "Do you want to open the file?", mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)==JOptionPane.YES_OPTION){
+            if(JOptionPane.showConfirmDialog(mainFrame, "Do you want to open the file?", mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)==JOptionPane.YES_OPTION){
                 try {
                     desktop.open(file);
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(mainFrame, "Could not open the file.", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
+                    mainFrame.showErrorMessage("Could not open the file.");
                 }
+            }
+        }
+    }
+
+    public static void openWebPage(MainFrame mainFrame, String webPage){
+        if(MyDesktop.isDesktopSupported()){
+            MyDesktop desktop = MyDesktop.getDesktop();
+            try {
+                desktop.browse(new URI(webPage));
+            } catch (Exception e) {
+                mainFrame.showErrorMessage("Could not open the webpage.");
+            }
+        }
+    }
+
+    public static void openEmail(MainFrame mainFrame, String email){
+        if(MyDesktop.isDesktopSupported()){
+            MyDesktop desktop = MyDesktop.getDesktop();
+            try {
+                desktop.mail(new URI("mailto", email, null));
+            } catch (Exception e) {
+                mainFrame.showErrorMessage("Could not open the webpage.");
             }
         }
     }
@@ -147,5 +171,17 @@ public class Utilities {
             successful = true;
         }
         return successful;
+    }
+
+    public static String zipFile(ZipOutputStream zos, File file, String requestName, byte[] buf) throws IOException {
+        String fileName = requestName == null ? file.getName() : requestName;
+        zos.putNextEntry(new ZipEntry(fileName));
+        FileInputStream fis = new FileInputStream(file);
+        int read;
+        while((read=fis.read(buf))>0){
+            zos.write(buf, 0, read);
+        }
+        fis.close();
+        return fileName;
     }
 }

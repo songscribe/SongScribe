@@ -28,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.io.File;
-import java.net.URI;
 
 import songscribe.data.MyDesktop;
 
@@ -38,7 +37,6 @@ import songscribe.data.MyDesktop;
 public class ReportBugDialog extends MyDialog {
     private static final Logger logger = Logger.getLogger(ReportBugDialog.class);
     public static final String BUGEMAIL = "songscribe@vasudevaserver.org";
-    private MyDesktop desktop;
 
     public ReportBugDialog(MainFrame mainFrame) {
         super(mainFrame, "Bug report");
@@ -57,7 +55,7 @@ public class ReportBugDialog extends MyDialog {
         southPanel.remove(applyButton);
         southPanel.remove(cancelButton);
         final MainFrame mf = mainFrame;
-        if(MyDesktop.isDesktopSupported() && (desktop= MyDesktop.getDesktop()).isSupported(MyDesktop.Action.MAIL)){
+        if(MyDesktop.isDesktopSupported()){
             JButton sendBug = new JButton("Send a report", new ImageIcon(MainFrame.getImage("mail_generic.png")));
             sendBug.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
@@ -80,7 +78,7 @@ public class ReportBugDialog extends MyDialog {
                     sb.append(System.getProperty("java.vm.version"));
                     sb.append("\nDescription:\n-------------Write your report here---------------");
                     try {
-                        desktop.mail(new URI("mailto", sb.toString(), null));
+                        Utilities.openEmail(mf, sb.toString());
                     } catch (Exception e1) {
                         mf.showErrorMessage("Cannot open the e-mail client. Please make your report manually as described above.");
                         logger.error("Report mail send", e1);

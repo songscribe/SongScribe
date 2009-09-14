@@ -48,7 +48,42 @@ public class XML {
     public static void writeValue(PrintWriter pw, String tag, String value){
         for(int i=0;i<indent;i++)pw.print(" ");
         pw.print("<");pw.print(tag);pw.print(">");
-        pw.print(value);
+        pw.print(escapeXML(value));
         pw.print("</");pw.print(tag);pw.println(">");
+    }
+
+    /**
+     * Replace special characters with XML escapes:
+     * <pre>
+     * &amp; <small>(ampersand)</small> is replaced by &amp;amp;
+     * &lt; <small>(less than)</small> is replaced by &amp;lt;
+     * &gt; <small>(greater than)</small> is replaced by &amp;gt;
+     * &quot; <small>(double quote)</small> is replaced by &amp;quot;
+     * </pre>
+     * @param string The string to be escaped.
+     * @return The escaped string.
+     */
+    public static String escapeXML(String string) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, len = string.length(); i < len; i++) {
+            char c = string.charAt(i);
+            switch (c) {
+            case '&':
+                sb.append("&amp;");
+                break;
+            case '<':
+                sb.append("&lt;");
+                break;
+            case '>':
+                sb.append("&gt;");
+                break;
+            case '"':
+                sb.append("&quot;");
+                break;
+            default:
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 }

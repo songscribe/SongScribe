@@ -11,26 +11,25 @@ import javax.sound.midi.MidiSystem;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.awt.*;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
+import java.util.zip.ZipOutputStream;
 
 public class ConvertAction extends AbstractAction {
     private UIConverter uiConverter;
     private JTextField songsDirectory;
 
-    public static final int[] GIF_WIDTH = {640, 2240};
-    public static final int[] LEFT_RIGHT_MARGIN = {13, 39};
-    public static final String[] GIF_NAME_POSSIX = {"-normal", "-large"};
+    public static final int[] IMAGE_WIDTH = {/*640, */2240};
+    public static final int[] LEFT_RIGHT_MARGIN = {/*13, */39};
+    public static final String[] IMAGE_NAME_POSSIX = {/*"-s", */"-l"};
 
     public ConvertAction(UIConverter uiConverter, JTextField songsDirectory) {
         this.uiConverter = uiConverter;
         this.songsDirectory = songsDirectory;
         putValue(NAME, "Convert");
         putValue(Action.SMALL_ICON, new ImageIcon(UIConverter.getImage("ok.png")));
-        assert GIF_WIDTH.length == GIF_NAME_POSSIX.length;
-        assert GIF_WIDTH.length == LEFT_RIGHT_MARGIN.length;
+        assert IMAGE_WIDTH.length == IMAGE_NAME_POSSIX.length;
+        assert IMAGE_WIDTH.length == LEFT_RIGHT_MARGIN.length;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -52,18 +51,17 @@ public class ConvertAction extends AbstractAction {
             uiConverter.showErrorMessage("No files in this folder to convert.");
             return;
         }
-        ProcessDialog pd = new ProcessDialog(uiConverter, "Converting...", songFiles.length * (2 + GIF_WIDTH.length));
+        ProcessDialog pd = new ProcessDialog(uiConverter, "Converting...", songFiles.length * (3 + IMAGE_WIDTH.length * 2));
         pd.packAndPos();
         new ConvertThread(songDirectoryFile, songFiles, pd).start();
         pd.setVisible(true);
-        JOptionPane.showMessageDialog(uiConverter, "Successfully converted.");
     }
 
     private class ConvertThread extends Thread {
         private File songDirectory;
         private File[] songFiles;
         private ProcessDialog processDialog;
-        private static final String IMAGETYPE = "GIF";
+        private static final String IMAGETYPE = "PNG";
 
         private ConvertThread(File songDirectory, File[] songFiles, ProcessDialog processDialog) {
             this.songDirectory = songDirectory;
@@ -85,44 +83,74 @@ public class ConvertAction extends AbstractAction {
             props.setProperty(Constants.INSTRUMENTPROP, Integer.toString(0));
             props.setProperty(Constants.TEMPOCHANGEPROP, Integer.toString(100));
 
-            for (File songFile : songFiles) {
-                //loading file
-                uiConverter.getMusicSheet().setComposition(null);
-                uiConverter.openMusicSheet(songFile, false);
-                processDialog.nextValue();
+            try {
+                File zipFile = new File(songDirectory.getParentFile(), songDirectory.getName() + ".zip");
+                ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+                byte[] buf = new byte[1024];
 
-                // producing gif
-                MusicSheet musicSheet = uiConverter.getMusicSheet();
-                musicSheet.getComposition().setUnderLyrics("");
-                musicSheet.getComposition().setTranslatedLyrics("");
-                musicSheet.getComposition().setSongTitle("");
-                musicSheet.getComposition().setRightInfo("");
+                for (File songFile : songFiles) {
+                    //loading file
+                    uiConverter.getMusicSheet().setComposition(null);
+                    uiConverter.openMusicSheet(songFile, false);
+                    Utilities.zipFile(zos, songFile, null, buf);
+                    processDialog.nextValue();
 
-                String fileName = songFile.getName();
-                int dotPos = fileName.lastIndexOf('.');
-                if (dotPos > 0) fileName = fileName.substring(0, dotPos);
+                    // producing images
+                    MusicSheet musicSheet = uiConverter.getMusicSheet();
+                    musicSheet.getComposition().setUnderLyrics("");
+                    musicSheet.getComposition().setTranslatedLyrics("");
+                    musicSheet.getComposition().setSongTitle("");
+                    musicSheet.getComposition().setRightInfo("");
 
-                for(int i = 0; i < GIF_WIDTH.length; i++) {
-                    double scale = (double)(GIF_WIDTH[i] - 2 * LEFT_RIGHT_MARGIN[i]) / musicSheet.getSheetWidth();
-                    BufferedImage image = musicSheet.createMusicSheetImageForExport(Color.WHITE, scale, myBorders[i]);
+                    String fileName = songFile.getName();
+                    int dotPos = fileName.lastIndexOf('.');
+                    if (dotPos > 0) fileName = fileName.substring(0, dotPos);
+
+                    for(int i = 0; i < IMAGE_WIDTH.length; i++) {
+                        double scale = (double)(IMAGE_WIDTH[i] - 2 * LEFT_RIGHT_MARGIN[i]) / musicSheet.getSheetWidth();
+                        BufferedImage image = musicSheet.createMusicSheetImageForExport(Color.WHITE, scale, myBorders[i]);
+                        File imageFile = new File(songDirectory, fileName + IMAGE_NAME_POSSIX[i] + "." + IMAGETYPE.toLowerCase());
+                        try {
+                            Utilities.writeImage(image, IMAGETYPE, imageFile);
+                        } catch (Exception e) {
+                            imageFile = null;
+                            uiConverter.showErrorMessage("Could not convert image for " + songFile.getName());
+                        } finally{
+                            processDialog.nextValue();
+                        }
+                        if (imageFile != null) {
+                            Utilities.zipFile(zos, imageFile, null, buf);
+                        }
+                        processDialog.nextValue();
+                    }
+
+                    // producing MIDI
+                    musicSheet.getComposition().musicChanged(props);
+                    File midiFile = new File(songDirectory, fileName + ".mid");
                     try {
-                        Utilities.writeImage(image, IMAGETYPE, new File(songDirectory, fileName + GIF_NAME_POSSIX[i] + "." + IMAGETYPE.toLowerCase()));
-                    } catch (Exception e) {
-                        uiConverter.showErrorMessage("Could not convert image for " + songFile.getName());
+                        MidiSystem.write(musicSheet.getComposition().getSequence(), 1, midiFile);
+                    } catch (IOException e) {
+                        midiFile = null;
+                        uiConverter.showErrorMessage("Could not convert MIDI for " + songFile.getName());
+                    } finally {
+                        processDialog.nextValue();
+                    }
+
+                    if (midiFile != null) {
+                        Utilities.zipFile(zos, midiFile, null, buf);
                     }
                     processDialog.nextValue();
                 }
+                zos.close();
 
-                // producing MIDI
-                musicSheet.getComposition().musicChanged(props);
-                try {
-                    MidiSystem.write(musicSheet.getComposition().getSequence(), 1, new File(songDirectory, fileName + ".midi"));
-                } catch (IOException e) {
-                    uiConverter.showErrorMessage("Could not convert MIDI for " + songFile.getName());
-                }
-                processDialog.nextValue();
+                JOptionPane.showMessageDialog(processDialog, "Conversion complete!");
+
+                Utilities.openWebPage(uiConverter, uiConverter.getProperties().getProperty(Constants.BOOKUPLOADURL));
+            } catch (IOException e) {
+                uiConverter.showErrorMessage("Error while producing ZIP file.");
+            } finally {
+                processDialog.setVisible(false);
             }
-            processDialog.setVisible(false);
         }
     }
 }

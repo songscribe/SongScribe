@@ -36,9 +36,6 @@ import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.mainframeactions.PlayActiveNoteThread;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import java.awt.*;
@@ -48,12 +45,16 @@ import java.util.Vector;
 import java.util.Properties;
 import java.util.ListIterator;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Csaba Kávai
  *
  */
 
 public final class MusicSheet extends JComponent implements MouseListener, MouseMotionListener, PropertyChangeListener, FocusListener, MetaEventListener{
+    private static Logger LOG = Logger.getLogger(MusicSheet.class);
+
     //view constants
     private static final int[] NOTEDIST = {70, 50, 35, 25, 25, 25, 70, 50, 35, 25, 25, 25, 30, 0, 25, 25, 25, 15, 20, 20, 20, 0};
     //private static final int ND = 35;
@@ -181,9 +182,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
     private BaseMsDrawer drawer;
     private BaseMsDrawer[] drawers = new BaseMsDrawer[2];
-
-    //paging
-    private int pageNum;
 
     public MusicSheet(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -464,9 +462,11 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public static int calculateLastNoteXPos(Line line, Note note){
-        Note lastNote = line.noteCount()>0 ? line.getNote(line.noteCount()-1) : null;
-        return line.noteCount()==0 ? startLocX :
-                lastNote.getXPos()+Math.round((NOTEDIST[lastNote.getNoteType().ordinal()]+note.getAccidental().getNb()*FIXPREFIXWIDTH+(note.isAccidentalInParenthesis()?8:0))*line.getNoteDistChangeRatio());
+        if (line.noteCount() == 0) {
+            return startLocX;
+        }
+        Note lastNote = line.getNote(line.noteCount()-1);
+        return lastNote.getXPos()+Math.round((NOTEDIST[lastNote.getNoteType().ordinal()]+note.getAccidental().getNb()*FIXPREFIXWIDTH+(note.isAccidentalInParenthesis()?8:0))*line.getNoteDistChangeRatio());
                 //lastNote.getXPos()+Math.round((ND+note.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
     }
 
@@ -1337,7 +1337,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         public void run() {
             try {
                 sleep(500);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                LOG.error(e);
+            }
             MusicSheet.this.requestFocusInWindow();
         }
     }
@@ -1569,7 +1571,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public BufferedImage createMusicSheetImageForExport(Color background, double scale, MyBorder border){
-        BufferedImage image = new BufferedImage((int)((getSheetWidth())*scale)+border.getWidth(), (int)((getSheetHeight())*scale)+border.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage((int)((getSheetWidth())*scale)+border.getWidth(), (int)((getSheetHeight())*scale)+border.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
         createMusicSheetImageForExport(image, background, scale, border);
         return image;
     }

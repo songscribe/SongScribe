@@ -55,9 +55,9 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
     public static final int MAJORVERSION = 1;
-    public static final int MINORVERSION = 9;
+    public static final int MINORVERSION = 10;
 
-    private static Logger logger = Logger.getLogger(MainFrame.class);
+    private static Logger LOG = Logger.getLogger(MainFrame.class);
 
     public static Sequencer sequencer;
     public static Receiver receiver;
@@ -100,7 +100,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
             defaultProps.load(new FileInputStream(DEFPROPSFILE));
         } catch (IOException e) {
             showErrorMessage("The program could not start, because a necessay file is not available. Please reinstall the software.");
-            logger.error("Could not read default properties file.", e);
+            LOG.error("Could not read default properties file.", e);
             System.exit(0);
         }
     }
@@ -109,7 +109,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
         try {
             properties.load(new FileInputStream(PROPSFILE));
         }catch (IOException e) {
-            logger.error("Could not read properties file.", e);
+            LOG.error("Could not read properties file.", e);
         }
     }
     private final ProfileManager profileManager = new ProfileManager(this);
@@ -152,40 +152,43 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
             saxParser = SAXParserFactory.newInstance().newSAXParser();
         } catch (Exception e) {
             showErrorMessage(PROGNAME+" cannot start because of an initialization error.");
-            logger.error("SaxParser configuration", e);
+            LOG.error("SaxParser configuration", e);
             System.exit(0);
         }
-        MRJApplicationUtils.registerAboutHandler(this);
-        MRJApplicationUtils.registerPrefsHandler(this);
-        MRJApplicationUtils.registerQuitHandler(this);
-        MRJApplicationUtils.registerOpenDocumentHandler(this);
-        MRJApplicationUtils.registerOpenApplicationHandler(this);
-        MRJApplicationUtils.registerPrintDocumentHandler(this);
-    }
-
-    private void firstRun() {
-        File ssDocs = new File(new JFileChooser().getCurrentDirectory(), "SongScribe");
-        ssDocs.mkdir();
-        for(File file:new File("examples").listFiles()){
-            try {
-                Utilities.copyFile(file, new File(ssDocs, file.getName()));
-            } catch (IOException e) {
-                logger.error("Cannot copy example file", e);
-            }
-        }
-        previousDirectory = ssDocs;
-        properties.setProperty(Constants.FIRSTRUN, Constants.FALSEVALUE);
-    }
-
-    public void initFrame(){
-        setTitle(PROGNAME);
-        setIconImage(getImage("swicon.png"));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 exitAction.actionPerformed(null);
             }
         });
+    }
+
+    private void firstRun() {
+        File ssDocs = new File(new JFileChooser().getCurrentDirectory(), "SongScribe");
+        boolean ssDocsCreated = ssDocs.mkdir();
+        if(ssDocsCreated){
+            for(File file:new File("examples").listFiles()){
+                try {
+                    Utilities.copyFile(file, new File(ssDocs, file.getName()));
+                } catch (IOException e) {
+                    LOG.error("Cannot copy example file", e);
+                }
+            }
+            previousDirectory = ssDocs;
+        }
+        properties.setProperty(Constants.FIRSTRUN, Constants.FALSEVALUE);
+    }
+
+    public void initFrame(){
+        setTitle(PROGNAME);
+        setIconImage(getImage("swicon.png"));
+
+        MRJApplicationUtils.registerAboutHandler(this);
+        MRJApplicationUtils.registerPrefsHandler(this);
+        MRJApplicationUtils.registerQuitHandler(this);
+        MRJApplicationUtils.registerOpenDocumentHandler(this);
+        MRJApplicationUtils.registerOpenApplicationHandler(this);
+        MRJApplicationUtils.registerPrintDocumentHandler(this);
 
         init();
         pack();
@@ -593,7 +596,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
             JOptionPane.showMessageDialog(null, "Cannot read the soundbank. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
         } catch (InvalidMidiDataException e) {
             hideSplash();
-            JOptionPane.showMessageDialog(null, "The soundbank file looks like demaged. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "The soundbank file looks like damaged. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -627,7 +630,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
             }
         }catch(Exception e){
             e.printStackTrace();
-            logger.error("main", e);
+            LOG.error("main", e);
         }
 
         hideSplash();
@@ -664,7 +667,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
                 properties.setProperty(Constants.LASTAUTOUPDATE, Long.toString(System.currentTimeMillis()));
             }
         }catch(NumberFormatException nf){
-            logger.error("Lastupdate property is not a number.");
+            LOG.error("Lastupdate property is not a number.");
         }
     }
 
@@ -702,10 +705,10 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
             if(setTitle)setSaveFile(openFile);
         } catch (SAXException e1) {
             showErrorMessage("Could not open the file "+openFile.getName()+", because it is damaged.");
-            logger.error("SaxParser parse", e1);
+            LOG.error("SaxParser parse", e1);
         } catch (IOException e1) {
             showErrorMessage("Could not open the file "+openFile.getName()+". Check if you have the permission to open it.");
-            logger.error("Song open", e1);
+            LOG.error("Song open", e1);
         }
         modifiedDocument = previousModifiedDocument;
     }
@@ -731,7 +734,7 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
             } catch (IOException e1) {
                 e1.printStackTrace();
                 showErrorMessage("Could not save the properties file. Please reinstall the software.");
-                logger.error("Save props", e1);
+                LOG.error("Save props", e1);
             }
             closeMidi();
             System.exit(0);

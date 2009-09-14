@@ -27,6 +27,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
 
@@ -40,14 +41,9 @@ public class AboutDialog extends MyDialog{
     public static final String WEB = "http://www.songscribe.org";
     public static final String LICENSE = "GPL (General Public License)";
 
-    private MyDesktop desktop;
-
     public AboutDialog(MainFrame mainFrame) {
         super(mainFrame, "About");
 
-        if(MyDesktop.isDesktopSupported()){
-            desktop = MyDesktop.getDesktop();
-        }
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.addTab("About", makeAboutPanel());
         try {
@@ -146,7 +142,7 @@ public class AboutDialog extends MyDialog{
 
         web.setFont(new java.awt.Font("Arial", 0, 14));
         web.setText(WEB);
-        if(desktop!=null && desktop.isSupported(MyDesktop.Action.BROWSE)){
+        if(MyDesktop.isDesktopSupported()){
             web.setForeground(new java.awt.Color(0, 0, 204));
             web.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -167,7 +163,7 @@ public class AboutDialog extends MyDialog{
 
         email.setFont(new java.awt.Font("Arial", 0, 12));
         email.setText(ReportBugDialog.BUGEMAIL);
-        if(desktop!=null && desktop.isSupported(MyDesktop.Action.BROWSE)){
+        if(MyDesktop.isDesktopSupported()){
             email.setForeground(new java.awt.Color(0, 0, 204));
             email.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -256,19 +252,11 @@ public class AboutDialog extends MyDialog{
     }
 
     private void webMouseClicked() {
-        try {
-            desktop.browse(new URI(WEB));
-        } catch (Exception e) {
-            logger.error("Desktop browse", e);
-        }
+        Utilities.openWebPage(mainFrame, WEB);
     }
 
     private void emailMouseClicked() {
-        try {
-            desktop.mail(new URI("mailto", ReportBugDialog.BUGEMAIL+"?SUBJECT=SongScribe comment", null));
-        } catch (Exception e) {
-            logger.error("Desktop mail", e);
-        }
+        Utilities.openEmail(mainFrame,ReportBugDialog.BUGEMAIL+"?SUBJECT=SongScribe comment");
     }
 
     protected void getData() {
