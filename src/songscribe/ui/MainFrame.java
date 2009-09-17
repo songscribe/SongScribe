@@ -730,7 +730,11 @@ public class MainFrame extends JFrame {
         }
 
         public void actionPerformed(ActionEvent e) {
-            if(!showSaveDialog())return;
+            boolean quit = showSaveDialog();
+
+            // Save the result of the dialog so Mac quit handler can access it
+            this.putValue("quit", new Boolean(quit));
+            if(!quit)return;
             if(musicSheet!=null)musicSheet.saveProperties();
             properties.setProperty(Constants.PREVIOUSDIRECTORY, previousDirectory.getAbsolutePath());
             try {
@@ -820,8 +824,9 @@ public class MainFrame extends JFrame {
         prefAction.actionPerformed(null);
     }
 
-    public void handleQuit() {
+    public boolean handleQuit() {
         exitAction.actionPerformed(null);
+        return ((Boolean) exitAction.getValue("quit")).booleanValue();
     }
 
     public void handleOpenFile(File file) {

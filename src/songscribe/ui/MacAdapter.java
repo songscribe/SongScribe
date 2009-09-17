@@ -45,17 +45,17 @@ public class MacAdapter extends ApplicationAdapter {
     }
 
     public void handleQuit(ApplicationEvent event) {
-        this.frame.handleQuit();
-        event.setHandled(true);
+        boolean quit = this.frame.handleQuit();
+
+        // Documentation says to set isHandled to false to reject the quit
+        event.setHandled(quit);
     }
 
     public void handleOpenFile(ApplicationEvent event) {
         this.frame.handleOpenFile(new File(event.getFilename()));
-        event.setHandled(true);
     }
 
     public void handlePrintFile(ApplicationEvent event) {
         this.frame.handlePrintFile(new File(event.getFilename()));
-        event.setHandled(true);
     }
 }
