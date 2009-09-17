@@ -25,6 +25,7 @@ import songscribe.ui.mainframeactions.DialogOpenAction;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.MacAdapter;
+import songscribe.ui.Utilities;
 import songscribe.publisher.publisheractions.*;
 import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.newsteps.PaperSizeDialog;
@@ -88,7 +89,10 @@ public class Publisher extends MainFrame {
             System.exit(0);
         }
         init();
-        MacAdapter.attachTo(this, false);
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(this, false);
+
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);

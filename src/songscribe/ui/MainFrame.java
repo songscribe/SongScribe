@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
     public static final int MAJORVERSION = 1;
-    public static final int MINORVERSION = 10;
+    public static final int MINORVERSION = 11;
 
     private static Logger LOG = Logger.getLogger(MainFrame.class);
 
@@ -183,7 +183,10 @@ public class MainFrame extends JFrame {
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
         init();
-        MacAdapter.attachTo(this, true);
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(this, true);
+        
         pack();
         musicSheet.requestFocusInWindow();
         Rectangle mxBound = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();

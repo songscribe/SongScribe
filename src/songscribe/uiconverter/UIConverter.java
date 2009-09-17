@@ -3,6 +3,7 @@ package songscribe.uiconverter;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.MacAdapter;
+import songscribe.ui.Utilities;
 import songscribe.data.FileExtensions;
 
 import javax.swing.*;
@@ -68,7 +69,10 @@ public class UIConverter extends MainFrame {
         rejectList.setModel(rejectListModel);
         numberSongButton.addActionListener(new NumberSongAction());
         getContentPane().add(mainPanel);
-        MacAdapter.attachTo(this, false);
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(this, false);
+        
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);

@@ -77,7 +77,10 @@ public class SlideFrame extends MainFrame{
             System.exit(0);
         }
         init();
-        MacAdapter.attachTo(this, false);
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(this, false);
+
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);
