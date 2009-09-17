@@ -40,7 +40,6 @@ import songscribe.data.PlatformFileDialog;
 import songscribe.data.FileExtensions;
 import songscribe.ui.playsubmenu.InstrumentDialog;
 import songscribe.IO.SliderIO;
-import com.apple.mrj.MRJApplicationUtils;
 
 /**
  * @author Csaba Kávai
@@ -78,11 +77,10 @@ public class SlideFrame extends MainFrame{
             System.exit(0);
         }
         init();
+        MacAdapter.attachTo(this, false);
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);
-        MRJApplicationUtils.registerPrefsHandler(null);
-        MRJApplicationUtils.registerPrintDocumentHandler(null);
         properties.setProperty(Constants.TEMPOCHANGEPROP, "100");
         fireMusicChanged(this);
         automaticCheckForUpdate();

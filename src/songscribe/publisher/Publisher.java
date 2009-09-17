@@ -24,6 +24,7 @@ package songscribe.publisher;
 import songscribe.ui.mainframeactions.DialogOpenAction;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
+import songscribe.ui.MacAdapter;
 import songscribe.publisher.publisheractions.*;
 import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.newsteps.PaperSizeDialog;
@@ -36,13 +37,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.xml.sax.SAXException;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-
-import com.apple.mrj.MRJApplicationUtils;
 
 /**
  * @author Csaba Kávai
@@ -91,11 +88,10 @@ public class Publisher extends MainFrame {
             System.exit(0);
         }
         init();
+        MacAdapter.attachTo(this, false);
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);
-        MRJApplicationUtils.registerPrefsHandler(null);
-        MRJApplicationUtils.registerPrintDocumentHandler(null);
         graphics = getGraphics();
         automaticCheckForUpdate();
     }
@@ -182,6 +178,8 @@ public class Publisher extends MainFrame {
         //SOUTH
         statusBar = new StatusBar(this);
         getContentPane().add(BorderLayout.SOUTH, statusBar);
+
+        
     }
 
     public JMenu insertMenuFactory() {

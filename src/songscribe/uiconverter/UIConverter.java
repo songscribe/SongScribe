@@ -2,6 +2,7 @@ package songscribe.uiconverter;
 
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
+import songscribe.ui.MacAdapter;
 import songscribe.data.FileExtensions;
 
 import javax.swing.*;
@@ -9,12 +10,9 @@ import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
-import com.apple.mrj.MRJApplicationUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.Logger;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
@@ -39,9 +37,6 @@ public class UIConverter extends MainFrame {
     public UIConverter() {
         PROGNAME = "Song Converter";
         lastWordForDoYouWannaSaveDialog = null;
-
-        MRJApplicationUtils.registerAboutHandler(this);
-        MRJApplicationUtils.registerQuitHandler(this);
 
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
@@ -73,6 +68,7 @@ public class UIConverter extends MainFrame {
         rejectList.setModel(rejectListModel);
         numberSongButton.addActionListener(new NumberSongAction());
         getContentPane().add(mainPanel);
+        MacAdapter.attachTo(this, false);
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);

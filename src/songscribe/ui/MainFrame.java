@@ -45,13 +45,13 @@ import java.util.*;
 import org.xml.sax.SAXException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import com.apple.mrj.*;
+
 
 /**
  * @author Csaba Kávai
  *
  */
-public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandler, MRJQuitHandler, MRJOpenDocumentHandler, MRJOpenApplicationHandler, MRJPrintDocumentHandler {
+public class MainFrame extends JFrame {
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
     public static final int MAJORVERSION = 1;
@@ -182,15 +182,8 @@ public class MainFrame extends JFrame implements MRJAboutHandler, MRJPrefsHandle
     public void initFrame(){
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
-
-        MRJApplicationUtils.registerAboutHandler(this);
-        MRJApplicationUtils.registerPrefsHandler(this);
-        MRJApplicationUtils.registerQuitHandler(this);
-        MRJApplicationUtils.registerOpenDocumentHandler(this);
-        MRJApplicationUtils.registerOpenApplicationHandler(this);
-        MRJApplicationUtils.registerPrintDocumentHandler(this);
-
         init();
+        MacAdapter.attachTo(this, true);
         pack();
         musicSheet.requestFocusInWindow();
         Rectangle mxBound = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
