@@ -21,6 +21,8 @@ Created on 2006.01.01.
 */
 package songscribe.ui;
 
+import org.apache.commons.httpclient.Header;
+
 /**
  * @author Csaba Kávai
  */
@@ -52,4 +54,6 @@ public class Constants {
     public static final String METRIC = "metric";
     public static final String FIRSTRUN = "firstrun";
     public static final String BOOKUPLOADURL = "bookuploadurl";
+    public static final String CHECKSUMSFILENAME = "checksums";
+    public static final Header MAXAGEHEADER = new Header("Cache-Control", "max-age=0");
 }

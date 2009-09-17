@@ -41,7 +41,6 @@ import java.text.DecimalFormat;
 import org.apache.log4j.Logger;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.Header;
 
 /**
  * @author Csaba Kávai
@@ -51,9 +50,6 @@ public class UpdateDialog extends MyDialog{
     private JComboBox updateMode = new JComboBox(new String[]{"Update from the Internet", "Have an update file"});
     private static final String VERSIONFILE = "version";
     private boolean downloadCancelled;
-
-    public static final String CHECKSUMSFILENAME = "checksums";
-    public static final Header MAXAGEHEADER = new Header("Cache-Control", "max-age=0");
 
     private class TempFilePair{
         File originalFile; File tempFile;
@@ -156,8 +152,8 @@ public class UpdateDialog extends MyDialog{
                     GetMethod getChecksum = null;
                     BufferedReader br=null;
                     for(;updateNumber<updateBaseURLs.length;updateNumber++){
-                        getChecksum = new GetMethod(updateBaseURLs[updateNumber]+CHECKSUMSFILENAME);
-                        getChecksum.addRequestHeader(MAXAGEHEADER);
+                        getChecksum = new GetMethod(updateBaseURLs[updateNumber]+Constants.CHECKSUMSFILENAME);
+                        getChecksum.addRequestHeader(Constants.MAXAGEHEADER);
                         httpClient.executeMethod(getChecksum);
                         checksumStream = getChecksum.getResponseBodyAsStream();
                         if(checksumStream!=null){
@@ -223,7 +219,7 @@ public class UpdateDialog extends MyDialog{
                     for(TempFilePair tfp: tempFilePairs){
                         FileOutputStream fos = new FileOutputStream(tfp.tempFile);
                         GetMethod getFile = new GetMethod(updateBaseURLs[updateNumber]+tfp.originalFile.getPath().replace('\\', '/').replace(" ", "%20"));
-                        getFile.addRequestHeader(MAXAGEHEADER);
+                        getFile.addRequestHeader(Constants.MAXAGEHEADER);
                         httpClient.executeMethod(getFile);
                         InputStream urlIs = getFile.getResponseBodyAsStream();
                         if(urlIs==null) throw new IOException("Cannot download file: "+tfp.originalFile.getPath());

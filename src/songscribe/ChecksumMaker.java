@@ -21,7 +21,7 @@ Created on Jan 10, 2007
 */
 package songscribe;
 
-import songscribe.ui.UpdateDialog;
+import songscribe.ui.Constants;
 
 import java.io.*;
 import java.util.zip.Adler32;
@@ -35,7 +35,7 @@ public class ChecksumMaker {
     public static final String HEADER = "SongScribe update";
 
     public static void main(String[] args) throws IOException {
-        PrintWriter pw = new PrintWriter(UpdateDialog.CHECKSUMSFILENAME);
+        PrintWriter pw = new PrintWriter(Constants.CHECKSUMSFILENAME);
         pw.println(HEADER);
         writeCheckSum(pw, new File("."));
         pw.close();
@@ -44,7 +44,7 @@ public class ChecksumMaker {
     private static void writeCheckSum(PrintWriter pw, File file) throws IOException {
         if(file.isDirectory()){
             for(String df:file.list()){
-                if(!df.equals(UpdateDialog.CHECKSUMSFILENAME))writeCheckSum(pw, new File(file, df));
+                if(!df.equals(Constants.CHECKSUMSFILENAME))writeCheckSum(pw, new File(file, df));
             }
         }else{
             String path = file.getPath().replace('\\', '/');

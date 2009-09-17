@@ -82,7 +82,15 @@ public class MainFrame extends JFrame {
     private static final File DEFPROPSFILE = new File("conf/defprops");
     private SAXParser saxParser;
 
-    private static MediaTracker mt = new MediaTracker(new JLabel());    
+    private static MediaTracker mediaTracker = null;
+
+    private static MediaTracker getMediaTracker() {
+        if (mediaTracker == null) {
+            mediaTracker = new MediaTracker(new JLabel());
+        }
+
+        return mediaTracker;
+    }
 
     public final Icon blankIcon = new ImageIcon(getImage("blank.png"));
 
@@ -673,8 +681,8 @@ public class MainFrame extends JFrame {
             return null;
         }
         try {
-            mt.addImage(img, 0);
-            mt.waitForID(0);
+            getMediaTracker().addImage(img, 0);
+            getMediaTracker().waitForID(0);
         } catch (InterruptedException ignored) {}
         return img;
     }
@@ -686,8 +694,8 @@ public class MainFrame extends JFrame {
             return null;
         }
         try {
-            mt.addImage(img, 0);
-            mt.waitForID(0);
+            getMediaTracker().addImage(img, 0);
+            getMediaTracker().waitForID(0);
         } catch (InterruptedException ignored) {}
         return img;
     }
@@ -711,7 +719,7 @@ public class MainFrame extends JFrame {
 
 
     public static void setMediaTracker(MediaTracker mt) {
-        MainFrame.mt = mt;
+        MainFrame.mediaTracker = mt;
     }
 
     protected class ExitAction extends AbstractAction {

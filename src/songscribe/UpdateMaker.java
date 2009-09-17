@@ -22,7 +22,6 @@ Created on Sep 12, 2007
 package songscribe;
 
 import songscribe.ui.Constants;
-import songscribe.ui.UpdateDialog;
 
 import java.util.Properties;
 import java.io.*;
@@ -41,8 +40,8 @@ public class UpdateMaker {
         props.load(new FileInputStream("conf/defprops"));
         String updateBaseURL = props.getProperty(Constants.UPDATEURL1);
         HttpClient httpClient = new HttpClient();
-        GetMethod getChecksum = new GetMethod(updateBaseURL+ UpdateDialog.CHECKSUMSFILENAME);
-        getChecksum.addRequestHeader(UpdateDialog.MAXAGEHEADER);
+        GetMethod getChecksum = new GetMethod(updateBaseURL+ Constants.CHECKSUMSFILENAME);
+        getChecksum.addRequestHeader(Constants.MAXAGEHEADER);
         httpClient.executeMethod(getChecksum);
         BufferedReader br = new BufferedReader(new InputStreamReader(getChecksum.getResponseBodyAsStream()));
         if(!br.readLine().equals(ChecksumMaker.HEADER)){
