@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>false</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>mssw</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>document.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>SongScribe Writer Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+	<key>CFBundleIconFile</key>
+	<string>app.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.songscribe.songwriter</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>SongScribe Writer</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>SSSW</string>
+	<key>CFBundleVersion</key>
+	<string>1.10.0</string>
+	<key>Java</key>
+	<dict>
+		<key>ClassPath</key>
+		<array>
+			<string>$JAVAROOT/songscribe.jar</string>
+			<string>$JAVAROOT/libs/itext-1.4.jar</string>
+			<string>$JAVAROOT/libs/log4j-1.2.9.jar</string>
+		</array>
+		<key>JVMVersion</key>
+		<string>1.5+</string>
+		<key>MainClass</key>
+		<string>songscribe.Runner</string>
+		<key>VMOptions</key>
+		<string>-Dsongscribe=sw -Xms256m -Xmx512m -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Dapple.awt.graphics.UseQuartz=true</string>
+		<key>WorkingDirectory</key>
+		<string>$APP_PACKAGE/Contents/Resources/Java</string>
+	</dict>
+</dict>
+</plist>

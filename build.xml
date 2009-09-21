@@ -45,6 +45,10 @@
             <fileset file="license.txt"/>
             <fileset file="readme.html"/>
 	        <fileset file="launching.txt"/>
+            <fileset file="writer.Info.plist"/>
+            <fileset file="book.Info.plist"/>
+            <fileset file="show.Info.plist"/>
+            <fileset file="converter.Info.plist"/>
             <fileset file="songscribe.jar"/>
         </copy>
         <java classname="songscribe.ChecksumMaker" dir="${ss}" fork="true">
