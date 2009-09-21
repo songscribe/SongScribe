@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
     public static final int MAJORVERSION = 1;
-    public static final int MINORVERSION = 11;
+    public static final int MINORVERSION = 12;
 
     private static Logger LOG = Logger.getLogger(MainFrame.class);
 
