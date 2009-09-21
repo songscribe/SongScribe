@@ -66,25 +66,27 @@ public class FughettaDrawer extends BaseMsDrawer{
         noteHead.put(NoteType.DEMISEMIQUAVERREST, "\uf0a8");
     }
 
-    private static final float upperCrotchetStemX = size/3.6056337f;
-    private static final float upperMinimStemX = size/3.1411042f;
+    private static final double upperCrotchetStemX = size/3.6056337d;
+    private static final double upperMinimStemX = size/3.1411042f;
+    private static final double tempoStemShortitude = 2;
     private static final Line2D.Float upperStem = new Line2D.Float(0f, -size/32f, 0f, -size/1.1429f);
     private static final Line2D.Float lowerStem = new Line2D.Float(0f, size/60f, 0f, size/1.1429f);
     private static final Line2D.Float graceNoteSlash = new Line2D.Float(size/18.285715f, -size/5.5652175f, size/2.3703704f, -size/2.6666667f);
     private static final BasicStroke graceNoteSlashStroke = new BasicStroke(0.64f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
-    private static final float upperFlagX = size/3.6834533f;
-    private static final float upperFlagY = -size/1.6623377f;
-    private static final float upperFlag2Y = -size/1.1851852f;
-    private static final float upperFlag3Y = -size/0.9411765f;
-    private static final float lowerFlagY = size/1.6f;
-    private static final float lowerFlag2Y = size/1.1428572f;
-    private static final float lowerFlag3Y = size/0.9078014f;
+    private static final double upperFlagX = size/3.6834533d;
+    private static final double upperFlagY = -size/1.6623377d;
+    private static final double upperFlag2Y = -size/1.1851852d;
+    private static final double upperFlag3Y = -size/0.9411765d;
+    private static final double lowerFlagY = size/1.6d;
+    private static final double lowerFlag2Y = size/1.1428572d;
+    private static final double lowerFlag3Y = size/0.9078014d;
+    private static final double flagYLength = 7;
     private static final double graceNoteScale = 0.6;
 
     private static final String trebleclef = "\uf026";    
     private static final String[] accidentals = {"", "\uf06e", "\uf062", "\uf023", "\uf06e\uf06e", "\uf062\uf062", "\uf0dc", "\uf06e\uf062", "\uf06e\uf023"};
     private static final String[] accidentalParenthesis = {"", "\uf04e", "\uf041", "\uf061", "\uf06e\uf06e", "\uf062\uf062", "\uf081", "\uf06e\uf062", "\uf06e\uf023"};
-    private static final float manualParenthesisY = size/3.5068493f;
+    private static final double manualParenthesisY = size/3.5068493d;
     private static final String beginParenthesis = "\uf028";
     private static final String endParenthesis = "\uf029";
 
@@ -99,25 +101,26 @@ public class FughettaDrawer extends BaseMsDrawer{
     private static final BasicStroke repeatThinStroke = new BasicStroke(0.64f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     private static final Ellipse2D.Float repeatCircle1 = new Ellipse2D.Float(0f, size/2f-size/2.3703704f, size/8f, size/8f);
     private static final Ellipse2D.Float repeatCircle2 = new Ellipse2D.Float(0f, size/2f-size/1.4545455f, size/8f, size/8f);
-    private static final float repeatLeftThickX = 4.167f/2f;
-    private static final float repeatRightThickX = Note.NORMALIMAGEWIDTH-repeatLeftThickX;
-    private static final float repeatLeftRightThickX = Note.NORMALIMAGEWIDTH/2f;
-    private static final float repeatThickThinDiff = size/6.095238f;
-    private static final float repeatThinCircleDiff = size/6.918919f;
-    private static final float barLineSpace = 4.167f;
+    private static final double repeatLeftThickX = 4.167d/2d;
+    private static final double repeatRightThickX = Note.NORMALIMAGEWIDTH-repeatLeftThickX;
+    private static final double repeatLeftRightThickX = Note.NORMALIMAGEWIDTH/2d;
+    private static final double repeatThickThinDiff = size/6.095238d;
+    private static final double repeatThinCircleDiff = size/6.918919d;
+    private static final double barLineSpace = 4.167d;
 
     private static final BasicStroke heavyLineStroke = new BasicStroke(4.167f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final BasicStroke thinLineStroke = new BasicStroke(0.674f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
 
-    private static final float dotWidth = size/9.142858f;
-    private static final Ellipse2D.Float[] noteDots = {new Ellipse2D.Float(13.1f, -dotWidth/2, dotWidth, dotWidth),
-        new Ellipse2D.Float(15.878f+dotWidth, -dotWidth/2, dotWidth, dotWidth)};
+    private static final double dotWidth = size/9.142858d;
+    private static final Ellipse2D.Double[] noteDots = {new Ellipse2D.Double(13.1d, -dotWidth/2, dotWidth, dotWidth),
+        new Ellipse2D.Double(15.878d+dotWidth, -dotWidth/2, dotWidth, dotWidth)};
 
     private GeneralPath breathMark, fermata;
 
     public FughettaDrawer(MusicSheet ms) throws FontFormatException, IOException {
         super(ms);
         crotchetWidth = upperCrotchetStemX;
+        beamX1Correction = beamX2Correction = 0d;
         breathMark = FileGeneralPath.readGeneralPath(new File("fonts/bm"));
         fermata = FileGeneralPath.readGeneralPath(new File("fonts/fm"));
     }
@@ -131,14 +134,14 @@ public class FughettaDrawer extends BaseMsDrawer{
         //drawing the note
         NoteType nt = note.getNoteType();
         if(noteHead.containsKey(nt)){
-            paintSimpleNote(g2, note, beamed, note.isUpper());
+            paintSimpleNote(g2, note, beamed, note.isUpper(), false);
             //drawing the lengthening
             g2.setStroke(stemStroke);
             if(beamed){
                 if(note.isUpper()){
-                    g2.draw(new Line2D.Float(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX, upperStem.y2-note.a.lengthening));
+                    g2.draw(new Line2D.Double(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX, upperStem.y2-note.a.lengthening));
                 }else{
-                    g2.draw(new Line2D.Float(lowerStem.x1, lowerStem.y1, lowerStem.x2, lowerStem.y2-note.a.lengthening));
+                    g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1, lowerStem.x2, lowerStem.y2-note.a.lengthening));
                 }
             }
         }else{
@@ -151,13 +154,13 @@ public class FughettaDrawer extends BaseMsDrawer{
                     g2.translate(upperCrotchetStemX, 0);
                     g2.draw(upperStem);
                     g2.translate(-upperCrotchetStemX, 0);
-                    g2.drawString(mainUpperFlag, upperFlagX, upperFlagY);
+                    g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY);
                     g2.setTransform(at1);
                     g2.setStroke(graceNoteSlashStroke);
                     g2.draw(graceNoteSlash);
                     break;
                 case REPEATLEFT:
-                    drawRepeat(g2, repeatLeftThickX, 1f, true);
+                    drawRepeat(g2, repeatLeftThickX, 1d, true);
                     break;
                 case REPEATRIGHT:
                     drawRepeat(g2, repeatRightThickX, -1f, true);
@@ -245,7 +248,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         }
     }
 
-    private void paintSimpleNote(Graphics2D g2, Note note, boolean beamed, boolean upper) {
+    private void paintSimpleNote(Graphics2D g2, Note note, boolean beamed, boolean upper, boolean isTempoNote) {
         NoteType nt = note.getNoteType();
         String headStr = noteHead.get(nt);
         //drawing the notehead
@@ -255,33 +258,40 @@ public class FughettaDrawer extends BaseMsDrawer{
         //drawing the stem
         g2.setStroke(stemStroke);
         if(nt.isNote() && nt!=NoteType.SEMIBREVE){
+            double stemLongitude = 0;
+            if (isTempoNote) stemLongitude -= tempoStemShortitude;
+            if (nt==NoteType.SEMIQUAVER) stemLongitude+=flagYLength;
+            if (nt==NoteType.DEMISEMIQUAVER) stemLongitude+=2*flagYLength;
             if(upper){
-                g2.translate(nt==NoteType.MINIM?upperMinimStemX:upperCrotchetStemX, 0);
-                g2.draw(upperStem);
-                g2.translate(nt==NoteType.MINIM?-upperMinimStemX:-upperCrotchetStemX, 0);
+                double stemX = nt==NoteType.MINIM?upperMinimStemX:upperCrotchetStemX;
+                g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2()-stemLongitude));
             }else{
-                g2.draw(lowerStem);
+                g2.draw(new Line2D.Double(0d, lowerStem.getY1(), 0d, lowerStem.getY2()+stemLongitude));
             }
         }
         //drawing the flag(s)
         if(!beamed && nt.isBeamable()){
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             if(upper){
-                g2.drawString(mainUpperFlag, upperFlagX, upperFlagY);
+                if (isTempoNote) g2.translate(0, tempoStemShortitude);;
+                g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY);
                 if(nt!=NoteType.QUAVER){
-                    g2.drawString(secondUpperFlag, upperFlagX, upperFlag2Y);
+                    g2.drawString(secondUpperFlag, (float)upperFlagX, (float)upperFlag2Y);
                     if(nt!=NoteType.SEMIQUAVER){
-                        g2.drawString(secondUpperFlag, upperFlagX, upperFlag3Y);
+                        g2.drawString(secondUpperFlag, (float)upperFlagX, (float)upperFlag3Y);
                     }
                 }
+                if (isTempoNote) g2.translate(0, -tempoStemShortitude);;
             }else{
-                g2.drawString(mainLowerFlag, 0, lowerFlagY);
+                if (isTempoNote) g2.translate(0, -tempoStemShortitude);;
+                g2.drawString(mainLowerFlag, 0, (float)lowerFlagY);
                 if(nt!=NoteType.QUAVER){
-                    g2.drawString(secondLowerFlag, 0, lowerFlag2Y);
+                    g2.drawString(secondLowerFlag, 0, (float)lowerFlag2Y);
                     if(nt!=NoteType.SEMIQUAVER){
-                        g2.drawString(secondLowerFlag, 0, lowerFlag3Y);
+                        g2.drawString(secondLowerFlag, 0, (float)lowerFlag3Y);
                     }
                 }
+                if (isTempoNote) g2.translate(0, tempoStemShortitude);;
             }
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
@@ -313,7 +323,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         g2.setTransform(at);
     }
 
-    private void drawRepeat(Graphics2D g2, float thickStart, float direction, boolean drawThink){
+    private void drawRepeat(Graphics2D g2, double thickStart, double direction, boolean drawThink){
         AffineTransform at = g2.getTransform();
         g2.translate(thickStart, 0);
         if (drawThink) {
@@ -362,9 +372,9 @@ public class FughettaDrawer extends BaseMsDrawer{
     protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {
         g2.setFont(fughetta);
         AffineTransform at = g2.getTransform();
-        g2.translate(x, y-size*tempoChangeZoom/8.0);
-        g2.scale(tempoChangeZoom, tempoChangeZoom);
-        paintSimpleNote(g2, tempoNote, false, true);
+        g2.translate(x, y-size*tempoChangeZoomY/8.0);
+        g2.scale(tempoChangeZoomX, tempoChangeZoomY);
+        paintSimpleNote(g2, tempoNote, false, true, true);
         g2.setTransform(at);        
     }
 

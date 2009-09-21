@@ -82,15 +82,7 @@ public class MainFrame extends JFrame {
     private static final File DEFPROPSFILE = new File("conf/defprops");
     private SAXParser saxParser;
 
-    private static MediaTracker mediaTracker = null;
-
-    private static MediaTracker getMediaTracker() {
-        if (mediaTracker == null) {
-            mediaTracker = new MediaTracker(new JLabel());
-        }
-
-        return mediaTracker;
-    }
+    private static MediaTracker mediaTracker = new MediaTracker(new JLabel());
 
     public final Icon blankIcon = new ImageIcon(getImage("blank.png"));
 
@@ -106,6 +98,7 @@ public class MainFrame extends JFrame {
     {
         try {
             defaultProps.load(new FileInputStream(DEFPROPSFILE));
+            LOG.debug("Default properties loaded e.g showmemusage="+defaultProps.getProperty(Constants.SHOWMEMUSEAGE));
         } catch (IOException e) {
             showErrorMessage("The program could not start, because a necessay file is not available. Please reinstall the software.");
             LOG.error("Could not read default properties file.", e);
@@ -116,6 +109,7 @@ public class MainFrame extends JFrame {
     {
         try {
             properties.load(new FileInputStream(PROPSFILE));
+            LOG.debug("Normal properties loaded e.g previousdirectory="+defaultProps.getProperty(Constants.PREVIOUSDIRECTORY));
         }catch (IOException e) {
             LOG.error("Could not read properties file.", e);
         }
@@ -681,8 +675,8 @@ public class MainFrame extends JFrame {
             return null;
         }
         try {
-            getMediaTracker().addImage(img, 0);
-            getMediaTracker().waitForID(0);
+            mediaTracker.addImage(img, 0);
+            mediaTracker.waitForID(0);
         } catch (InterruptedException ignored) {}
         return img;
     }
@@ -694,8 +688,8 @@ public class MainFrame extends JFrame {
             return null;
         }
         try {
-            getMediaTracker().addImage(img, 0);
-            getMediaTracker().waitForID(0);
+            mediaTracker.addImage(img, 0);
+            mediaTracker.waitForID(0);
         } catch (InterruptedException ignored) {}
         return img;
     }
@@ -716,8 +710,6 @@ public class MainFrame extends JFrame {
         }
         modifiedDocument = previousModifiedDocument;
     }
-
-
     public static void setMediaTracker(MediaTracker mt) {
         MainFrame.mediaTracker = mt;
     }

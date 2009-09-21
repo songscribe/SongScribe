@@ -42,6 +42,8 @@ public class ImageMsDrawer extends BaseMsDrawer{
     public ImageMsDrawer(MusicSheet ms) throws FontFormatException, IOException {
         super(ms);
         crotchetWidth = crotchetDim.width;
+        beamX1Correction = 0.3;
+        beamX2Correction = 0;
     }
 
     protected void drawLineBeginning(Graphics2D g2, Line line, int l) {
@@ -159,12 +161,14 @@ public class ImageMsDrawer extends BaseMsDrawer{
 
     protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {        
         AffineTransform at = g2.getTransform();
-        g2.translate(x, y-Note.HOTSPOT.y);
-        g2.scale(tempoChangeZoom, tempoChangeZoom);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.translate(x, y-19);
+        g2.scale(tempoChangeZoomX, tempoChangeZoomY);
         g2.drawImage(tempoNote.getUpImage(), 0, 0, null);
         for(int i=0;i<tempoNote.getDotted();i++){
             g2.drawImage(Note.DOTIMAGE, i*4, 0, null);
         }
         g2.setTransform(at);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_DEFAULT);
     }
 }

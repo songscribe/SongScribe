@@ -205,7 +205,7 @@ public class VerticalAdjustment extends Adjustment{
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getFsEndingYPos()-8;
         }else if(ar.adjustType==AdjustType.ANNOTATION){
             Note note = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex);
-            ar.rectangle.x = Math.round(musicSheet.getDrawer().getAnnotationXPos((Graphics2D)musicSheet.getGraphics(), note))-8;
+            ar.rectangle.x = (int)Math.round(musicSheet.getDrawer().getAnnotationXPos((Graphics2D)musicSheet.getGraphics(), note))-8;
             ar.rectangle.y = musicSheet.getDrawer().getAnnotationYPos(ar.line, note)-8;
         }else if(ar.adjustType==AdjustType.TRILL){
             ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-12;

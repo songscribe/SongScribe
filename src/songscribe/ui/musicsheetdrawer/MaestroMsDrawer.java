@@ -175,9 +175,9 @@ public class MaestroMsDrawer extends BaseMsDrawer{
         //drawing the lengthening
         if(beamed){
             if(note.isUpper()){
-                g2.draw(new Line2D.Float(xPos+crotchetWidth, yPos-0.5f, xPos+crotchetWidth, yPos-Note.HOTSPOT.y-note.a.lengthening-1.5f));
+                g2.draw(new Line2D.Double(xPos+crotchetWidth, yPos-0.5f, xPos+crotchetWidth, yPos-Note.HOTSPOT.y-note.a.lengthening-1.5f));
             }else{
-                g2.draw(new Line2D.Float(xPos, yPos+0.5f, xPos, yPos+Note.HOTSPOT.y-note.a.lengthening+1.5f));
+                g2.draw(new Line2D.Double(xPos, yPos+0.5f, xPos, yPos+Note.HOTSPOT.y-note.a.lengthening+1.5f));
             }
         }
 
@@ -214,9 +214,9 @@ public class MaestroMsDrawer extends BaseMsDrawer{
     protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {
         int helpY = tempoNote.getNoteType()==NoteType.SEMIBREVE ? y-(int)size8 : y;
         g2.setFont(maestro);
-        drawAntialiasedStringZoomed(g2, upNoteMap.get(tempoNote.getNoteType()), x, helpY, (float)tempoChangeZoom);
+        drawAntialiasedStringZoomed(g2, upNoteMap.get(tempoNote.getNoteType()), x, helpY, (float)tempoChangeZoomY);
         for(int i=0;i<tempoNote.getDotted();i++){
-            drawAntialiasedStringZoomed(g2, dot, x+12+i*6, y+3, (float)tempoChangeZoom);
+            drawAntialiasedStringZoomed(g2, dot, x+12+i*6, y+3, (float)tempoChangeZoomY);
         }
     }
 }

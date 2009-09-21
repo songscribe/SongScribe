@@ -58,7 +58,8 @@ public abstract class BaseMsDrawer {
     private static final String TRILL = "\uf0d9";
     private static final double glissandoLength = size/2.6666667;
     private static final float longDashWidth = 7f;
-    protected static final double tempoChangeZoom = 0.8;
+    protected static final double tempoChangeZoomX = 0.8;
+    protected static final double tempoChangeZoomY = 0.6;
 
     protected static final float spaceBtwNoteAndAccidental = 2.7f;//1.139f;
     protected static final float spaceBtwTwoAccidentals = 1.3f;
@@ -72,7 +73,8 @@ public abstract class BaseMsDrawer {
     private int[] froms = new int[2];
     private boolean[] isNaturals = new boolean[2];
 
-    protected float crotchetWidth;
+    protected double crotchetWidth;
+    protected double beamX1Correction, beamX2Correction;
 
     protected MusicSheet ms;
 
@@ -247,7 +249,7 @@ public abstract class BaseMsDrawer {
                     g2.setFont(fughetta);
                     g2.drawString(TRILL, x, y);
                     if(n<trillEnd){
-                        drawGlissando(g2, x+18, y-3, Math.round(line.getNote(trillEnd).getXPos()+crotchetWidth), y-3);
+                        drawGlissando(g2, x+18, y-3, (int)Math.round(line.getNote(trillEnd).getXPos()+crotchetWidth), y-3);
                     }
                 }
             }
@@ -256,17 +258,17 @@ public abstract class BaseMsDrawer {
             for(ListIterator<Interval> li = line.getBeamings().listIterator();li.hasNext();){
                 Interval interval = li.next();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Line2D.Float beamLine;
+                Line2D.Double beamLine;
                 Note firstNote = line.getNote(interval.getA());
                 Note lastNote = line.getNote(interval.getB());
                 if(firstNote.isUpper()){
-                    beamLine = new Line2D.Float(
+                    beamLine = new Line2D.Double(
                         firstNote.getXPos()+crotchetWidth,
                         ms.getNoteYPos(firstNote.getYPos(), l)-Note.HOTSPOT.y-firstNote.a.lengthening,
                         lastNote.getXPos()+crotchetWidth,
                         ms.getNoteYPos(lastNote.getYPos(), l)-Note.HOTSPOT.y-lastNote.a.lengthening);
                 }else{
-                    beamLine = new Line2D.Float(
+                    beamLine = new Line2D.Double(
                         firstNote.getXPos(),
                         ms.getNoteYPos(firstNote.getYPos(), l)+Note.HOTSPOT.y-firstNote.a.lengthening,
                         lastNote.getXPos()+1,
@@ -388,9 +390,9 @@ public abstract class BaseMsDrawer {
         return ms.getNoteYPos(0, l)+note.getAnnotation().getyPos();
     }
 
-    public float getAnnotationXPos(Graphics2D g2, Note note) {
+    public double getAnnotationXPos(Graphics2D g2, Note note) {
         Annotation a = note.getAnnotation();
-        float xPos = note.getXPos()+crotchetWidth/2;
+        double xPos = note.getXPos()+crotchetWidth/2;
         if(a.getXalignment()==Component.CENTER_ALIGNMENT){
             xPos-=g2.getFontMetrics(getAnnotationFont()).stringWidth(a.getAnnotation())/2;
         }else if(a.getXalignment()==Component.RIGHT_ALIGNMENT){
@@ -412,7 +414,7 @@ public abstract class BaseMsDrawer {
         if(note.getNoteType()==NoteType.SEMIBREVE || note.getNoteType()==NoteType.MINIM){
             return note.getRealUpNoteRect().width/2;
         }else{
-            return Math.round(crotchetWidth/2);
+            return (int)Math.round(crotchetWidth/2);
         }
     }
 
@@ -433,14 +435,14 @@ public abstract class BaseMsDrawer {
         }
     }
 
-    private void drawBeaming(int level, int begin, int end, Line line, Line2D.Float beamLine, Graphics2D g2, int prevBegin, int prevEnd, boolean isPrevLeft){
+    private void drawBeaming(int level, int begin, int end, Line line, Line2D.Double beamLine, Graphics2D g2, int prevBegin, int prevEnd, boolean isPrevLeft){
         if(level==-1) return;
         boolean upper = line.getNote(begin).isUpper();
         //clipping
         if(begin==end){
             if(line.getNote(begin).getNoteType()==NoteType.GRACEQUAVER) return;
-            float startBeamLineX;
-            float endBeamLineX;
+            double startBeamLineX;
+            double endBeamLineX;
             if(upper){
                 if(begin!=prevBegin || prevBegin==prevEnd && isPrevLeft){
                     startBeamLineX = line.getNote(begin).getXPos() - 1;
@@ -458,12 +460,12 @@ public abstract class BaseMsDrawer {
                     endBeamLineX = line.getNote(end).getXPos();
                 }
             }
-            g2.setClip(new Rectangle2D.Float(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,
+            g2.setClip(new Rectangle2D.Double(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,
                 endBeamLineX-startBeamLineX, Math.abs(beamLine.y1-beamLine.y2)+6));
         }else{
-            float startBeamLineX = line.getNote(begin).getXPos() + (upper ? crotchetWidth : 0) /*- stemStroke.getLineWidth()/2f*/;
-            float endBeamLineX = line.getNote(end).getXPos() + (upper ? crotchetWidth : 0) + stemStroke.getLineWidth()/2f;
-            g2.setClip(new Rectangle2D.Float(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,
+            double startBeamLineX = line.getNote(begin).getXPos() + (upper ? crotchetWidth : 0) + beamX1Correction - stemStroke.getLineWidth()/4f;
+            double endBeamLineX = line.getNote(end).getXPos() + (upper ? crotchetWidth : 0) - beamX2Correction + stemStroke.getLineWidth()/4f;
+            g2.setClip(new Rectangle2D.Double(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,
                 endBeamLineX-startBeamLineX, Math.abs(beamLine.y1-beamLine.y2)+6));
         }
 
@@ -472,7 +474,7 @@ public abstract class BaseMsDrawer {
 
         //recursing
         float trans = upper ? beamTranslateY : -beamTranslateY;
-        Line2D.Float subBeamLine = new Line2D.Float(beamLine.x1, beamLine.y1+trans, beamLine.x2, beamLine.y2+trans);
+        Line2D.Double subBeamLine = new Line2D.Double(beamLine.x1, beamLine.y1+trans, beamLine.x2, beamLine.y2+trans);
         int startSubBeam = -1;
         for(int i=begin;i<=end+1;i++){
             if(i<=end && isNoteTypeInLevel(line, i, level-1)){
@@ -584,9 +586,9 @@ public abstract class BaseMsDrawer {
     public void drawBeatChange(Graphics2D g2, BeatChange beatChange, int xPos, int yPos){
         drawTempoChangeNote(g2, beatChange.getFirstNote(), xPos, yPos);
         g2.setFont(ms.getComposition().getGeneralFont());
-        float eqXPos = xPos + crotchetWidth + 7;
+        double eqXPos = xPos + crotchetWidth + 7;
         drawAntialiasedString(g2, "=", eqXPos, yPos);
-        drawTempoChangeNote(g2, beatChange.getSecondNote(), Math.round(eqXPos+12), yPos);
+        drawTempoChangeNote(g2, beatChange.getSecondNote(), (int)Math.round(eqXPos+12), yPos);
     }
 
     private void drawEndings(Graphics2D g2, int line, int x1, int x2, String str){
@@ -634,8 +636,8 @@ public abstract class BaseMsDrawer {
             g2.setTransform(at);
         }else if(note.getDurationArticulation()==DurationArticulation.TENUTO){
             g2.setStroke(tenutoStroke);
-            float width = note.getNoteType()==NoteType.SEMIBREVE || note.getNoteType()==NoteType.MINIM ? note.getRealUpNoteRect().width : crotchetWidth;
-            g2.draw(new Line2D.Float(xPos, durY, xPos+width, durY));
+            double width = note.getNoteType()==NoteType.SEMIBREVE || note.getNoteType()==NoteType.MINIM ? note.getRealUpNoteRect().width : crotchetWidth;
+            g2.draw(new Line2D.Double(xPos, durY, xPos+width, durY));
         }
     }
 
@@ -645,9 +647,9 @@ public abstract class BaseMsDrawer {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
-    protected void drawAntialiasedString(Graphics2D g2, String str, float x, float y){
+    protected void drawAntialiasedString(Graphics2D g2, String str, double x, double y){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.drawString(str, x, y);
+        g2.drawString(str, (float)x, (float)y);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
