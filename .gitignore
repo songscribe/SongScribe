@@ -1,2 +1,7 @@
 # No IntelliJ stuff
 *.iml
+*.ipr
+*.iws
+songscribe.jar
+version
+*.exe
