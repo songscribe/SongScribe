@@ -57,7 +57,7 @@ public class SaveAsAction extends AbstractAction {
                 saveFile = new File(saveFile.getAbsolutePath()+FileExtensions.SONGWRITER);
             }
             if(saveFile.exists()){
-                int answ = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to owerwrite it?",
+                int answ = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
                         mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION);
                 if(answ==JOptionPane.NO_OPTION){
                     return;

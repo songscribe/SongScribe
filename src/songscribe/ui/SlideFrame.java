@@ -522,7 +522,7 @@ public class SlideFrame extends MainFrame{
                     saveFile = new File(saveFile.getAbsolutePath()+FileExtensions.SONGSHOW);
                 }
                 if(saveFile.exists()){
-                    int answ = JOptionPane.showConfirmDialog(SlideFrame.this, "The file "+saveFile.getName()+" already exists. Do you want to owerwrite it?",
+                    int answ = JOptionPane.showConfirmDialog(SlideFrame.this, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
                             PROGNAME, JOptionPane.YES_NO_OPTION);
                     if(answ==JOptionPane.NO_OPTION){
                         return;

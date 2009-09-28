@@ -69,7 +69,7 @@ public class ExportPDFAction extends AbstractAction{
                 saveFile = new File(saveFile.getAbsolutePath()+".pdf");
             }
             if(saveFile.exists()){
-                int answ = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to owerwrite it?",
+                int answ = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
                         mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION);
                 if(answ==JOptionPane.NO_OPTION){
                     return;
@@ -91,13 +91,14 @@ public class ExportPDFAction extends AbstractAction{
             document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
             int sheetWidth = mainFrame.getMusicSheet().getSheetWidth();
             int sheetHeight = mainFrame.getMusicSheet().getSheetHeight();
-            double resolution = Math.min((double)msres, Math.min((double)(paperWidth-(data.leftInnerMargin+data.rightOuterMargin)*msres)/sheetWidth, (double)(paperHeight-(data.topMargin+data.bottomMargin)*msres)/sheetHeight));
+            double resolution = Math.min((double)msres, Math.min((double)(paperWidth-(data.leftInnerMargin+data.rightOuterMargin)*msres)/sheetWidth,
+                    (double)(paperHeight-(data.topMargin+data.bottomMargin)*msres)/sheetHeight));
             try {
                 PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(saveFile));
                 document.open();
                 PdfContentByte cb = writer.getDirectContent();
                 Graphics2D g2 = cb.createGraphicsShapes(paperWidth, paperHeight);
-                g2.translate(data.leftInnerMargin*msres, data.topMargin*msres);
+                g2.translate((paperWidth-(data.leftInnerMargin+data.rightOuterMargin+sheetWidth)*msres)/2+data.leftInnerMargin*msres, data.topMargin*msres);
                 mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, resolution);
                 g2.dispose();
                 document.close();

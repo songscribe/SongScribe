@@ -237,10 +237,11 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
         int[] beamKeyCodes = {KeyEvent.VK_B, KeyEvent.VK_T, KeyEvent.VK_T};
         int[] beamKeyMasks = {0, 0, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()};
+        BeamingType beamingTypes[] = {BeamingType.BEAM, BeamingType.TRIPLET, BeamingType.TIE};
         for(int i=0;i<beamKeyCodes.length;i++){
             Object o = new Object();
             getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(beamKeyCodes[i], beamKeyMasks[i]), o);
-            getActionMap().put(o, new BeamingKeyActions(i));
+            getActionMap().put(o, new BeamingKeyActions(beamingTypes[i]));
         }
 
         mainFrame.addProperyChangeListener(this);
@@ -370,8 +371,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             if(activeNotePoint.xIndex>0){
                 line.getNote(activeNotePoint.xIndex-1).setGlissando(activeNote.getYPos());
             }
-            repaintImage = true;
-            repaint();
             return true;
         }
         if(activeNote.getNoteType()==NoteType.REPEATLEFT &&
@@ -379,8 +378,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             Note repeatLeftRight = new RepeatLeftRight();
             repeatLeftRight.setXPos(line.getNote(xIndex-1).getXPos());
             line.setNote(xIndex-1, repeatLeftRight);
-            repaintImage = true;
-            repaint();
             return true;
         }
         if(activeNote.getNoteType()==NoteType.REPEATRIGHT &&
@@ -388,8 +385,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             Note repeatLeftRight = new RepeatLeftRight();
             repeatLeftRight.setXPos(line.getNote(xIndex).getXPos());                        
             line.setNote(xIndex, repeatLeftRight);
-            repaintImage = true;
-            repaint();
             return true;
         }
         if(activeNote.getNoteType()==NoteType.PASTE){
@@ -416,8 +411,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 line.getNote(i).setXPos(line.getNote(i).getXPos()+shift);
             }
             control = pasteAction.prevPasteControl;
-            drawWidthIfWiderLine(line, false);
-            spellLyrics(line);
             for(int i=xIndex;i<xIndex+copySize;i++){
                 Interval interval=line.getBeamings().findInterval(i);
                 if(interval!=null){
@@ -425,10 +418,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                     i=interval.getB();
                 }
             }
-            activeNote = null;
             inSelection = true;
-            repaintImage = true;
-            repaint();
             return true;
         }
         if(playInsertingNote && activeNote.getNoteType().isNote()){
@@ -470,9 +460,26 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 //lastNote.getXPos()+Math.round((ND+note.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
     }
 
-    private void postCommonAddInsertModifyActiveNoteCommands(Line line) {
+    private void postCommonAddInsertModifyActiveNoteCommands(Line line, int xIndex) {
         //mainFrame.getUndoManager().undoableEditHappened(new UndoableEditEvent(this, new ModifyUndoableEdit(oldNote, oldNoteInfo, xIndex)));
-        setActiveNote(activeNote.getNoteType().newInstance());
+        NoteType nextNoteType;
+        switch (activeNote.getNoteType()) {
+            case GRACEQUAVER:
+                nextNoteType = NoteType.GLISSANDO;
+                break;
+            case GLISSANDO:
+                if(line.getNote(xIndex).getNoteType() != NoteType.GRACEQUAVER) {
+                    nextNoteType = line.getNote(xIndex).getNoteType();
+                }else if(xIndex>0){
+                    nextNoteType = line.getNote(xIndex-1).getNoteType();
+                }else{
+                    nextNoteType = NoteType.CROTCHET;
+                }
+                break;
+            default:
+                nextNoteType = activeNote.getNoteType();
+        }
+        setActiveNote(nextNoteType.newInstance());
         mainFrame.getInsertMenu().updateState();
         spellLyrics(line);
         drawWidthIfWiderLine(line, false);
@@ -482,7 +489,10 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void addActiveNote(Line line) {
         if (activeNote != null) {
-            if(commonAddInsertModifyActiveNoteCommands(line.noteCount(), line))return;
+            if(commonAddInsertModifyActiveNoteCommands(line.noteCount(), line)){
+                postCommonAddInsertModifyActiveNoteCommands(line, line.noteCount()-1);
+                return;
+            }
             activeNote.setXPos(calculateLastNoteXPos(line, activeNote));
             line.addNote(activeNote);
             //mainFrame.getUndoManager().undoableEditHappened(new UndoableEditEvent(this, new InsertUndoableEdit(cloneActiveNote, ni, noteInfo.size()-2)));
@@ -511,7 +521,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 }
                 calculateLenghtenings(line.noteCount()-1, line, true);
             }
-            postCommonAddInsertModifyActiveNoteCommands(line);
+            postCommonAddInsertModifyActiveNoteCommands(line, line.noteCount()-1);
         }
     }
 
@@ -532,7 +542,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             for (int i=xIndex+1;i<line.noteCount();i++) {
                 line.getNote(i).setXPos(line.getNote(i).getXPos()+shift);
             }
-            postCommonAddInsertModifyActiveNoteCommands(line);
+            postCommonAddInsertModifyActiveNoteCommands(line, xIndex);
         }
     }
 
@@ -565,7 +575,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 line.getTies().removeInterval(xIndex-1, xIndex+1);
             }
 
-            postCommonAddInsertModifyActiveNoteCommands(line);
+            postCommonAddInsertModifyActiveNoteCommands(line, xIndex);
         }
     }
 
@@ -1521,12 +1531,12 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     private int selectedNoteStorage[] = new int[3];
 
+    private enum BeamingType {BEAM, TRIPLET, TIE}
+
     private class BeamingKeyActions extends AbstractAction {
-        //types: 0:BEAM 1:TRIPLET 2:TIE
+        private BeamingType type;
 
-        private int type;
-
-        public BeamingKeyActions(int type) {
+        public BeamingKeyActions(BeamingType type) {
             this.type = type;
         }
 
@@ -1536,33 +1546,46 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             selectedNoteStorage[2] = selectionEnd;
             selectedNotesLine = activeNotePoint.line;
             Line line = composition.getLine(selectedNotesLine);
-            if(type==0 && line.noteCount()>=2){
-                selectionBegin = line.noteCount()-2;
-                selectionEnd = line.noteCount()-1;
-                beamSelectedNotes(line.getBeamings().findInterval(selectionEnd)==null);
-            }else if(type==1){
-                int minL = Integer.MAX_VALUE, sumL = 0;
-                for(int i=line.noteCount()-1;i>=0;i--){
-                    Note note = line.getNote(i);
-                    if(note.getDuration()<minL && note.getDuration()>0){
-                        minL = note.getDuration();
+            switch (type) {
+                case BEAM:
+                    if(line.noteCount()>=2) {
+                        selectionBegin = line.noteCount()-2;
+                        while(selectionBegin>0 && line.getNote(selectionBegin).getNoteType()==NoteType.GRACEQUAVER) {
+                            selectionBegin--;
+                        }
+                        selectionEnd = line.noteCount()-1;
+                        beamSelectedNotes(line.getBeamings().findInterval(selectionEnd)==null);
                     }
-                    sumL+=note.getDuration();
-                    if(sumL==minL*3){
-                        selectionBegin = i;
-                        selectionEnd =line.noteCount()-1;
-                        Interval tupletInterval = line.getTuplets().findInterval(selectionEnd);
-                        if(tupletInterval==null){
-                            tupletSelectedNotes(3);
-                        }else if(tupletInterval.getData().equals("3")){
-                            untupletSelectedNotes();
+                    break;
+                case TRIPLET:
+                    int minL = Integer.MAX_VALUE, sumL = 0;
+                    for(int i=line.noteCount()-1;i>=0;i--){
+                        Note note = line.getNote(i);
+                        if(note.getDuration()<minL && note.getDuration()>0){
+                            minL = note.getDuration();
+                        }
+                        sumL+=note.getDuration();
+                        if(sumL==minL*3){
+                            selectionBegin = i;
+                            selectionEnd =line.noteCount()-1;
+                            Interval tupletInterval = line.getTuplets().findInterval(selectionEnd);
+                            if(tupletInterval==null){
+                                tupletSelectedNotes(3);
+                            }else if(tupletInterval.getData().equals("3")){
+                                untupletSelectedNotes();
+                            }
                         }
                     }
-                }
-            }else if(type==2 && line.noteCount()>=2){
-                selectionBegin = line.noteCount()-2;
-                selectionEnd = line.noteCount()-1;
-                tieSelectedNotes(line.getTies().findInterval(selectionEnd)==null);
+                    break;
+                case TIE:
+                    if(line.noteCount()>=2) {
+                        selectionBegin = line.noteCount()-2;
+                        selectionEnd = line.noteCount()-1;
+                        tieSelectedNotes(line.getTies().findInterval(selectionEnd)==null);
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException();
             }
             selectedNotesLine = selectedNoteStorage[0];
             selectionBegin = selectedNoteStorage[1];

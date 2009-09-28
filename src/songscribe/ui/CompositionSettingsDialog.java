@@ -458,10 +458,14 @@ public class CompositionSettingsDialog extends MyDialog{
             StringBuilder sb = new StringBuilder(30);
             String rightInfo = rightInfoArea.getText();
             if(rightInfo.charAt(rightInfo.length()-1)!='\n')sb.append('\n');
-            sb.append(monthCombo.getSelectedItem());
-            sb.append(' ');
-            sb.append(dayCombo.getSelectedItem());
-            sb.append(", ");
+            if(monthCombo.getSelectedIndex()>0){
+                sb.append(monthCombo.getSelectedItem());
+                if(dayCombo.getSelectedIndex()>0){
+                    sb.append(' ');
+                    sb.append(dayCombo.getSelectedItem());
+                }
+                sb.append(", ");
+            }
             try {
                 sb.append(Integer.toString(Integer.parseInt(yearField.getText())));
             } catch (NumberFormatException e1) {

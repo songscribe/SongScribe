@@ -52,7 +52,7 @@ public class SaveAsAction extends AbstractAction{
                 saveFile = new File(saveFile.getAbsolutePath()+FileExtensions.SONGBOOK);
             }
             if(saveFile.exists()){
-                int answ = JOptionPane.showConfirmDialog(publisher, "The file "+saveFile.getName()+" already exists. Do you want to owerwrite it?",
+                int answ = JOptionPane.showConfirmDialog(publisher, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
                         publisher.PROGNAME, JOptionPane.YES_NO_OPTION);
                 if(answ==JOptionPane.NO_OPTION){
                     return;
