@@ -40,6 +40,8 @@ public final class Composition{
 
     public static final int[] VELOCITY = {98, 127};
 
+    public static final int GRACEQUAVER_DURATION = PPQ/8;
+
     //music data
     private Tempo tempo;
     private String number;
@@ -256,7 +258,7 @@ public final class Composition{
 
     private int addUpDownMessagesToTrack(Track track, Line line, int n, int ticks) throws InvalidMidiDataException {
         Note note = line.getNote(n);
-        if(note.getNoteType().isNote() && note.getNoteType()!= NoteType.GRACEQUAVER){
+        if(note.getNoteType().isNote()){
             int pitch = note.getPitch();
             Interval interval = line.getTies().findInterval(n);
             if(interval==null || interval.getA()==n){
@@ -269,6 +271,7 @@ public final class Composition{
                 ShortMessage up = new ShortMessage();
                 up.setMessage(0x80, pitch, VELOCITY[note.getForceArticulation()==ForceArticulation.ACCENT ? 1 : 0]);
                 int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
+                if(note.getNoteType()==NoteType.GRACEQUAVER) currDuration = 100;
                 track.add(new MidiEvent(up, (int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)));
                 //System.out.println("-" +(ticks+note.getDuration()*durationShortitude)+", "+note.getPitch());
             }
@@ -277,7 +280,8 @@ public final class Composition{
     }
 
     private int getNoteDurationWithTuplet(Line line, Note note, int n){
-        return Math.round(note.getDuration()*getTupletFactor(line, n));
+        return note.getNoteType()!=NoteType.GRACEQUAVER ? Math.round(note.getDuration()*getTupletFactor(line, n)) :
+                GRACEQUAVER_DURATION;
     }
 
     private MetaMessage getMidiTempoMessage(int realTempo) throws InvalidMidiDataException {
