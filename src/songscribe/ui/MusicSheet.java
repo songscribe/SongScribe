@@ -448,7 +448,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public static boolean defaultUpperNote(Note note){
-        return note.getYPos()>=0;
+        return note.getYPos() >= 0 || note.getNoteType() == NoteType.GRACEQUAVER;
     }
 
     public static int calculateLastNoteXPos(Line line, Note note){

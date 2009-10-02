@@ -265,7 +265,7 @@ public final class Composition{
                 ShortMessage down = new ShortMessage();
                  down.setMessage(0x90, pitch, VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
                 track.add(new MidiEvent(down, ticks));
-                //System.out.print("Pitch: " +note.getPitch()+"    Duration: "+ticks);
+                // System.out.print("Pitch: " +note.getPitch()+"    Duration: "+ticks);
             }
             if(interval==null || interval.getB()==n){
                 ShortMessage up = new ShortMessage();
@@ -273,7 +273,7 @@ public final class Composition{
                 int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
                 if(note.getNoteType()==NoteType.GRACEQUAVER) currDuration = 100;
                 track.add(new MidiEvent(up, (int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)));
-                //System.out.println("-" +(ticks+note.getDuration()*durationShortitude)+", "+note.getPitch());
+                // System.out.println("-" +(int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)+", "+note.getPitch());
             }
         }
         return ticks+getNoteDurationWithTuplet(line, note, n);

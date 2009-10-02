@@ -99,7 +99,7 @@ public class LineIO {
         private Line line;
         private String lastTag;
         private NoteIO.NoteReader noteReader;
-        private StringBuilder value = new StringBuilder(20);        
+        private StringBuilder value = new StringBuilder(20);
 
         private enum Where{LINE, NOTES}
         private Where where;

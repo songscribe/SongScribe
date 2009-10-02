@@ -29,7 +29,8 @@ import java.awt.*;
  * @author Csaba Kávai
  */
 public class GraceQuaver extends Note{
-    public static final Image IMAGE = MainFrame.getImage("graceQuaverUp.gif");
+    public static final Image UPIMAGE = MainFrame.getImage("graceQuaverUp.gif");
+    public static final Image DOWNIMAGE = MainFrame.getImage("graceQuaverDown.gif");
     public static final Rectangle REALUPNOTERECT = new Rectangle(2, 11, 13, 20);
     public static final Rectangle REALDOWNNOTERECT = new Rectangle(0, 24, 9, 20);
 
@@ -46,11 +47,11 @@ public class GraceQuaver extends Note{
     }
 
     public Image getUpImage() {
-        return IMAGE;
+        return UPIMAGE;
     }
 
     public Image getDownImage() {
-        return IMAGE;
+        return DOWNIMAGE;
     }
 
     public NoteType getNoteType() {

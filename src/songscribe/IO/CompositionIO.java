@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  */
 public class CompositionIO {
     public static final int IOMAJORVERSION = 1;
-    public static final int IOMINORVERSION = 1;
+    public static final int IOMINORVERSION = 2;
 
     //version 1.0
     private static final String XMLCOMPOSITION = "composition";
@@ -135,6 +135,9 @@ public class CompositionIO {
                         }else if(majorVersion==1 && minorVersion==1){
                             lineReader = new LineIO.LineReader();
                             viewReader = new ViewIO.ViewReader(mainFrame.getProfileManager());
+                        }else if(majorVersion==1 && minorVersion==2){
+                            lineReader = new LineIO.LineReader();
+                            viewReader = new ViewIO.ViewReader(mainFrame.getProfileManager());
                         }else {
                             throw new SAXException("Unsupported version number.");
                         }
@@ -147,6 +150,8 @@ public class CompositionIO {
                     startElement10(uri, localName, qName, attributes);
                 }else if(majorVersion==1 && minorVersion==1){
                     startElement11(uri, localName, qName, attributes);
+                }else if(majorVersion==1 && minorVersion==2){
+                    startElement12(uri, localName, qName, attributes);
                 }
             }
             value.delete(0, value.length());
@@ -195,11 +200,18 @@ public class CompositionIO {
             }
         }
 
+        public void startElement12(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            //no changes
+            startElement11(uri, localName, qName, attributes);
+        }
+
         public void endElement(String uri, String localName, String qName) throws SAXException {
             if(majorVersion==1 && minorVersion==0){
                 endElement10(qName);
             }else if(majorVersion==1 && minorVersion==1){
                 endElement11(qName);
+            }else if(majorVersion==1 && minorVersion==2){
+                endElement12(qName);
             }
         }
 
@@ -262,6 +274,19 @@ public class CompositionIO {
         }
 
         public void endElement11(String qName){
+            //no change except end the end of the line reading we set the quaver notes to upper position
+            endElement12(qName);
+            if(where==Where.LINES && composion.lineCount()>0){
+                Line lastLine = composion.getLine(composion.lineCount() - 1);
+                for(int i=0;i<lastLine.noteCount();i++){
+                    if(lastLine.getNote(i).getNoteType()==NoteType.GRACEQUAVER){
+                        lastLine.getNote(i).setUpper(true);
+                    }
+                }
+            }
+        }
+
+        public void endElement12(String qName){
             if(qName.equals(XMLLINES)){
                 where = Where.COMPOSITION;
             }else if(qName.equals(XMLVIEW)){

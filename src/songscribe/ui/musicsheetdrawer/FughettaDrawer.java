@@ -26,18 +26,14 @@ import songscribe.music.Line;
 import songscribe.music.NoteType;
 import songscribe.music.KeyType;
 import songscribe.ui.MusicSheet;
-import songscribe.ui.MainFrame;
 import songscribe.data.FileGeneralPath;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.FileInputStream;
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
@@ -71,7 +67,8 @@ public class FughettaDrawer extends BaseMsDrawer{
     private static final double tempoStemShortitude = 2;
     private static final Line2D.Float upperStem = new Line2D.Float(0f, -size/32f, 0f, -size/1.1429f);
     private static final Line2D.Float lowerStem = new Line2D.Float(0f, size/60f, 0f, size/1.1429f);
-    private static final Line2D.Float graceNoteSlash = new Line2D.Float(size/18.285715f, -size/5.5652175f, size/2.3703704f, -size/2.6666667f);
+    private static final Line2D.Float graceNoteUpperSlash = new Line2D.Float(size/18.285715f, -size/5.5652175f, size/2.3703704f, -size/2.6666667f);
+    private static final Line2D.Float graceNoteLowerSlash = new Line2D.Float(-size/11.906977f, size/5.5652175f, size/3.5310345f, size/2.6666667f);
     private static final BasicStroke graceNoteSlashStroke = new BasicStroke(0.64f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final double upperFlagX = size/3.6834533d;
     private static final double upperFlagY = -size/1.6623377d;
@@ -151,13 +148,21 @@ public class FughettaDrawer extends BaseMsDrawer{
                     g2.scale(graceNoteScale, graceNoteScale);
                     g2.drawString(noteHead.get(NoteType.QUAVER), 0, 0);
                     g2.setStroke(stemStroke);
-                    g2.translate(upperCrotchetStemX, 0);
-                    g2.draw(upperStem);
-                    g2.translate(-upperCrotchetStemX, 0);
-                    g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY);
-                    g2.setTransform(at1);
-                    g2.setStroke(graceNoteSlashStroke);
-                    g2.draw(graceNoteSlash);
+                    if(note.isUpper()){
+                        g2.translate(upperCrotchetStemX, 0);
+                        g2.draw(upperStem);
+                        g2.translate(-upperCrotchetStemX, 0);
+                        g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY);
+                        g2.setTransform(at1);
+                        g2.setStroke(graceNoteSlashStroke);
+                        g2.draw(graceNoteUpperSlash);
+                    }else{
+                        g2.draw(lowerStem);
+                        g2.drawString(mainLowerFlag, 0f, (float)lowerFlagY);
+                        g2.setTransform(at1);
+                        g2.setStroke(graceNoteSlashStroke);
+                        g2.draw(graceNoteLowerSlash);
+                    }
                     break;
                 case REPEATLEFT:
                     drawRepeat(g2, repeatLeftThickX, 1d, true);
