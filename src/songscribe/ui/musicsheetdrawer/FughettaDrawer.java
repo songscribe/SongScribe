@@ -265,8 +265,8 @@ public class FughettaDrawer extends BaseMsDrawer{
         if(nt.isNote() && nt!=NoteType.SEMIBREVE){
             double stemLongitude = 0;
             if (isTempoNote) stemLongitude -= tempoStemShortitude;
-            if (nt==NoteType.SEMIQUAVER) stemLongitude+=flagYLength;
-            if (nt==NoteType.DEMISEMIQUAVER) stemLongitude+=2*flagYLength;
+            if (nt==NoteType.SEMIQUAVER && !beamed) stemLongitude+=flagYLength;
+            if (nt==NoteType.DEMISEMIQUAVER  && !beamed) stemLongitude+=2*flagYLength;
             if(upper){
                 double stemX = nt==NoteType.MINIM?upperMinimStemX:upperCrotchetStemX;
                 g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2()-stemLongitude));
