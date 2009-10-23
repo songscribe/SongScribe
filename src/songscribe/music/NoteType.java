@@ -114,8 +114,12 @@ public enum NoteType {
         return acceleratorKey;
     }
 
+    public boolean isRealNote() {
+        return ordinal()>=SEMIBREVE.ordinal() && ordinal()<=DEMISEMIQUAVER.ordinal();
+    }
+
     public boolean isNote() {
-        return ordinal()>=SEMIBREVE.ordinal() && ordinal()<=DEMISEMIQUAVER.ordinal() || this==GRACEQUAVER;
+        return isRealNote() || this==GRACEQUAVER;
     }
 
     public boolean isRest() {

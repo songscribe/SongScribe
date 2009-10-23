@@ -263,7 +263,7 @@ public final class Composition{
             Interval interval = line.getTies().findInterval(n);
             if(interval==null || interval.getA()==n){
                 ShortMessage down = new ShortMessage();
-                 down.setMessage(0x90, pitch, VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
+                down.setMessage(0x90, pitch, VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
                 track.add(new MidiEvent(down, ticks));
                 // System.out.print("Pitch: " +note.getPitch()+"    Duration: "+ticks);
             }
@@ -533,7 +533,6 @@ public final class Composition{
 
     /**
      * Do not call this directly unless you know what you are doing. Instead use musicSheet.setLineWidth
-     * @param lineWidth
      */
     public void setLineWidth(int lineWidth) {
         this.lineWidth = lineWidth;

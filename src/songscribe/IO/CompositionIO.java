@@ -64,6 +64,8 @@ public class CompositionIO {
     private static final String XMLMONTH = "month";
     private static final String XMLDAY = "day";
     private static final String XMLRIGHTINFOSTARTY = "rightinfostarty";
+    private static final String XMLPARSONSSIMPLE = "parsonssimple";
+    private static final String XMLPARSONSIMPROVED = "parsonsimproved";
 
 
     public static void writeComposition(Composition c, PrintWriter pw) throws IOException {
@@ -87,6 +89,8 @@ public class CompositionIO {
         XML.writeValue(pw, XMLRIGHTINFOSTARTY, Integer.toString(c.getRightInfoStartY()));
         if(c.getRowHeight()!=0)XML.writeValue(pw, XMLROWHEIGHT, Integer.toString(c.getRowHeight()));
         XML.writeValue(pw, XMLLINEWIDTH, Integer.toString(c.getLineWidth()));
+        XML.writeValue(pw, XMLPARSONSSIMPLE, ParsonsCodeGenerator.getParsonsCode(c, false));
+        XML.writeValue(pw, XMLPARSONSIMPROVED, ParsonsCodeGenerator.getParsonsCode(c, true));
         pw.println("  <"+XMLLINES+">");
         for(int l=0;l<c.lineCount();l++){
             LineIO.writeLine(c.getLine(l), pw);
