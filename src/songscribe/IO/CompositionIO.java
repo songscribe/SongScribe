@@ -283,7 +283,7 @@ public class CompositionIO {
             if(where==Where.LINES && composion.lineCount()>0){
                 Line lastLine = composion.getLine(composion.lineCount() - 1);
                 for(int i=0;i<lastLine.noteCount();i++){
-                    if(lastLine.getNote(i).getNoteType()==NoteType.GRACEQUAVER){
+                    if(lastLine.getNote(i).getNoteType().isGraceNote()){
                         lastLine.getNote(i).setUpper(true);
                     }
                 }

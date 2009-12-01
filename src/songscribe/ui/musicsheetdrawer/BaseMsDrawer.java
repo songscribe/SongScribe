@@ -47,6 +47,9 @@ public abstract class BaseMsDrawer {
     protected static final BasicStroke tenutoStroke = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final BasicStroke dashStroke = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[]{3.937f, 5.9055f}, 0f);
     private static final BasicStroke longDashStroke = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+    private static final BasicStroke graceSemiQuaverStemStroke = new BasicStroke(0.6f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+    private static final BasicStroke graceSemiQuaverBeamStroke = new BasicStroke(2f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+    private static final BasicStroke graceSemiQuaverStrikeStroke = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     private static final BasicStroke underScoreStroke = new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final Ellipse2D.Float staccatoEllipse = new Ellipse2D.Float(0f, 0f, 3.5f, 3.5f);
     private static final Color selectionColor = new Color(254, 45, 125);
@@ -420,7 +423,7 @@ public abstract class BaseMsDrawer {
 
     private boolean isNoteTypeInLevel(Line line, int noteIndex, int level){
         NoteType nt = line.getNote(noteIndex).getNoteType();
-        if(nt!=NoteType.GRACEQUAVER){
+        if(!nt.isGraceNote()){
             for(int i=0;i<BEAMLEVELS.length;i++){
                 if(BEAMLEVELS[i]==nt){
                     return i<=level;
@@ -429,8 +432,8 @@ public abstract class BaseMsDrawer {
             return false;
         }else{
             int begin=noteIndex-1, end=noteIndex+1;
-            while(begin>0 && line.getNote(begin).getNoteType()==NoteType.GRACEQUAVER)begin--;
-            while(end<line.noteCount() && line.getNote(end).getNoteType()==NoteType.GRACEQUAVER)end++;
+            while(begin>0 && line.getNote(begin).getNoteType().isGraceNote())begin--;
+            while(end<line.noteCount() && line.getNote(end).getNoteType().isGraceNote())end++;
             return begin>=0 && isNoteTypeInLevel(line, begin, level) && end<line.noteCount() && isNoteTypeInLevel(line, end, level); 
         }
     }
@@ -440,7 +443,7 @@ public abstract class BaseMsDrawer {
         boolean upper = line.getNote(begin).isUpper();
         //clipping
         if(begin==end){
-            if(line.getNote(begin).getNoteType()==NoteType.GRACEQUAVER) return;
+            if(line.getNote(begin).getNoteType().isGraceNote()) return;
             double startBeamLineX;
             double endBeamLineX;
             if(upper){
@@ -497,23 +500,29 @@ public abstract class BaseMsDrawer {
 
         g2.setStroke(lineStroke);
         //drawing the stave-longitude
-        if (Math.abs(glissando.pitch) > 5 && (xIndex+1==line.noteCount() ||
-                Math.abs(line.getNote(xIndex+1).getYPos())<Math.abs(glissando.pitch))) {
-            for (int i = glissando.pitch + (glissando.pitch % 2 == 0 ? 0 : glissando.pitch > 0 ? -1 : 1); Math.abs(i) > 5; i += glissando.pitch > 0 ? -2 : 2)
-                g2.drawLine(x2-5, ms.getNoteYPos(i, l),
-                        x2+5, ms.getNoteYPos(i, l));
-        }
+        // TODO: check with Tanima
+//        if (Math.abs(glissando.pitch) > 5 && (xIndex+1==line.noteCount() ||
+//                Math.abs(line.getNote(xIndex+1).getYPos())<Math.abs(glissando.pitch))) {
+//            for (int i = glissando.pitch + (glissando.pitch % 2 == 0 ? 0 : glissando.pitch > 0 ? -1 : 1); Math.abs(i) > 5; i += glissando.pitch > 0 ? -2 : 2)
+//                g2.drawLine(x2-5, ms.getNoteYPos(i, l),
+//                        x2+5, ms.getNoteYPos(i, l));
+//        }
     }
 
     public int getGlissandoX1Pos(int xIndex, Note.Glissando glissando, int l){
         Line line = ms.getComposition().getLine(l);
-        int x1 = line.getNote(xIndex).getXPos()+15+glissando.x1Translate;
-        if(line.getNote(xIndex).getNoteType()==NoteType.SEMIBREVE){
+        Note note = line.getNote(xIndex);
+        int x1 = note.getXPos()+15+glissando.x1Translate;
+        NoteType noteType = note.getNoteType();
+        if(noteType ==NoteType.SEMIBREVE){
             x1+=3;
-        }else if(line.getNote(xIndex).getNoteType()==NoteType.GRACEQUAVER){
+        }else if(noteType.isGraceNote()){
             x1-=3;
+            if (noteType == NoteType.GRACESEMIQUAVER) {
+                x1 += ((GraceSemiQuaver)note).getX2DiffPos();
+            }
         }
-        x1+=line.getNote(xIndex).getDotted()*6;
+        x1+= note.getDotted()*6;
         return x1;
     }
 
@@ -689,6 +698,56 @@ public abstract class BaseMsDrawer {
         x+=xTranslate;
         for(int i=0;i<rightVector.size();i++){
             drawAntialiasedString(g2, rightVector.get(i), x, y+i*Math.round(g2.getFontMetrics().getHeight()*0.9f));
+        }
+    }
+
+    protected void drawGraceSemiQuaverBeam(Graphics2D g2, Note note, int line) {
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        int dir = note.isUpper() ? -1 : 1;
+        int x1 = note.getXPos() + (note.isUpper() ? 8 : 2);
+        int x2 = x1 + ((GraceSemiQuaver)note).getX2DiffPos();
+        int y1Pos = ((GraceSemiQuaver) note).getY0Pos();
+        int y2Pos = note.getYPos();
+        // drawing the stem
+        g2.setStroke(graceSemiQuaverStemStroke);
+        int yHead1 = ms.getNoteYPos(y1Pos, line);
+        int lengthening1 = Math.max(dir * (y2Pos - y1Pos) - 2, 0);
+        int yUpper1 = ms.getNoteYPos(y1Pos + dir * (4 + lengthening1), line);
+        g2.drawLine(x1, yHead1, x1, yUpper1 + dir);
+
+        int lengthening2 = Math.max(dir * (y1Pos - y2Pos) - 2, 0);
+        int yUpper2 = ms.getNoteYPos(y2Pos + dir * (4 + lengthening2), line);
+        int yHead2 = ms.getNoteYPos(y2Pos, line);
+        g2.drawLine(x2, yHead2, x2, yUpper2 + dir);
+
+        // drawing the beams
+        g2.setStroke(graceSemiQuaverBeamStroke);
+        g2.setClip(x1, 0, x2 - x1, Integer.MAX_VALUE);
+        g2.drawLine(x1, yUpper1, x2, yUpper2);
+        yUpper1 -= dir * 3;
+        yUpper2 -= dir * 3;
+        g2.drawLine(x1, yUpper1, x2, yUpper2);
+        g2.setClip(null);
+
+        // drawing the grace strike
+        g2.setStroke(graceSemiQuaverStrikeStroke);
+        yUpper1 += -3 * dir * MusicSheet.HALFLINEDIST + dir * 5;
+        yUpper2 += dir * MusicSheet.HALFLINEDIST + dir * 4;
+        g2.drawLine(x1-5, yUpper1, x2-3, yUpper2);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
+        //drawing steve-longitudes
+        g2.setStroke(lineStroke);
+        drawStaveLongitude(g2, y1Pos, line, x1-8, x1+3);
+        drawStaveLongitude(g2, y2Pos, line, x2-8, x2+3);
+    }
+
+    protected void drawStaveLongitude(Graphics g2, int yPos, int line, int x1Pos, int x2Pos) {
+        if (Math.abs(yPos) > 5) {
+            for (int i = yPos + (yPos % 2 == 0 ? 0 : (yPos > 0 ? -1 : 1)); Math.abs(i) > 5; i += yPos > 0 ? -2 : 2){
+                int y1 = ms.getNoteYPos(i, line);
+                g2.drawLine(x1Pos, y1, x2Pos, y1);
+            }
         }
     }
 

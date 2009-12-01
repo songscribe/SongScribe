@@ -87,17 +87,21 @@ public class ImageMsDrawer extends BaseMsDrawer{
         }else{
             noteImg = Note.getColoredNote(beamed ? NoteType.CROTCHET : note.getNoteType(), color, note.isUpper());
         }
-        g2.drawImage(noteImg, xPos, yPos, null);
+        if (note.getNoteType() != NoteType.GRACESEMIQUAVER) {
+            g2.drawImage(noteImg, xPos, yPos, null);
+        } else {
+            g2.drawImage(noteImg, xPos, ms.getNoteYPos(((GraceSemiQuaver)note).getY0Pos(), line)-Note.HOTSPOT.y, null);
+            g2.drawImage(noteImg, xPos + ((GraceSemiQuaver)note).getX2DiffPos(), yPos, null);
+            g2.setPaint(color);
+            drawGraceSemiQuaverBeam(g2, note, line);
+            g2.setPaint(Color.black);
+        }
 
         g2.setPaint(Color.black);
         g2.setStroke(lineStroke);
         //drawing the stave-longitude
-        if (Math.abs(note.getYPos()) > 5  && note.getNoteType().drawStaveLongitude()) {
-            for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1)); Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2){
-                int y1 = ms.getNoteYPos(i, line);
-                g2.drawLine(xPos+Note.HOTSPOT.x-8, y1, xPos + Note.HOTSPOT.x+(note.getNoteType()!=NoteType.SEMIBREVE ? 8 : 12), y1);
-            }
-
+        if (note.getNoteType().drawStaveLongitude()) {
+            drawStaveLongitude(g2, note.getYPos(), line, xPos+Note.HOTSPOT.x-8, xPos + Note.HOTSPOT.x+(note.getNoteType()!=NoteType.SEMIBREVE ? 8 : 12));
         }
 
         g2.setPaint(color);

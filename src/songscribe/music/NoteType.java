@@ -45,7 +45,8 @@ public enum NoteType {
     SEMIQUAVERREST(new SemiquaverRest(), "Sixteenth rest", KeyStroke.getKeyStroke(KeyEvent.VK_2, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
     DEMISEMIQUAVERREST(new DemisemiquaverRest(), "Thirtysecond rest", KeyStroke.getKeyStroke(KeyEvent.VK_1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
 
-    GRACEQUAVER(new GraceQuaver(), "Grace note", KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)),
+    GRACEQUAVER(new GraceQuaver(), "Grace Eighth", KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)),
+    GRACESEMIQUAVER(new GraceSemiQuaver(), "Grace Sixteenth", null),
     GLISSANDO(Note.GLISSANDONOTE, "GlissandoNote", KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.SHIFT_MASK)),
     REPEATLEFT(new RepeatLeft(), "Repeat left", KeyStroke.getKeyStroke(KeyEvent.VK_L, 0)),
     REPEATRIGHT(new RepeatRight(), "Repeat right", KeyStroke.getKeyStroke(KeyEvent.VK_R, 0)),
@@ -55,7 +56,8 @@ public enum NoteType {
     DOUBLEBARLINE(new DoubleBarLine(), "Double barline", null),
     FINALDOUBLEBARLINE(new FinalDoubleBarLine(), "Final double barline", null),
 
-    PASTE(Note.PASTENOTE, null, null);
+    PASTE(Note.PASTENOTE, null, null),
+    GRACESEMIQUAVEREDITSTEP1(new GraceSemiQuaverEditStep1(), null, null);
 
     private Note instance;
     private String name;
@@ -119,7 +121,7 @@ public enum NoteType {
     }
 
     public boolean isNote() {
-        return isRealNote() || this==GRACEQUAVER;
+        return isRealNote() || isGraceNote();
     }
 
     public boolean isRest() {
@@ -134,8 +136,12 @@ public enum NoteType {
         return this==REPEATLEFT || this==REPEATRIGHT || this==REPEATLEFTRIGHT;
     }
 
+    public boolean isGraceNote() {
+        return this==GRACEQUAVER || this==GRACESEMIQUAVER;
+    }
+
     public boolean drawStaveLongitude(){
-        return this!=BREATHMARK;
+        return this!=BREATHMARK && this!=GRACESEMIQUAVER;
     }
 
     public boolean snapToEnd(){

@@ -258,30 +258,56 @@ public final class Composition{
 
     private int addUpDownMessagesToTrack(Track track, Line line, int n, int ticks) throws InvalidMidiDataException {
         Note note = line.getNote(n);
-        if(note.getNoteType().isNote()){
-            int pitch = note.getPitch();
-            Interval interval = line.getTies().findInterval(n);
-            if(interval==null || interval.getA()==n){
-                ShortMessage down = new ShortMessage();
-                down.setMessage(0x90, pitch, VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
-                track.add(new MidiEvent(down, ticks));
-                // System.out.print("Pitch: " +note.getPitch()+"    Duration: "+ticks);
-            }
-            if(interval==null || interval.getB()==n){
-                ShortMessage up = new ShortMessage();
-                up.setMessage(0x80, pitch, VELOCITY[note.getForceArticulation()==ForceArticulation.ACCENT ? 1 : 0]);
-                int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
-                if(note.getNoteType()==NoteType.GRACEQUAVER) currDuration = 100;
-                track.add(new MidiEvent(up, (int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)));
-                // System.out.println("-" +(int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)+", "+note.getPitch());
+        if(note.getNoteType().isGraceNote()) {
+            switch (note.getNoteType()) {
+                case GRACESEMIQUAVER:
+                    GraceSemiQuaver graceSemiQuaver = (GraceSemiQuaver) note;
+                    int yPos = note.getYPos();
+                    note.setYPos(graceSemiQuaver.getY0Pos());
+                    addDownMessageToTrack(track, ticks, note);
+                    ticks += GRACEQUAVER_DURATION;
+                    addUpMessageToTrack(track, ticks, note);
+                    note.setYPos(yPos);
+                case GRACEQUAVER:
+                    addDownMessageToTrack(track, ticks, note);
+                    ticks += GRACEQUAVER_DURATION;
+                    addUpMessageToTrack(track, ticks, note);
+                    break;
+                default:
+                    mainFrame.showErrorMessage("Programmer's error: no such NoteType in MIDI generation: " + note.getNoteType());
             }
         }
-        return ticks+getNoteDurationWithTuplet(line, note, n);
+        else if(note.getNoteType().isNote()){
+            Interval interval = line.getTies().findInterval(n);
+            if(interval==null || interval.getA()==n){
+                addDownMessageToTrack(track, ticks, note);
+            }
+            int noteDuration = getNoteDurationWithTuplet(line, note, n);
+            if(interval==null || interval.getB()==n){
+                int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
+                addUpMessageToTrack(track, (int)(ticks + noteDuration * currDuration / 100f), note);
+            }
+            ticks += noteDuration;
+        }
+        return ticks;
+    }
+
+    private void addDownMessageToTrack(Track track, int ticks, Note note) throws InvalidMidiDataException {
+        ShortMessage down = new ShortMessage();
+        down.setMessage(0x90, note.getPitch(), VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
+        track.add(new MidiEvent(down, ticks));
+        // System.out.print("Pitch: " +note.getPitch()+"    Duration: "+ticks);
+    }
+
+    private void addUpMessageToTrack(Track track, int ticks, Note note) throws InvalidMidiDataException {
+        ShortMessage up = new ShortMessage();
+        up.setMessage(0x80, note.getPitch(), VELOCITY[note.getForceArticulation()== ForceArticulation.ACCENT ? 1 : 0]);
+        track.add(new MidiEvent(up, ticks));
+        // System.out.println("-" +(int)(ticks+getNoteDurationWithTuplet(line, note, n)*currDuration/100f)+", "+note.getPitch());
     }
 
     private int getNoteDurationWithTuplet(Line line, Note note, int n){
-        return note.getNoteType()!=NoteType.GRACEQUAVER ? Math.round(note.getDuration()*getTupletFactor(line, n)) :
-                GRACEQUAVER_DURATION;
+        return Math.round(note.getDuration()*getTupletFactor(line, n));
     }
 
     private MetaMessage getMidiTempoMessage(int realTempo) throws InvalidMidiDataException {
