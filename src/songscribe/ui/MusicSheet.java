@@ -41,9 +41,7 @@ import javax.sound.midi.MetaMessage;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.event.*;
-import java.util.Vector;
-import java.util.Properties;
-import java.util.ListIterator;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -56,9 +54,32 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     private static Logger LOG = Logger.getLogger(MusicSheet.class);
 
     //view constants
-    private static final int[] NOTEDIST = {70, 50, 35, 25, 25, 25, 70, 50, 35, 25, 25, 25, 30, 0, 25, 25, 25, 15, 20, 20, 20, 0};
-    //private static final int ND = 35;
-    //private static final int BEAMEDNOTEDIST = 23;
+    private static final Map<NoteType, Integer> NOTEDIST = new HashMap<NoteType, Integer>();
+    static {
+        NOTEDIST.put(NoteType.SEMIBREVE, 70);
+        NOTEDIST.put(NoteType.MINIM, 50);
+        NOTEDIST.put(NoteType.CROTCHET, 35);
+        NOTEDIST.put(NoteType.QUAVER, 25);
+        NOTEDIST.put(NoteType.SEMIQUAVER, 25);
+        NOTEDIST.put(NoteType.DEMISEMIQUAVER, 25);
+        NOTEDIST.put(NoteType.SEMIBREVEREST, 70);
+        NOTEDIST.put(NoteType.MINIMREST, 50);
+        NOTEDIST.put(NoteType.CROTCHETREST, 35);
+        NOTEDIST.put(NoteType.QUAVERREST, 25);
+        NOTEDIST.put(NoteType.SEMIQUAVERREST, 25);
+        NOTEDIST.put(NoteType.DEMISEMIQUAVERREST, 25);
+        NOTEDIST.put(NoteType.GRACEQUAVER, 30);
+        NOTEDIST.put(NoteType.GRACESEMIQUAVER, 50);
+        NOTEDIST.put(NoteType.GLISSANDO, 0);
+        NOTEDIST.put(NoteType.REPEATLEFT, 25);
+        NOTEDIST.put(NoteType.REPEATRIGHT, 25);
+        NOTEDIST.put(NoteType.REPEATLEFTRIGHT, 25);
+        NOTEDIST.put(NoteType.BREATHMARK, 15);
+        NOTEDIST.put(NoteType.SINGLEBARLINE, 20);
+        NOTEDIST.put(NoteType.DOUBLEBARLINE, 20);
+        NOTEDIST.put(NoteType.FINALDOUBLEBARLINE, 20);
+        NOTEDIST.put(NoteType.PASTE, 0);
+    }
 
     private static final int INVISIBLELINESNUMBELOW = 3;
     private static final int INVISIBLELINESNUMABOVE = 3;
@@ -387,6 +408,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             line.setNote(xIndex, repeatLeftRight);
             return true;
         }
+        if(activeNote.getNoteType()==NoteType.GRACESEMIQUAVEREDITSTEP1) {
+            return true;
+        }
         if(activeNote.getNoteType()==NoteType.PASTE){
             //if the user tries to insert into triplet, he will get an error message
             Interval iv = line.getTuplets().findInterval(xIndex-1);
@@ -405,7 +429,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             }
             line.pasteIntervals(copyAction.intervalSetsCopyBuffer, xIndex);
             Note lastNote = copyAction.copyBuffer.get(copySize-1);
-            int shift = Math.round((NOTEDIST[lastNote.getNoteType().ordinal()]+lastNote.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio())+lastNote.getXPos()-copyAction.copyBuffer.get(0).getXPos();
+            int shift = Math.round((NOTEDIST.get(lastNote.getNoteType())+lastNote.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio())+lastNote.getXPos()-copyAction.copyBuffer.get(0).getXPos();
             //int shift = Math.round((ND+lastNote.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio())+lastNote.getXPos()-copyAction.copyBuffer.get(0).getXPos();
             for (int i=xIndex+copySize;i<line.noteCount();i++) {
                 line.getNote(i).setXPos(line.getNote(i).getXPos()+shift);
@@ -448,7 +472,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public static boolean defaultUpperNote(Note note){
-        return note.getYPos() >= 0 || note.getNoteType() == NoteType.GRACEQUAVER;
+        return note.getYPos() >= 0 || note.getNoteType().isGraceNote() || note.getNoteType()==NoteType.GRACESEMIQUAVEREDITSTEP1;
     }
 
     public static int calculateLastNoteXPos(Line line, Note note){
@@ -456,30 +480,37 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             return startLocX;
         }
         Note lastNote = line.getNote(line.noteCount()-1);
-        return lastNote.getXPos()+Math.round((NOTEDIST[lastNote.getNoteType().ordinal()]+note.getAccidental().getNb()*FIXPREFIXWIDTH+(note.isAccidentalInParenthesis()?8:0))*line.getNoteDistChangeRatio());
+        return lastNote.getXPos()+Math.round((NOTEDIST.get(lastNote.getNoteType())+note.getAccidental().getNb()*FIXPREFIXWIDTH+(note.isAccidentalInParenthesis()?8:0))*line.getNoteDistChangeRatio());
                 //lastNote.getXPos()+Math.round((ND+note.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
     }
 
     private void postCommonAddInsertModifyActiveNoteCommands(Line line, int xIndex) {
         //mainFrame.getUndoManager().undoableEditHappened(new UndoableEditEvent(this, new ModifyUndoableEdit(oldNote, oldNoteInfo, xIndex)));
-        NoteType nextNoteType;
-        switch (activeNote.getNoteType()) {
-            case GRACEQUAVER:
-                nextNoteType = NoteType.GLISSANDO;
-                break;
-            case GLISSANDO:
-                if(line.getNote(xIndex).getNoteType() != NoteType.GRACEQUAVER) {
-                    nextNoteType = line.getNote(xIndex).getNoteType();
-                }else if(xIndex>0){
-                    nextNoteType = line.getNote(xIndex-1).getNoteType();
-                }else{
-                    nextNoteType = NoteType.CROTCHET;
-                }
-                break;
-            default:
-                nextNoteType = activeNote.getNoteType();
+        Note nextNote;
+        if (activeNote.getNoteType().isGraceNote()) {
+            nextNote = NoteType.GLISSANDO.newInstance();
         }
-        setActiveNote(nextNoteType.newInstance());
+        else if (activeNote.getNoteType() == NoteType.GLISSANDO) {
+            NoteType nextNoteType;
+            if(!line.getNote(xIndex).getNoteType().isGraceNote()) {
+                nextNoteType = line.getNote(xIndex).getNoteType();
+            }else if(xIndex>0){
+                nextNoteType = line.getNote(xIndex-1).getNoteType();
+            }else{
+                nextNoteType = NoteType.CROTCHET;
+            }
+            nextNote = nextNoteType.newInstance();
+        }
+        else if(activeNote.getNoteType()==NoteType.GRACESEMIQUAVEREDITSTEP1) {
+            nextNote = new GraceSemiQuaver();
+            ((GraceSemiQuaver)nextNote).setY0Pos(activeNote.getYPos());
+            ((GraceSemiQuaver)nextNote).setX2DiffPos(15);
+            nextNote.setUpper(true);
+        }
+        else {
+            nextNote = activeNote.getNoteType().newInstance();
+        }
+        setActiveNote(nextNote);
         mainFrame.getInsertMenu().updateState();
         spellLyrics(line);
         drawWidthIfWiderLine(line, false);
@@ -537,7 +568,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             line.removeInterval(xIndex-1, xIndex);
             activeNote.setXPos(line.getNote(xIndex).getXPos()+activeNote.getAccidental().getNb()*FIXPREFIXWIDTH);
             line.addNote(xIndex, activeNote);
-            int shift = Math.round((NOTEDIST[activeNote.getNoteType().ordinal()]+activeNote.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
+            int shift = Math.round((NOTEDIST.get(activeNote.getNoteType())+activeNote.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
             //int shift = Math.round((ND+activeNote.getAccidental().getNb()*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
             for (int i=xIndex+1;i<line.noteCount();i++) {
                 line.getNote(i).setXPos(line.getNote(i).getXPos()+shift);
@@ -555,7 +586,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 return;
             }
             activeNote.setXPos(oldNote.getXPos()+(activeNote.getAccidental().getNb()-oldNote.getAccidental().getNb())*FIXPREFIXWIDTH);
-            int shift = Math.round((NOTEDIST[activeNote.getNoteType().ordinal()] - NOTEDIST[oldNote.getNoteType().ordinal()]
+            int shift = Math.round((NOTEDIST.get(activeNote.getNoteType()) - NOTEDIST.get(oldNote.getNoteType())
                     +(activeNote.getAccidental().getNb()-oldNote.getAccidental().getNb())*FIXPREFIXWIDTH)*line.getNoteDistChangeRatio());
             line.setNote(xIndex, activeNote);
             for (int i=xIndex+1;i<line.noteCount();i++) {
@@ -600,7 +631,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
         for(int i=selectionBegin;i<=selectionEnd;i++){
             NoteType nt = line.getNote(i).getNoteType();
-            if(!nt.isBeamable() && nt!=NoteType.GRACEQUAVER){
+            if(!nt.isBeamable() && !nt.isGraceNote()){
                 JOptionPane.showMessageDialog(mainFrame, "You can "+(beam?"beam":"unbeam")+" only quavers, semiquavers and demisemiquavers.",
                         mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -797,7 +828,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                     helper.setBounds(note.isUpper() ? note.getRealUpNoteRect() : note.getRealDownNoteRect());
                 }
                 helper.translate(note.getXPos(), getNoteYPos(note.getYPos(), l)-Note.HOTSPOT.y);
-                if (fromRectangle && dragRectangle.contains(helper) ||
+                if (fromRectangle && dragRectangle.intersects(helper) ||
                         !fromRectangle && helper.contains(startDrag)) {
                     selectedNotesLine = l;
                     if(selectionBegin==-1){
@@ -856,13 +887,13 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         for(int left=goodIndex-1;left>=startIndex;left--){
             note = line.getNote(left);
             note.setUpper(beaming==1);
-            note.a.lengthening = note.getNoteType()!=NoteType.GRACEQUAVER ?
+            note.a.lengthening = !note.getNoteType().isGraceNote() ?
                     (int)Math.round(note.getYPos()*HALFLINEDIST-(k*note.getXPos()+n)) : 0;
         }
         for(int right=goodIndex+1;right<=endIndex;right++){
             note = line.getNote(right);
             note.setUpper(beaming==1);
-            note.a.lengthening = note.getNoteType()!=NoteType.GRACEQUAVER ?
+            note.a.lengthening = !note.getNoteType().isGraceNote() ?
                     (int)Math.round(note.getYPos()*HALFLINEDIST-(k*note.getXPos()+n)) : 0;
         }
     }
@@ -1029,7 +1060,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             if(strict){
                 idealSpace = endNote.getRealUpNoteRect().width;
             }else{
-                idealSpace = NOTEDIST[endNote.getNoteType().ordinal()]*line.getNoteDistChangeRatio()+20;
+                idealSpace = NOTEDIST.get(endNote.getNoteType())*line.getNoteDistChangeRatio()+20;
                 //idealSpace = ND*line.getNoteDistChangeRatio()+20;
             }
             if(line.getNote(line.noteCount()-1).getXPos()>composition.getLineWidth()-idealSpace){
@@ -1550,7 +1581,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 case BEAM:
                     if(line.noteCount()>=2) {
                         selectionBegin = line.noteCount()-2;
-                        while(selectionBegin>0 && line.getNote(selectionBegin).getNoteType()==NoteType.GRACEQUAVER) {
+                        while(selectionBegin>0 && line.getNote(selectionBegin).getNoteType().isGraceNote()) {
                             selectionBegin--;
                         }
                         selectionEnd = line.noteCount()-1;

@@ -21,10 +21,7 @@ Created on Sep 3, 2006
 */
 package songscribe.ui.musicsheetdrawer;
 
-import songscribe.music.Note;
-import songscribe.music.Line;
-import songscribe.music.NoteType;
-import songscribe.music.KeyType;
+import songscribe.music.*;
 import songscribe.ui.MusicSheet;
 import songscribe.data.FileGeneralPath;
 
@@ -123,8 +120,9 @@ public class FughettaDrawer extends BaseMsDrawer{
     }
 
     public void paintNote(Graphics2D g2, Note note, int line, boolean beamed, Color color) {
-        AffineTransform at = g2.getTransform();
+        AffineTransform origTransform = g2.getTransform();
         g2.translate(note.getXPos(), ms.getNoteYPos(note.getYPos(), line));
+        AffineTransform translatedTransform = g2.getTransform();
         g2.setFont(fughetta);
         g2.setPaint(color);
 
@@ -144,7 +142,6 @@ public class FughettaDrawer extends BaseMsDrawer{
         }else{
             switch(nt){
                 case GRACEQUAVER:
-                    AffineTransform at1 = g2.getTransform();
                     g2.scale(graceNoteScale, graceNoteScale);
                     g2.drawString(noteHead.get(NoteType.QUAVER), 0, 0);
                     g2.setStroke(stemStroke);
@@ -153,16 +150,25 @@ public class FughettaDrawer extends BaseMsDrawer{
                         g2.draw(upperStem);
                         g2.translate(-upperCrotchetStemX, 0);
                         g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY);
-                        g2.setTransform(at1);
+                        g2.setTransform(translatedTransform);
                         g2.setStroke(graceNoteSlashStroke);
                         g2.draw(graceNoteUpperSlash);
                     }else{
                         g2.draw(lowerStem);
                         g2.drawString(mainLowerFlag, 0f, (float)lowerFlagY);
-                        g2.setTransform(at1);
+                        g2.setTransform(translatedTransform);
                         g2.setStroke(graceNoteSlashStroke);
                         g2.draw(graceNoteLowerSlash);
                     }
+                    break;
+                case GRACESEMIQUAVER:
+                    g2.scale(graceNoteScale, graceNoteScale);
+                    GraceSemiQuaver graceSemiQuaver = (GraceSemiQuaver) note;
+                    g2.drawString(noteHead.get(NoteType.QUAVER), 0, (float)((graceSemiQuaver.getY0Pos() - graceSemiQuaver.getYPos()) * MusicSheet.HALFLINEDIST / graceNoteScale));
+                    g2.drawString(noteHead.get(NoteType.QUAVER), (float) (graceSemiQuaver.getX2DiffPos() / graceNoteScale), 0);
+                    g2.setTransform(origTransform);
+                    g2.translate(note.isUpper() ? -2.7 : -1.7, 0);
+                    drawGraceSemiQuaverBeam(g2, note, line);
                     break;
                 case REPEATLEFT:
                     drawRepeat(g2, repeatLeftThickX, 1d, true);
@@ -184,10 +190,8 @@ public class FughettaDrawer extends BaseMsDrawer{
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.fill(breathMark);
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                    g2.scale(16, 16);
-                    break;
-
             }
+            g2.setTransform(translatedTransform);
         }
 
         g2.setStroke(lineStroke);
@@ -218,7 +222,8 @@ public class FughettaDrawer extends BaseMsDrawer{
             }
         }
 
-        g2.setTransform(at);
+        g2.setTransform(origTransform);
+
         //drawing the glissando
         if(note.getGlissando()!=Note.NOGLISSANDO){
             drawGlissando(g2, ms.getComposition().getLine(line).getNoteIndex(note), note.getGlissando(), line);
@@ -229,17 +234,17 @@ public class FughettaDrawer extends BaseMsDrawer{
 
         //drawing the fermata
         if(note.isFermata()){
-            at = g2.getTransform();
             g2.translate(note.getXPos()-5, ms.getNoteYPos(getFermataYPos(note), line)+12);
             g2.scale(0.0625, 0.0625);
             g2.scale(0.9, 0.8);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.fill(fermata);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            g2.setTransform(at);
+            g2.setTransform(origTransform);
         }
 
         g2.setPaint(Color.black);
+        g2.setTransform(origTransform);
     }
 
     private void drawSimpleAccidental(Graphics2D g2, Note note, float startX) {

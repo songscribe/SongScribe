@@ -33,7 +33,8 @@ public class NoteMenu extends InsertSubMenu{
         super(mainFrame, "Note", "crotchet22.gif", mainFrame.getNoteSelectionPanel());
         for(NoteType nt:NoteType.values()){
             if(nt.isNote() || nt==NoteType.GLISSANDO){
-                createCheckBoxMenuItem(nt.getName(), nt.name(), nt.name().toLowerCase()+"16.gif", nt.getAcceleratorKey());
+                String actionCommand = nt!=NoteType.GRACESEMIQUAVER ? nt.name() : NoteType.GRACESEMIQUAVEREDITSTEP1.name();
+                createCheckBoxMenuItem(nt.getName(), actionCommand, nt.name().toLowerCase()+"16.gif", nt.getAcceleratorKey());
             }
         }
     }

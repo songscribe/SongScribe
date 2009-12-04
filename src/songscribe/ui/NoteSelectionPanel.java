@@ -43,7 +43,7 @@ public final class NoteSelectionPanel extends SelectionPanel{
         this.mainFrame = mainFrame;
 
         for (NoteType nt : NoteType.values()) {
-            if(nt.isNote()){
+            if(nt.isNote() && nt!=NoteType.GRACESEMIQUAVER){
                 JToggleButton noteTypeButton = new JToggleButton();
                 noteTypeButton.setToolTipText(nt.getCompoundName());
                 noteTypeButton.setIcon(new ImageIcon(Note.clipNoteImage(nt.getInstance().getUpImage(), nt.getInstance().getRealUpNoteRect(), Color.yellow, SELECTIONIMAGEDIM)));
@@ -53,6 +53,15 @@ public final class NoteSelectionPanel extends SelectionPanel{
                 selectionGroup.add(noteTypeButton);
             }
         }
+
+        //adding gracesemiquaver
+        JToggleButton graceSemiQuaverButton = new JToggleButton();
+        graceSemiQuaverButton.setToolTipText(NoteType.GRACESEMIQUAVER.getCompoundName());
+        graceSemiQuaverButton.setIcon(new ImageIcon(MainFrame.getImage("graceSemiQuaver.gif")));
+        graceSemiQuaverButton.addActionListener(this);
+        graceSemiQuaverButton.setActionCommand(NoteType.GRACESEMIQUAVEREDITSTEP1.name());
+        addSelectionComponent(graceSemiQuaverButton);
+        selectionGroup.add(graceSemiQuaverButton);
 
         //making the glissando button
         JToggleButton glissandoButton = new JToggleButton();

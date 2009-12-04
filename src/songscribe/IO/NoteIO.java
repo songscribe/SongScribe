@@ -53,6 +53,8 @@ public class NoteIO {
     private static final String XMLBEATCHANGE = "beatchange";
     private static final String XMLGLISSANDOX1TRANSLATE = "glissandox1translate";
     private static final String XMLGLISSANDOX2TRANSLATE = "glissandox2translate";
+    private static final String XMLGRACESEMIQUAVERY0POS = "y0pos";
+    private static final String XMLGRACESEMIQUAVERX2DIFFPOS = "x2diffpos";
 
     public static void writeNote(Note n, PrintWriter pw) throws IOException {
         pw.println("          <"+XMLNOTE+" "+XMLTYPE+"=\""+n.getNoteType().name()+"\">");
@@ -76,6 +78,10 @@ public class NoteIO {
         if(n.isTrill())XML.writeEmptyTag(pw, XMLTRILL);
         if(n.isFermata())XML.writeEmptyTag(pw, XMLFERMATA);
         if(n.getBeatChange()!=null)XML.writeValue(pw, XMLBEATCHANGE, n.getBeatChange().name());
+        if(n.getNoteType() == NoteType.GRACESEMIQUAVER) {
+            XML.writeValue(pw, XMLGRACESEMIQUAVERY0POS, Integer.toString(((GraceSemiQuaver) n).getY0Pos()));
+            XML.writeValue(pw, XMLGRACESEMIQUAVERX2DIFFPOS, Integer.toString(((GraceSemiQuaver) n).getX2DiffPos()));
+        }
         pw.println("          </"+XMLNOTE+">");
     }
 
@@ -188,6 +194,10 @@ public class NoteIO {
                         note.setFermata(true);
                     }else if(lastTag.equals(XMLBEATCHANGE)){
                         note.setBeatChange(BeatChange.valueOf(str));
+                    }else if(lastTag.equals(XMLGRACESEMIQUAVERY0POS)){
+                        ((GraceSemiQuaver) note).setY0Pos(Integer.valueOf(str));
+                    }else if(lastTag.equals(XMLGRACESEMIQUAVERX2DIFFPOS)){
+                        ((GraceSemiQuaver) note).setX2DiffPos(Integer.valueOf(str));
                     }
                 }
             }

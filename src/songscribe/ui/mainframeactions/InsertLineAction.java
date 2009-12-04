@@ -49,7 +49,7 @@ public class InsertLineAction extends AbstractAction {
             mainFrame.getMusicSheet().setRepaintImage(true);
             mainFrame.getMusicSheet().repaint();
         }else{
-            mainFrame.showErrorMessage("Please select a page first.");
+            mainFrame.showErrorMessage("Please select a line first.");
         }
     }
 }
