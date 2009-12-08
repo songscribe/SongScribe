@@ -48,6 +48,13 @@ public class Runner {
         //adding the classpath dinamically
         for(File lib:new File("libs").listFiles()) if(lib.isFile())addURL(lib);
 
+        String ss = System.getProperty("songscribe");
+
+        if (ss.equals("version")) {
+            System.out.printf("%d.%d\n", MainFrame.MAJORVERSION, MainFrame.MINORVERSION);
+            return;
+        }
+
         //look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -55,7 +62,6 @@ public class Runner {
         }
 
         //launching ss
-        String ss = System.getProperty("songscribe");
         if(ss == null)startFrame(args);
         else if(ss.equals("sw"))MainFrame.main(args);
         else if(ss.equals("ss"))SlideFrame.main(args);
