@@ -1,9 +1,11 @@
 package songscribe.uiconverter;
 
+import songscribe.music.Composition;
 import songscribe.ui.ProcessDialog;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.Constants;
 import songscribe.ui.Utilities;
+import songscribe.IO.CompositionIO;
 import songscribe.data.MyBorder;
 
 import javax.swing.*;
@@ -92,15 +94,22 @@ public class ConvertAction extends AbstractAction {
                     //loading file
                     uiConverter.getMusicSheet().setComposition(null);
                     uiConverter.openMusicSheet(songFile, false);
-                    Utilities.zipFile(zos, songFile, null, buf);
+                    MusicSheet musicSheet = uiConverter.getMusicSheet();
+                    Composition composition = musicSheet.getComposition();
+                    
+                    // ensuring of having the latest format by writing the mssw file again
+                    File tempMsswSong = File.createTempFile("mssw_uiconvert", ".mssw");
+                    PrintWriter tempMsswSongPrintWriter = new PrintWriter(new FileWriter(tempMsswSong));
+                    CompositionIO.writeComposition(composition, tempMsswSongPrintWriter);
+                    tempMsswSongPrintWriter.close();
+                    Utilities.zipFile(zos, tempMsswSong, songFile.getName(), buf);
                     processDialog.nextValue();
 
-                    // producing images
-                    MusicSheet musicSheet = uiConverter.getMusicSheet();
-                    musicSheet.getComposition().setUnderLyrics("");
-                    musicSheet.getComposition().setTranslatedLyrics("");
-                    musicSheet.getComposition().setSongTitle("");
-                    musicSheet.getComposition().setRightInfo("");
+                    // producing images                    
+                    composition.setUnderLyrics("");
+                    composition.setTranslatedLyrics("");
+                    composition.setSongTitle("");
+                    composition.setRightInfo("");
 
                     String fileName = songFile.getName();
                     int dotPos = fileName.lastIndexOf('.');
@@ -125,10 +134,10 @@ public class ConvertAction extends AbstractAction {
                     }
 
                     // producing MIDI
-                    musicSheet.getComposition().musicChanged(props);
+                    composition.musicChanged(props);
                     File midiFile = new File(songDirectory, fileName + ".mid");
                     try {
-                        MidiSystem.write(musicSheet.getComposition().getSequence(), 1, midiFile);
+                        MidiSystem.write(composition.getSequence(), 1, midiFile);
                     } catch (IOException e) {
                         midiFile = null;
                         uiConverter.showErrorMessage("Could not convert MIDI for " + songFile.getName());

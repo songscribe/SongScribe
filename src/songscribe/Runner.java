@@ -23,6 +23,7 @@ package songscribe;
 
 import songscribe.ui.MainFrame;
 import songscribe.ui.SlideFrame;
+import songscribe.ui.Utilities;
 import songscribe.publisher.Publisher;
 import songscribe.converter.ImageConverter;
 import songscribe.converter.MidiConverter;
@@ -48,17 +49,20 @@ public class Runner {
         //adding the classpath dinamically
         for(File lib:new File("libs").listFiles()) if(lib.isFile())addURL(lib);
 
+        Logger LOG = Logger.getLogger(Runner.class);
+
         String ss = System.getProperty("songscribe");
 
-        if (ss.equals("version")) {
-            System.out.printf("%d.%d\n", MainFrame.MAJORVERSION, MainFrame.MINORVERSION);
+        if ("version".equals(ss)) {
+            System.out.println(Utilities.getVersion());
             return;
         }
 
         //look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {            
+        } catch (Exception e) {
+            LOG.warn("Could not set system default look&feel", e);
         }
 
         //launching ss
@@ -78,6 +82,7 @@ public class Runner {
         try {
             Method method = sysclass.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
+            //noinspection deprecation
             method.invoke(sysloader, file.toURL());
         } catch (Throwable t) {
             JOptionPane.showMessageDialog(null, "The program could not start because of an unexpected error.\n Please contact the developer.", "Fatal", JOptionPane.ERROR_MESSAGE);

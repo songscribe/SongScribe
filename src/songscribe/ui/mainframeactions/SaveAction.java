@@ -55,7 +55,6 @@ public class SaveAction extends AbstractAction {
         }
         try {
             PrintWriter pw = new PrintWriter(mainFrame.getSaveFile(), "UTF-8");
-            pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             CompositionIO.writeComposition(mainFrame.getMusicSheet().getComposition(), pw);
             pw.close();
         } catch (IOException e1) {

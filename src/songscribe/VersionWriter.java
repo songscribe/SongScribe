@@ -32,7 +32,7 @@ public class VersionWriter {
     public static void main(String[] args) throws FileNotFoundException {
         if(args[0].equals("full")){
             System.out.println(Utilities.getFileVersion());
-        }else if(args[0].equals("update")){
+        }else if(args[0].equals("normal")){
             System.out.println(Utilities.getVersion());
         }
     }

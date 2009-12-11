@@ -22,29 +22,28 @@ Created on 2005.01.06., 22:15:02
 
 package songscribe.ui;
 
-import songscribe.music.*;
-import songscribe.data.PropertyChangeListener;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.xml.sax.SAXException;
 import songscribe.IO.CompositionIO;
+import songscribe.data.PropertyChangeListener;
+import songscribe.music.*;
 import songscribe.ui.mainframeactions.*;
 import songscribe.ui.playsubmenu.PlayMenu;
 
-import javax.swing.*;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
 import javax.sound.midi.*;
-import javax.xml.parsers.SAXParserFactory;
+import javax.swing.*;
 import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.awt.Image;
 import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-
-import org.xml.sax.SAXException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
 
 /**
@@ -76,7 +75,10 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "Cannot make \".songscribe\" directory in the user home. Please give proper permissions.\nUntil then the program cannot save properties.", PACKAGENAME, JOptionPane.ERROR_MESSAGE);
         }
         File logFile = new File(SSHOME, "log");
-        if(logFile.length()>1000000l)logFile.delete();
+        if(logFile.length()>1000000l) {
+            //noinspection ResultOfMethodCallIgnored
+            logFile.delete();
+        }
     }
     private static final File PROPSFILE = new File(SSHOME, "props");
     private static final File DEFPROPSFILE = new File("conf/defprops");
@@ -127,14 +129,11 @@ public class MainFrame extends JFrame {
     private PlayMenu playMenu = new PlayMenu(this);
     private JMenu controlMenu;
 
-    private MyUndoManager undoManager = new MyUndoManager();
     protected AbstractAction saveAction;
     protected AbstractAction saveAsAction;
     protected ExitAction exitAction = new ExitAction();
     private DialogOpenAction aboutAction = new DialogOpenAction(this, "About", "info.png", AboutDialog.class);
     private DialogOpenAction prefAction = new DialogOpenAction(this, "Preferences...", "configure.png", PreferencesDialog.class);    
-    private UndoAction undoAction = new UndoAction();
-    private RedoAction redoAction = new RedoAction();
     private DialogOpenAction compositionSettingsAction = new DialogOpenAction(this, "Composition settings...", "compositionsettings.png", KeyStroke.getKeyStroke(KeyEvent.VK_G, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), CompositionSettingsDialog.class);
 
     private ModeAction[] modeActions;
@@ -279,11 +278,6 @@ public class MainFrame extends JFrame {
             fileMenu.add(exitAction);
         }
         JMenu editMenu = new JMenu("Edit");
-        undoAction.setEnabled(false);
-        redoAction.setEnabled(false);
-        //editMenu.add(undoAction);
-        //editMenu.add(redoAction);
-        //editMenu.addSeparator();
         editMenu.add(musicSheet.cutAction);
         editMenu.add(musicSheet.copyAction);
         editMenu.add(musicSheet.pasteAction);
@@ -358,7 +352,8 @@ public class MainFrame extends JFrame {
         compositionMenu.add(new DialogOpenAction(this, "Line width...", "changelinewidth.png", LineWidthChangeDialog.class));
 
         JMenu helpMenu = new JMenu("Help");
-        helpMenu.add(new DialogOpenAction(this, "Tutorial", "kontact_contacts.png", TutorialDialog.class));
+        helpMenu.add(new DialogOpenAction(this, "Basic Tutorial", "kontact_contacts.png", TutorialDialog.class));
+        helpMenu.add(new PDFTutorialOpenAction(this, "Extended Tutorial (PDF)", "blockdevice.png"));
         helpMenu.add(new TipAction(this));
         helpMenu.add(new DialogOpenAction(this, "Keymap", "keyboard.png", KeyMapDialog.class));
         helpMenu.addSeparator();
@@ -454,10 +449,6 @@ public class MainFrame extends JFrame {
         modifiedDocument = false;
     }
 
-    public boolean isModifiedDocument() {
-        return modifiedDocument;
-    }
-
     public MusicSheet getMusicSheet() {
         return musicSheet;
     }
@@ -500,10 +491,6 @@ public class MainFrame extends JFrame {
 
     public ProfileManager getProfileManager() {
         return profileManager;
-    }
-
-    public MyUndoManager getUndoManager() {
-        return undoManager;
     }
 
     public JMenu getControlMenu() {
@@ -655,7 +642,9 @@ public class MainFrame extends JFrame {
     }
 
     protected static void hideSplash() {
-        splashWindow.dispose();
+        if (splashWindow != null) {
+            splashWindow.dispose();
+        }
     }
 
     protected void automaticCheckForUpdate(){
@@ -725,7 +714,7 @@ public class MainFrame extends JFrame {
             boolean quit = showSaveDialog();
 
             // Save the result of the dialog so Mac quit handler can access it
-            this.putValue("quit", new Boolean(quit));
+            this.putValue("quit", quit);
             if(!quit)return;
             if(musicSheet!=null)musicSheet.saveProperties();
             properties.setProperty(Constants.PREVIOUSDIRECTORY, previousDirectory.getAbsolutePath());
@@ -738,50 +727,6 @@ public class MainFrame extends JFrame {
             }
             closeMidi();
             System.exit(0);
-        }
-    }
-
-    private class UndoAction extends AbstractAction {
-        public UndoAction() {
-            putValue(Action.NAME, "Undo");
-            putValue(Action.SMALL_ICON, new ImageIcon(getImage("undo.png")));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            try {
-                undoManager.undo();
-            } catch (CannotUndoException e1) {
-                JOptionPane.showMessageDialog(MainFrame.this, "Undo could not be done!", PROGNAME, JOptionPane.WARNING_MESSAGE);
-            }
-            setEnabled(undoManager.canUndo());
-            redoAction.setEnabled(undoManager.canRedo());
-        }
-    }
-
-    private class RedoAction extends AbstractAction {
-        public RedoAction() {
-            putValue(Action.NAME, "Redo");
-            putValue(Action.SMALL_ICON, new ImageIcon(getImage("redo.png")));
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            try {
-                undoManager.redo();
-            } catch (CannotRedoException e1) {
-                JOptionPane.showMessageDialog(MainFrame.this, "Redo could not be done!", PROGNAME, JOptionPane.WARNING_MESSAGE);
-            }
-            undoAction.setEnabled(undoManager.canUndo());
-            setEnabled(undoManager.canRedo());
-        }
-    }
-
-    public class MyUndoManager extends UndoManager {
-        public void undoableEditHappened(UndoableEditEvent e) {
-            super.undoableEditHappened(e);
-            undoAction.setEnabled(undoManager.canUndo());
-            redoAction.setEnabled(undoManager.canRedo());
         }
     }
 
@@ -818,7 +763,7 @@ public class MainFrame extends JFrame {
 
     public boolean handleQuit() {
         exitAction.actionPerformed(null);
-        return ((Boolean) exitAction.getValue("quit")).booleanValue();
+        return (Boolean) exitAction.getValue("quit");
     }
 
     public void handleOpenFile(File file) {
@@ -827,10 +772,6 @@ public class MainFrame extends JFrame {
         setSelectedTool(selectSelectionPanel);
         selectSelectionPanel.setActive();
         unmodifiedDocument();
-    }
-
-    public void handleOpenApplication() {
-        //do nothing because defaultly an empty document is opened
     }
 
     public void handlePrintFile(File file) {

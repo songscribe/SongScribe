@@ -69,6 +69,7 @@ public class CompositionIO {
 
 
     public static void writeComposition(Composition c, PrintWriter pw) throws IOException {
+        pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         pw.println("<"+XMLCOMPOSITION+" "+XMLVERSION+"=\""+IOMAJORVERSION+"."+IOMINORVERSION+"\">");
         XML.indent = 2;
         XML.writeValue(pw, XMLKEYS, Integer.toString(c.getDefaultKeys()));

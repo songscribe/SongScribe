@@ -5,4 +5,7 @@
 songscribe.jar
 version
 *.exe
+build/
 dist/
+bin/
+.*

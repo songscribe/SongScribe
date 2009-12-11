@@ -1,29 +1,94 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="songscribe" default="dist">
-    <property name="output.dir" value="${basedir}/classes_temp"/>
-    <property name="jarfile" value="songscribe.jar"/>
-    <property name="dist" value="${basedir}/dist"/>
-    <property name="ss" value="${dist}/ss"/>
+<project name="songscribe" default="build">
+    <property name="src.dir" location="src"/>
+    <property name="c.src.dir" location="${src.dir}/c"/>
+    <property name="libs.dir" location="libs"/>
+    <property name="idea.lib.dir" location="${libs.dir}/idea-lib"/>
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="songscribe.jar" value="songscribe.jar"/>
 
     <path id="classpath">
-        <pathelement location="${basedir}/libs/log4j-1.2.9.jar"/>
-        <pathelement location="${basedir}/libs/itext-1.4.jar"/>
-        <pathelement location="${basedir}/libs/swing-layout.jar"/>
-        <pathelement location="${basedir}/libs/AppleJavaExtensions.jar"/>
-        <pathelement location="${basedir}/libs/commons-httpclient-3.1.jar"/>
-        <pathelement location="${basedir}/libs/commons-logging-1.1.jar"/>
-        <pathelement location="${basedir}/libs/commons-codec-1.3.jar"/>
-        <pathelement location="${basedir}/libs/jdc.jar"/>
+        <pathelement location="${libs.dir}/log4j-1.2.9.jar"/>
+        <pathelement location="${libs.dir}/itext-1.4.jar"/>
+        <pathelement location="${libs.dir}/swing-layout.jar"/>
+        <pathelement location="${libs.dir}/AppleJavaExtensions.jar"/>
+        <pathelement location="${libs.dir}/commons-httpclient-3.1.jar"/>
+        <pathelement location="${libs.dir}/commons-logging-1.1.jar"/>
+        <pathelement location="${libs.dir}/commons-codec-1.3.jar"/>
+        <pathelement location="${libs.dir}/jdc.jar"/>
+        <pathelement location="${libs.dir}/forms_rt.jar"/>
     </path>
 
-    <target name="dist">
-        <copy todir="${ss}/conf">
+    <path id="idea.compile.classpath">
+        <pathelement location="${idea.lib.dir}/asm.jar"/>
+        <pathelement location="${idea.lib.dir}/asm-commons.jar"/>
+        <pathelement location="${idea.lib.dir}/javac2.jar"/>
+        <pathelement location="${idea.lib.dir}/jdom.jar"/>
+    </path>
+
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="idea.compile.classpath"/>
+
+    <target name="init" description="initialize build">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="clean" description="deletes the build and dist folder">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <delete file="${songscribe.jar}"/>
+    </target>
+
+    <target name="build" depends="init" description="build the source code and generates the songscribe.jar">
+        <javac2
+            srcdir="${src.dir}"
+                destdir="${build.dir}"
+                classpathref="classpath"
+                excludes="${c.src.dir}"
+                encoding="UTF-8"
+                target="1.5"
+                debug="on"
+        />
+        <jar destfile="${songscribe.jar}" basedir="${build.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="songscribe.Runner"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <path id="dist.path">
+        <pathelement location="conf" />
+        <pathelement location="fonts" />
+        <pathelement location="examples" />
+        <pathelement location="help" />
+        <pathelement location="images" />
+        <pathelement location="libs" />
+        <pathelement location="profiles" />
+        <pathelement location="thirdpartylicenses" />
+
+        <pathelement location="license.txt"/>
+        <pathelement location="readme.html"/>
+        <pathelement location="launching.txt"/>
+        <pathelement location="writer.Info.plist"/>
+        <pathelement location="book.Info.plist"/>
+        <pathelement location="show.Info.plist"/>
+        <pathelement location="converter.Info.plist"/>
+        <pathelement location="songscribe.jar"/>
+    </path>
+
+    <target name="dist" depends="build" description="dist">
+        <copy todir="${dist.dir}">
+            <path refid="dist.path" />
+        </copy>
+
+        <!--copy todir="${ss}/conf">
             <fileset dir="${basedir}/conf" excludes=".svn"/>
         </copy>
         <copy todir="${ss}/fonts">
             <fileset dir="${basedir}/fonts" excludes=".svn"/>
         </copy>
-	    <copy todir="${ss}/examples">
+        <copy todir="${ss}/examples">
             <fileset dir="${basedir}/examples" excludes=".svn"/>
         </copy>
         <copy todir="${ss}/help">
@@ -44,13 +109,15 @@
         <copy todir="${ss}">
             <fileset file="license.txt"/>
             <fileset file="readme.html"/>
-	        <fileset file="launching.txt"/>
+            <fileset file="launching.txt"/>
             <fileset file="writer.Info.plist"/>
             <fileset file="book.Info.plist"/>
             <fileset file="show.Info.plist"/>
             <fileset file="converter.Info.plist"/>
             <fileset file="songscribe.jar"/>
         </copy>
+
+
         <java classname="songscribe.ChecksumMaker" dir="${ss}" fork="true">
             <classpath refid="classpath"/>
             <classpath location="${jarfile}"/>
@@ -64,7 +131,7 @@
             <classpath refid="classpath"/>
             <classpath location="${jarfile}"/>
             <arg value="update"/>
-        </java>
+        </java-->
 
         <!--Making the tar.gz platform independent file-->
 
@@ -91,18 +158,65 @@
         <delete dir="${temp_ss}/src"/>
         <delete file="${temp_ss}/build.xml"/>
         <move file="${temp_ss}" tofile="${ss}"/-->
-	
-	    <!--Making the update file-->
+
+        <!--Making the update file-->
         
         <!--zip destfile="${dist}/ssupdate_${updateversion}.msu">
             <fileset dir="${ss}"/>
         </zip-->
 
+
+    </target>
+
+    <target name="update" description="update making for internet">
         <!--Deleting the stuff for update-->
         <java classname="songscribe.UpdateMaker">
             <classpath refid="classpath"/>
-            <classpath location="${jarfile}"/>
-            <arg value="${ss}"/>
+            <classpath location="${songscribe.jar}"/>
+            <arg value="${dist.dir}"/>
+        </java>
+    </target>
+
+    <target name="songwriter" description="Launch SongWriter">
+        <antcall target="execute-runner">
+            <param name="runner.param" value="sw"/>
+            <param name="runner.spawn" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="sw" depends="songwriter" description="Launch SongWriter"/>
+
+    <target name="songbook" description="Launch SongBook">
+        <antcall target="execute-runner">
+            <param name="runner.param" value="sb"/>
+            <param name="runner.spawn" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="songshow" description="Launch SongShow">
+        <antcall target="execute-runner">
+            <param name="runner.param" value="ss"/>
+            <param name="runner.spawn" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="converter" description="Launch Converter">
+        <antcall target="execute-runner">
+            <param name="runner.param" value="ui_converter"/>
+            <param name="runner.spawn" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="version" description="Prints out the SongScribe's current version number">
+        <antcall target="execute-runner">
+            <param name="runner.param" value="version"/>
+        </antcall>
+    </target>
+
+    <target name="execute-runner">
+        <property name="runner.spawn" value="false"/>
+        <java jar="${songscribe.jar}" fork="true" spawn="${runner.spawn}">
+            <jvmarg value="-Dsongscribe=${runner.param}"/>
         </java>
     </target>
 </project>
