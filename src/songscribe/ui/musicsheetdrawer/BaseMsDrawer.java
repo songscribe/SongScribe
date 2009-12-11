@@ -553,7 +553,7 @@ public abstract class BaseMsDrawer {
     private void drawGlissando(Graphics2D g2, int x1, int y1, int x2, int y2){
         double l = Math.sqrt(Math.abs(x1-x2)*Math.abs(x1-x2)+Math.abs(y1-y2)*Math.abs(y1-y2));
         int m = (int)Math.round(l/glissandoLength);
-        if(m==0)m=1;
+        m = Math.max(2, m); // minimum two glissando parts
         g2.setFont(fughetta);
         AffineTransform at = g2.getTransform();
         g2.translate(x1, y1+2.25d);

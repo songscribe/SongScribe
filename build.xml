@@ -5,6 +5,8 @@
     <property name="libs.dir" location="libs"/>
     <property name="idea.lib.dir" location="${libs.dir}/idea-lib"/>
     <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.update.dir" location="${build.dir}/update"/>
     <property name="dist.dir" value="dist"/>
     <property name="songscribe.jar" value="songscribe.jar"/>
 
@@ -42,17 +44,16 @@
         <include name="license.txt"/>
         <include name="readme.html"/>
         <include name="launching.txt"/>
-        <include name="writer.Info.plist"/>
-        <include name="book.Info.plist"/>
-        <include name="show.Info.plist"/>
-        <include name="converter.Info.plist"/>
         <include name="songscribe.jar"/>
+        <!-- The  *.plist files are copied with filter copy in dist task, don't specify them here-->
     </patternset>
 
     <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="idea.compile.classpath"/>
 
     <target name="init" description="initialize build">
         <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.update.dir}"/>
         <mkdir dir="${dist.dir}"/>
     </target>
 
@@ -65,14 +66,14 @@
     <target name="build" depends="init" description="build the source code and generates the songscribe.jar">
         <javac2
             srcdir="${src.dir}"
-                destdir="${build.dir}"
+                destdir="${build.classes.dir}"
                 classpathref="classpath"
                 excludes="${c.src.dir}"
                 encoding="UTF-8"
                 target="1.5"
                 debug="on"
         />
-        <jar destfile="${songscribe.jar}" basedir="${build.dir}">
+        <jar destfile="${songscribe.jar}" basedir="${build.classes.dir}">
             <manifest>
                 <attribute name="Main-Class" value="songscribe.Runner"/>
             </manifest>
@@ -80,38 +81,62 @@
     </target>
 
     <target name="dist" depends="build" description="make a distribution of the program">
+        <!--Delete the files in dist-->
         <delete>
             <fileset dir="${dist.dir}"/>
         </delete>
+
+        <!--Copy the pre-defined program files there-->
         <copy todir="${dist.dir}">
             <fileset dir="${basedir}">
                 <patternset refid="dist.path"/>
             </fileset>
         </copy>
 
+        <!--Create version file-->
         <java classname="songscribe.VersionWriter" output="${dist.dir}/version">
             <classpath refid="classpath"/>
             <classpath location="${songscribe.jar}"/>
             <arg value="full"/>
         </java>
-        <java classname="songscribe.VersionWriter" output="${dist.dir}/version.txt">
+
+        <!--Set the version property with the human readable version-->
+        <java classname="songscribe.VersionWriter" outputproperty="version">
             <classpath refid="classpath"/>
             <classpath location="${songscribe.jar}"/>
             <arg value="normal"/>
         </java>
+
+        <!--Create version.txt file-->
+        <echo message="${version}" file="${dist.dir}/version.txt" />
+
+        <!--Filter-copy the plist files replacing with the current version number-->
+        <copy todir="${dist.dir}">
+            <fileset dir="${basedir}" includes="*.plist" />
+            <filterset>
+                <filter token="VERSION" value="${version}"/>
+            </filterset>
+        </copy>
     </target>
 
     <target name="prepare-update" depends="dist" description="making update for internet">
-        <java classname="songscribe.ChecksumMaker" dir="${dist.dir}" fork="true">
+        <!--Copy the whole dist to a temporary working directory-->
+        <copy todir="${build.update.dir}">
+            <fileset dir="${dist.dir}" />
+        </copy>
+        <!--Create the checksums file-->
+        <java classname="songscribe.ChecksumMaker" dir="${build.update.dir}" fork="true">
             <classpath refid="classpath"/>
             <classpath location="${songscribe.jar}"/>
         </java>
-        <!--Deleting the stuff for update-->
+        <!--Synchronizing with the server content-->
         <java classname="songscribe.UpdateMaker">
             <classpath refid="classpath"/>
             <classpath location="${songscribe.jar}"/>
-            <arg value="${dist.dir}"/>
+            <arg value="${build.update.dir}"/>
         </java>
+
+        <!--TODO: zip the files, upload to the server and run ssh command to unzip them-->
     </target>
 
     <target name="songwriter" description="Launch SongWriter">
