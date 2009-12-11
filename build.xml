@@ -27,6 +27,28 @@
         <pathelement location="${idea.lib.dir}/jdom.jar"/>
     </path>
 
+    <!-- specify here the the directories and files which should go to the distribution-->
+    <!-- WARNING: the directories must end with slash! -->
+    <patternset id="dist.path" >
+        <include name="conf/" />
+        <include name="fonts/" />
+        <include name="examples/" />
+        <include name="help/" />
+        <include name="images/" />
+        <include name="libs/" />
+        <exclude name="libs/idea-lib/" />
+        <include name="profiles/" />
+        <include name="thirdpartylicenses/" />
+        <include name="license.txt"/>
+        <include name="readme.html"/>
+        <include name="launching.txt"/>
+        <include name="writer.Info.plist"/>
+        <include name="book.Info.plist"/>
+        <include name="show.Info.plist"/>
+        <include name="converter.Info.plist"/>
+        <include name="songscribe.jar"/>
+    </patternset>
+
     <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="idea.compile.classpath"/>
 
     <target name="init" description="initialize build">
@@ -57,118 +79,33 @@
         </jar>
     </target>
 
-    <path id="dist.path">
-        <pathelement location="conf" />
-        <pathelement location="fonts" />
-        <pathelement location="examples" />
-        <pathelement location="help" />
-        <pathelement location="images" />
-        <pathelement location="libs" />
-        <pathelement location="profiles" />
-        <pathelement location="thirdpartylicenses" />
-
-        <pathelement location="license.txt"/>
-        <pathelement location="readme.html"/>
-        <pathelement location="launching.txt"/>
-        <pathelement location="writer.Info.plist"/>
-        <pathelement location="book.Info.plist"/>
-        <pathelement location="show.Info.plist"/>
-        <pathelement location="converter.Info.plist"/>
-        <pathelement location="songscribe.jar"/>
-    </path>
-
-    <target name="dist" depends="build" description="dist">
+    <target name="dist" depends="build" description="make a distribution of the program">
+        <delete>
+            <fileset dir="${dist.dir}"/>
+        </delete>
         <copy todir="${dist.dir}">
-            <path refid="dist.path" />
+            <fileset dir="${basedir}">
+                <patternset refid="dist.path"/>
+            </fileset>
         </copy>
 
-        <!--copy todir="${ss}/conf">
-            <fileset dir="${basedir}/conf" excludes=".svn"/>
-        </copy>
-        <copy todir="${ss}/fonts">
-            <fileset dir="${basedir}/fonts" excludes=".svn"/>
-        </copy>
-        <copy todir="${ss}/examples">
-            <fileset dir="${basedir}/examples" excludes=".svn"/>
-        </copy>
-        <copy todir="${ss}/help">
-            <fileset dir="${basedir}/help" excludes=".svn"/>
-        </copy>
-        <copy todir="${ss}/images">
-            <fileset dir="${basedir}/images" excludes=".svn"/>
-        </copy>
-        <copy todir="${ss}/libs">
-            <fileset dir="${basedir}/libs" excludes=".svn"/>
-        </copy>
-        <copy todir="${ss}/profiles">
-            <fileset dir="${basedir}/profiles" excludes=".svn"/>            
-        </copy>
-        <copy todir="${ss}/thirdpartylicenses">
-            <fileset dir="${basedir}/thirdpartylicenses" excludes=".svn"/>
-        </copy>        
-        <copy todir="${ss}">
-            <fileset file="license.txt"/>
-            <fileset file="readme.html"/>
-            <fileset file="launching.txt"/>
-            <fileset file="writer.Info.plist"/>
-            <fileset file="book.Info.plist"/>
-            <fileset file="show.Info.plist"/>
-            <fileset file="converter.Info.plist"/>
-            <fileset file="songscribe.jar"/>
-        </copy>
-
-
-        <java classname="songscribe.ChecksumMaker" dir="${ss}" fork="true">
+        <java classname="songscribe.VersionWriter" output="${dist.dir}/version">
             <classpath refid="classpath"/>
-            <classpath location="${jarfile}"/>
-        </java>
-        <java classname="songscribe.VersionWriter" output="${ss}/version">
-            <classpath refid="classpath"/>
-            <classpath location="${jarfile}"/>
+            <classpath location="${songscribe.jar}"/>
             <arg value="full"/>
         </java>
-        <java classname="songscribe.VersionWriter" outputproperty="updateversion">
+        <java classname="songscribe.VersionWriter" output="${dist.dir}/version.txt">
             <classpath refid="classpath"/>
-            <classpath location="${jarfile}"/>
-            <arg value="update"/>
-        </java-->
-
-        <!--Making the tar.gz platform independent file-->
-
-        <!--property name="tarfile" value="${basedir}/songscribe_${updateversion}.tar"/>
-        <property name="temp_ss" value="${dist}/songscribe"/>
-        <move file="${ss}" tofile="${temp_ss}"/>
-        <tar destfile="${tarfile}" basedir="${dist}"/>
-        <gzip src="${tarfile}" destfile="${tarfile}.gz"/>
-        <delete file="${tarfile}"/-->
-
-        <!--Making the tar.gz platform independent with sources file-->
-
-        <!--property name="tarsrcfile" value="${basedir}/songscribe_src_${updateversion}.tar"/>
-        <copy todir="${temp_ss}/src">
-                <fileset dir="${basedir}/src" excludes=".svn"/>
-            </copy>
-        <copy file="${basedir}/build.xml" todir="${temp_ss}"/>
-        <tar destfile="${tarsrcfile}" basedir="${dist}"/>
-        <gzip src="${tarsrcfile}" destfile="${tarsrcfile}.gz"/>
-        <delete file="${tarsrcfile}"/>
-
-        <move file="${tarfile}.gz" todir="${dist}"/>
-        <move file="${tarsrcfile}.gz" todir="${dist}"/>
-        <delete dir="${temp_ss}/src"/>
-        <delete file="${temp_ss}/build.xml"/>
-        <move file="${temp_ss}" tofile="${ss}"/-->
-
-        <!--Making the update file-->
-        
-        <!--zip destfile="${dist}/ssupdate_${updateversion}.msu">
-            <fileset dir="${ss}"/>
-        </zip-->
-
-
+            <classpath location="${songscribe.jar}"/>
+            <arg value="normal"/>
+        </java>
     </target>
 
-    <target name="update" description="update making for internet">
+    <target name="prepare-update" depends="dist" description="making update for internet">
+        <java classname="songscribe.ChecksumMaker" dir="${dist.dir}" fork="true">
+            <classpath refid="classpath"/>
+            <classpath location="${songscribe.jar}"/>
+        </java>
         <!--Deleting the stuff for update-->
         <java classname="songscribe.UpdateMaker">
             <classpath refid="classpath"/>
