@@ -29,6 +29,7 @@ import songscribe.converter.ImageConverter;
 import songscribe.converter.MidiConverter;
 import songscribe.uiconverter.UIConverter;
 
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.reflect.Method;
@@ -78,12 +79,12 @@ public class Runner {
 
     public static void addURL(File file) {
         URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
-        Class sysclass = URLClassLoader.class;     
+        Class<? extends ClassLoader> sysclass = URLClassLoader.class;
         try {
             Method method = sysclass.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
             //noinspection deprecation
-            method.invoke(sysloader, file.toURL());
+            method.invoke(sysloader, file.toURI().toURL());
         } catch (Throwable t) {
             JOptionPane.showMessageDialog(null, "The program could not start because of an unexpected error.\n Please contact the developer.", "Fatal", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Runner.class).fatal("Error, could not add URL to system classloader", t);
