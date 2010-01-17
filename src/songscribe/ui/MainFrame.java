@@ -203,11 +203,14 @@ public class MainFrame extends JFrame {
         musicSheet = new MusicSheet(this);
         musicSheet.initComponent();
         PlaybackPanel playbackPanel = new PlaybackPanel(this);
-        JPanel center = new JPanel();
-        center.setLayout(new BorderLayout());
+//        JPanel center = new JPanel();
+//        center.setLayout(new BorderLayout());
+        JSplitPane center = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        center.setContinuousLayout(true);
+        center.setResizeWeight(0.8);
         center.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        center.add(musicSheet.getScrolledMusicSheet());
-        center.add(BorderLayout.SOUTH, playbackPanel);
+        center.setTopComponent(musicSheet.getScrolledMusicSheet());
+        center.setBottomComponent(playbackPanel);
         getContentPane().add(center);
 
         //WEST
@@ -564,7 +567,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    protected static void openMidi(){
+    protected static void openMidi() {
         try {
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
@@ -575,7 +578,10 @@ public class MainFrame extends JFrame {
             receiver = MidiSystem.getReceiver();
         } catch (MidiUnavailableException e) {
             hideSplash();
-            JOptionPane.showMessageDialog(null, "You may be already running "+PACKAGENAME+". Playing will be disabled.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, String.format("You may be already running %s or another program that uses sound.\n" +
+                    "Please try to quit them and restart %s.\n" +
+                    "In this session playback will be disabled.", PACKAGENAME, PACKAGENAME),
+                    PACKAGENAME, JOptionPane.WARNING_MESSAGE);
         } catch (IOException e) {
             hideSplash();
             JOptionPane.showMessageDialog(null, "Cannot read the soundbank. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
