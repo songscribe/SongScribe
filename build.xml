@@ -7,6 +7,12 @@
     <property name="build.dir" location="build"/>
     <property name="build.classes.dir" location="${build.dir}/classes"/>
     <property name="build.update.dir" location="${build.dir}/update"/>
+    <property name="build.update.file.name" value="update.bz2" />
+    <property name="build.update.file" location="${build.dir}/${build.update.file.name}"/>
+    <property name="remote.update.dir" value="~/musicofthesupreme/files/update/ss" />
+    <property name="remote.user" value="musicofthesupreme" />
+    <property name="remote.host" value="barracuda.dreamhost.com" />
+    <property name="keyfile" location="${user.home}/.ssh/id_rsa"/>
     <property name="dist.dir" value="dist"/>
     <property name="songscribe.jar" value="songscribe.jar"/>
 
@@ -71,7 +77,7 @@
                 excludes="${c.src.dir}"
                 encoding="UTF-8"
                 target="1.5"
-                debug="on"
+                debug="off"
         />
         <jar destfile="${songscribe.jar}" basedir="${build.classes.dir}">
             <manifest>
@@ -136,7 +142,18 @@
             <arg value="${build.update.dir}"/>
         </java>
 
-        <!--TODO: zip the files, upload to the server and run ssh command to unzip them-->
+        <tar destfile="${build.update.file}" basedir="${build.update.dir}" compression="bzip2" />
+    </target>
+
+    <target name="upload-update" depends="prepare-update" >
+        <input message="Passphrase for ${keyfile}: " addproperty="passphrase">
+              <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
+        </input>
+        <scp file="${build.update.file}" todir="${remote.user}@${remote.host}:${remote.update.dir}"
+             keyfile="${keyfile}" passphrase="${passphrase}" verbose="true"/>
+        <sshexec host="${remote.host}" username="${remote.user}" keyfile="${keyfile}" passphrase="${passphrase}"
+                command="cd ${remote.update.dir};tar -xjf ${build.update.file.name};rm ${build.update.file.name}"
+                verbose="true"/>
     </target>
 
     <target name="songwriter" description="Launch SongWriter">
