@@ -75,9 +75,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         NOTEDIST.put(NoteType.REPEATRIGHT, 25);
         NOTEDIST.put(NoteType.REPEATLEFTRIGHT, 25);
         NOTEDIST.put(NoteType.BREATHMARK, 15);
-        NOTEDIST.put(NoteType.SINGLEBARLINE, 20);
-        NOTEDIST.put(NoteType.DOUBLEBARLINE, 20);
-        NOTEDIST.put(NoteType.FINALDOUBLEBARLINE, 20);
+        NOTEDIST.put(NoteType.SINGLEBARLINE, 60);
+        NOTEDIST.put(NoteType.DOUBLEBARLINE, 60);
+        NOTEDIST.put(NoteType.FINALDOUBLEBARLINE, 60);
         NOTEDIST.put(NoteType.PASTE, 0);
     }
 
@@ -918,7 +918,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         for(int i=0;i<composition.lineCount();i++){
             drawWidthIfWiderLine(composition.getLine(i), true);
         }
-
+        if (mainFrame.getLyricsModePanel() != null) {
+            mainFrame.getLyricsModePanel().getData();
+        }
         spellLyrics();
         setActiveNotePositionToEnd();
         mainFrame.setMode(Mode.NOTEEDIT);        
@@ -1369,7 +1371,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public void focusLost(FocusEvent e) {
-        if(focusLostExceptions.indexOf(e.getOppositeComponent())==-1){
+        if(focusLostExceptions.indexOf(e.getOppositeComponent()) == -1){
             new FocusLostThread().start();
         }
     }

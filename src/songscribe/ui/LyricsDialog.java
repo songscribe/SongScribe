@@ -33,15 +33,18 @@ import java.awt.*;
  * @author Csaba Kávai
  */
 public class LyricsDialog extends MyDialog{
-    private MyJTextArea lyricsArea;
-    private MyJTextArea underSongArea;
-    private MyJTextArea translatedArea;
-    private JPanel centerPanel;
-    private JPanel charsPanel;
-    private JButton moreButton;
-    private JButton takeButton;
-    private JPanel morePanel;
-    private JButton nonBreakingHyphenButton;
+    protected MyJTextArea lyricsArea;
+    protected MyJTextArea underSongArea;
+    protected MyJTextArea translatedArea;
+    protected JPanel centerPanel;
+    protected JPanel charsPanel;
+    protected JButton moreButton;
+    protected JButton takeButton;
+    protected JPanel morePanel;
+    protected JButton nonBreakingHyphenButton;
+    protected JPanel syllablifiedLyricsPanel;
+    protected JPanel underLyricsPanel;
+    protected JPanel translatedLyricsPanel;
 
     final static char[][] specChars = {{'\u0103', '\u0101', '\u00f1', '\u00e2', '\u0169'},{'\u0102', '\u0100', '\u00d1', '\u00c2', '\u0168'}};
     final static char[][] specCharsMap = {{'a', 'a', 'n', 'a', 'u'}, {'A', 'A', 'N', 'A', 'U'}};
@@ -95,39 +98,26 @@ public class LyricsDialog extends MyDialog{
     }
 
     protected void getData(){
-        Composition c = mainFrame.getMusicSheet().getComposition();
-        lyricsArea.setText(c.getLyrics());
-        underSongArea.setText(c.getUnderLyrics());
-        translatedArea.setText(c.getTranslatedLyrics());
+        Composition composition = mainFrame.getMusicSheet().getComposition();
+        lyricsArea.setText(composition.getLyrics());
+        underSongArea.setText(composition.getUnderLyrics());
+        translatedArea.setText(composition.getTranslatedLyrics());
     }
 
     protected void setData(){
-        Composition c = mainFrame.getMusicSheet().getComposition();
-        c.setLyrics(lyricsArea.getText());
-        c.setUnderLyrics(underSongArea.getText());
-        c.setTranslatedLyrics(translatedArea.getText());
+        Composition composition = mainFrame.getMusicSheet().getComposition();
+        composition.setLyrics(lyricsArea.getText());
+        composition.setUnderLyrics(underSongArea.getText());
+        composition.setTranslatedLyrics(translatedArea.getText());
         mainFrame.getMusicSheet().spellLyrics();
         mainFrame.modifiedDocument();
+        mainFrame.getLyricsModePanel().getData();
     }
 
     private class TakeUnderSongLyricsFromSyllabifiedLyricsAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            char[] lyricsChars = lyricsArea.getText().toCharArray();
-            boolean inParanthesis = false;
-            StringBuilder sb = new StringBuilder(lyricsArea.getText().length());
-            for(int i=0;i<lyricsChars.length;i++){
-                char c = lyricsChars[i];
-                if(c=='(')inParanthesis=true;
-                if(!inParanthesis){
-                    if(c!='-' && c!='_'){
-                        sb.append(c);
-                    }else if(c=='-' && i<lyricsChars.length-1 && lyricsChars[i+1]=='-'){
-                        sb.append('-');
-                    }
-                }
-                if(c==')')inParanthesis=false;
-            }
-            underSongArea.setText(sb.toString());
+            String underLyrics = Utilities.removeSyllablifyMarkings(lyricsArea.getText());
+            underSongArea.setText(underLyrics);
         }
     }
 }

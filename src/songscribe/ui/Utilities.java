@@ -101,12 +101,24 @@ public class Utilities {
     }
 
     private static boolean isMac;
+    private static boolean isWindows;
+    private static boolean isLinux;
     static{
         isMac = System.getProperty("os.name").toLowerCase().indexOf("mac")!=-1;
+        isWindows = System.getProperty("os.name").toLowerCase().indexOf("windows")!=-1;
+        isLinux = System.getProperty("os.name").toLowerCase().indexOf("linux")!=-1;
     }
 
     public static boolean isMac() {        
         return isMac;
+    }
+
+    public static boolean isWindows() {
+        return isWindows;
+    }
+
+    public static boolean isLinux() {
+        return isLinux;
     }
 
     public static int getFileVersion(){
@@ -183,5 +195,25 @@ public class Utilities {
         }
         fis.close();
         return fileName;
+    }
+
+
+    public static String removeSyllablifyMarkings(String lyrics) {
+        char[] lyricsChars = lyrics.toCharArray();
+        boolean inParanthesis = false;
+        StringBuilder sb = new StringBuilder(lyrics.length());
+        for(int i=0;i<lyricsChars.length;i++){
+            char c = lyricsChars[i];
+            if(c=='(')inParanthesis=true;
+            if(!inParanthesis){
+                if(c!='-' && c!='_'){
+                    sb.append(c);
+                }else if(c=='-' && i<lyricsChars.length-1 && lyricsChars[i+1]=='-'){
+                    sb.append('-');
+                }
+            }
+            if(c==')')inParanthesis=false;
+        }
+        return sb.toString();
     }
 }

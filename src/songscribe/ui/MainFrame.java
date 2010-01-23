@@ -124,6 +124,7 @@ public class MainFrame extends JFrame {
     private RestSelectionPanel restSelectionPanel;
     private OtherSelectionPanel otherSelectionPanel;
     private StatusBar statusBar;
+    private LyricsModePanel lyricsModePanel;
 
     private InsertMenu insertMenu;
     private PlayMenu playMenu = new PlayMenu(this);
@@ -202,15 +203,16 @@ public class MainFrame extends JFrame {
         //CENTER
         musicSheet = new MusicSheet(this);
         musicSheet.initComponent();
-        PlaybackPanel playbackPanel = new PlaybackPanel(this);
-//        JPanel center = new JPanel();
-//        center.setLayout(new BorderLayout());
+        JTabbedPane southTabbedPane = new JTabbedPane();
+        southTabbedPane.add("Playback", new PlaybackPanel(this));
+        lyricsModePanel = new LyricsModePanel(this);
+        southTabbedPane.add("Lyrics", lyricsModePanel.getLyricsModePanel());
         JSplitPane center = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         center.setContinuousLayout(true);
-        center.setResizeWeight(0.8);
+        center.setResizeWeight(Utilities.isLinux() ? 0.85 : 1.0); // unknown rendering problem in Linux
         center.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         center.setTopComponent(musicSheet.getScrolledMusicSheet());
-        center.setBottomComponent(playbackPanel);
+        center.setBottomComponent(southTabbedPane);
         getContentPane().add(center);
 
         //WEST
@@ -492,6 +494,10 @@ public class MainFrame extends JFrame {
         return statusBar;
     }
 
+    public LyricsModePanel getLyricsModePanel() {
+        return lyricsModePanel;
+    }
+
     public ProfileManager getProfileManager() {
         return profileManager;
     }
@@ -514,7 +520,7 @@ public class MainFrame extends JFrame {
 
     public void fireMusicChanged(Object sender){
         for(PropertyChangeListener pcl : propertyChangeListeners){
-            if(pcl!=sender){
+            if(pcl != sender){
                 pcl.musicChanged(properties);
             }
         }
