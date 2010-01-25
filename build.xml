@@ -55,6 +55,7 @@
     </patternset>
 
     <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="idea.compile.classpath"/>
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
     <target name="init" description="initialize build">
         <mkdir dir="${build.dir}"/>
@@ -145,10 +146,24 @@
         <tar destfile="${build.update.file}" basedir="${build.update.dir}" compression="bzip2" />
     </target>
 
+    <target name="test" description="upload update onto the net">
+        <input message="Passphrase for ${keyfile}: " addproperty="passphrase" />
+		<echo message="${passphrase}" />
+		<propertyregex property="passphrase"
+			input="${passphrase}"
+			regexp="(.+)\s*"
+			select="\1"
+			override="true"
+		/>
+		<echo message="${passphrase}" />
+    </target>
+
     <target name="upload-update" depends="prepare-update" description="upload update onto the net">
+		<input message="Press return to continue, if you do not get a prompt after the first try, press return again..." />
         <input message="Passphrase for ${keyfile}: " addproperty="passphrase">
-              <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
-        </input>
+			<handler classname="org.apache.tools.ant.input.SecureInputHandler"/>
+		</input>
+		<echo message="'${passphrase}'" />
         <scp file="${build.update.file}" todir="${remote.user}@${remote.host}:${remote.update.dir}"
              keyfile="${keyfile}" passphrase="${passphrase}" verbose="true"/>
         <sshexec host="${remote.host}" username="${remote.user}" keyfile="${keyfile}" passphrase="${passphrase}"
