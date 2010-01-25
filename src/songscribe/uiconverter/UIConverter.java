@@ -69,10 +69,6 @@ public class UIConverter extends MainFrame {
         rejectList.setModel(rejectListModel);
         numberSongButton.addActionListener(new NumberSongAction());
         getContentPane().add(mainPanel);
-
-        if (Utilities.isMac())
-            MacAdapter.attachTo(this, false);
-        
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);
@@ -105,7 +101,10 @@ public class UIConverter extends MainFrame {
     public static void main(String[] args) {
         PropertyConfigurator.configure("conf/logger.properties");
         openMidi();
-        new UIConverter();
+        UIConverter ui = new UIConverter();
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(ui, true);
     }
 
     public boolean isLegalFileName(String fileName) {

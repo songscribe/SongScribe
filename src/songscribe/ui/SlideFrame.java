@@ -77,10 +77,6 @@ public class SlideFrame extends MainFrame{
             System.exit(0);
         }
         init();
-
-        if (Utilities.isMac())
-            MacAdapter.attachTo(this, false);
-
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);
@@ -407,8 +403,11 @@ public class SlideFrame extends MainFrame{
         showSplash("sssplash.png");
         PropertyConfigurator.configure("conf/logger.properties");
         openMidi();
-        new SlideFrame();
+        SlideFrame sf = new SlideFrame();
         hideSplash();
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(sf, true);
     }
 
     private int currentSlide;

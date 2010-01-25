@@ -89,10 +89,6 @@ public class Publisher extends MainFrame {
             System.exit(0);
         }
         init();
-
-        if (Utilities.isMac())
-            MacAdapter.attachTo(this, false);
-
         pack();
         setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
         setVisible(true);
@@ -230,8 +226,11 @@ public class Publisher extends MainFrame {
         showSplash("sbsplash.png");
         PropertyConfigurator.configure("conf/logger.properties");
         openMidi();
-        new Publisher();
+        Publisher pub = new Publisher();
         hideSplash();
+
+        if (Utilities.isMac())
+            MacAdapter.attachTo(pub, true);
     }
 
     public MusicSheet openMusicSheet(File openFile) {

@@ -185,10 +185,6 @@ public class MainFrame extends JFrame {
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
         init();
-
-        if (Utilities.isMac())
-            MacAdapter.attachTo(this, true);
-        
         pack();
         musicSheet.requestFocusInWindow();
         Rectangle mxBound = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -619,6 +615,10 @@ public class MainFrame extends JFrame {
                 mf.showErrorMessage("Cannot read the tip file");
                 mf.properties.setProperty(Constants.SHOWTIP, Constants.FALSEVALUE);
             }
+
+            if (Utilities.isMac())
+                MacAdapter.attachTo(mf, true);
+
             if(args.length>0){
                 File f = new File(args[0]);
                 if(f.exists()){
