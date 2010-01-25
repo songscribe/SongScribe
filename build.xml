@@ -145,7 +145,7 @@
         <tar destfile="${build.update.file}" basedir="${build.update.dir}" compression="bzip2" />
     </target>
 
-    <target name="upload-update" depends="prepare-update" >
+    <target name="upload-update" depends="prepare-update" description="upload update onto the net">
         <input message="Passphrase for ${keyfile}: " addproperty="passphrase">
               <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
         </input>

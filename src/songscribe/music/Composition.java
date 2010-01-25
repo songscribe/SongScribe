@@ -258,8 +258,9 @@ public final class Composition{
 
     private int addUpDownMessagesToTrack(Track track, Line line, int n, int ticks) throws InvalidMidiDataException {
         Note note = line.getNote(n);
-        if(note.getNoteType().isGraceNote()) {
-            switch (note.getNoteType()) {
+        NoteType type = note.getNoteType();
+        if(type.isGraceNote()) {
+            switch (type) {
                 case GRACESEMIQUAVER:
                     GraceSemiQuaver graceSemiQuaver = (GraceSemiQuaver) note;
                     int yPos = note.getYPos();
@@ -274,18 +275,21 @@ public final class Composition{
                     addUpMessageToTrack(track, ticks, note);
                     break;
                 default:
-                    mainFrame.showErrorMessage("Programmer's error: no such NoteType in MIDI generation: " + note.getNoteType());
+                    mainFrame.showErrorMessage("Programmer's error: no such NoteType in MIDI generation: " + type);
             }
         }
-        else if(note.getNoteType().isNote()){
-            Interval interval = line.getTies().findInterval(n);
-            if(interval==null || interval.getA()==n){
-                addDownMessageToTrack(track, ticks, note);
-            }
+        else if(type.isNote() || type.isRest()) {
             int noteDuration = getNoteDurationWithTuplet(line, note, n);
-            if(interval==null || interval.getB()==n){
-                int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
-                addUpMessageToTrack(track, (int)(ticks + noteDuration * currDuration / 100f), note);
+            if(type.isNote()){
+                Interval interval = line.getTies().findInterval(n);
+                if(interval==null || interval.getA()==n){
+                    addDownMessageToTrack(track, ticks, note);
+                }
+
+                if(interval==null || interval.getB()==n){
+                    int currDuration = note.getDurationArticulation() == null ? durationShortitude : note.getDurationArticulation().getDuration();
+                    addUpMessageToTrack(track, (int)(ticks + noteDuration * currDuration / 100f), note);
+                }
             }
             ticks += noteDuration;
         }
