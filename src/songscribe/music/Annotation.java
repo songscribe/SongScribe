@@ -29,8 +29,8 @@ import java.awt.*;
  * @author Csaba Kávai
  */
 public class Annotation {
-    public static final int ABOVE = -4*MusicSheet.LINEDIST;
-    public static final int BELOW = 8*MusicSheet.LINEDIST;
+    public static final int ABOVE = -4 * MusicSheet.LINEDIST;
+    public static final int BELOW = 8 * MusicSheet.LINEDIST;
     private String annotation;
     private float xalignment = Component.LEFT_ALIGNMENT;
     private int yPos = ABOVE; 

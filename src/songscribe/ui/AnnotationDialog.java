@@ -202,7 +202,6 @@ public class AnnotationDialog extends MyDialog{
         dialogPanel.add(BorderLayout.SOUTH, south);
     }
 
-    private JRadioButton oldVerticalButton;
     protected void getData() {
         MusicSheet ms = mainFrame.getMusicSheet();
         selectedNote = ms.getSingleSelectedNote();
@@ -217,7 +216,7 @@ public class AnnotationDialog extends MyDialog{
             if(tc.getXalignment()==a.value)a.button.setSelected(true);
         }
 
-        oldVerticalButton = tc.getyPos()<0 ? aboveButton : belowButton;
+        JRadioButton oldVerticalButton = tc.getyPos()<0 ? aboveButton : belowButton;
         oldVerticalButton.setSelected(true);
 
         removeButton.setEnabled(!tcnull);
@@ -231,18 +230,45 @@ public class AnnotationDialog extends MyDialog{
     }
 
     protected void setData() {
-        for(Alignment a: Alignment.values()){
-            if(a.button.isSelected()){
-                if(selectedNote.getAnnotation()==null)selectedNote.setAnnotation(new Annotation(""));
-                selectedNote.getAnnotation().setAnnotation((String)annotationCombo.getSelectedItem());
-                selectedNote.getAnnotation().setXalignment(a.value);
+        Annotation annotation;
+        String annotationText = (String) annotationCombo.getSelectedItem();
+
+        if (annotationText == null || annotationText.length() == 0) {
+            annotation = null;
+        }
+        else {
+            //horizontal alignment
+            Alignment horizontalAlignment = null;
+            for(Alignment alignment: Alignment.values()){
+                if(alignment.button.isSelected()){
+                    horizontalAlignment = alignment;
+                    break;
+                }
             }
+            if (horizontalAlignment == null) {
+                String message = "Programmer's error: no such horizontal annotation.";
+                mainFrame.showErrorMessage(message);
+                throw new RuntimeException(message);
+            }
+            annotation = new Annotation(annotationText, horizontalAlignment.value);            
+
+            //vertical alignment
+            int yPos;
+            if (aboveButton.isSelected()) {
+                yPos = Annotation.ABOVE;
+            }
+            else if (belowButton.isSelected()) {
+                yPos = Annotation.BELOW;
+            }
+            else {
+                String message = "Programmer's error: no such vertical annotation.";
+                mainFrame.showErrorMessage(message);
+                throw new RuntimeException(message);
+            }
+            annotation.setyPos(yPos);
         }
-        if(!oldVerticalButton.isSelected()){
-            if(aboveButton.isSelected())selectedNote.getAnnotation().setyPos(Annotation.ABOVE);
-            else selectedNote.getAnnotation().setyPos(Annotation.BELOW);
-            oldVerticalButton = selectedNote.getAnnotation().getyPos()<0 ? aboveButton : belowButton;
-        }
+
+        selectedNote.setAnnotation(annotation);
         mainFrame.modifiedDocument();
     }
 }
