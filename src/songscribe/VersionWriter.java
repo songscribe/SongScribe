@@ -21,19 +21,30 @@ Created on Jan 30, 2007
 */
 package songscribe;
 
+import songscribe.ui.Constants;
 import songscribe.ui.Utilities;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * @author Csaba Kávai
  */
 public class VersionWriter {
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         if(args[0].equals("full")){
             System.out.println(Utilities.getFileVersion());
-        }else if(args[0].equals("normal")){
-            System.out.println(Utilities.getVersion());
+        } else if(args[0].equals("normal")) {
+            System.out.println(Utilities.getPublicVersion());
+        } else if(args[0].equals("checksum")) {
+            Properties versionProperties = new Properties();
+            versionProperties.load(new FileInputStream(Utilities.VERSION_PROPERTIES));
+            versionProperties.setProperty(Constants.CHECKSUM_VERSION_PROP,
+                    Integer.toString(Utilities.getVersionChecksum(versionProperties)));
+            versionProperties.store(new FileWriter(Utilities.VERSION_PROPERTIES), null);
         }
     }
 }

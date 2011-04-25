@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Properties;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;
 import java.net.URI;
@@ -40,6 +41,10 @@ import songscribe.data.GifEncoder;
  */
 public class Utilities {
     private static Logger logger = Logger.getLogger(Utilities.class);
+    private static Properties versionProperties;
+    public static final File VERSION_PROPERTIES = new File("conf/version.properties");
+    private static final int VERSION_FACTOR = 1931;
+
     public static String getSongTitleFileNameForFileChooser(MusicSheet musicSheet){
         StringBuilder sb = new StringBuilder(musicSheet.getComposition().getSongTitle().length()+10);
         try{
@@ -122,11 +127,50 @@ public class Utilities {
     }
 
     public static int getFileVersion(){
-        return MainFrame.MAJORVERSION * 10000 + MainFrame.MINORVERSION * 100;
+        return getMajorVersion() * 10000 + getMinorVersion() * 100 + getBuildVersion();
     }
 
-    public static String getVersion() {
-        return MainFrame.MAJORVERSION + "." + MainFrame.MINORVERSION;
+    public static String getPublicVersion() {
+        return getMajorVersion() + "." + getMinorVersion();
+    }
+
+    public static int getMajorVersion() {
+        return Integer.parseInt(getVersionProperties().getProperty(Constants.MAJOR_VERSION_PROP));
+    }
+
+    public static int getMinorVersion() {
+        return Integer.parseInt(getVersionProperties().getProperty(Constants.MINOR_VERSION_PROP));
+    }
+
+    public static int getBuildVersion() {
+        return Integer.parseInt(getVersionProperties().getProperty(Constants.BUILD_VERSION_PROP));
+    }
+
+    public static int getVersionChecksum(Properties properties) {
+        int major = Integer.parseInt(properties.getProperty(Constants.MAJOR_VERSION_PROP));
+        int minor = Integer.parseInt(properties.getProperty(Constants.MINOR_VERSION_PROP));
+        int build = Integer.parseInt(properties.getProperty(Constants.BUILD_VERSION_PROP));
+        return major * VERSION_FACTOR * VERSION_FACTOR + minor * VERSION_FACTOR + build;
+    }
+
+    public static Properties getVersionProperties() {
+        if (versionProperties == null) {
+            versionProperties = new Properties();
+            try {
+                versionProperties.load(new FileInputStream(VERSION_PROPERTIES));
+                if (Integer.parseInt(versionProperties.getProperty(Constants.CHECKSUM_VERSION_PROP)) !=
+                        getVersionChecksum(versionProperties)) {
+                    throw new IOException("Version file is corrupted");
+                }
+            } catch (IOException e) {
+                logger.error("Cannot load version properties", e);
+                versionProperties.setProperty(Constants.MAJOR_VERSION_PROP, "0");
+                versionProperties.setProperty(Constants.MINOR_VERSION_PROP, "0");
+                versionProperties.setProperty(Constants.BUILD_VERSION_PROP, "0");
+                JOptionPane.showMessageDialog(null, "The version file is corrupted. Please reinstall the software.", MainFrame.PACKAGENAME, JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return versionProperties;
     }
 
     public static void copyFile(File in, File out) throws IOException {

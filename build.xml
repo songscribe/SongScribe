@@ -11,7 +11,7 @@
     <property name="build.update.file" location="${build.dir}/${build.update.file.name}"/>
     <property name="remote.update.dir" value="~/musicofthesupreme/files/update/ss" />
     <property name="remote.user" value="musicofthesupreme" />
-    <property name="remote.host" value="barracuda.dreamhost.com" />
+    <property name="remote.host" value="canis.dreamhost.com" />
     <property name="keyfile" location="${user.home}/.ssh/id_rsa"/>
     <property name="dist.dir" value="dist"/>
     <property name="songscribe.jar" value="songscribe.jar"/>
@@ -93,6 +93,18 @@
             <fileset dir="${dist.dir}"/>
         </delete>
 
+        <!--Increase the build version-->
+        <propertyfile file="conf/version.properties">
+            <entry key="build.version" type="int" operation="+" value="1"/>
+        </propertyfile>
+
+        <!--Create version checksum-->
+        <java classname="songscribe.VersionWriter">
+            <classpath refid="classpath"/>
+            <classpath location="${songscribe.jar}"/>
+            <arg value="checksum"/>
+        </java>
+
         <!--Copy the pre-defined program files there-->
         <copy todir="${dist.dir}">
             <fileset dir="${basedir}">
@@ -115,7 +127,7 @@
         </java>
 
         <!--Create version.txt file-->
-        <echo message="${version}" file="${dist.dir}/version.txt" />
+        <!--echo message="${version}" file="${dist.dir}/version.txt" /-->
 
         <!--Filter-copy the plist files replacing with the current version number-->
         <copy todir="${dist.dir}">

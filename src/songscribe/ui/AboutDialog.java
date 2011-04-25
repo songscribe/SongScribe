@@ -26,8 +26,6 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
 
@@ -117,7 +115,7 @@ public class AboutDialog extends MyDialog{
         versionLabel.setText("Version:");
 
         version.setFont(new java.awt.Font("Arial", 0, 14));
-        version.setText(Utilities.getVersion());
+        version.setText(Utilities.getPublicVersion());
 
         copyrightLabel.setFont(new java.awt.Font("Arial", 1, 14));
         copyrightLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);

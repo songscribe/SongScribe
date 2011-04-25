@@ -45,7 +45,7 @@ public class ReportBugDialog extends MyDialog {
                 "a bad behavior or just have a wish to improve the program, you are most welcome to write a bug report to the following e-mail address:</p><p color=\"blue\"><u>"+
                 BUGEMAIL+"</u></p><p>If you want to write a report, just click the button below and it will create an e-mail message at your default e-mail client."+
                 "If you do not use e-mail client, you can write the mail by yourself, but do it in this way: please write \"SongScribe bug\" or \"SongScribe wish\" as subject, "+
-                "write the operation system, the version number (this: "+Utilities.getVersion()+") and attach the log file which can be found here:.</p>"+
+                "write the operation system, the version number (this: "+Utilities.getPublicVersion()+") and attach the log file which can be found here:.</p>"+
                 "<p color=\"blue\"><u>"+logFile.getAbsolutePath()+"</u></p>"+
                 "<p>Thank you for helping improve SongScribe.</p><p>Csaba Kavai<br>The author</p></html>");
         area.setEditable(false);
@@ -71,7 +71,7 @@ public class ReportBugDialog extends MyDialog {
                         sb.append("\"");
                     }
                     sb.append("&BODY=Version: ");
-                    sb.append(Utilities.getVersion());
+                    sb.append(Utilities.getPublicVersion());
                     sb.append("\nOperation system: ");
                     sb.append(System.getProperty("os.name"));
                     sb.append("\nJVM version: ");

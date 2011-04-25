@@ -53,8 +53,6 @@ import java.util.Vector;
 public class MainFrame extends JFrame {
     public String PROGNAME;
     public static final String PACKAGENAME = "SongScribe";
-    public static final int MAJORVERSION = 1;
-    public static final int MINORVERSION = 14;
 
     private static Logger LOG = Logger.getLogger(MainFrame.class);
 
@@ -645,7 +643,7 @@ public class MainFrame extends JFrame {
                 g.drawImage(getImage("version.png"), 10, 481, null);
                 g.setFont(new Font("Serif", Font.BOLD, 24));
                 ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.drawString(Utilities.getVersion(), 75, 500);
+                g.drawString(Utilities.getPublicVersion(), 75, 500);
                 g.drawImage(getImage("years.png"), 322, 488, null);
                 g.drawImage(getImage("name.png"), 419, 485, null);
             }

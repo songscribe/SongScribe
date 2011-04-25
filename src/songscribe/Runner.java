@@ -29,7 +29,6 @@ import songscribe.converter.ImageConverter;
 import songscribe.converter.MidiConverter;
 import songscribe.uiconverter.UIConverter;
 
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.reflect.Method;
@@ -55,7 +54,7 @@ public class Runner {
         String ss = System.getProperty("songscribe");
 
         if ("version".equals(ss)) {
-            System.out.println(Utilities.getVersion());
+            System.out.println(Utilities.getPublicVersion());
             return;
         }
 

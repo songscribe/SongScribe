@@ -148,28 +148,49 @@ public class UpdateDialog extends MyDialog{
                 int updateNumber = 0;
                 //determining the files to update and calculating the the size
                 try {
-                    InputStream checksumStream=null;
-                    GetMethod getChecksum = null;
-                    BufferedReader br=null;
+                    //downloading the version
                     for(;updateNumber<updateBaseURLs.length;updateNumber++){
-                        getChecksum = new GetMethod(updateBaseURLs[updateNumber]+Constants.CHECKSUMSFILENAME);
-                        getChecksum.addRequestHeader(Constants.MAXAGEHEADER);
-                        httpClient.executeMethod(getChecksum);
-                        checksumStream = getChecksum.getResponseBodyAsStream();
-                        if(checksumStream!=null){
-                            br = new BufferedReader(new InputStreamReader(checksumStream));
-                            if(!br.readLine().equals(ChecksumMaker.HEADER)){
-                                checksumStream.close();
-                                checksumStream=null;
+                        GetMethod versionGetMethod = new GetMethod(updateBaseURLs[updateNumber]+Constants.VERSION_FILENAME);
+                        versionGetMethod.addRequestHeader(Constants.MAXAGEHEADER);
+                        httpClient.executeMethod(versionGetMethod);
+                        String remoteVersionStr = versionGetMethod.getResponseBodyAsString();
+                        if(remoteVersionStr != null){
+                            remoteVersionStr = remoteVersionStr.trim();
+                            int remoteVersion = Integer.parseInt(remoteVersionStr);
+                            int localVersion = Utilities.getFileVersion();
+                            System.out.format("remote version: %d; local version: %d", remoteVersion, localVersion);
+                            if (remoteVersion <= localVersion) {
+                                versionGetMethod.releaseConnection();
+                                if (!automatic) {
+                                    JOptionPane.showMessageDialog(dialogPanel, "No update is available. You already have the lastest version.", mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+                                }
+                                return;
                             }
                         }
-                        if(checksumStream==null){
-                            getChecksum.releaseConnection();
+                        if(remoteVersionStr == null){
+                            versionGetMethod.releaseConnection();
                         }else break;
                     }
-                    if(checksumStream==null)throw new IOException("Cannot download checksums");                    
+
+                    // downloading the checksums
+                    BufferedReader checksumBufferedReader=null;
+                    GetMethod getChecksum = new GetMethod(updateBaseURLs[updateNumber]+Constants.CHECKSUMSFILENAME);
+                    getChecksum.addRequestHeader(Constants.MAXAGEHEADER);
+                    httpClient.executeMethod(getChecksum);
+                    InputStream checksumStream = getChecksum.getResponseBodyAsStream();
+                    if (checksumStream != null) {
+                        checksumBufferedReader = new BufferedReader(new InputStreamReader(checksumStream));
+                        if(!checksumBufferedReader.readLine().equals(ChecksumMaker.HEADER)){
+                            checksumStream.close();
+                            checksumStream = null;
+                        }
+                    }
+                    if(checksumStream==null) {
+                        getChecksum.releaseConnection();
+                        throw new IOException("Cannot download checksums");
+                    }
                     String line;
-                    while((line=br.readLine())!=null){
+                    while((line=checksumBufferedReader.readLine())!=null){
                         int spacePos1 = line.lastIndexOf(' ');
                         int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
                         File file = new File(line.substring(0, spacePos2));
@@ -186,7 +207,7 @@ public class UpdateDialog extends MyDialog{
                             }
                         }
                     }
-                    br.close();
+                    checksumBufferedReader.close();
                     getChecksum.releaseConnection();
                 } catch (IOException e) {
                     logger.error("Internet update checksums", e);
@@ -202,7 +223,7 @@ public class UpdateDialog extends MyDialog{
                     }else return;
                 }
 
-                if(tempFilePairs.size()==0){
+                if(tempFilePairs.isEmpty()){
                     if(!automatic)JOptionPane.showMessageDialog(dialogPanel, "No update is available. You already have the lastest version.", mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }else if(automatic){
@@ -258,7 +279,9 @@ public class UpdateDialog extends MyDialog{
                         System.out.println("Copied: "+tfp.originalFile.getName());
                     }
                 } catch (IOException e) {
-                    mainFrame.showErrorMessage("You may not have permission to overwrite the program code during updating.\nPlease ask the system administrator to do it.");
+                    mainFrame.showErrorMessage(
+                            "You don't have permission to overwrite the application files.\n" +
+                            "If you are using Windows, quit SongScribe and start it with \"Run as administrator\", and again click on Help | Check for Updates");
                     logger.error("Internet update copy", e);
                     throw new CannotUpdateException();
                 }
