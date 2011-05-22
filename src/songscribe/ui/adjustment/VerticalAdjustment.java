@@ -21,6 +21,8 @@ Created on Jul 22, 2006
 */
 package songscribe.ui.adjustment;
 
+import songscribe.data.Interval;
+import songscribe.data.SlurData;
 import songscribe.ui.MusicSheet;
 import songscribe.music.Composition;
 import songscribe.music.Line;
@@ -28,6 +30,7 @@ import songscribe.music.Annotation;
 import songscribe.music.Note;
 
 import java.awt.*;
+import java.util.ListIterator;
 import java.util.Vector;
 
 /**
@@ -42,7 +45,11 @@ public class VerticalAdjustment extends Adjustment{
         BEATCHANGE(Color.pink),
         FSENDING(Color.green),
         ANNOTATION(Color.magenta),
-        TRILL(Color.pink);
+        TRILL(Color.pink),
+        SLURPOS1(Color.orange),
+        SLURPOS2(Color.orange),
+        SLURCTRLY(Color.orange);
+
 
         private Color color;
 
@@ -102,35 +109,61 @@ public class VerticalAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-6, draggingRect.line+1));
+            }else if(draggingRect.adjustType==AdjustType.SLURCTRLY){
+                upLeftDragBounds.setLocation(draggingRect.rectangle.x, 0);
+                downRightDragBounds.setLocation(draggingRect.rectangle.x, Integer.MAX_VALUE);
+            } else {
+                upLeftDragBounds.setLocation(0, 0);
+                downRightDragBounds.setLocation(Integer.MAX_VALUE, Integer.MAX_VALUE);
             }
         }
     }
 
     protected void drag() {
         if(draggingRect==null)return;
-        int diffY = draggingRect.rectangle.y+draggingRect.rectangle.height/2;
+        int diffX = endPoint.x - draggingRect.rectangle.x+draggingRect.rectangle.width/2;
+        int diffY = endPoint.y - draggingRect.rectangle.y+draggingRect.rectangle.height/2;
         draggingRect.rectangle.y=endPoint.y-draggingRect.rectangle.height/2;
         if(draggingRect.adjustType==AdjustType.RIGHTINFO){
-            musicSheet.getComposition().setRightInfoStartY(musicSheet.getComposition().getRightInfoStartY()+endPoint.y-diffY);
+            musicSheet.getComposition().setRightInfoStartY(musicSheet.getComposition().getRightInfoStartY()+diffY);
         }else if(draggingRect.adjustType==AdjustType.TOPSPACE){
-            musicSheet.getComposition().setTopSpace(musicSheet.getComposition().getTopSpace()+endPoint.y-diffY, true);
+            musicSheet.getComposition().setTopSpace(musicSheet.getComposition().getTopSpace()+diffY, true);
         }else if(draggingRect.adjustType==AdjustType.ROWHEIGHT){
-            musicSheet.getComposition().setRowHeight(musicSheet.getComposition().getRowHeight()+endPoint.y-diffY);
+            musicSheet.getComposition().setRowHeight(musicSheet.getComposition().getRowHeight()+diffY);
         }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
-            line.setTempoChangeYPos(line.getTempoChangeYPos()+endPoint.y-diffY);
+            line.setTempoChangeYPos(line.getTempoChangeYPos()+diffY);
         }else if(draggingRect.adjustType==AdjustType.BEATCHANGE){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
-            line.setBeatChangeYPos(line.getBeatChangeYPos()+endPoint.y-diffY);
+            line.setBeatChangeYPos(line.getBeatChangeYPos()+diffY);
         }else if(draggingRect.adjustType==AdjustType.FSENDING){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
-            line.setFsEndingYPos(line.getFsEndingYPos()+endPoint.y-diffY);
+            line.setFsEndingYPos(line.getFsEndingYPos()+diffY);
         }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
             Annotation a = musicSheet.getComposition().getLine(draggingRect.line).getNote(draggingRect.xIndex).getAnnotation();
-            a.setyPos(a.getyPos()+endPoint.y-diffY);
+            a.setyPos(a.getyPos()+diffY);
         }else if(draggingRect.adjustType==AdjustType.TRILL){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
-            line.setTrillYPos(line.getTrillYPos()+endPoint.y-diffY);
+            line.setTrillYPos(line.getTrillYPos()+diffY);
+        }else if(draggingRect.adjustType==AdjustType.SLURPOS1 || draggingRect.adjustType==AdjustType.SLURPOS2 || draggingRect.adjustType==AdjustType.SLURCTRLY){
+            Line line = musicSheet.getComposition().getLine(draggingRect.line);
+            Interval interval = line.getSlurs().findInterval(draggingRect.xIndex);
+            SlurData slurData = new SlurData(interval.getData());
+            switch (draggingRect.adjustType) {
+                case SLURPOS1:
+                    draggingRect.rectangle.x=endPoint.x-draggingRect.rectangle.width/2;
+                    slurData.setxPos1(slurData.getxPos1()+diffX);
+                    slurData.setyPos1(slurData.getyPos1()+diffY);
+                    break;
+                case SLURPOS2:
+                    draggingRect.rectangle.x=endPoint.x-draggingRect.rectangle.width/2;
+                    slurData.setxPos2(slurData.getxPos2()+diffX);
+                    slurData.setyPos2(slurData.getyPos2()+diffY);
+                    break;
+                case SLURCTRLY:
+                    slurData.setCtrly(slurData.getCtrly()+diffY);
+            }
+            interval.setData(slurData.toString());
         }
         musicSheet.viewChanged();
         musicSheet.getComposition().modifiedComposition();
@@ -180,6 +213,13 @@ public class VerticalAdjustment extends Adjustment{
 
                 int firstBeatChange = line.getFirstBeatChange();
                 if(firstBeatChange>-1)adjustRects.add(new AdjustRect(l, AdjustType.BEATCHANGE, firstBeatChange));
+
+                for(ListIterator<Interval> li = line.getSlurs().listIterator();li.hasNext();){
+                    Interval interval = li.next();
+                    adjustRects.add(new AdjustRect(l, AdjustType.SLURPOS1, interval.getA()));
+                    adjustRects.add(new AdjustRect(l, AdjustType.SLURPOS2, interval.getB()));
+                    adjustRects.add(new AdjustRect(l, AdjustType.SLURCTRLY, interval.getA()));
+                }
             }
 
         }else{
@@ -210,6 +250,31 @@ public class VerticalAdjustment extends Adjustment{
         }else if(ar.adjustType==AdjustType.TRILL){
             ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-12;
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getTrillYPos()-8;
+        }else if(ar.adjustType==AdjustType.SLURPOS1 || ar.adjustType==AdjustType.SLURPOS2 || ar.adjustType==AdjustType.SLURCTRLY){
+            Line line = musicSheet.getComposition().getLine(ar.line);
+            Interval interval = line.getSlurs().findInterval(ar.xIndex);
+            SlurData slurData = new SlurData(interval.getData());
+            Note note = line.getNote(ar.xIndex);
+            switch (ar.adjustType) {
+                case SLURPOS1:
+                    ar.rectangle.x = note.getXPos() + slurData.getxPos1();
+                    ar.rectangle.y = musicSheet.getNoteYPos(note.getYPos(), ar.line) + slurData.getyPos1();
+                    ar.rectangle.y += slurData.getCtrly() > 0 ? 8 : -20;
+                    break;
+                case SLURPOS2:
+                    ar.rectangle.x = note.getXPos() + slurData.getxPos2();
+                    ar.rectangle.y = musicSheet.getNoteYPos(note.getYPos(), ar.line) + slurData.getyPos2();
+                    ar.rectangle.y += slurData.getCtrly() > 0 ? 8 : -20;
+                    break;
+                case SLURCTRLY:
+                    Note lastNote = line.getNote(interval.getB());
+                    ar.rectangle.x = (note.getXPos() + slurData.getxPos1() + lastNote.getXPos() + slurData.getxPos2()) / 2;
+                    ar.rectangle.y = (musicSheet.getNoteYPos(note.getYPos(), ar.line) +
+                            musicSheet.getNoteYPos(lastNote.getYPos(), ar.line)) / 2 + slurData.getCtrly();
+                    ar.rectangle.y -= 4;
+                    break;
+            }
+            ar.rectangle.x -= 4;
         }
         ar.rectangle.width = ar.rectangle.height = 8;
     }

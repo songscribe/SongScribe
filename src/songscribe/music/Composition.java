@@ -326,8 +326,10 @@ public final class Composition{
         boolean lastLine = true;
         for(int lineIndex = lines.indexOf(line);lineIndex>=0;lineIndex--){
             Line currentLine = lines.get(lineIndex);
-            for(int n = lastLine?noteIndex:currentLine.noteCount()-1;n>=0;n--){
-                if(currentLine.getNote(n).getTempoChange()!=null)return currentLine.getNote(n).getTempoChange();
+            for(int n = lastLine?noteIndex:currentLine.noteCount()-1;n>=0;n--) {
+                if(currentLine.getNote(n).getTempoChange() != null) {
+                    return currentLine.getNote(n).getTempoChange();
+                }
             }
             lastLine = false;
         }

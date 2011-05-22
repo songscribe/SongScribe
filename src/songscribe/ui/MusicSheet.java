@@ -717,7 +717,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         int pitch=line.getNote(selectionBegin).getPitch();
         for(int i=selectionBegin+1;i<=selectionEnd;i++){
             if(line.getNote(i).getPitch()!=pitch){
-                JOptionPane.showMessageDialog(mainFrame, "The selected notes must be of the same pitch.",
+                JOptionPane.showMessageDialog(mainFrame, "The selected notes must be of the same pitch.\n" +
+                        "If you want to tie multiple notes of different pitches please use Slur.",
                     mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -731,6 +732,44 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         composition.modifiedComposition();
         repaintImage = true;
         repaint();
+    }
+
+    public void slurSelectedNotes(boolean slur){
+        if(selectedNotesLine==-1 || selectionBegin==selectionEnd){
+            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to "+(slur?"make":"remove")+" slur.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        Line line = composition.getLine(selectedNotesLine);
+
+        if (!slur) {
+            Interval beginSlur = line.getSlurs().findInterval(selectionBegin);
+            Interval endSlur = line.getSlurs().findInterval(selectionEnd);
+            if (beginSlur == null || beginSlur != endSlur) {
+                JOptionPane.showMessageDialog(mainFrame, "Please select a slur or part of it to remove.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        } else if (selectionEnd - selectionBegin == 1 &&
+                line.getNote(selectionBegin).getPitch() == line.getNote(selectionEnd).getPitch()) {
+            JOptionPane.showMessageDialog(mainFrame, "You cannot slur two notes of the same pitch. Use Tie instead.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if(slur){
+            line.getSlurs().addInterval(selectionBegin, selectionEnd);
+        }else{
+            line.getSlurs().removeInterval(selectionBegin, selectionEnd);
+        }
+        repaintImage = true;
+        repaint();
+        if (slur) {
+                JOptionPane.showMessageDialog(mainFrame,
+                    MainFrame.PACKAGENAME + " recommends to change to Vertical Alignment Mode in Mode menu to align this slur.",
+                    "Tip", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public void makeFsEndingOnSelectedNotes(boolean fsEnding){

@@ -48,6 +48,7 @@ public class LineIO {
     private static final String XMLTRILLYPOS = "trillypos";
     private static final String XMLBEAMINGS = "beamings";
     private static final String XMLTIES = "ties";
+    private static final String XMLSLURS = "slurs";
     private static final String XMLTRIPLETS = "triplets";// the old version of triplets
     private static final String XMLTUPLETS = "tuplets";
     private static final String XMLFSENDINGS = "fsendings";
@@ -69,6 +70,7 @@ public class LineIO {
         if(l.getFirstTrill()>-1)XML.writeValue(pw, XMLTRILLYPOS , Integer.toString(l.getTrillYPos()));
         if(!l.getBeamings().isEmpty())XML.writeValue(pw, XMLBEAMINGS, intervalToString(l.getBeamings()));
         if(!l.getTies().isEmpty())XML.writeValue(pw, XMLTIES, intervalToString(l.getTies()));
+        if(!l.getSlurs().isEmpty())XML.writeValue(pw, XMLSLURS, intervalToString(l.getSlurs()));
         if(!l.getTuplets().isEmpty())XML.writeValue(pw, XMLTUPLETS, intervalToString(l.getTuplets()));
         if(!l.getFsEndings().isEmpty())XML.writeValue(pw, XMLFSENDINGS, intervalToString(l.getFsEndings()));
         pw.println("      <"+XMLNOTES+">");
@@ -173,6 +175,8 @@ public class LineIO {
                         stringToIntervalSet(line.getBeamings(), str);
                     }else if(lastTag.equals(XMLTIES)){
                         stringToIntervalSet(line.getTies(), str);
+                    }else if(lastTag.equals(XMLSLURS)){
+                        stringToIntervalSet(line.getSlurs(), str);
                     }else if(lastTag.equals(XMLTUPLETS) || lastTag.equals(XMLTRIPLETS)){
                         stringToIntervalSet(line.getTuplets(), str);
                         for(ListIterator<Interval> li = line.getTuplets().listIterator();li.hasNext();){

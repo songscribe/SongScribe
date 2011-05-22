@@ -21,6 +21,7 @@ Created on Jun 24, 2006
 */
 package songscribe.ui.musicsheetdrawer;
 
+import songscribe.data.SlurData;
 import songscribe.music.*;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.Utilities;
@@ -255,6 +256,54 @@ public abstract class BaseMsDrawer {
                         drawGlissando(g2, x+18, y-3, (int)Math.round(line.getNote(trillEnd).getXPos()+crotchetWidth), y-3);
                     }
                 }
+            }
+
+            //drawing the slur if any
+            for(ListIterator<Interval> li = line.getSlurs().listIterator();li.hasNext();){
+                Interval interval = li.next();
+                Note firstNote = line.getNote(interval.getA());
+                Note lastNote = line.getNote(interval.getB());
+                SlurData slurData;
+                if (interval.getData() == null) { // applying the default values;
+                    boolean slurUpper = firstNote.isUpper();
+                    int xPos1 = getHalfNoteWidthForTie(firstNote)+2;
+                    int xPos2 = getHalfNoteWidthForTie(lastNote)-3;
+                    if(firstNote.isUpper()!=lastNote.isUpper() && firstNote.isUpper()){
+                        slurUpper = false;
+                        xPos1+=7;
+                        xPos2-=5;
+                    }
+
+                    int yPos1 = (slurUpper ? MusicSheet.LINEDIST/2+2 : -MusicSheet.LINEDIST/2-2);
+                    int yPos2 = (slurUpper ? MusicSheet.LINEDIST/2+2 : -MusicSheet.LINEDIST/2-2);
+                    int ctrly = slurUpper? 16 : -18;
+                    slurData = new SlurData(xPos1, xPos2, yPos1, yPos2, ctrly);
+                    interval.setData(slurData.toString());
+                } else {
+                    slurData = new SlurData(interval.getData());
+                }
+                g2.setStroke(lineStroke);
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
+                int xPos1 = firstNote.getXPos()+slurData.getxPos1();
+                int xPos2 = lastNote.getXPos()+slurData.getxPos2();
+                int yPos1 = ms.getNoteYPos(firstNote.getYPos(), l)+slurData.getyPos1();
+                int yPos2 = ms.getNoteYPos(lastNote.getYPos(), l)+slurData.getyPos2();
+                int ctrly = (ms.getNoteYPos(firstNote.getYPos(), l) + ms.getNoteYPos(lastNote.getYPos(), l)) / 2 + slurData.getCtrly();
+                int gap = xPos2 - xPos1;
+                tie.moveTo(xPos1, yPos1);
+                tie.quadTo(xPos1 + gap / 2, ctrly, xPos1 + gap, yPos2);
+                tie.quadTo(xPos1 + gap / 2, ctrly + 2, xPos1, yPos1);
+                tie.closePath();
+                g2.draw(tie);
+                g2.fill(tie);
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                /*g2.setPaint(Color.red);
+                g2.drawRect(xPos, yPos, 1, 1);
+                g2.setPaint(Color.green);
+                g2.drawRect(note.getXPos(), yPos, 1, 1);
+                g2.drawRect(note.getXPos()+note.getRealUpNoteRect().width, yPos, 1, 1);
+                g2.setPaint(Color.black);*/
             }
 
             //drawing beamings

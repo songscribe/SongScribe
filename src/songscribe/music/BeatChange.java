@@ -26,15 +26,10 @@ package songscribe.music;
  */
 public enum BeatChange {
     QUAVEREQUALSQUAVER(new Quaver(), new Quaver(), 1f),
-    DOTTEDCROCHETEQUALSMINIM(new Crotchet(), new Minim(), 3f/4f),
-    MINIMEQUALSDOTTEDCROCHET(new Minim(), new Crotchet(), 4f/3f);
-
-    static{
-        DOTTEDCROCHETEQUALSMINIM.firstNote.setDotted(1);
-        DOTTEDCROCHETEQUALSMINIM.firstNote.setYPos(1);
-        MINIMEQUALSDOTTEDCROCHET.secondNote.setDotted(1);
-        MINIMEQUALSDOTTEDCROCHET.secondNote.setYPos(1);
-    }
+    DOTTEDCROCHETEQUALSMINIM(createDottedVersion(new Crotchet()), new Minim(), 3f/4f),
+    MINIMEQUALSDOTTEDCROCHET(new Minim(), createDottedVersion(new Crotchet()), 4f/3f),
+    CROTCHETQUALSDOTTEDCROCHET(new Crotchet(), createDottedVersion(new Crotchet()), 2f/3f),
+    DOTTEDCROCHETQUALSCROCHET(createDottedVersion(new Crotchet()), new Crotchet(), 3f/2f);
 
     private Note firstNote, secondNote;
     private float tempoChange;
@@ -43,6 +38,12 @@ public enum BeatChange {
         this.firstNote = firstNote;
         this.secondNote = secondNote;
         this.tempoChange = tempoChange;
+    }
+
+    private static Note createDottedVersion(Note note) {
+        note.setDotted(1);
+        note.setYPos(1);
+        return note;
     }
 
     public Note getFirstNote() {

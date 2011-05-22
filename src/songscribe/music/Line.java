@@ -42,10 +42,11 @@ public class Line {
 
     private final IntervalSet beamings = new IntervalSet();
     private final IntervalSet ties = new IntervalSet();
+    private final IntervalSet slurs = new IntervalSet();
     private final IntervalSet tuplets = new IntervalSet();
     private final IntervalSet fsEndings = new IntervalSet();
 
-    private final IntervalSet[] intervalSets = {beamings, ties, tuplets, fsEndings};
+    private final IntervalSet[] intervalSets = {beamings, ties, tuplets, fsEndings, slurs};
 
     //view properties
     private int tempoChangeYPos;
@@ -199,6 +200,10 @@ public class Line {
 
     public IntervalSet getTies() {
         return ties;
+    }
+
+    public IntervalSet getSlurs() {
+        return slurs;
     }
 
     public IntervalSet getTuplets() {
