@@ -154,7 +154,7 @@ public class ConvertAction extends AbstractAction {
 
                 JOptionPane.showMessageDialog(processDialog, "Conversion complete!");
 
-                Utilities.openWebPage(uiConverter, uiConverter.getProperties().getProperty(Constants.BOOKUPLOADURL));
+                //Utilities.openWebPage(uiConverter, uiConverter.getProperties().getProperty(Constants.BOOKUPLOADURL));
             } catch (IOException e) {
                 uiConverter.showErrorMessage("Error while producing ZIP file.");
             } finally {

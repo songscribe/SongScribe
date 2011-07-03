@@ -10,3 +10,4 @@ dist/
 bin/
 .*
 !.gitignore
+!tutorial.pdf
