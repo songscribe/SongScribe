@@ -11,3 +11,5 @@ bin/
 .*
 !.gitignore
 !tutorial.pdf
+
+*.class

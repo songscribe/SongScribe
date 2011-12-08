@@ -25,6 +25,8 @@ public class ConvertAction extends AbstractAction {
     public static final int[] LEFT_RIGHT_MARGIN = {/*13, */39};
     public static final String[] IMAGE_NAME_POSSIX = {/*"-s", */"-l"};
 
+    private static final boolean CREATE_ZIP = false;
+
     public ConvertAction(UIConverter uiConverter, JTextField songsDirectory) {
         this.uiConverter = uiConverter;
         this.songsDirectory = songsDirectory;
@@ -86,9 +88,16 @@ public class ConvertAction extends AbstractAction {
             props.setProperty(Constants.TEMPOCHANGEPROP, Integer.toString(100));
 
             try {
-                File zipFile = new File(songDirectory.getParentFile(), songDirectory.getName() + ".zip");
-                ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
-                byte[] buf = new byte[1024];
+                File zipFile = null;
+                ZipOutputStream zos = null;
+                byte[] buf = null;
+
+                if (CREATE_ZIP)
+                {
+                    zipFile = new File(songDirectory.getParentFile(), songDirectory.getName() + ".zip");
+                    zos = new ZipOutputStream(new FileOutputStream(zipFile));
+                    buf = new byte[1024];
+                }
 
                 for (File songFile : songFiles) {
                     //loading file
@@ -102,7 +111,11 @@ public class ConvertAction extends AbstractAction {
                     PrintWriter tempMsswSongPrintWriter = new PrintWriter(new FileWriter(tempMsswSong));
                     CompositionIO.writeComposition(composition, tempMsswSongPrintWriter);
                     tempMsswSongPrintWriter.close();
-                    Utilities.zipFile(zos, tempMsswSong, songFile.getName(), buf);
+
+                    if (zos != null)
+                        Utilities.zipFile(zos, tempMsswSong, songFile.getName(), buf);
+
+                    tempMsswSong.delete();
                     processDialog.nextValue();
 
                     // producing images                    
@@ -127,7 +140,7 @@ public class ConvertAction extends AbstractAction {
                         } finally{
                             processDialog.nextValue();
                         }
-                        if (imageFile != null) {
+                        if (imageFile != null && zos != null) {
                             Utilities.zipFile(zos, imageFile, null, buf);
                         }
                         processDialog.nextValue();
@@ -145,12 +158,14 @@ public class ConvertAction extends AbstractAction {
                         processDialog.nextValue();
                     }
 
-                    if (midiFile != null) {
+                    if (midiFile != null && zos != null) {
                         Utilities.zipFile(zos, midiFile, null, buf);
                     }
                     processDialog.nextValue();
                 }
-                zos.close();
+
+                if (zos != null)
+                    zos.close();
 
                 JOptionPane.showMessageDialog(processDialog, "Conversion complete!");
 

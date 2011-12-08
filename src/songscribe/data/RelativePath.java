@@ -33,8 +33,7 @@ public class RelativePath {
 	 * break a path down into individual elements and add to a list.
 	 * example : if a path is /a/b/c/d.txt, the breakdown will be [d.txt,c,b,a]
 	 * @param f input file
-	 * @return a List collection with the individual elements of the path in
-reverse order
+	 * @return a List collection with the individual elements of the path in reverse order
 	 */
 	private static List getPathList(File f) {
 		List l = new ArrayList();

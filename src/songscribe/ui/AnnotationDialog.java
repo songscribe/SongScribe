@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -179,7 +179,7 @@ public class AnnotationDialog extends MyDialog{
                     .add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 88, Short.MAX_VALUE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );       
+        );
         dialogPanel.add(centerPanel);
 
         //----------------------south------------------------
@@ -250,7 +250,7 @@ public class AnnotationDialog extends MyDialog{
                 mainFrame.showErrorMessage(message);
                 throw new RuntimeException(message);
             }
-            annotation = new Annotation(annotationText, horizontalAlignment.value);            
+            annotation = new Annotation(annotationText, horizontalAlignment.value);
 
             //vertical alignment
             int yPos;
