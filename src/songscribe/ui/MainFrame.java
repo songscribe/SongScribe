@@ -571,8 +571,11 @@ public class MainFrame extends JFrame {
         try {
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
-            Soundbank sb = MidiSystem.getSoundbank(new File("libs/sound/soundbank-deluxe.gm"));
-            if(!synthesizer.loadAllInstruments(sb))throw new IOException();
+            try {
+                Soundbank sb = MidiSystem.getSoundbank(new File("libs/sound/soundbank-deluxe.gm"));
+                synthesizer.loadAllInstruments(sb);
+            } catch (InvalidMidiDataException ignored) {
+            }
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
             receiver = MidiSystem.getReceiver();
@@ -585,9 +588,6 @@ public class MainFrame extends JFrame {
         } catch (IOException e) {
             hideSplash();
             JOptionPane.showMessageDialog(null, "Cannot read the soundbank. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
-        } catch (InvalidMidiDataException e) {
-            hideSplash();
-            JOptionPane.showMessageDialog(null, "The soundbank file looks like damaged. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
         }
     }
 
