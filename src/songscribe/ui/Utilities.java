@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Calendar;
 import java.util.Properties;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;
@@ -151,6 +152,10 @@ public class Utilities {
         int minor = Integer.parseInt(properties.getProperty(Constants.MINOR_VERSION_PROP));
         int build = Integer.parseInt(properties.getProperty(Constants.BUILD_VERSION_PROP));
         return major * VERSION_FACTOR * VERSION_FACTOR + minor * VERSION_FACTOR + build;
+    }
+
+    public static int getYear() {
+        return Calendar.getInstance().get(Calendar.YEAR);
     }
 
     public static Properties getVersionProperties() {
