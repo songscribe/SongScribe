@@ -640,12 +640,10 @@ public class MainFrame extends JFrame {
         splashWindow.setVisible(true);
         splashWindow.getRootPane().setGlassPane(new JComponent(){
             protected void paintComponent(Graphics g) {
-                g.drawImage(getImage("version.png"), 10, 481, null);
-                g.setFont(new Font("Serif", Font.BOLD, 24));
+                g.setFont(new Font("Serif", Font.BOLD, 20));
                 ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.drawString(Utilities.getPublicVersion(), 75, 500);
-                g.drawImage(getImage("years.png"), 322, 488, null);
-                g.drawImage(getImage("name.png"), 419, 485, null);
+                g.drawString("Version " + Utilities.getPublicVersion(), 20, 503);
+                g.drawString("© 2006-" + Utilities.getYear() + " Himádri", 305, 503);
             }
         });
         splashWindow.getRootPane().getGlassPane().setVisible(true);
