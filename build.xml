@@ -78,6 +78,7 @@
                 excludes="${c.src.dir}"
                 encoding="UTF-8"
                 target="1.5"
+                source="1.5"
                 debug="off"
         />
         <jar destfile="${songscribe.jar}" basedir="${build.classes.dir}">
