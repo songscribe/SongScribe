@@ -571,11 +571,6 @@ public class MainFrame extends JFrame {
         try {
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
-            try {
-                Soundbank sb = MidiSystem.getSoundbank(new File("libs/sound/soundbank-deluxe.gm"));
-                synthesizer.loadAllInstruments(sb);
-            } catch (InvalidMidiDataException ignored) {
-            }
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
             receiver = MidiSystem.getReceiver();
@@ -585,9 +580,6 @@ public class MainFrame extends JFrame {
                     "Please try to quit them and restart %s.\n" +
                     "In this session playback will be disabled.", PACKAGENAME, PACKAGENAME),
                     PACKAGENAME, JOptionPane.WARNING_MESSAGE);
-        } catch (IOException e) {
-            hideSplash();
-            JOptionPane.showMessageDialog(null, "Cannot read the soundbank. Playing will be disabled. Try to reinstall the program.", PACKAGENAME, JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -599,7 +591,7 @@ public class MainFrame extends JFrame {
 
     public static void main(String[] args) {
         showSplash("swsplash.png");
-        PropertyConfigurator.configure("conf/logger.properties");        
+        PropertyConfigurator.configure("conf/logger.properties");
         openMidi();
         try{
             MainFrame mf = new MainFrame();

@@ -16,6 +16,38 @@ public class ExportABCAnnotationActionTest {
     }
 
     @Test
+    public void testTranslateKey() {
+        assertEquals("C# major", action.translateKey(KeyType.SHARPS, 7));
+        assertEquals("F# major", action.translateKey(KeyType.SHARPS, 6));
+        assertEquals("B major", action.translateKey(KeyType.SHARPS, 5));
+        assertEquals("E major", action.translateKey(KeyType.SHARPS, 4));
+        assertEquals("A major", action.translateKey(KeyType.SHARPS, 3));
+        assertEquals("D major", action.translateKey(KeyType.SHARPS, 2));
+        assertEquals("G major", action.translateKey(KeyType.SHARPS, 1));
+        assertEquals("C major", action.translateKey(KeyType.SHARPS, 0));
+        assertEquals("C major", action.translateKey(KeyType.FLATS, 0));
+        assertEquals("F major", action.translateKey(KeyType.FLATS, 1));
+        assertEquals("Bb major", action.translateKey(KeyType.FLATS, 2));
+        assertEquals("Eb major", action.translateKey(KeyType.FLATS, 3));
+        assertEquals("Ab major", action.translateKey(KeyType.FLATS, 4));
+        assertEquals("Db major", action.translateKey(KeyType.FLATS, 5));
+        assertEquals("Gb major", action.translateKey(KeyType.FLATS, 6));
+        assertEquals("Cb major", action.translateKey(KeyType.FLATS, 7));
+    }
+
+    @Test
+    public void testTranslateTempo() {
+        assertEquals("\"Moderato\"", action.translateTempo(new Tempo(120, Tempo.Type.CROTCHET, "Moderato", false)));
+        assertEquals("1/4=120 \"Moderato\"", action.translateTempo(new Tempo(120, Tempo.Type.CROTCHET, "Moderato", true)));
+        assertEquals("3/8=140 \"Fast\"", action.translateTempo(new Tempo(140, Tempo.Type.CROTCHETDOTTED, "Fast", true)));
+        assertEquals("1/2=60 \"Slow\"", action.translateTempo(new Tempo(60, Tempo.Type.MINIM, "Slow", true)));
+        assertEquals("3/4=70 \"Slow\"", action.translateTempo(new Tempo(70, Tempo.Type.MINIMDOTTED, "Slow", true)));
+        assertEquals("1/8=80 \"Very slow\"", action.translateTempo(new Tempo(80, Tempo.Type.QUAVER, "Very slow", true)));
+        assertEquals("3/16=70 \"Very slow\"", action.translateTempo(new Tempo(70, Tempo.Type.QUAVERDOTTED, "Very slow", true)));
+        assertEquals("1/1=50 \"Even slower\"", action.translateTempo(new Tempo(50, Tempo.Type.SEMIBREVE, "Even slower", true)));
+    }
+
+    @Test
     public void testTranslateUnitLength() {
 
         assertEquals(new Fraction(1, 1), action.translateUnitLength(Tempo.Type.SEMIBREVE.getNote().getDuration()));

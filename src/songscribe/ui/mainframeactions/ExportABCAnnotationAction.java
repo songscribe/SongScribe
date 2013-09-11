@@ -114,7 +114,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
 
     String translateTempo(Tempo tempo) {
         if (!tempo.isShowTempo()) {
-            return tempo.getTempoDescription();
+            return "\"" + tempo.getTempoDescription() + "\"";
         } else {
             Fraction fraction = translateUnitLength(tempo.getTempoType().getNote().getDuration());
             return fraction.getNumerator() + "/" + fraction.getDenominator() + "=" + tempo.getVisibleTempo() + " \"" + tempo.getTempoDescription() + "\"";
