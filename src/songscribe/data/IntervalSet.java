@@ -80,6 +80,28 @@ public class IntervalSet {
         }
         return null;
     }
+    
+    public boolean isStartOfAnyInterval(int x) {
+        for(Interval i:is){
+            if(i.a==x){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isEndOfAnyInterval(int x) {
+        for(Interval i:is){
+            if(i.b==x){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isInsideAnyInterval(int x) {
+        return findInterval(x) != null;
+    }
 
     public void shiftValues(int from, int shift){
         for(ListIterator<Interval> li=is.listIterator();li.hasNext();){

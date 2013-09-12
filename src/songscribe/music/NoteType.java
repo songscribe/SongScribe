@@ -23,9 +23,9 @@ Created on 2005.01.13., 21:32:45
 package songscribe.music;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.*;
 
 /**
  * @author Csaba Kávai
@@ -134,6 +134,10 @@ public enum NoteType {
 
     public boolean isRepeat(){
         return this==REPEATLEFT || this==REPEATRIGHT || this==REPEATLEFTRIGHT;
+    }
+    
+    public boolean isBarLine() {
+        return ordinal() >= SINGLEBARLINE.ordinal() && ordinal() <= FINALDOUBLEBARLINE.ordinal();
     }
 
     public boolean isGraceNote() {

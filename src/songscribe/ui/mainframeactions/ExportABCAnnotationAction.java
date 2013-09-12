@@ -23,12 +23,10 @@ package songscribe.ui.mainframeactions;
 
 import org.apache.log4j.Logger;
 import songscribe.data.Fraction;
+import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
-import songscribe.music.Composition;
-import songscribe.music.KeyType;
-import songscribe.music.Note;
-import songscribe.music.Tempo;
+import songscribe.music.*;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
@@ -94,8 +92,9 @@ public class ExportABCAnnotationAction extends AbstractAction {
         writer.println("W:"+composition.getUnderLyrics().replace('\n', ' '));
         writer.println("C:"+composition.getRightInfo().replace('\n', ' '));
         writer.println("Q:" + translateTempo(composition.getTempo()));
-        writer.println("L:1");
+        writer.println("L:1");        
         writer.println("K:" + translateKey(composition.getDefaultKeyType(), composition.getDefaultKeys())); //last
+        
 
 
     }
@@ -167,6 +166,86 @@ public class ExportABCAnnotationAction extends AbstractAction {
             return Integer.toString(fraction.getNumerator());
         }
         return fraction.getNumerator() + "/" + fraction.getDenominator();
+    }
+    
+    String translateRepeatAndBarLine(NoteType noteType) {
+        switch (noteType) {
+            case REPEATLEFT:
+                return "|:";
+            case REPEATRIGHT:
+                return ":|";
+            case REPEATLEFTRIGHT:
+                return "::";
+            case SINGLEBARLINE:
+                return "|";
+            case DOUBLEBARLINE:
+                return "||";
+            case FINALDOUBLEBARLINE:
+                return "|]";
+            default:
+                return "";
+        }
+    }
+
+    String translateNote(Note note) {
+        NoteType noteType = note.getNoteType();
+        if (noteType.isNote()) {
+            StringBuilder sb = new StringBuilder();
+            if (noteType.isGraceNote()) {
+                sb.append("{/");
+            }
+            sb.append(translateAccidental(note.getAccidental()));
+            sb.append(translatePitch(note));
+            sb.append(translateNoteLength(note.getDefaultDurationWithDots()));
+            if (noteType.isGraceNote()) {
+                sb.append("}");
+            }
+            return sb.toString();
+        }
+        if (noteType.isRest()) {
+            return "z" + translateNoteLength(note.getDefaultDurationWithDots());
+        }
+        if (noteType.isRepeat() || noteType.isBarLine()) {
+            return translateRepeatAndBarLine(noteType);
+        }
+        return "";
+    }
+    
+    String translateLine(Line line) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.noteCount(); i++) {
+            if (line.getBeamings().isStartOfAnyInterval(i)) {
+                sb.append(" ");
+            }                                                         
+            if (line.getFsEndings().isStartOfAnyInterval(i)) {
+                sb.append("[1 ");
+            }  
+            if (line.getSlurs().isStartOfAnyInterval(i)) {
+                sb.append("(");
+            }
+            
+            sb.append(translateNote(line.getNote(i)));
+
+            if (line.getNote(i).getNoteType() == NoteType.REPEATRIGHT && line.getFsEndings().isInsideAnyInterval(i)) {
+                sb.append("[2 ");
+            }
+            if (line.getBeamings().isEndOfAnyInterval(i)) {
+                sb.append(" ");
+            }
+            if (line.getFsEndings().isEndOfAnyInterval(i)) {
+                sb.append("|] ");
+            }
+            Interval tieInterval = line.getTies().findInterval(i);
+            if (tieInterval != null && i < tieInterval.getB()) {
+                sb.append("-");
+            }
+            if (line.getSlurs().isEndOfAnyInterval(i)) {
+                sb.append(") ");
+            }
+            
+            
+        }
+        return sb.toString();
     }
 
 }
