@@ -22,28 +22,27 @@ Created on 2005.01.05.,14:24:51
 
 package songscribe.ui;
 
-import songscribe.music.*;
-import songscribe.data.PropertyChangeListener;
+import org.apache.log4j.Logger;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
 import songscribe.data.MyBorder;
-import songscribe.ui.musicsheetdrawer.BaseMsDrawer;
-import songscribe.ui.musicsheetdrawer.ImageMsDrawer;
-import songscribe.ui.musicsheetdrawer.FughettaDrawer;
+import songscribe.data.PropertyChangeListener;
+import songscribe.music.*;
+import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.adjustment.NoteXPosAdjustment;
 import songscribe.ui.adjustment.VerticalAdjustment;
-import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.mainframeactions.PlayActiveNoteThread;
+import songscribe.ui.musicsheetdrawer.BaseMsDrawer;
+import songscribe.ui.musicsheetdrawer.FughettaDrawer;
+import songscribe.ui.musicsheetdrawer.ImageMsDrawer;
 
-import javax.swing.*;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
-
-import org.apache.log4j.Logger;
 
 /**
  * @author Csaba Kávai
@@ -822,6 +821,31 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         repaintImage = true;
         repaint();
     }
+    
+    public void invertLyricsUnderRests() {
+        try {
+            if (selectedNotesLine == -1 || selectionBegin != selectionEnd) {
+                throw new IllegalArgumentException();
+            }
+
+            Line line = composition.getLine(selectedNotesLine);
+            Note note = line.getNote(selectionBegin);
+    
+            if (!note.getNoteType().isRest()) {
+                throw new IllegalArgumentException();     
+            }
+            
+            note.setForceSyllable(!note.isForceSyllable());
+    
+            spellLyrics(line);
+            composition.modifiedComposition();
+            repaintImage = true;
+            repaint();
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(mainFrame, "You must select one rest to allow / disallow lyrics.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);    
+        }
+    }
 
     public void invertStemDirectionOnSelectedNotes(){
         if(selectedNotesLine==-1){
@@ -1047,7 +1071,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     private int setSyllableForNextNote(Line line, int noteIndex, String syllable, Note.SyllableRelation syllableRelation){
-        while(noteIndex<line.noteCount() && !line.getNote(noteIndex).getNoteType().isNote()) noteIndex++;
+        while(noteIndex<line.noteCount() && !line.getNote(noteIndex).getNoteType().isNote() && !line.getNote(noteIndex).isForceSyllable()) noteIndex++;
         if(noteIndex<line.noteCount()){
             line.getNote(noteIndex).a.syllable = syllable;
             line.getNote(noteIndex).a.syllableRelation = syllableRelation;

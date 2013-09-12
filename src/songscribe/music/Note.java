@@ -136,6 +136,8 @@ public abstract class Note implements Cloneable {
     protected boolean fermata;
 
     protected int syllableMovement;
+    
+    protected boolean forceSyllable;
 
     public enum SyllableRelation{NO, EXTENDER, DASH, ONEDASH}
 
@@ -173,6 +175,7 @@ public abstract class Note implements Cloneable {
         trill = note.trill;
         fermata = note.fermata;
         syllableMovement = note.syllableMovement;
+        forceSyllable = note.forceSyllable;
     }
 
     public abstract Image getUpImage();
@@ -311,6 +314,14 @@ public abstract class Note implements Cloneable {
         this.syllableMovement = syllableMovement;
     }
 
+    public boolean isForceSyllable() {
+        return forceSyllable;
+    }
+
+    public void setForceSyllable(boolean forceSyllable) {
+        this.forceSyllable = forceSyllable;
+    }
+
     public int getPitch(){
         return PITCHES[getPitchType()]+12*((yPos<=0 ? -yPos : -yPos-6)/7)+
                 PREFIXMODIFIER[(accidental==Accidental.NONE?findLastPrefix():accidental).ordinal()];
@@ -350,8 +361,12 @@ public abstract class Note implements Cloneable {
         return yPos<=0 ? -yPos % 7 : (7 - yPos % 7) % 7;
     }
 
+    public int getDefaultDurationWithDots(){
+        return (int)(getDefaultDuration() * DOTTEDLONGITUDE[dotted]);
+    }
+
     public int getDuration(){
-        return (int)(getDefaultDuration()*DOTTEDLONGITUDE[dotted]*(fermata?1.5f:1.0f));
+        return (int)(getDefaultDurationWithDots() * (fermata?1.5f:1.0f));
     }
 
     public void setLine(Line line) {

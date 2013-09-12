@@ -22,78 +22,143 @@ Created on Sep 15, 2007
 package songscribe.ui;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author Csaba Kávai
  */
-public class NotesMenu extends JMenu implements ActionListener {
+public class NotesMenu extends JMenu {
+    public static final String SEPARATOR = "|";
     private MainFrame mainFrame;
     private JMenuItem[] buttons;
+    
+    private class NotesMenuItem extends JMenuItem {
+        private NotesMenuItem(String name, String image, ActionListener actionListener) {
+            super(name, new ImageIcon(MainFrame.getImage(image)));
+            addActionListener(actionListener);
+        }
+    }
 
     public NotesMenu(MainFrame mainFrame) {
         super("Notes");
         this.mainFrame = mainFrame;
-        String[] images = {"beam_menu.gif", "unbeam_menu.gif", "triplet_menu.gif", "untriplet_menu.gif", "tie_menu.gif", "untie_menu.gif", "blank.png", "blank.png", "fsending_menu.gif", "unfsending_menu.gif", "trill_menu.gif", "blank.png", "upsidedown.gif"};
-        String[] names = {"Beam", "Unbeam", "Triplet", "Untuplet", "Tie", "Untie", "Add Slur", "Remove Slur", "First-second ending", "Remove first-second ending", "Trill", "Remove Trill", "Invert Stem Direction"};
-        String[] tuplets = {"Duplet (2)", "Quadruplet (4)", "Quintuplet (5)", "Sextuplet (6)", "Septuplet (7)"};
-        int[] tupletValues = new int[]{2, 4, 5, 6, 7};
-        buttons = new JMenuItem[names.length];
-        for(int i=0;i<names.length;i++){
-            buttons[i] = new JMenuItem(names[i], new ImageIcon(MainFrame.getImage(images[i])));
-            buttons[i].addActionListener(this);
-            add(buttons[i]);
-            if(i%2==1 && i<names.length-1)addSeparator();
-            if(i==2){
-                JMenu tupletMenu = new JMenu("Other tuplets");
-                tupletMenu.setIcon(mainFrame.blankIcon);
-                TupletAction tupletAction = new TupletAction();
-                for(int j=0;j<tuplets.length;j++){
-                    JMenuItem tupletButton = new JMenuItem(tuplets[j], mainFrame.blankIcon);
-                    tupletButton.addActionListener(tupletAction);
-                    tupletButton.setActionCommand(Integer.toString(tupletValues[j]));
-                    tupletMenu.add(tupletButton);
-                }
-                add(tupletMenu);
+        final MusicSheet musicSheet = mainFrame.getMusicSheet();
+
+        add(new NotesMenuItem("Beam", "beam_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.beamSelectedNotes(true);
             }
-        }
+        }));
+        add(new NotesMenuItem("Unbeam", "unbeam_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.beamSelectedNotes(false);
+            }
+        }));
+        
+        addSeparator();
+        add(new NotesMenuItem("Triplet", "triplet_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.tupletSelectedNotes(3);
+            }
+        }));
+        add(createTupletMenu());
+        add(new NotesMenuItem("Untuplet", "untriplet_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.untupletSelectedNotes();
+            }
+        }));
+        addSeparator();
+        
+        add(new NotesMenuItem("Tie", "tie_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.tieSelectedNotes(true);
+            }
+        }));
+        add(new NotesMenuItem("Untie", "untie_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.tieSelectedNotes(false);
+            }
+        }));
+        addSeparator();
+
+        add(new NotesMenuItem("Add Slur", "blank.png", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.slurSelectedNotes(true);
+            }
+        }));
+        add(new NotesMenuItem("Remove Slur", "blank.png", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.slurSelectedNotes(false);
+            }
+        }));
+        addSeparator();
+
+        add(new NotesMenuItem("First-second ending", "fsending_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.makeFsEndingOnSelectedNotes(true);
+            }
+        }));
+        add(new NotesMenuItem("Remove first-second ending", "unfsending_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.makeFsEndingOnSelectedNotes(false);
+            }
+        }));
+        addSeparator();
+
+        add(new NotesMenuItem("Trill", "trill_menu.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.makeTrillOnSelectedNotes(true);
+            }
+        }));
+        add(new NotesMenuItem("Remove Trill", "blank.png", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.makeTrillOnSelectedNotes(false);
+            }
+        }));
+        addSeparator();
+        add(new NotesMenuItem("Invert Stem Direction", "upsidedown.gif", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.invertStemDirectionOnSelectedNotes();
+            }
+        }));
+        add(new NotesMenuItem("Allow / Disallow Lyrics Under Rest", "blank.png", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.invertLyricsUnderRests();
+            }
+        }));
     }
 
-    public void actionPerformed(ActionEvent e) {
-        MusicSheet musicSheet = mainFrame.getMusicSheet();
-        if(e.getSource()==buttons[0]){
-            musicSheet.beamSelectedNotes(true);
-        }else if(e.getSource()==buttons[1]){
-            musicSheet.beamSelectedNotes(false);
-        }else if(e.getSource()==buttons[2]){
-            musicSheet.tupletSelectedNotes(3);
-        }else if(e.getSource()==buttons[3]){
-            musicSheet.untupletSelectedNotes();
-        }else if(e.getSource()==buttons[4]){
-            musicSheet.tieSelectedNotes(true);
-        }else if(e.getSource()==buttons[5]){
-            musicSheet.tieSelectedNotes(false);
-        }else if(e.getSource()==buttons[6]){
-            musicSheet.slurSelectedNotes(true);
-        }else if(e.getSource()==buttons[7]){
-            musicSheet.slurSelectedNotes(false);
-        }else if(e.getSource()==buttons[8]){
-            musicSheet.makeFsEndingOnSelectedNotes(true);
-        }else if(e.getSource()==buttons[9]){
-            musicSheet.makeFsEndingOnSelectedNotes(false);
-        }else if(e.getSource()==buttons[10]){
-            musicSheet.makeTrillOnSelectedNotes(true);
-        }else if(e.getSource()==buttons[11]){
-            musicSheet.makeTrillOnSelectedNotes(false);
-        }else if(e.getSource()==buttons[12]){
-            musicSheet.invertStemDirectionOnSelectedNotes();
+    private JMenu createTupletMenu() {
+        String[] tuplets = {"Duplet (2)", "Quadruplet (4)", "Quintuplet (5)", "Sextuplet (6)", "Septuplet (7)"};
+        final int[] tupletValues = new int[]{2, 4, 5, 6, 7};
+        JMenu tupletMenu = new JMenu("Other tuplets");
+        tupletMenu.setIcon(mainFrame.blankIcon);
+        for(int i=0;i<tuplets.length;i++){
+            final int iFinal = i;
+            JMenuItem tupletButton = new JMenuItem(tuplets[i], mainFrame.blankIcon);
+            tupletButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mainFrame.getMusicSheet().tupletSelectedNotes(tupletValues[iFinal]);
+                }
+            });
+            tupletMenu.add(tupletButton);
         }
-    }
-
-    private class TupletAction implements ActionListener{
-        public void actionPerformed(ActionEvent e) {
-            mainFrame.getMusicSheet().tupletSelectedNotes(Integer.parseInt(e.getActionCommand()));
-        }
+        return tupletMenu;
     }
 }
