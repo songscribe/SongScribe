@@ -50,13 +50,13 @@ public class ExportABCAnnotationActionTest {
     @Test
     public void testTranslateUnitLength() {
 
-        assertEquals(new Fraction(1, 1), action.translateUnitLength(Tempo.Type.SEMIBREVE.getNote().getDuration()));
-        assertEquals(new Fraction(1,2), action.translateUnitLength(Tempo.Type.MINIM.getNote().getDuration()));
-        assertEquals(new Fraction(3,4), action.translateUnitLength(Tempo.Type.MINIMDOTTED.getNote().getDuration()));
-        assertEquals(new Fraction(1,4), action.translateUnitLength(Tempo.Type.CROTCHET.getNote().getDuration()));
-        assertEquals(new Fraction(3,8), action.translateUnitLength(Tempo.Type.CROTCHETDOTTED.getNote().getDuration()));
-        assertEquals(new Fraction(1,8), action.translateUnitLength(Tempo.Type.QUAVER.getNote().getDuration()));
-        assertEquals(new Fraction(3,16), action.translateUnitLength(Tempo.Type.QUAVERDOTTED.getNote().getDuration()));
+        assertEquals(new Fraction(4,1), action.translateUnitLength(Tempo.Type.SEMIBREVE.getNote().getDuration(), Composition.PPQ));
+        assertEquals(new Fraction(2,1), action.translateUnitLength(Tempo.Type.MINIM.getNote().getDuration(), Composition.PPQ));
+        assertEquals(new Fraction(3,1), action.translateUnitLength(Tempo.Type.MINIMDOTTED.getNote().getDuration(), Composition.PPQ));
+        assertEquals(new Fraction(1,1), action.translateUnitLength(Tempo.Type.CROTCHET.getNote().getDuration(), Composition.PPQ));
+        assertEquals(new Fraction(3,2), action.translateUnitLength(Tempo.Type.CROTCHETDOTTED.getNote().getDuration(), Composition.PPQ));
+        assertEquals(new Fraction(1,2), action.translateUnitLength(Tempo.Type.QUAVER.getNote().getDuration(), Composition.PPQ));
+        assertEquals(new Fraction(3,4), action.translateUnitLength(Tempo.Type.QUAVERDOTTED.getNote().getDuration(), Composition.PPQ));
     }
 
     @Test
@@ -95,6 +95,7 @@ public class ExportABCAnnotationActionTest {
 
     @Test
     public void testTranslateNoteLength() {
+        action.compositionUnitLength = Composition.PPQ * 4;
         assertEquals("/32", action.translateNoteLength(new Demisemiquaver().getDuration()));
         assertEquals("3/64", action.translateNoteLength(makeDotted(new Demisemiquaver(), 1).getDuration()));
         assertEquals("7/128", action.translateNoteLength(makeDotted(new Demisemiquaver(), 2).getDuration()));
@@ -118,6 +119,12 @@ public class ExportABCAnnotationActionTest {
         assertEquals("", action.translateNoteLength(new Semibreve().getDuration()));
         assertEquals("3/2", action.translateNoteLength(makeDotted(new Semibreve(), 1).getDuration()));
         assertEquals("7/4", action.translateNoteLength(makeDotted(new Semibreve(), 2).getDuration()));
+
+        action.compositionUnitLength = Composition.PPQ;
+        assertEquals("4", action.translateNoteLength(new Semibreve().getDuration()));
+        assertEquals("2", action.translateNoteLength(new Minim().getDuration()));
+        assertEquals("", action.translateNoteLength(new Crotchet().getDuration()));
+        assertEquals("/2", action.translateNoteLength(new Quaver().getDuration()));
     }
 
     private Note makeDotted(Note note, int dotted) {

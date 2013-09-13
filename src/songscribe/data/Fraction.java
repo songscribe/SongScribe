@@ -16,6 +16,10 @@ public class Fraction {
     public int getDenominator() {
         return denominator;
     }
+    
+    public String asAbcString() {
+        return numerator + "/" + denominator;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -35,5 +39,10 @@ public class Fraction {
         int result = numerator;
         result = 31 * result + denominator;
         return result;
+    }
+    
+    @Override
+    public String toString() {
+        return asAbcString();
     }
 }

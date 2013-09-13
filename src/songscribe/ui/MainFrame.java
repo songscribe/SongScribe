@@ -269,6 +269,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(exportMusicSheetImageAction);
         ExportPDFAction exportPDFAction = new ExportPDFAction(this);
         fileMenu.add(exportPDFAction);
+        fileMenu.add(new ExportABCAnnotationAction(this));
         fileMenu.addSeparator();
         printAction = new PrintAction(this);
         fileMenu.add(printAction);
