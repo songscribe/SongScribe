@@ -577,6 +577,7 @@ public class MainFrame extends JFrame {
             receiver = MidiSystem.getReceiver();
         } catch (MidiUnavailableException e) {
             hideSplash();
+            LOG.warn("No MIDI", e);
             JOptionPane.showMessageDialog(null, String.format("You may be already running %s or another program that uses sound.\n" +
                     "Please try to quit them and restart %s.\n" +
                     "In this session playback will be disabled.", PACKAGENAME, PACKAGENAME),

@@ -21,25 +21,25 @@ Created on Jul 17, 2006
 */
 package songscribe;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import songscribe.converter.AbcConverter;
+import songscribe.converter.ImageConverter;
+import songscribe.converter.MidiConverter;
+import songscribe.publisher.Publisher;
 import songscribe.ui.MainFrame;
 import songscribe.ui.SlideFrame;
 import songscribe.ui.Utilities;
-import songscribe.publisher.Publisher;
-import songscribe.converter.ImageConverter;
-import songscribe.converter.MidiConverter;
 import songscribe.uiconverter.UIConverter;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.lang.reflect.Method;
-import java.io.File;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.*;
-
-import org.apache.log4j.Logger;
-
-import javax.swing.*;
 
 /**
  * @author Csaba Kávai
@@ -49,8 +49,7 @@ public class Runner {
         //adding the classpath dinamically
         for(File lib:new File("libs").listFiles()) if(lib.isFile())addURL(lib);
 
-        Logger LOG = Logger.getLogger(Runner.class);
-
+        PropertyConfigurator.configure("conf/logger.properties");
         String ss = System.getProperty("songscribe");
 
         if ("version".equals(ss)) {
@@ -62,17 +61,16 @@ public class Runner {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            LOG.warn("Could not set system default look&feel", e);
         }
 
         //launching ss
-        if(ss == null)startFrame(args);
-        else if(ss.equals("sw"))MainFrame.main(args);
-        else if(ss.equals("ss"))SlideFrame.main(args);
-        else if(ss.equals("sb"))Publisher.main(args);
-        else if(ss.equals("image_converter")) ImageConverter.main(args);
-        else if(ss.equals("midi_converter")) MidiConverter.main(args);
-        else if(ss.equals("ui_converter")) UIConverter.main(args);
+        if("sw".equals(ss))MainFrame.main(args);
+        else if("ss".equals(ss))SlideFrame.main(args);
+        else if("sb".equals(ss))Publisher.main(args);
+        else if("image_converter".equals(ss)) ImageConverter.main(args);
+        else if("midi_converter".equals(ss)) MidiConverter.main(args);
+        else if("ui_converter".equals(ss)) UIConverter.main(args);
+        else if("abc_converter".equals(ss)) AbcConverter.main(args);
         else startFrame(args);
     }
 

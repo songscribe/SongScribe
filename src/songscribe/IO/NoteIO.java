@@ -21,12 +21,11 @@ Created on Feb 19, 2006
 */
 package songscribe.IO;
 
+import org.xml.sax.Attributes;
 import songscribe.music.*;
 
-import java.io.PrintWriter;
 import java.io.IOException;
-
-import org.xml.sax.Attributes;
+import java.io.PrintWriter;
 
 /**
  * @author Csaba Kávai
@@ -50,6 +49,7 @@ public class NoteIO {
     private static final String XMLSYLLABLEMOVEMENT = "syllablemovement";
     private static final String XMLTRILL = "trill";
     private static final String XMLFERMATA = "fermata";
+    private static final String XMLFORCESYLLABLE = "forcesyllable";
     private static final String XMLBEATCHANGE = "beatchange";
     private static final String XMLGLISSANDOX1TRANSLATE = "glissandox1translate";
     private static final String XMLGLISSANDOX2TRANSLATE = "glissandox2translate";
@@ -77,6 +77,7 @@ public class NoteIO {
         if(n.getAnnotation()!=null)AnnotationIO.writeAnnotation(n.getAnnotation(), pw, 12);
         if(n.isTrill())XML.writeEmptyTag(pw, XMLTRILL);
         if(n.isFermata())XML.writeEmptyTag(pw, XMLFERMATA);
+        if(n.isForceSyllable())XML.writeEmptyTag(pw, XMLFORCESYLLABLE);
         if(n.getBeatChange()!=null)XML.writeValue(pw, XMLBEATCHANGE, n.getBeatChange().name());
         if(n.getNoteType() == NoteType.GRACESEMIQUAVER) {
             XML.writeValue(pw, XMLGRACESEMIQUAVERY0POS, Integer.toString(((GraceSemiQuaver) n).getY0Pos()));
@@ -192,6 +193,8 @@ public class NoteIO {
                         note.setTrill(true);
                     }else if(lastTag.equals(XMLFERMATA)){
                         note.setFermata(true);
+                    }else if(lastTag.equals(XMLFORCESYLLABLE)){
+                        note.setForceSyllable(true);
                     }else if(lastTag.equals(XMLBEATCHANGE)){
                         note.setBeatChange(BeatChange.valueOf(str));
                     }else if(lastTag.equals(XMLGRACESEMIQUAVERY0POS)){

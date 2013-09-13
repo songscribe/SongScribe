@@ -111,7 +111,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         }
     }
 
-    void writeABC(PrintWriter writer) {
+    public void writeABC(PrintWriter writer) {
         Composition composition = mainFrame.getMusicSheet().getComposition();
         compositionUnitLength = determineCompositionUnitLength(composition);
         writer.println("%abc-2.1");
@@ -222,7 +222,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
     String translateDecorations(Note note) {
         StringBuilder sb = new StringBuilder();
         if (note.getForceArticulation() == ForceArticulation.ACCENT) {
-            sb.append("!accent!");
+            sb.append("!>!");
         }
         if (note.getDurationArticulation() == DurationArticulation.STACCATO) {
             sb.append(".");
