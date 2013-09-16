@@ -40,7 +40,13 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/** The following features are not supported in abc 2.1
+ * 1. Accidentals in parenthesis. I opened a forum for this topic (with no answer yet): http://abcnotation.com/forums/viewtopic.php?f=7&t=260
+ * 2. Beat change.
+ * 3. Glissandos. I substituted them with slurs for now.
+ * 4. On syllabified lyrics no long hyphen between compound words (like God-Realisation)
+ * 5. Syllables under grace notes. Solution: put together with the syllable of next note with \
+ * 6. Forcing syllable under a rest (new SongScribe feature)
  * @author Csaba Kávai
  */
 public class ExportABCAnnotationAction extends AbstractAction {
@@ -361,11 +367,11 @@ public class ExportABCAnnotationAction extends AbstractAction {
         StringBuilder sb = new StringBuilder();
         for (int n = 0; n < line.noteCount(); n++) {
             Note note = line.getNote(n);
-            // TODO syylable forcing under rests is not supported in abc
+            // TODO syllable forcing under rests is not supported in abc
             
             if (note.getNoteType().isNote()) {  
                 sb.append(translateSyllable(note.a.syllable));
-                // TODO gracenotes are not supported in abc therefore me must put together with the next note
+                // TODO syllables under gracenotes are not supported in abc therefore me must put together with the next note
                 if (note.getNoteType().isGraceNote()) { 
                     sb.append('\\');
                 }
