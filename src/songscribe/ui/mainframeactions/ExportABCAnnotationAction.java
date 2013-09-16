@@ -27,6 +27,7 @@ import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.music.*;
+import songscribe.ui.Constants;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
@@ -89,12 +90,15 @@ public class ExportABCAnnotationAction extends AbstractAction {
         for (int l = 0; l < composition.lineCount(); l++) {
             Line line = composition.getLine(l);
             for (int n = 0; n < line.noteCount(); n++) {
-                Integer defaultDuration = line.getNote(n).getDefaultDuration();
-                Integer count = unitLengths.get(defaultDuration);
-                if (count == null) {
-                    unitLengths.put(defaultDuration, 1);
-                } else {
-                    unitLengths.put(defaultDuration, count + 1);
+                Note note = line.getNote(n);
+                if (note.getNoteType().isRealNote()) {
+                    Integer defaultDuration = note.getDefaultDuration();
+                    Integer count = unitLengths.get(defaultDuration);
+                    if (count == null) {
+                        unitLengths.put(defaultDuration, 1);
+                    } else {
+                        unitLengths.put(defaultDuration, count + 1);
+                    }
                 }
             }
         }
@@ -121,7 +125,6 @@ public class ExportABCAnnotationAction extends AbstractAction {
         // tune header
         writer.println("X:1");
         writer.println("T:"+composition.getSongTitle().replace('\n', ' '));
-        writer.println("w:"+composition.getLyrics().replace('\n', ' '));
         writer.println("W:"+composition.getUnderLyrics().replace('\n', ' '));
         writer.println("C:"+composition.getRightInfo().replace('\n', ' '));
         writer.println("Q:" + translateTempo(composition.getTempo()));
@@ -163,17 +166,24 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return new Fraction(upper, lower);
     }
 
-    String translatePitch(Note note) {
+    String translatePitch(int yPos) {
         StringBuilder sb = new StringBuilder();
-        char letter = (char)((note.getPitchType() + 1 ) % 7 + (note.getYPos() >= 0 ? 'A' : 'a'));
+        char letter = (char)((getPitchType(yPos) + 1 ) % 7 + (yPos >= 0 ? 'A' : 'a'));
         sb.append(letter);
-        for (int yPos = note.getYPos();yPos >= 7; yPos-=7) {
+        for (int y = yPos;y >= 7; y-=7) {
             sb.append(',');
         }
-        for (int yPos = note.getYPos();yPos < -7; yPos+=7) {
+        for (int y = yPos;y < -7; y+=7) {
             sb.append('\'');
         }
         return sb.toString();
+    }
+
+    /**
+     * @return 0 for B, 1 for C, 2 for D, ..., 6 for A
+     */
+    int getPitchType(int yPos){
+        return yPos<=0 ? -yPos % 7 : (7 - yPos % 7) % 7;
     }
 
     String translateAccidental(Note.Accidental accidental) {
@@ -261,7 +271,13 @@ public class ExportABCAnnotationAction extends AbstractAction {
             }
             sb.append(translateDecorations(note));
             sb.append(translateAccidental(note.getAccidental()));
-            sb.append(translatePitch(note));
+            
+            if (note.getNoteType() == NoteType.GRACESEMIQUAVER) {
+                sb.append(translatePitch(((GraceSemiQuaver)note).getY0Pos()));
+                sb.append(translateNoteLength(new Semiquaver().getDefaultDuration()));
+            }
+            
+            sb.append(translatePitch(note.getYPos()));
             int duration;
             switch (noteType) {
                 case GRACEQUAVER:
@@ -273,7 +289,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
                 default:
                     duration = note.getDefaultDurationWithDots();
             }
-            sb.append(translateNoteLength(duration));
+            sb.append(translateNoteLength(duration));            
             if (noteType.isGraceNote()) {
                 sb.append("}");
             } 
@@ -340,11 +356,48 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return line.getSlurs().isEndOfAnyInterval(n) || 
                 (n > 0 && line.getNote(n - 1).getGlissando() != Note.NOGLISSANDO);
     }
+    
+    String translateLyrics(Line line) {
+        StringBuilder sb = new StringBuilder();
+        for (int n = 0; n < line.noteCount(); n++) {
+            Note note = line.getNote(n);
+            // TODO syylable forcing under rests is not supported in abc
+            
+            if (note.getNoteType().isNote()) {  
+                sb.append(translateSyllable(note.a.syllable));
+                // TODO gracenotes are not supported in abc therefore me must put together with the next note
+                if (note.getNoteType().isGraceNote()) { 
+                    sb.append('\\');
+                }
+                switch (note.a.syllableRelation) {
+                    case NO:
+                        sb.append(' ');
+                        break;
+                    case ONEDASH: //TODO long dash is not supported in abc
+                    case DASH:
+                        sb.append('-');
+                        break;
+                    case EXTENDER:
+                        sb.append('_');
+                        break;
+                }
+            }
+        }
+        return sb.toString();
+    }
+    
+    String translateSyllable(String syllable) {
+        if (Constants.UNDERSCORE.equals(syllable) || Constants.HYPHEN.equals(syllable)) {
+            return "";
+        }
+        return syllable.replace(Constants.NON_BREAKING_HYPHEN, "\\-");
+    }
 
     void translateComposition(PrintWriter writer, Composition composition) {
         for (int l = 0; l < composition.lineCount(); l++) {
             Line line = composition.getLine(l);
             writer.println(translateLine(line));
+            writer.println("w:" + translateLyrics(line));
         }
     }
 

@@ -77,7 +77,7 @@ public class ExportABCAnnotationActionTest {
     private void assertPitch(String expected, int yPos) {
         Crotchet crotchet = new Crotchet();
         crotchet.setYPos(yPos);
-        assertEquals(expected, action.translatePitch(crotchet));
+        assertEquals(expected, action.translatePitch(crotchet.getYPos()));
     }
 
     @Test

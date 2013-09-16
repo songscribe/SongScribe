@@ -45,6 +45,7 @@ public class Constants {
     public static final String FALSEVALUE = "false";
     public static final String ACCELERATOR_KEYS = "AcceleratorKeys";
     public static final String UNDERSCORE = "_";
+    public static final String HYPHEN = "-";
     public static final String SHOWMEMUSEAGE = "showmemusage";
     public static final String SHOWPUBLISHERNEWINFO = "showpublishernewinfo";
     public static final String UPDATEURL1 = "updateurl1";
@@ -61,4 +62,5 @@ public class Constants {
     public static final String MINOR_VERSION_PROP = "minor.version";
     public static final String BUILD_VERSION_PROP = "build.version";
     public static final String CHECKSUM_VERSION_PROP = "checksum.version";
+    public static final String NON_BREAKING_HYPHEN = Character.toString('\u00AD');
 }
