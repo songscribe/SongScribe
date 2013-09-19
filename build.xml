@@ -1,187 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="songscribe" default="build">
-    <property name="src.dir" location="src"/>
-    <property name="c.src.dir" location="${src.dir}/c"/>
-    <property name="libs.dir" location="libs"/>
-    <property name="idea.lib.dir" location="${libs.dir}/idea-lib"/>
-    <property name="build.dir" location="build"/>
-    <property name="build.classes.dir" location="${build.dir}/classes"/>
-    <property name="build.update.dir" location="${build.dir}/update"/>
-    <property name="build.update.file.name" value="update.bz2" />
-    <property name="build.update.file" location="${build.dir}/${build.update.file.name}"/>
-    <property name="remote.update.dir" value="~/musicofthesupreme/files/update/ss" />
-    <property name="remote.user" value="musicofthesupreme" />
-    <property name="remote.host" value="canis.dreamhost.com" />
-    <property name="keyfile" location="${user.home}/.ssh/id_rsa"/>
-    <property name="dist.dir" value="dist"/>
-    <property name="songscribe.jar" value="songscribe.jar"/>
+<project name="songscribe" default="prepare-update">
+    <property name="dist.dir" value="target/dist"/>
+    <property name="update.dir" value="target/update"/>
+    <property name="songscribe.jar" value="${dist.dir}/SongScribe.jar"/>
 
-    <path id="classpath">
-        <pathelement location="${libs.dir}/log4j-1.2.9.jar"/>
-        <pathelement location="${libs.dir}/itext-1.4.jar"/>
-        <pathelement location="${libs.dir}/swing-layout.jar"/>
-        <pathelement location="${libs.dir}/AppleJavaExtensions.jar"/>
-        <pathelement location="${libs.dir}/commons-httpclient-3.1.jar"/>
-        <pathelement location="${libs.dir}/commons-logging-1.1.jar"/>
-        <pathelement location="${libs.dir}/commons-codec-1.3.jar"/>
-        <pathelement location="${libs.dir}/jdc.jar"/>
-        <pathelement location="${libs.dir}/forms_rt.jar"/>
-    </path>
-
-    <path id="idea.compile.classpath">
-        <pathelement location="${idea.lib.dir}/asm.jar"/>
-        <pathelement location="${idea.lib.dir}/asm-commons.jar"/>
-        <pathelement location="${idea.lib.dir}/javac2.jar"/>
-        <pathelement location="${idea.lib.dir}/jdom.jar"/>
-    </path>
-
-    <!-- specify here the the directories and files which should go to the distribution-->
-    <!-- WARNING: the directories must end with slash! -->
-    <patternset id="dist.path" >
-        <include name="conf/" />
-        <include name="fonts/" />
-        <include name="examples/" />
-        <include name="help/" />
-        <include name="images/" />
-        <include name="libs/" />
-        <exclude name="libs/idea-lib/" />
-        <include name="profiles/" />
-        <include name="thirdpartylicenses/" />
-        <include name="license.txt"/>
-        <include name="readme.html"/>
-        <include name="launching.txt"/>
-        <include name="songscribe.jar"/>
-        <!-- The  *.plist files are copied with filter copy in dist task, don't specify them here-->
-    </patternset>
-
-    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="idea.compile.classpath"/>
-	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
-
-    <target name="init" description="initialize build">
-        <mkdir dir="${build.dir}"/>
-        <mkdir dir="${build.classes.dir}"/>
-        <mkdir dir="${build.update.dir}"/>
-        <mkdir dir="${dist.dir}"/>
-    </target>
-
-    <target name="clean" description="deletes the build and dist folder">
-        <delete dir="${build.dir}"/>
-        <delete dir="${dist.dir}"/>
-        <delete file="${songscribe.jar}"/>
-    </target>
-
-    <target name="build" depends="init" description="build the source code and generates the songscribe.jar">
-        <javac2
-            srcdir="${src.dir}"
-                destdir="${build.classes.dir}"
-                classpathref="classpath"
-                excludes="${c.src.dir}"
-                encoding="UTF-8"
-                target="1.5"
-                source="1.5"
-                debug="off"
-        />
-        <jar destfile="${songscribe.jar}" basedir="${build.classes.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="songscribe.Runner"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="dist" depends="build" description="make a distribution of the program">
-        <!--Delete the files in dist-->
-        <delete>
-            <fileset dir="${dist.dir}"/>
-        </delete>
-
-        <!--Increase the build version-->
-        <propertyfile file="conf/version.properties">
-            <entry key="build.version" type="int" operation="+" value="1"/>
-        </propertyfile>
-
-        <!--Create version checksum-->
-        <java classname="songscribe.VersionWriter">
-            <classpath refid="classpath"/>
-            <classpath location="${songscribe.jar}"/>
-            <arg value="checksum"/>
-        </java>
-
-        <!--Copy the pre-defined program files there-->
-        <copy todir="${dist.dir}">
-            <fileset dir="${basedir}">
-                <patternset refid="dist.path"/>
-            </fileset>
-        </copy>
-
-        <!--Create version file-->
-        <java classname="songscribe.VersionWriter" output="${dist.dir}/version">
-            <classpath refid="classpath"/>
-            <classpath location="${songscribe.jar}"/>
-            <arg value="full"/>
-        </java>
-
-        <!--Set the version property with the human readable version-->
-        <java classname="songscribe.VersionWriter" outputproperty="version">
-            <classpath refid="classpath"/>
-            <classpath location="${songscribe.jar}"/>
-            <arg value="normal"/>
-        </java>
-
-        <!--Create version.txt file-->
-        <!--echo message="${version}" file="${dist.dir}/version.txt" /-->
-
-        <!--Filter-copy the plist files replacing with the current version number-->
-        <copy todir="${dist.dir}">
-            <fileset dir="${basedir}" includes="*.plist" />
-            <filterset>
-                <filter token="VERSION" value="${version}"/>
-            </filterset>
-        </copy>
-    </target>
-
-    <target name="prepare-update" depends="dist" description="making update for internet">
+    <target name="prepare-update" description="making update for internet">
         <!--Copy the whole dist to a temporary working directory-->
-        <copy todir="${build.update.dir}">
+        <copy todir="${update.dir}">
             <fileset dir="${dist.dir}" />
         </copy>
         <!--Create the checksums file-->
-        <java classname="songscribe.ChecksumMaker" dir="${build.update.dir}" fork="true">
-            <classpath refid="classpath"/>
+        <java classname="songscribe.ChecksumMaker" dir="${update.dir}" fork="true">
             <classpath location="${songscribe.jar}"/>
         </java>
         <!--Synchronizing with the server content-->
         <java classname="songscribe.UpdateMaker">
-            <classpath refid="classpath"/>
             <classpath location="${songscribe.jar}"/>
-            <arg value="${build.update.dir}"/>
+            <arg value="${update.dir}"/>
         </java>
-
-        <tar destfile="${build.update.file}" basedir="${build.update.dir}" compression="bzip2" />
-    </target>
-
-    <target name="test" description="upload update onto the net">
-        <input message="Passphrase for ${keyfile}: " addproperty="passphrase" />
-		<echo message="${passphrase}" />
-		<propertyregex property="passphrase"
-			input="${passphrase}"
-			regexp="(.+)\s*"
-			select="\1"
-			override="true"
-		/>
-		<echo message="${passphrase}" />
-    </target>
-
-    <target name="upload-update" depends="prepare-update" description="upload update onto the net">
-		<input message="Press return to continue, if you do not get a prompt after the first try, press return again..." />
-        <input message="Passphrase for ${keyfile}: " addproperty="passphrase">
-			<handler classname="org.apache.tools.ant.input.SecureInputHandler"/>
-		</input>
-		<echo message="'${passphrase}'" />
-        <scp file="${build.update.file}" todir="${remote.user}@${remote.host}:${remote.update.dir}"
-             keyfile="${keyfile}" passphrase="${passphrase}" verbose="true"/>
-        <sshexec host="${remote.host}" username="${remote.user}" keyfile="${keyfile}" passphrase="${passphrase}"
-                command="cd ${remote.update.dir};tar -xjf ${build.update.file.name};rm ${build.update.file.name}"
-                verbose="true"/>
     </target>
 
     <target name="songwriter" description="Launch SongWriter">

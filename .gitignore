@@ -5,9 +5,7 @@
 songscribe.jar
 version
 *.exe
-build/
-dist/
-bin/
+target/
 .*
 !.gitignore
 !tutorial.pdf
