@@ -21,7 +21,6 @@ Created on Jul 17, 2006
 */
 package songscribe;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import songscribe.converter.AbcConverter;
 import songscribe.converter.ImageConverter;
@@ -36,19 +35,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 /**
  * @author Csaba Kávai
  */
 public class Runner {
     public static void main(String[] args) {
-        //adding the classpath dinamically
-//        for(File lib:new File("libs").listFiles()) if(lib.isFile())addURL(lib);
-
         PropertyConfigurator.configure("conf/logger.properties");
         String ss = System.getProperty("songscribe");
 
@@ -72,21 +64,6 @@ public class Runner {
         else if("ui_converter".equals(ss)) UIConverter.main(args);
         else if("abc_converter".equals(ss)) AbcConverter.main(args);
         else startFrame(args);
-    }
-
-    public static void addURL(File file) {
-        URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
-        Class<? extends ClassLoader> sysclass = URLClassLoader.class;
-        try {
-            Method method = sysclass.getDeclaredMethod("addURL", URL.class);
-            method.setAccessible(true);
-            //noinspection deprecation
-            method.invoke(sysloader, file.toURI().toURL());
-        } catch (Throwable t) {
-            JOptionPane.showMessageDialog(null, "The program could not start because of an unexpected error.\n Please contact the developer.", "Fatal", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(Runner.class).fatal("Error, could not add URL to system classloader", t);
-            System.exit(0);
-        }
     }
 
     private static void startFrame(final String[] args){
