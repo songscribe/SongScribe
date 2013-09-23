@@ -2,12 +2,11 @@
 *.iml
 *.ipr
 *.iws
-songscribe.jar
-version
-*.exe
-target/
-.*
-!.gitignore
-!tutorial.pdf
+.idea/
 
-*.class
+#No maven stuff
+target/
+
+# No generated source
+src/main/java/songscribe/Version.java
+
