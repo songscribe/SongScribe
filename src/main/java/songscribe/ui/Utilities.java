@@ -124,11 +124,11 @@ public class Utilities {
     }
 
     public static String getPublicVersion() {
-        return Version.MAJOR_VERSION + "." + Version.MINOR_VERSION;
+        return Version.PUBLIC_VERSION;
     }
 
     public static String getFullVersion() {
-        return Version.MAJOR_VERSION + "." + Version.MINOR_VERSION + "." + Version.BUILD_VERSION;
+        return Version.PUBLIC_VERSION + "." + Version.BUILD_VERSION;
     }
 
     public static int getYear() {

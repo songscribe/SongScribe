@@ -58,9 +58,5 @@ public class Constants {
     public static final String CHECKSUMSFILENAME = "checksums";
     public static final String VERSION_FILENAME = "version";
     public static final Header MAXAGEHEADER = new Header("Cache-Control", "max-age=0");
-    public static final String MAJOR_VERSION_PROP = "major.version";
-    public static final String MINOR_VERSION_PROP = "minor.version";
-    public static final String BUILD_VERSION_PROP = "build.version";
-    public static final String CHECKSUM_VERSION_PROP = "checksum.version";
     public static final String NON_BREAKING_HYPHEN = Character.toString('\u00AD');
 }

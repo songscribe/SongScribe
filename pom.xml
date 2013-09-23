@@ -6,12 +6,10 @@
 
     <groupId>SongScribe</groupId>
     <artifactId>SongScribe</artifactId>
-    <version>${major.version}.${minor.version}</version>
+    <version>1.17</version>
     <packaging>jar</packaging>
     
     <properties>
-        <major.version>1</major.version>
-        <minor.version>17</minor.version>
         <build.version>${maven.build.timestamp}</build.version>
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
@@ -102,7 +100,7 @@
                             <classpathPrefix>libs</classpathPrefix>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${build.version}</Implementation-Build>
+                            <Implementation-Build>${project.version}.${build.version}</Implementation-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -212,8 +210,7 @@
                                     out.println '// This is an auto generated code. DO NOT MODIFY!'
                                     out.println 'package songscribe;'
                                     out.println 'public final class Version {'
-                                    out.println '   public static final String MAJOR_VERSION="${major.version}";'
-                                    out.println '   public static final String MINOR_VERSION="${minor.version}";'
+                                    out.println '   public static final String PUBLIC_VERSION="${project.version}";'
                                     out.println '   public static final String BUILD_VERSION="${build.version}";'
                                     out.println '}'
                                 }
