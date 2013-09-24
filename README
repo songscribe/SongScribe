@@ -1,0 +1,42 @@
+---------------------------------------------------------------
+Building SongScribe from Sources
+---------------------------------------------------------------
+The build system is based on Maven 2. Use this command.
+
+${MAIN_DIR}> mvn package
+
+This will compile, package the application into target/dist.
+
+---------------------------------------------------------------
+Launching SongScribe
+---------------------------------------------------------------
+SongScribe needs Java 5 to run.
+After packaging the application, enter the directory target/dist.
+
+Application chooser:
+
+${MAIN_DIR}/target/dist> java -jar songscribe.jar
+
+A window will appear where you can select which application you want to start.
+
+Specifically you can use the following commands to start the different applications:
+
+1. Song Writer is the main application for creating, converting and playing songs:
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=sw -jar songscribe.jar
+
+2. Song Show for full-screen song slideshow:
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=ss -jar songscribe.jar
+
+3. Song Book for creating nice looking PDF of Songs, Images and Text
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=sb -jar songscribe.jar
+
+4. UiConverter for converting image and midi files from songs in batch
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=ui_converter -jar songscribe.jar
+
+------------------------------------------------------------------
+Command line tools:
+------------------------------------------------------------------
+Image Converter: java -Dsongscribe=image_converter -jar SongScribe.jar -help
+Midi Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar -help
+ABC Annotation Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar <mssw_file> 
+Version Info: java -Dsongscribe=version -jar SongScribe.jar

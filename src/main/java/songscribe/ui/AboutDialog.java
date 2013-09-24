@@ -44,7 +44,7 @@ public class AboutDialog extends MyDialog{
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.addTab("About", makeAboutPanel());
         try {
-            tabPane.add("Read me", createTextPane("file:readme.html"));
+            tabPane.add("Read me", createTextPane("file:help/About.html"));
         } catch (IOException e) {
             logger.error("Could not load readme file.", e);
         }

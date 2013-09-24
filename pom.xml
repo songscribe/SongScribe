@@ -9,6 +9,12 @@
     <version>1.17</version>
     <packaging>jar</packaging>
     
+    <description>
+        SongScribe is a song editor program especially designed to support music composed by Maestro Sri Chinmoy
+    </description>
+    
+    <url>http://songscribe.org/</url>
+    
     <properties>
         <build.version>${maven.build.timestamp}</build.version>
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
@@ -30,6 +36,7 @@
                 <role>architect</role>
                 <role>developer</role>
             </roles>
+            <url>http://www.kavaiszoftvermernok.hu/</url>
         </developer>
         <developer>
             <id>Aparajita</id>
@@ -39,6 +46,13 @@
             </roles>
         </developer>
     </developers>
+
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE Version 3</name>
+            <url>http://www.gnu.org/licenses</url>
+        </license>
+    </licenses>
 
     <dependencies>
         <dependency>
@@ -97,9 +111,10 @@
                         <manifest>
                             <mainClass>songscribe.Runner</mainClass>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>libs</classpathPrefix>
+                            <classpathPrefix>libs</classpathPrefix>                            
                         </manifest>
                         <manifestEntries>
+                            <Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path>
                             <Implementation-Build>${project.version}.${build.version}</Implementation-Build>
                         </manifestEntries>
                     </archive>
@@ -178,9 +193,8 @@
                                 <resource>
                                     <directory>${project.basedir}</directory>
                                     <includes>
-                                        <include>launching.txt</include>
-                                        <include>license.txt</include>
-                                        <include>readme.html</include>
+                                        <include>README</include>
+                                        <include>LICENSE</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -243,6 +257,39 @@
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>                
+                <executions>
+                    <execution>
+                        <id>prepare-update</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="update.dir" value="${project.build.directory}/update"/>
+                                <property name="songscribe.jar" value="${project.build.directory}/${jarName}.${project.packaging}"/>
+                                <!--Copy the whole dist to a temporary working directory-->
+                                <copy todir="${update.dir}">
+                                    <fileset dir="${project.dist.directory}" />
+                                </copy>
+                                <!--Create the checksums file-->
+                                <java classname="songscribe.ChecksumMaker" dir="${update.dir}" fork="true">
+                                    <classpath location="${songscribe.jar}"/>
+                                </java>
+                                <!--Synchronizing with the server content-->
+                                <java classname="songscribe.UpdateMaker">
+                                    <classpath location="${songscribe.jar}"/>
+                                    <classpath refid="maven.compile.classpath"/>
+                                    <arg value="${update.dir}"/>
+                                </java>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

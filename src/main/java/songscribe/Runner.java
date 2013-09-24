@@ -44,11 +44,6 @@ public class Runner {
         PropertyConfigurator.configure("conf/logger.properties");
         String ss = System.getProperty("songscribe");
 
-        if ("version".equals(ss)) {
-            System.out.println(Utilities.getPublicVersion());
-            return;
-        }
-
         //look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -63,6 +58,7 @@ public class Runner {
         else if("midi_converter".equals(ss)) MidiConverter.main(args);
         else if("ui_converter".equals(ss)) UIConverter.main(args);
         else if("abc_converter".equals(ss)) AbcConverter.main(args);
+        else if("version".equals(ss)) System.out.println(Utilities.getFullVersion());
         else startFrame(args);
     }
 
