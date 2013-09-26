@@ -51,19 +51,26 @@ public class Utilities {
             sb.append(musicSheet.getComposition().getNumber());
         }
         if(musicSheet.getComposition().getNumber().length()>0)sb.append(' ');
-        outer:
         for(char c : musicSheet.getComposition().getSongTitle().toCharArray()){
-            for(int i=0;i<LyricsDialog.specChars.length;i++){
-                for(int j=0;j<LyricsDialog.specChars[i].length;j++){
-                    if(c==LyricsDialog.specChars[i][j]){
-                        sb.append(LyricsDialog.specCharsMap[i][j]);
-                        continue outer;
-                    }
-                }
+            Character specialCharMapped = mapSpecialChar(c);
+            if (specialCharMapped != null) {
+                sb.append(specialCharMapped);
+            } else if (Character.isLetterOrDigit(c) || c == ' ') {
+                sb.append(c);
             }
-            sb.append(c);
         }
         return sb.toString();
+    }
+    
+    private static Character mapSpecialChar(char c) {
+        for(int i=0;i<LyricsDialog.specChars.length;i++){
+            for(int j=0;j<LyricsDialog.specChars[i].length;j++){
+                if(c==LyricsDialog.specChars[i][j]){
+                    return LyricsDialog.specCharsMap[i][j]; 
+                }
+            }
+        }
+        return null;
     }
 
     public static int arrayIndexOf(Object[] array, Object element){
