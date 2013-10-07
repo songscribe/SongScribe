@@ -184,11 +184,11 @@
                                     <targetPath>thirdpartylicenses</targetPath>
                                 </resource>
                                 <resource>
-                                    <directory>${project.basedir}</directory>
-                                    <includes>
-                                        <include>*.plist</include>
-                                        <include>version</include>
-                                    </includes>
+                                    <directory>${project.basedir}/src/main/plist</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/config</directory>
                                     <filtering>true</filtering>
                                 </resource>
                                 <resource>
