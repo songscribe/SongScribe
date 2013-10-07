@@ -7,6 +7,3 @@
 #No maven stuff
 target/
 
-# No generated source
-src/main/java/songscribe/Version.java
-

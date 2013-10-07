@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=libs/jdc.jar -DgroupId=com.jtechlabs -DartifactId=jdirectorychooser -Dversion=1.1.0 -Dpackaging=jar

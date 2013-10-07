@@ -20,6 +20,7 @@
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <jarName>${project.artifactId}</jarName>
+        <project.generated.sources.directory>${project.build.directory}/generated-sources/java/</project.generated.sources.directory>
     </properties>
 
     <scm>
@@ -31,7 +32,7 @@
     <developers>
         <developer>
             <id>Himadri</id>
-            <name>Csaba Kavai</name>
+            <name>Cs. Kavai</name>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
@@ -84,8 +85,8 @@
             <groupId>com.jtechlabs</groupId>
             <artifactId>jdirectorychooser</artifactId>
             <version>1.1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/jdirectorychooser-1.1.0.jar</systemPath>
+            <!--scope>system</scope>
+            <systemPath>${project.basedir}/libs/jdirectorychooser-1.1.0.jar</systemPath-->
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
@@ -114,7 +115,7 @@
                             <classpathPrefix>libs</classpathPrefix>                            
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path>
+                            <!--Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path-->
                             <Implementation-Build>${project.version}.${build.version}</Implementation-Build>
                         </manifestEntries>
                     </archive>
@@ -220,7 +221,9 @@
                         </goals>
                         <configuration>
                             <source>
-                                File file = new File("${project.build.sourceDirectory}/songscribe/Version.java").withWriter { out ->
+                                File dir = new File("${project.generated.sources.directory}/songscribe/")
+                                dir.mkdirs()
+                                File file = new File(dir, "Version.java").withWriter { out ->
                                     out.println '// This is an auto generated code. DO NOT MODIFY!'
                                     out.println 'package songscribe;'
                                     out.println 'public final class Version {'
@@ -252,11 +255,27 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>3.1</version>
                 <configuration>
+                    <generatedSourcesDirectory>${project.generated.sources.directory}</generatedSourcesDirectory>
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.generated.sources.directory}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -293,4 +312,10 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>OSS Sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/central_bundles-1253/</url>
+        </repository>
+    </repositories>
 </project>
