@@ -100,8 +100,8 @@ public class MainFrame extends JFrame {
             defaultProps.load(new FileInputStream(DEFPROPSFILE));
             LOG.debug("Default properties loaded e.g showmemusage="+defaultProps.getProperty(Constants.SHOWMEMUSEAGE));
         } catch (IOException e) {
-            showErrorMessage("The program could not start, because a necessay file is not available. Please reinstall the software.");
-            LOG.error("Could not read default properties file.", e);
+            showErrorMessage("The program could not start, because a necessary file is not available. Please reinstall the software.");
+            LOG.fatal("Could not read default properties file.", e);
             System.exit(0);
         }
     }
@@ -540,6 +540,10 @@ public class MainFrame extends JFrame {
 
     public Properties getProperties() {
         return properties;
+    }
+
+    public Properties getDefaultProps() {
+        return defaultProps;
     }
 
     public AbstractAction getSaveAction() {

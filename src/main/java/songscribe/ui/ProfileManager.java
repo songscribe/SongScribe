@@ -80,17 +80,32 @@ public class ProfileManager {
 
     public ProfileManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        setDefaultProfile(mainFrame.getProperties().getProperty(Constants.DEFAULTPROFILEPROP));
+        Vector<String> existingProfiles = enumerateProfiles();
+        if (existingProfiles.contains(mainFrame.getProperties().getProperty(Constants.DEFAULTPROFILEPROP))) {
+            setDefaultProfile(mainFrame.getProperties().getProperty(Constants.DEFAULTPROFILEPROP));
+        } else if(existingProfiles.contains(mainFrame.getDefaultProps().getProperty(Constants.DEFAULTPROFILEPROP))) {
+            setDefaultProfile(mainFrame.getDefaultProps().getProperty(Constants.DEFAULTPROFILEPROP));
+        } else if (!existingProfiles.isEmpty()) {
+            setDefaultProfile(existingProfiles.get(0));
+        } else {
+            mainFrame.showErrorMessage("There is not a single profile in your installation. Try reinstalling " + MainFrame.PACKAGENAME);
+            logger.fatal("There is not a single profile among profiles!", new IllegalStateException());
+            System.exit(-1);
+        }
+
     }
 
-    public Object[] enumerateProfiles(){
+    public Vector<String> enumerateProfiles(){
         Vector<String> profiles = new Vector<String>(10, 10);
-        for(File file:DEFAULTDIR.listFiles()){
-            if(file.isFile() && getProfile(file.getName())!=null){
-                profiles.add(file.getName());
+        File[] files = DEFAULTDIR.listFiles();
+        if (files != null) {
+            for(File file: files){
+                if(file.isFile() && getProfile(file.getName())!=null){
+                    profiles.add(file.getName());
+                }
             }
         }
-        return profiles.toArray();
+        return profiles;
     }
 
     public Properties getProfile(String name){
