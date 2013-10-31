@@ -34,7 +34,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -149,7 +156,7 @@ public class UpdateDialog extends MyDialog{
                             remoteVersion = remoteVersion.trim();
                             String localVersion = Version.BUILD_VERSION;
                             System.out.format("remote version: %s; local version: %s", remoteVersion, localVersion);
-                            if (remoteVersion.equals(localVersion)) {
+                            if (remoteVersion.compareTo(localVersion) <= 0) {
                                 versionGetMethod.releaseConnection();
                                 if (!automatic) {
                                     JOptionPane.showMessageDialog(dialogPanel, "No update is available. You already have the lastest version.", mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);

@@ -18,7 +18,7 @@
     <properties>
         <build.version>${maven.build.timestamp}</build.version>
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
-        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
         <jarName>${project.artifactId}</jarName>
         <project.generated.sources.directory>${project.build.directory}/generated-sources/java/</project.generated.sources.directory>
     </properties>
@@ -85,8 +85,8 @@
             <groupId>com.jtechlabs</groupId>
             <artifactId>jdirectorychooser</artifactId>
             <version>1.1.0</version>
-            <!--scope>system</scope>
-            <systemPath>${project.basedir}/libs/jdirectorychooser-1.1.0.jar</systemPath-->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/jdirectorychooser-1.1.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
@@ -115,7 +115,7 @@
                             <classpathPrefix>libs</classpathPrefix>                            
                         </manifest>
                         <manifestEntries>
-                            <!--Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path-->
+                            <Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path>
                             <Implementation-Build>${project.version}.${build.version}</Implementation-Build>
                         </manifestEntries>
                     </archive>
@@ -178,6 +178,10 @@
                                 <resource>
                                     <directory>profiles</directory>
                                     <targetPath>profiles</targetPath>
+                                </resource>
+                                <resource>
+                                    <directory>libs</directory>
+                                    <targetPath>libs</targetPath>
                                 </resource>
                                 <resource>
                                     <directory>thirdpartylicenses</directory>
@@ -311,11 +315,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
-    <repositories>
-        <repository>
-            <id>OSS Sonatype</id>
-            <url>https://oss.sonatype.org/content/repositories/central_bundles-1253/</url>
-        </repository>
-    </repositories>
+    </build>    
 </project>
