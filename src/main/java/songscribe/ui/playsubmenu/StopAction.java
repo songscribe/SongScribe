@@ -24,9 +24,7 @@ package songscribe.ui.playsubmenu;
 import songscribe.ui.MainFrame;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 /**
  * @author Csaba Kávai
@@ -38,7 +36,6 @@ class StopAction extends AbstractAction {
         this.playMenu = playMenu;
         putValue(NAME, "Stop");
         putValue(SMALL_ICON, new ImageIcon(MainFrame.getImage("player_stop.png")));
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         setEnabled(MainFrame.sequencer!=null);
     }
 

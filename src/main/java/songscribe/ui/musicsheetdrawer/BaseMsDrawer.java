@@ -218,8 +218,13 @@ public abstract class BaseMsDrawer {
                     if(c==line.noteCount() || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO){
                         endX = relation==Note.SyllableRelation.ONEDASH ? startX+(int)(longDashWidth*2f) : composition.getLineWidth();
                     }else{
-                        endX = relation==Note.SyllableRelation.EXTENDER ? line.getNote(c).getXPos()+12 :
-                                line.getNote(c).getXPos()+Note.HOTSPOT.x-g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable)/2+line.getNote(c).getSyllableMovement()-2;
+                        if (relation == Note.SyllableRelation.EXTENDER) {
+                            endX = line.getNote(c).getXPos() + 12;
+                        } else if (relation == Note.SyllableRelation.ONEDASH && line.getNote(c).a.syllable.isEmpty()) {
+                            endX = startX+(int)(longDashWidth*2f);
+                        } else {
+                            endX = line.getNote(c).getXPos() + Note.HOTSPOT.x - g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable) / 2 + line.getNote(c).getSyllableMovement() - 2;
+                        }
                     }
                     if(relation==Note.SyllableRelation.DASH){
                         g2.setStroke(dashStroke);

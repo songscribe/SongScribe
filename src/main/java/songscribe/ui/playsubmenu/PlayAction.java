@@ -31,7 +31,6 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 /**
  * @author Csaba Kávai
@@ -44,7 +43,6 @@ class PlayAction extends AbstractAction {
         this.playMenu = playMenu;
         putValue(Action.NAME, "Play");
         putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("player_play.png")));
-        putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
         setEnabled(MainFrame.sequencer!=null);
     }
 

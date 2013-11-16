@@ -25,7 +25,6 @@ import songscribe.ui.MainFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 /**
  * @author Csaba Kávai
@@ -37,7 +36,6 @@ class PauseAction extends AbstractAction {
         this.playMenu = playMenu;
         putValue(Action.NAME, "Pause");
         putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("player_pause.png")));
-        putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
         setEnabled(MainFrame.sequencer!=null);
     }
 
