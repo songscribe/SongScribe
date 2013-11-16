@@ -496,6 +496,7 @@ public abstract class BaseMsDrawer {
         if(level==-1) return;
         boolean upper = line.getNote(begin).isUpper();
         //clipping
+        boolean leftOriented;
         if(begin==end){
             if(line.getNote(begin).getNoteType().isGraceNote()) return;
             double startBeamLineX;
@@ -504,22 +505,27 @@ public abstract class BaseMsDrawer {
                 if(begin!=prevBegin || prevBegin==prevEnd && isPrevLeft){
                     startBeamLineX = line.getNote(begin).getXPos() - 1;
                     endBeamLineX = line.getNote(begin).getXPos() + crotchetWidth;
+                    leftOriented = true;
                 }else{
                     startBeamLineX = line.getNote(begin).getXPos() + crotchetWidth;
                     endBeamLineX = line.getNote(begin).getXPos() + 2*crotchetWidth + 2;
+                    leftOriented = false;
                 }
             }else{
-                if(end!=prevEnd || prevBegin==prevEnd && !isPrevLeft){
-                    startBeamLineX = line.getNote(end).getXPos();
-                    endBeamLineX = line.getNote(end).getXPos() + crotchetWidth + 2;
-                }else{
+                if(begin!=prevBegin || prevBegin==prevEnd && isPrevLeft){
                     startBeamLineX = line.getNote(end).getXPos() - crotchetWidth - 2;
                     endBeamLineX = line.getNote(end).getXPos();
+                    leftOriented = true;
+                }else{
+                    startBeamLineX = line.getNote(end).getXPos();
+                    endBeamLineX = line.getNote(end).getXPos() + crotchetWidth + 2;
+                    leftOriented = false;
                 }
             }
             g2.setClip(new Rectangle2D.Double(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,
                 endBeamLineX-startBeamLineX, Math.abs(beamLine.y1-beamLine.y2)+6));
         }else{
+            leftOriented = false;
             double startBeamLineX = line.getNote(begin).getXPos() + (upper ? crotchetWidth : 0) + beamX1Correction - stemStroke.getLineWidth()/4f;
             double endBeamLineX = line.getNote(end).getXPos() + (upper ? crotchetWidth : 0) - beamX2Correction + stemStroke.getLineWidth()/4f;
             g2.setClip(new Rectangle2D.Double(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,
@@ -539,8 +545,7 @@ public abstract class BaseMsDrawer {
                     startSubBeam = i;
                 }
             }else if(startSubBeam!=-1){
-                drawBeaming(level-1, startSubBeam, i-1, line, subBeamLine, g2, begin, end,
-                        upper && (begin != prevBegin || prevBegin == prevEnd && isPrevLeft) || !upper && end == prevEnd && (prevBegin != prevEnd || isPrevLeft));
+                drawBeaming(level-1, startSubBeam, i-1, line, subBeamLine, g2, begin, end, leftOriented);
                 startSubBeam = -1;
             }
         }
