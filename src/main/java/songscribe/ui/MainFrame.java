@@ -132,7 +132,7 @@ public class MainFrame extends JFrame {
     protected AbstractAction saveAsAction;
     protected ExitAction exitAction = new ExitAction();
     private DialogOpenAction aboutAction = new DialogOpenAction(this, "About", "info.png", AboutDialog.class);
-    private DialogOpenAction prefAction = new DialogOpenAction(this, "Preferences...", "configure.png", PreferencesDialog.class);    
+    private DialogOpenAction prefAction = new DialogOpenAction(this, "Preferences...", "configure.png", PreferencesDialog.class);
     private DialogOpenAction compositionSettingsAction = new DialogOpenAction(this, "Composition settings...", "compositionsettings.png", KeyStroke.getKeyStroke(KeyEvent.VK_G, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), CompositionSettingsDialog.class);
 
     private ModeAction[] modeActions;
@@ -303,7 +303,7 @@ public class MainFrame extends JFrame {
         renderMenu.setIcon(new ImageIcon(getImage("looknfeel.png")));
         ButtonGroup renderGroup = new ButtonGroup();
         for(final MusicSheet.DrawerType dt:MusicSheet.DrawerType.values()){
-            JCheckBoxMenuItem item = new JCheckBoxMenuItem(dt.getMenuName());            
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(dt.getMenuName());
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     musicSheet.setDrawer(dt);
@@ -471,7 +471,7 @@ public class MainFrame extends JFrame {
 
     public OtherSelectionPanel getOtherSelectionPanel() {
         return otherSelectionPanel;
-    }    
+    }
 
     public InsertMenu getInsertMenu() {
         return insertMenu;
@@ -576,6 +576,7 @@ public class MainFrame extends JFrame {
         try {
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
+            synthesizer.loadAllInstruments(synthesizer.getDefaultSoundbank());
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
             receiver = MidiSystem.getReceiver();
@@ -631,7 +632,7 @@ public class MainFrame extends JFrame {
 
     protected static void showSplash(String splashScreen) {
         splashWindow = new JWindow((Frame)null);
-        JLabel splashLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().createImage("images/"+splashScreen)));        
+        JLabel splashLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().createImage("images/"+splashScreen)));
         splashWindow.getContentPane().add(splashLabel);
         splashWindow.pack();
         splashWindow.setLocation(CENTERPOINT.x-splashWindow.getWidth()/2, CENTERPOINT.y-splashWindow.getHeight()/2);
