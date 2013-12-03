@@ -6,15 +6,15 @@
 
     <groupId>SongScribe</groupId>
     <artifactId>SongScribe</artifactId>
-    <version>1.17</version>
+    <version>1.18</version>
     <packaging>jar</packaging>
-    
+
     <description>
         SongScribe is a song editor program especially designed to support music composed by Maestro Sri Chinmoy
     </description>
-    
+
     <url>http://songscribe.org/</url>
-    
+
     <properties>
         <build.version>${maven.build.timestamp}</build.version>
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
@@ -28,7 +28,7 @@
         <developerConnection>scm:git:git@github.com:songscribe/SongScribe.git</developerConnection>
         <url>https://github.com/songscribe/SongScribe</url>
     </scm>
-    
+
     <developers>
         <developer>
             <id>Himadri</id>
@@ -112,7 +112,7 @@
                         <manifest>
                             <mainClass>songscribe.Runner</mainClass>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>libs</classpathPrefix>                            
+                            <classpathPrefix>libs</classpathPrefix>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path>
@@ -125,7 +125,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.8</version>
-                <executions>                    
+                <executions>
                     <execution>
                         <id>copy-dependencies</id>
                         <phase>package</phase>
@@ -144,6 +144,9 @@
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <id>copy-resources</id>
@@ -210,10 +213,10 @@
                                 </resource>
                             </resources>
                         </configuration>
-                    </execution>                    
+                    </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
@@ -261,6 +264,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
+                    <encoding>UTF-8</encoding>
                     <generatedSourcesDirectory>${project.generated.sources.directory}</generatedSourcesDirectory>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -283,7 +287,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>                
+                <version>1.7</version>
                 <executions>
                     <execution>
                         <id>prepare-update</id>
@@ -315,5 +319,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>    
+    </build>
 </project>
