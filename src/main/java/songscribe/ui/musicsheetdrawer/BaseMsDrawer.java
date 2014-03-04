@@ -198,13 +198,19 @@ public abstract class BaseMsDrawer {
 
                 //drawing the lyrics
                 int lyricsY = ms.getNoteYPos(0, l)+line.getLyricsYPos();
+                int dashY = lyricsY - composition.getLyricsFont().getSize() / 4;
                 g2.setFont(composition.getLyricsFont());
                 int syllableWidth = 0;
                 if(note.a.syllable!=null && note.a.syllable!=Constants.UNDERSCORE){
                     syllableWidth = g2.getFontMetrics().stringWidth(note.a.syllable);
-                    drawAntialiasedString(g2, note.a.syllable, note.getXPos()+Note.HOTSPOT.x-syllableWidth/2+note.getSyllableMovement(), lyricsY);
+                    int lyricsX = note.getXPos() + Note.HOTSPOT.x - syllableWidth / 2 + note.getSyllableMovement();
+                    drawAntialiasedString(g2, note.a.syllable, lyricsX, lyricsY);
+                    if (n == 0 && line.beginRelation == Note.SyllableRelation.ONEDASH) {
+                        g2.setStroke(longDashStroke);
+                        g2.draw(new Line2D.Float(lyricsX - longDashWidth - 10, dashY, lyricsX - 10, dashY));
+                    }
                 }
-                if(lyricsDrawn<=n && (note.a.syllableRelation!=Note.SyllableRelation.NO || n==0 && line.beginRelation!=Note.SyllableRelation.NO)){
+                if(lyricsDrawn<=n && (note.a.syllableRelation!=Note.SyllableRelation.NO || n==0 && line.beginRelation==Note.SyllableRelation.EXTENDER)){
                     Note.SyllableRelation relation = note.a.syllableRelation!=Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
                     int c;
                     if(relation==Note.SyllableRelation.DASH || relation==Note.SyllableRelation.ONEDASH){
@@ -213,7 +219,7 @@ public abstract class BaseMsDrawer {
                         for(c=n;c<line.noteCount() && line.getNote(c).a.syllableRelation==relation;c++);
                     }
                     lyricsDrawn = c;
-                    int startX = n==0 && line.beginRelation!=Note.SyllableRelation.NO ? note.getXPos()-10 : note.getXPos()+Note.HOTSPOT.x+syllableWidth/2+note.getSyllableMovement()+2;
+                    int startX = n==0 && line.beginRelation==Note.SyllableRelation.EXTENDER ? note.getXPos()-10 : note.getXPos()+Note.HOTSPOT.x+syllableWidth/2+note.getSyllableMovement()+2;
                     int endX;
                     if(c==line.noteCount() || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO){
                         endX = relation==Note.SyllableRelation.ONEDASH ? startX+(int)(longDashWidth*2f) : composition.getLineWidth();
@@ -226,19 +232,20 @@ public abstract class BaseMsDrawer {
                             endX = line.getNote(c).getXPos() + Note.HOTSPOT.x - g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable) / 2 + line.getNote(c).getSyllableMovement() - 2;
                         }
                     }
+
                     if(relation==Note.SyllableRelation.DASH){
                         g2.setStroke(dashStroke);
                         float dashPhase = dashStroke.getDashArray()[0]+dashStroke.getDashArray()[1];
                         int length = Math.round((float)Math.floor((endX-startX-dashStroke.getDashArray()[1])/dashPhase)*dashPhase+dashStroke.getDashArray()[0]);
                         int gap = (endX-startX-length)/2;
-                        g2.drawLine(startX+gap, lyricsY-composition.getLyricsFont().getSize()/4, endX-gap, lyricsY-composition.getLyricsFont().getSize()/4);
+                        g2.drawLine(startX+gap, dashY, endX-gap, dashY);
                     }else if(relation==Note.SyllableRelation.EXTENDER){
                         g2.setStroke(underScoreStroke);
                         g2.drawLine(startX, lyricsY, endX, lyricsY);
                     }else if(relation==Note.SyllableRelation.ONEDASH){
                         g2.setStroke(longDashStroke);
                         float centerX = (endX-startX)/2f+startX;
-                        g2.draw(new Line2D.Float(centerX-longDashWidth/2f, lyricsY-composition.getLyricsFont().getSize()/4, centerX+longDashWidth/2f, lyricsY-composition.getLyricsFont().getSize()/4));
+                        g2.draw(new Line2D.Float(centerX-longDashWidth/2f, dashY, centerX+longDashWidth/2f, dashY));
                     }
                 }
 

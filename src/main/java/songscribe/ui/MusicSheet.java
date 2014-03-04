@@ -717,7 +717,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         for(int i=selectionBegin+1;i<=selectionEnd;i++){
             if(line.getNote(i).getPitch()!=pitch){
                 JOptionPane.showMessageDialog(mainFrame, "The selected notes must be of the same pitch.\n" +
-                        "If you want to tie multiple notes of different pitches please use Slur.",
+                        "If you want to tie multiple notes of different pitches, please use Slur.",
                     mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -1019,6 +1019,11 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         if(beginIndex==endIndex)return;
         String lyrics = composition.getLyrics().substring(beginIndex, endIndex)+NEWLINESTRING;
 
+        // calculcating the beginrelations
+        if (lyrics.startsWith("--")){
+            line.beginRelation = Note.SyllableRelation.ONEDASH;
+            lyrics=lyrics.substring(2);
+        }
         //making the lyrics
         int begin = 0;
         int noteIndex = 0;
