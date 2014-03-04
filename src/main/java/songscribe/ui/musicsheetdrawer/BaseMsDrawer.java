@@ -214,9 +214,9 @@ public abstract class BaseMsDrawer {
                     Note.SyllableRelation relation = note.a.syllableRelation!=Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
                     int c;
                     if(relation==Note.SyllableRelation.DASH || relation==Note.SyllableRelation.ONEDASH){
-                        for(c=n+1;c<line.noteCount() && line.getNote(c).a.syllable==Constants.UNDERSCORE;c++);
+                        for(c=n+1;c<line.noteCount() && (line.getNote(c).a.syllable==Constants.UNDERSCORE || line.getNote(c).a.syllable.isEmpty());c++);
                     }else{
-                        for(c=n;c<line.noteCount() && line.getNote(c).a.syllableRelation==relation;c++);
+                        for(c=n;c<line.noteCount() && (line.getNote(c).a.syllableRelation==relation || line.getNote(c).a.syllable.isEmpty());c++);
                     }
                     lyricsDrawn = c;
                     int startX = n==0 && line.beginRelation==Note.SyllableRelation.EXTENDER ? note.getXPos()-10 : note.getXPos()+Note.HOTSPOT.x+syllableWidth/2+note.getSyllableMovement()+2;
