@@ -22,6 +22,7 @@ Created on Jun 24, 2006
 package songscribe.ui.musicsheetdrawer;
 
 import songscribe.data.Interval;
+import songscribe.data.IntervalSet;
 import songscribe.data.SlurData;
 import songscribe.music.*;
 import songscribe.ui.Constants;
@@ -32,7 +33,9 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -238,10 +241,10 @@ public abstract class BaseMsDrawer {
                         float dashPhase = dashStroke.getDashArray()[0]+dashStroke.getDashArray()[1];
                         int length = Math.round((float)Math.floor((endX-startX-dashStroke.getDashArray()[1])/dashPhase)*dashPhase+dashStroke.getDashArray()[0]);
                         int gap = (endX-startX-length)/2;
-                        g2.drawLine(startX+gap, dashY, endX-gap, dashY);
+                        drawWithEmptySyllablesExclusion(g2, startX + gap, dashY, endX - gap, dashY, line, n, c+1);
                     }else if(relation==Note.SyllableRelation.EXTENDER){
                         g2.setStroke(underScoreStroke);
-                        g2.drawLine(startX, lyricsY, endX, lyricsY);
+                        drawWithEmptySyllablesExclusion(g2, startX, lyricsY, endX, lyricsY, line, n, c+1);
                     }else if(relation==Note.SyllableRelation.ONEDASH){
                         g2.setStroke(longDashStroke);
                         float centerX = (endX-startX)/2f+startX;
@@ -431,6 +434,31 @@ public abstract class BaseMsDrawer {
                 if(iv.getB()>repeatRightPos && repeatRightPos!=-1){
                     drawEndings(g2, l, line.getNote(repeatRightPos+1).getXPos(), line.getNote(iv.getB()).getXPos()+2*(int)crotchetWidth, "2.");
                 }
+            }
+        }
+    }
+
+    private void drawWithEmptySyllablesExclusion(Graphics2D g2, int x1, int y1, int x2, int y2, Line line, int startIndex, int endIndex) {
+        ArrayList<Integer> emptySyllables = new ArrayList<Integer>();
+        endIndex = Math.min(line.noteCount(), endIndex);
+        for (int i = startIndex; i < endIndex; i++) {
+            if (line.getNote(i).a.syllable.isEmpty()) {
+                emptySyllables.add(i);
+            }
+        }
+        if (emptySyllables.isEmpty()) {
+            g2.drawLine(x1, y1, x2, y2);
+        } else {
+            IntervalSet intervalSet = new IntervalSet();
+            intervalSet.addInterval(startIndex, endIndex);
+            for (Integer i : emptySyllables) {
+                intervalSet.removeInterval(i, i+1);
+            }
+            for(ListIterator<Interval> intervalListIterator = intervalSet.listIterator();intervalListIterator.hasNext();){
+                Interval interval = intervalListIterator.next();
+                int drawX1 = interval.getA() == startIndex ? x1 : line.getNote(interval.getA()).getXPos();
+                int drawX2 = interval.getB() == endIndex ? x2 : line.getNote(interval.getB()-1).getXPos() + 12;
+                g2.drawLine(drawX1, y1, drawX2, y2);
             }
         }
     }
