@@ -1023,6 +1023,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         if (lyrics.startsWith("--")){
             line.beginRelation = Note.SyllableRelation.ONEDASH;
             lyrics=lyrics.substring(2);
+            beginIndex += 2;
         }
         //making the lyrics
         int begin = 0;

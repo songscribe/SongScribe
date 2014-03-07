@@ -33,10 +33,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @author Csaba Kávai
@@ -84,6 +81,8 @@ public abstract class BaseMsDrawer {
     protected double beamX1Correction, beamX2Correction;
 
     protected MusicSheet ms;
+
+    private Map<CachedViewPropertiesKey, Object> viewCache = new HashMap<CachedViewPropertiesKey, Object>();
 
     public BaseMsDrawer(MusicSheet ms) throws FontFormatException, IOException{
         this.ms = ms;
@@ -224,7 +223,7 @@ public abstract class BaseMsDrawer {
                     lyricsDrawn = c;
                     int startX = n==0 && line.beginRelation==Note.SyllableRelation.EXTENDER ? note.getXPos()-10 : note.getXPos()+Note.HOTSPOT.x+syllableWidth/2+note.getSyllableMovement()+2;
                     int endX;
-                    if(c==line.noteCount() || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO){
+                    if(c==line.noteCount()/* || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO*/){
                         endX = relation==Note.SyllableRelation.ONEDASH ? startX+(int)(longDashWidth*2f) : composition.getLineWidth();
                     }else{
                         if (relation == Note.SyllableRelation.EXTENDER) {
@@ -248,6 +247,8 @@ public abstract class BaseMsDrawer {
                     }else if(relation==Note.SyllableRelation.ONEDASH){
                         g2.setStroke(longDashStroke);
                         float centerX = (endX-startX)/2f+startX;
+                        viewCache.put(new CachedViewPropertiesKey(l, n, CachedViewPropertiesKey.Property.ONE_DASH_CENTER), (int)centerX);
+                        centerX += note.getSyllableRelationMovement();
                         g2.draw(new Line2D.Float(centerX-longDashWidth/2f, dashY, centerX+longDashWidth/2f, dashY));
                     }
                 }
@@ -642,6 +643,10 @@ public abstract class BaseMsDrawer {
         }else if(!note.isUpper() && note.getYPos()<-4){
             return note.getYPos()-5;
         }else return -9;
+    }
+
+    public Map<CachedViewPropertiesKey, Object> getViewCache() {
+        return viewCache;
     }
 
     private void drawGlissando(Graphics2D g2, int x1, int y1, int x2, int y2){

@@ -136,7 +136,9 @@ public abstract class Note implements Cloneable {
     protected boolean fermata;
 
     protected int syllableMovement;
-    
+
+    protected int syllableRelationMovement;
+
     protected boolean forceSyllable;
 
     public enum SyllableRelation{NO, EXTENDER, DASH, ONEDASH}
@@ -175,6 +177,7 @@ public abstract class Note implements Cloneable {
         trill = note.trill;
         fermata = note.fermata;
         syllableMovement = note.syllableMovement;
+        syllableRelationMovement = note.syllableRelationMovement;
         forceSyllable = note.forceSyllable;
     }
 
@@ -312,6 +315,14 @@ public abstract class Note implements Cloneable {
 
     public void setSyllableMovement(int syllableMovement) {
         this.syllableMovement = syllableMovement;
+    }
+
+    public int getSyllableRelationMovement() {
+        return syllableRelationMovement;
+    }
+
+    public void setSyllableRelationMovement(int syllableRelationMovement) {
+        this.syllableRelationMovement = syllableRelationMovement;
     }
 
     public boolean isForceSyllable() {

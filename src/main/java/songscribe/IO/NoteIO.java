@@ -47,6 +47,7 @@ public class NoteIO {
     private static final String XMLFORCEARTICULATION = "forcearticulation";
     private static final String XMLDURATIONARTICULATION = "durationarticulation";
     private static final String XMLSYLLABLEMOVEMENT = "syllablemovement";
+    private static final String XMLSYLLABLERELATIONMOVEMENT = "syllablerelationmovement";
     private static final String XMLTRILL = "trill";
     private static final String XMLFERMATA = "fermata";
     private static final String XMLFORCESYLLABLE = "forcesyllable";
@@ -73,6 +74,7 @@ public class NoteIO {
         }
         if(n.isUpper())XML.writeEmptyTag(pw, XMLUPPER);
         if(n.getSyllableMovement()!=0)XML.writeValue(pw, XMLSYLLABLEMOVEMENT, Integer.toString(n.getSyllableMovement()));
+        if(n.getSyllableRelationMovement()!=0)XML.writeValue(pw, XMLSYLLABLERELATIONMOVEMENT, Integer.toString(n.getSyllableRelationMovement()));
         if(n.getTempoChange()!=null)TempoIO.writeTempo(n.getTempoChange(), pw, 12);
         if(n.getAnnotation()!=null)AnnotationIO.writeAnnotation(n.getAnnotation(), pw, 12);
         if(n.isTrill())XML.writeEmptyTag(pw, XMLTRILL);
@@ -189,6 +191,8 @@ public class NoteIO {
                         note.setUpper(true);
                     }else if(lastTag.equals(XMLSYLLABLEMOVEMENT)){
                         note.setSyllableMovement(Integer.valueOf(str));
+                    }else if(lastTag.equals(XMLSYLLABLERELATIONMOVEMENT)){
+                        note.setSyllableRelationMovement(Integer.valueOf(str));
                     }else if(lastTag.equals(XMLTRILL)){
                         note.setTrill(true);
                     }else if(lastTag.equals(XMLFERMATA)){

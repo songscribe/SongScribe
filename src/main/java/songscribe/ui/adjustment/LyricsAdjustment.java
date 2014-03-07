@@ -26,6 +26,7 @@ import songscribe.music.Line;
 import songscribe.music.Note;
 import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
+import songscribe.ui.musicsheetdrawer.CachedViewPropertiesKey;
 
 import java.awt.*;
 import java.util.Vector;
@@ -36,7 +37,9 @@ import java.util.Vector;
 public class LyricsAdjustment extends Adjustment{
        private enum AdjustType{
         SYLLABLEMOVEMENT(Color.green),
+        SYLLABLERELATIONMOVEMENT(Color.green),
         LYRICSYPOS(Color.magenta);
+
 
 
         private Color color;
@@ -86,6 +89,9 @@ public class LyricsAdjustment extends Adjustment{
             if(draggingRect.adjustType==AdjustType.SYLLABLEMOVEMENT){
                 upLeftDragBounds.setLocation((draggingRect.xIndex>0 ? line.getNote(draggingRect.xIndex-1).getXPos() : 0)+draggingRect.rectangle.width, draggingRect.rectangle.y);
                 downRightDragBounds.setLocation(draggingRect.xIndex<line.noteCount()-1 ? line.getNote(draggingRect.xIndex+1).getXPos() : musicSheet.getComposition().getLineWidth(), draggingRect.rectangle.y);
+            }else if(draggingRect.adjustType==AdjustType.SYLLABLERELATIONMOVEMENT){
+                upLeftDragBounds.setLocation(line.getNote(draggingRect.xIndex).getXPos(), draggingRect.rectangle.y);
+                downRightDragBounds.setLocation(musicSheet.getComposition().getLineWidth(), draggingRect.rectangle.y);
             }else if(draggingRect.adjustType==AdjustType.LYRICSYPOS){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-4, draggingRect.line+1));
@@ -99,6 +105,12 @@ public class LyricsAdjustment extends Adjustment{
             draggingRect.rectangle.x=endPoint.x-draggingRect.rectangle.width/2;
             Note note = musicSheet.getComposition().getLine(draggingRect.line).getNote(draggingRect.xIndex);
             note.setSyllableMovement(endPoint.x-note.getXPos());
+        }else if(draggingRect.adjustType==AdjustType.SYLLABLERELATIONMOVEMENT){
+            draggingRect.rectangle.x=endPoint.x-draggingRect.rectangle.width/2;
+            Note note = musicSheet.getComposition().getLine(draggingRect.line).getNote(draggingRect.xIndex);
+            int originalCenter = ((Integer) musicSheet.getDrawer().getViewCache().get(
+                    new CachedViewPropertiesKey(draggingRect.line, draggingRect.xIndex, CachedViewPropertiesKey.Property.ONE_DASH_CENTER)));
+            note.setSyllableRelationMovement(endPoint.x - originalCenter);
         }else if(draggingRect.adjustType==AdjustType.LYRICSYPOS){
             int diffY = draggingRect.rectangle.y+draggingRect.rectangle.height/2;
             draggingRect.rectangle.y=endPoint.y-draggingRect.rectangle.height/2;
@@ -137,6 +149,10 @@ public class LyricsAdjustment extends Adjustment{
                         if(line.getNote(n).a.syllable!=Constants.UNDERSCORE){
                             adjustRects.add(new AdjustRect(l, AdjustType.SYLLABLEMOVEMENT, n));
                         }
+                        if (line.getNote(n).a.syllableRelation == Note.SyllableRelation.ONEDASH &&
+                                musicSheet.getDrawer().getViewCache().containsKey(new CachedViewPropertiesKey(l, n, CachedViewPropertiesKey.Property.ONE_DASH_CENTER))) {
+                            adjustRects.add(new AdjustRect(l, AdjustType.SYLLABLERELATIONMOVEMENT, n));
+                        }
                         if(foundLyrics==-1)foundLyrics = n;
                     }
                 }
@@ -157,6 +173,10 @@ public class LyricsAdjustment extends Adjustment{
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+line.getLyricsYPos()-8;
         }else if(ar.adjustType==AdjustType.SYLLABLEMOVEMENT){
             ar.rectangle.x = note.getXPos()+note.getSyllableMovement();
+            ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+line.getLyricsYPos()+5;
+        }else if(ar.adjustType==AdjustType.SYLLABLERELATIONMOVEMENT){
+            ar.rectangle.x = ((Integer) musicSheet.getDrawer().getViewCache().get(
+                    new CachedViewPropertiesKey(ar.line, ar.xIndex, CachedViewPropertiesKey.Property.ONE_DASH_CENTER)) + note.getSyllableRelationMovement() - 4);
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+line.getLyricsYPos()+5;
         }
         ar.rectangle.width = ar.rectangle.height = 8;
