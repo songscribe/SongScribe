@@ -76,9 +76,12 @@ public class FughettaDrawer extends BaseMsDrawer{
     private static final double flagYLength = 7;
     private static final double graceNoteScale = 0.6;
 
-    private static final String trebleclef = "\uf026";    
-    private static final String[] accidentals = {"", "\uf06e", "\uf062", "\uf023", "\uf06e\uf06e", "\uf062\uf062", "\uf0dc", "\uf06e\uf062", "\uf06e\uf023"};
-    private static final String[] accidentalParenthesis = {"", "\uf04e", "\uf041", "\uf061", "\uf06e\uf06e", "\uf062\uf062", "\uf081", "\uf06e\uf062", "\uf06e\uf023"};
+    private static final String trebleclef = "\uf026";
+                                                                     //  NATURAL   FLAT      SHARP     DOUBLE-NATURAL  DOUBLE-FLAT     D-SHARP   NATURAL-FLAT    NATURAL-SHARP
+    private static final String[] accidentals =                     {"", "\uf06e", "\uf062", "\uf023", "\uf06e\uf06e", "\uf0ba",       "\uf0dc", "\uf06e\uf062", "\uf06e\uf023"};
+    private static final String[] accidentalParenthesis =           {"", "\uf04e", "\uf041", "\uf061", "\uf06e\uf06e", "\uf08c",       "\uf081", "\uf06e\uf062", "\uf06e\uf023"};
+    private static final String[] graceNoteAccidentals =            {"", "\uf0e9", "\uf069", "\uf049", "\uf0e9\uf0e9", "\uf069\uf069", "\uf0dc", "\uf0e9\uf069", "\uf0e9\uf049"};
+    private static final String[] graceNoteAccidentalsParenthesis = {"", "\uf0e9", "\uf07b", "\uf05b", "\uf0e9\uf0e9", "\uf069\uf069", "\uf081", "\uf0e9\uf069", "\uf0e9\uf049"};
     private static final double manualParenthesisY = size/3.5068493d;
     private static final String beginParenthesis = "\uf028";
     private static final String endParenthesis = "\uf029";
@@ -110,7 +113,7 @@ public class FughettaDrawer extends BaseMsDrawer{
 
     private GeneralPath breathMark, fermata;
 
-    public FughettaDrawer(MusicSheet ms) throws FontFormatException, IOException {
+    public FughettaDrawer(MusicSheet ms) throws IOException{
         super(ms);
         crotchetWidth = upperCrotchetStemX;
         beamX1Correction = beamX2Correction = 0d;
@@ -209,15 +212,23 @@ public class FughettaDrawer extends BaseMsDrawer{
         //drawing accidental
         int accidental = note.getAccidental().ordinal();
         if(accidental>0){
+            float resizeFactor = 1;
+            if (note.getNoteType().isGraceNote()) {
+                g2.setFont(fughettaGrace);
+                resizeFactor = graceAccidentalResizeFactor;
+            }
             if(!note.isAccidentalInParenthesis() || !accidentals[accidental].equals(accidentalParenthesis[accidental])){
-                drawSimpleAccidental(g2, note, -spaceBtwNoteAndAccidental-getAccidentalWidth(note));
+                drawSimpleAccidental(g2, note, -spaceBtwNoteAndAccidental-getAccidentalWidth(note), resizeFactor);
             }else{
                 float xPos = -spaceBtwNoteAndAccidental-getAccidentalWidth(note);
-                drawAntialiasedString(g2, beginParenthesis, xPos, manualParenthesisY);
+                drawAntialiasedString(g2, beginParenthesis, xPos*resizeFactor, manualParenthesisY*resizeFactor);
                 xPos+=beginParenthesisWidth+spaceBtwAccidentalAndParenthesis;
                 if(note.getAccidental().getComponent(1)==1)xPos+=0.5f;
-                drawSimpleAccidental(g2, note, xPos);
-                drawAntialiasedString(g2, endParenthesis, -spaceBtwNoteAndAccidental-endParenthesisWidth, manualParenthesisY);
+                drawSimpleAccidental(g2, note, xPos, resizeFactor);
+                drawAntialiasedString(g2, endParenthesis, (-spaceBtwNoteAndAccidental-endParenthesisWidth)*resizeFactor, manualParenthesisY*resizeFactor);
+            }
+            if (note.getNoteType().isGraceNote()) {
+                g2.setFont(fughetta);
             }
         }
 
@@ -246,14 +257,15 @@ public class FughettaDrawer extends BaseMsDrawer{
         g2.setTransform(origTransform);
     }
 
-    private void drawSimpleAccidental(Graphics2D g2, Note note, float startX) {
+    private void drawSimpleAccidental(Graphics2D g2, Note note, float startX, float resizeFactor) {
         int accidental = note.getAccidental().ordinal();
+        startX *= resizeFactor;
         String str = note.isAccidentalInParenthesis() ? accidentalParenthesis[accidental] : accidentals[accidental];
         if(str.length()==1){
             drawAntialiasedString(g2, str, startX, 0f);
         }else{
             drawAntialiasedString(g2, str.substring(0,1), startX, 0f);
-            drawAntialiasedString(g2, str.substring(1), startX+getAccidentalComponentWidth(note, 0)+spaceBtwTwoAccidentals, 0f);
+            drawAntialiasedString(g2, str.substring(1), startX+(getAccidentalComponentWidth(note, 0)+spaceBtwTwoAccidentals)*resizeFactor, 0f);
         }
     }
 

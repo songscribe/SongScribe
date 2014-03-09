@@ -38,6 +38,7 @@ import java.util.Map;
 /**
  * @author Csaba Kávai
  */
+@Deprecated
 public class MaestroMsDrawer extends BaseMsDrawer{    
     private static final float size8 = size/8;
     private static final Font maestro = new Font("Maestro", 0, (int)size);
@@ -83,7 +84,7 @@ public class MaestroMsDrawer extends BaseMsDrawer{
     private static final String extraFlagUp = "\uf091";
     private static final String extraFlagDown = "\uf093";
 
-    public MaestroMsDrawer(MusicSheet ms) throws FontFormatException, IOException {
+    public MaestroMsDrawer(MusicSheet ms) throws IOException {
         super(ms);
         crotchetWidth = 10;
         if(Utilities.arrayIndexOf(MainFrame.FONTFAMILIES, "Maestro")==-1){

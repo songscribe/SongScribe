@@ -21,6 +21,7 @@ Created on Jun 24, 2006
 */
 package songscribe.ui.musicsheetdrawer;
 
+import org.apache.log4j.Logger;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
 import songscribe.data.SlurData;
@@ -39,6 +40,8 @@ import java.util.*;
  * @author Csaba Kávai
  */
 public abstract class BaseMsDrawer {
+    private static final Logger logger = Logger.getLogger(FughettaDrawer.class);
+
     protected final int[][] FLATSHARPORDER = {{}, {0, -3, 1, -2, 2, -1, 3},{-4, -1, -5, -2, 1, -3, 0}};
 
     protected static final float size = 32;
@@ -57,7 +60,8 @@ public abstract class BaseMsDrawer {
     private static final float beamTranslateY = 7;
     private static final Font tupletFont = new Font("Times New Roman", Font.BOLD, 14);
     private static final Font fsEndingFont = new Font("Times New Roman", Font.BOLD, 14);
-    protected static Font fughetta;
+    protected static final Font fughetta;
+    protected static final Font fughettaGrace;
     private static final String GLISSANDO = "\uf07e";
     private static final String TRILL = "\uf0d9";
     private static final double glissandoLength = size/2.6666667;
@@ -68,6 +72,8 @@ public abstract class BaseMsDrawer {
     protected static final float spaceBtwNoteAndAccidental = 2.7f;//1.139f;
     protected static final float spaceBtwTwoAccidentals = 1.3f;
     protected static final float spaceBtwAccidentalAndParenthesis = 0f;
+
+    protected static final float graceAccidentalResizeFactor = 0.65f;
 
     private static final NoteType[] BEAMLEVELS = {NoteType.DEMISEMIQUAVER, NoteType.SEMIQUAVER, NoteType.QUAVER};
 
@@ -82,13 +88,18 @@ public abstract class BaseMsDrawer {
 
     protected MusicSheet ms;
 
-    private Map<CachedViewPropertiesKey, Object> viewCache = new HashMap<CachedViewPropertiesKey, Object>();
-
-    public BaseMsDrawer(MusicSheet ms) throws FontFormatException, IOException{
-        this.ms = ms;
-        if(fughetta==null){
-            fughetta  = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/fughetta.ttf")).deriveFont(size);
+    static {
+        try {
+            Font fughettaBaseFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/fughetta.ttf"));
+            fughetta = fughettaBaseFont.deriveFont(size);
+            fughettaGrace = fughettaBaseFont.deriveFont(size * graceAccidentalResizeFactor);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot load fughetta font" , e);
         }
+    }
+
+    public BaseMsDrawer(MusicSheet ms){
+        this.ms = ms;
     }
 
     public void drawMusicSheet(Graphics2D g2, boolean drawEditingComponents, double scale){
@@ -246,9 +257,8 @@ public abstract class BaseMsDrawer {
                         drawWithEmptySyllablesExclusion(g2, startX, lyricsY, endX, lyricsY, line, n, c+1);
                     }else if(relation==Note.SyllableRelation.ONEDASH){
                         g2.setStroke(longDashStroke);
-                        float centerX = (endX-startX)/2f+startX;
-                        viewCache.put(new CachedViewPropertiesKey(l, n, CachedViewPropertiesKey.Property.ONE_DASH_CENTER), (int)centerX);
-                        centerX += note.getSyllableRelationMovement();
+                        note.a.longDashPosition = (endX-startX)/2f+startX;
+                        float centerX = note.getSyllableRelationMovement() == 0 ? note.a.longDashPosition : note.getXPos() + note.getSyllableRelationMovement();
                         g2.draw(new Line2D.Float(centerX-longDashWidth/2f, dashY, centerX+longDashWidth/2f, dashY));
                     }
                 }
@@ -643,10 +653,6 @@ public abstract class BaseMsDrawer {
         }else if(!note.isUpper() && note.getYPos()<-4){
             return note.getYPos()-5;
         }else return -9;
-    }
-
-    public Map<CachedViewPropertiesKey, Object> getViewCache() {
-        return viewCache;
     }
 
     private void drawGlissando(Graphics2D g2, int x1, int y1, int x2, int y2){

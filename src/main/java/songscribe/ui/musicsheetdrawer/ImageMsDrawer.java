@@ -39,7 +39,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
     private static final Image FERMATAIMAGE = MainFrame.getImage("fermata32.png");
     private static final Dimension crotchetDim = new Dimension(Crotchet.REALUPNOTERECT.width-1, Note.IMAGEDIM.height);
 
-    public ImageMsDrawer(MusicSheet ms) throws FontFormatException, IOException {
+    public ImageMsDrawer(MusicSheet ms) {
         super(ms);
         crotchetWidth = crotchetDim.width;
         beamX1Correction = 0.3;
@@ -115,6 +115,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
 
         //drawing accidentals
         Note.Accidental accidental = note.getAccidental();
+        float resizeFactor = note.getNoteType().isGraceNote() ? graceAccidentalResizeFactor : 1;
         float prefXPos = xPos-(int)spaceBtwNoteAndAccidental;
         if(note.isAccidentalInParenthesis()){
             prefXPos-=4;

@@ -149,6 +149,7 @@ public abstract class Note implements Cloneable {
         //lyrics
         public String syllable;
         public SyllableRelation syllableRelation;
+        public float longDashPosition;
     }
 
     public final Acceleration a = new Acceleration();

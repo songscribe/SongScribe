@@ -26,7 +26,6 @@ import songscribe.music.Line;
 import songscribe.music.Note;
 import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
-import songscribe.ui.musicsheetdrawer.CachedViewPropertiesKey;
 
 import java.awt.*;
 import java.util.Vector;
@@ -108,9 +107,7 @@ public class LyricsAdjustment extends Adjustment{
         }else if(draggingRect.adjustType==AdjustType.SYLLABLERELATIONMOVEMENT){
             draggingRect.rectangle.x=endPoint.x-draggingRect.rectangle.width/2;
             Note note = musicSheet.getComposition().getLine(draggingRect.line).getNote(draggingRect.xIndex);
-            int originalCenter = ((Integer) musicSheet.getDrawer().getViewCache().get(
-                    new CachedViewPropertiesKey(draggingRect.line, draggingRect.xIndex, CachedViewPropertiesKey.Property.ONE_DASH_CENTER)));
-            note.setSyllableRelationMovement(endPoint.x - originalCenter);
+            note.setSyllableRelationMovement(endPoint.x - note.getXPos());
         }else if(draggingRect.adjustType==AdjustType.LYRICSYPOS){
             int diffY = draggingRect.rectangle.y+draggingRect.rectangle.height/2;
             draggingRect.rectangle.y=endPoint.y-draggingRect.rectangle.height/2;
@@ -149,8 +146,7 @@ public class LyricsAdjustment extends Adjustment{
                         if(line.getNote(n).a.syllable!=Constants.UNDERSCORE){
                             adjustRects.add(new AdjustRect(l, AdjustType.SYLLABLEMOVEMENT, n));
                         }
-                        if (line.getNote(n).a.syllableRelation == Note.SyllableRelation.ONEDASH &&
-                                musicSheet.getDrawer().getViewCache().containsKey(new CachedViewPropertiesKey(l, n, CachedViewPropertiesKey.Property.ONE_DASH_CENTER))) {
+                        if (line.getNote(n).a.syllableRelation == Note.SyllableRelation.ONEDASH) {
                             adjustRects.add(new AdjustRect(l, AdjustType.SYLLABLERELATIONMOVEMENT, n));
                         }
                         if(foundLyrics==-1)foundLyrics = n;
@@ -175,8 +171,7 @@ public class LyricsAdjustment extends Adjustment{
             ar.rectangle.x = note.getXPos()+note.getSyllableMovement();
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+line.getLyricsYPos()+5;
         }else if(ar.adjustType==AdjustType.SYLLABLERELATIONMOVEMENT){
-            ar.rectangle.x = ((Integer) musicSheet.getDrawer().getViewCache().get(
-                    new CachedViewPropertiesKey(ar.line, ar.xIndex, CachedViewPropertiesKey.Property.ONE_DASH_CENTER)) + note.getSyllableRelationMovement() - 4);
+            ar.rectangle.x = (note.getSyllableRelationMovement() == 0 ? (int) note.a.longDashPosition : note.getXPos() + note.getSyllableRelationMovement()) - 4;
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+line.getLyricsYPos()+5;
         }
         ar.rectangle.width = ar.rectangle.height = 8;
