@@ -90,10 +90,10 @@ public class MidiLister {
         try {
             seq = MidiSystem.getSequence(new FileInputStream(inputFileField.getText()));
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame, "FĂĄjl olvasĂĄsi hiba!");
+            JOptionPane.showMessageDialog(frame, "Error opening the file");
             return;
         } catch (InvalidMidiDataException e) {
-            JOptionPane.showMessageDialog(frame, "A MIDI fĂĄjl hibĂĄs!");
+            JOptionPane.showMessageDialog(frame, "A MIDI file format error");
             return;
         }
         listArea.append("File name: "+inputFileField.getText()+"\n");

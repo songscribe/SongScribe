@@ -49,11 +49,11 @@ public class LyricsDialog extends MyDialog{
     protected JPanel underLyricsPanel;
     protected JPanel translatedLyricsPanel;
 
-    final static char[][] specChars = {{'\u0103', '\u0101', '\u00f1', '\u00e2', '\u0169'},{'\u0102', '\u0100', '\u00d1', '\u00c2', '\u0168'}};
-    final static char[][] specCharsMap = {{'a', 'a', 'n', 'a', 'u'}, {'A', 'A', 'N', 'A', 'U'}};
+    final static char[][] specChars = {{'\u0103', '\u0101', '\u00f1', '\u00e2', '\u0169', '\u00e3'},{'\u0102', '\u0100', '\u00d1', '\u00c2', '\u0168', '\u00c3'}};
+    final static char[][] specCharsMap = {{'a', 'a', 'n', 'a', 'u', 'a'}, {'A', 'A', 'N', 'A', 'U', 'A'}};
     static final int MENU_SHORTCUT_KEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-    final KeyStroke[][] specCharStroke = {{KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU_SHORTCUT_KEY_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_SHORTCUT_KEY_MASK), null, null},
-        {KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU_SHORTCUT_KEY_MASK |InputEvent.SHIFT_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_MASK|InputEvent.SHIFT_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_SHORTCUT_KEY_MASK|InputEvent.SHIFT_MASK), null, null}};
+    final KeyStroke[][] specCharStroke = {{KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU_SHORTCUT_KEY_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_SHORTCUT_KEY_MASK), null, null, null},
+        {KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU_SHORTCUT_KEY_MASK |InputEvent.SHIFT_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_MASK|InputEvent.SHIFT_MASK), KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_SHORTCUT_KEY_MASK|InputEvent.SHIFT_MASK), null, null, null}};
 
     public LyricsDialog(MainFrame mainFrame) {
         super(mainFrame, "Lyrics");
