@@ -28,7 +28,7 @@ import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -67,7 +67,7 @@ public class LyricsAdjustment extends Adjustment{
     }
 
     private AdjustRect draggingRect;
-    private Vector<AdjustRect> adjustRects = new Vector<AdjustRect>(50, 30);
+    private ArrayList<AdjustRect> adjustRects = new ArrayList<AdjustRect>();
 
     public LyricsAdjustment(MusicSheet parent) {
         super(parent);

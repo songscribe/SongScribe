@@ -26,7 +26,7 @@ import songscribe.ui.MainFrame;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -445,7 +445,7 @@ public abstract class Note implements Cloneable {
         }
     }
 
-    private static Vector<ColoredNote> coloredNotes = new Vector<ColoredNote>(50, 10);
+    private static ArrayList<ColoredNote> coloredNotes = new ArrayList<ColoredNote>();
 
     public static Image getColoredNote(NoteType noteType, Color color, boolean upper) {
         for (ColoredNote cn : coloredNotes) {
@@ -475,7 +475,7 @@ public abstract class Note implements Cloneable {
         }
     }
 
-    private static Vector<ColoredImage> coloredImages = new Vector<ColoredImage>(20, 10);
+    private static ArrayList<ColoredImage> coloredImages = new ArrayList<ColoredImage>();
 
     public static Image getColoredImage(Image originalImage, Color color){
         for (ColoredImage ci : coloredImages) {

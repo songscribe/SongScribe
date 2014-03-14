@@ -230,7 +230,7 @@ public class CompositionSettingsDialog extends MyDialog{
         northProfilePanel.setLayout(new BoxLayout(northProfilePanel, BoxLayout.Y_AXIS));
         northProfilePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         MyDialog.addLabelToBox(northProfilePanel, "Available profiles:", 5);
-        profileCombo = new JComboBox(mainFrame.getProfileManager().enumerateProfiles());
+        profileCombo = new JComboBox(mainFrame.getProfileManager().enumerateProfiles().toArray());
         profileCombo.addActionListener(new ProfileComboAction());
         profileCombo.setSelectedItem(mainFrame.getProfileManager().getDefaultProfileName());
         JPanel profileComboHelper = new JPanel(new FlowLayout(FlowLayout.LEFT));

@@ -778,7 +778,7 @@ public abstract class BaseMsDrawer {
     }
 
     private void drawTextBox(Graphics2D g2, String str, int y, float xAlignment, int xTranslate){
-        Vector<String> rightVector = new Vector<String>(4);
+        ArrayList<String> rightVector = new ArrayList<String>(4);
         int prevIndex = 0;
         int maxWidth = 0;
         for(int i=0;i<=str.length();i++){

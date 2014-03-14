@@ -31,7 +31,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -41,7 +41,7 @@ class SongSelectStep extends Step{
 
     private DefaultListModel listModel = new DefaultListModel();
     private JList list = new JList(listModel);
-    private Vector<File> files = new Vector<File>(20, 10);
+    private ArrayList<File> files = new ArrayList<File>();
 
     public SongSelectStep(Data data) {
         super(data);

@@ -23,13 +23,13 @@ package songscribe.ui;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
  */
 public class MultiAccessibleAction extends AbstractAction{
-    protected Vector<AbstractButton> sames = new Vector<AbstractButton>(2, 2);
+    protected ArrayList<AbstractButton> sames = new ArrayList<AbstractButton>();
 
     public void addAbstractButton(AbstractButton abstractButton){
             sames.add(abstractButton);

@@ -18,14 +18,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class ExportBatchSongsImages extends AbstractAction {
     private static Logger logger = Logger.getLogger(ExportBatchSongsImages.class);
     private Publisher publisher;
     private ExportBatchSongsImagesDialog exportBatchSongsImagesDialog;
     private ProcessDialog processDialog;
-    private Vector<Song> songs;
+    private ArrayList<Song> songs;
 
     public ExportBatchSongsImages(Publisher publisher) {
         this.publisher = publisher;
@@ -138,7 +138,7 @@ public class ExportBatchSongsImages extends AbstractAction {
 
         protected void setData() {
             //finding songs
-            songs = new Vector<Song>();
+            songs = new ArrayList<Song>();
             for(ListIterator<Page> pages = publisher.getBook().pageIterator();pages.hasNext();){
                 for(ListIterator<PageComponent> comps = pages.next().getPageComponentIterator();comps.hasNext();){
                     PageComponent c = comps.next();

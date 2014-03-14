@@ -36,13 +36,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
  */
 public class Book extends JComponent implements MouseListener, MouseMotionListener{
-    private Vector<Page> pages = new Vector<Page>(10, 10);
+    private ArrayList<Page> pages = new ArrayList<Page>();
 
     private static final int PAGESSPACE = 30;
     private static final BasicStroke lineStroke = new BasicStroke(1f);

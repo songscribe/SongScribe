@@ -26,13 +26,13 @@ import songscribe.publisher.pagecomponents.PageComponent;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
  */
 public class Page {
-    private Vector<PageComponent> pageComponents = new Vector<PageComponent>(3, 2);
+    private ArrayList<PageComponent> pageComponents = new ArrayList<PageComponent>();
 
     private Book book;
 

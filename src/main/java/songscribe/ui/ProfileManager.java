@@ -31,7 +31,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -80,7 +80,7 @@ public class ProfileManager {
 
     public ProfileManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        Vector<String> existingProfiles = enumerateProfiles();
+        ArrayList<String> existingProfiles = enumerateProfiles();
         if (existingProfiles.contains(mainFrame.getProperties().getProperty(Constants.DEFAULTPROFILEPROP))) {
             setDefaultProfile(mainFrame.getProperties().getProperty(Constants.DEFAULTPROFILEPROP));
         } else if(existingProfiles.contains(mainFrame.getDefaultProps().getProperty(Constants.DEFAULTPROFILEPROP))) {
@@ -95,8 +95,8 @@ public class ProfileManager {
 
     }
 
-    public Vector<String> enumerateProfiles(){
-        Vector<String> profiles = new Vector<String>(10, 10);
+    public ArrayList<String> enumerateProfiles(){
+        ArrayList<String> profiles = new ArrayList<String>();
         File[] files = DEFAULTDIR.listFiles();
         if (files != null) {
             for(File file: files){

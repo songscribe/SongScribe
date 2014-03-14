@@ -40,7 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -62,7 +62,7 @@ public class ExportPortableAction extends AbstractAction {
             this.oldFile = oldFile;
         }
     }
-    private Vector<OldFiles> oldFiles = new Vector<OldFiles>();
+    private ArrayList<OldFiles> oldFiles = new ArrayList<OldFiles>();
     private byte[] buf = new byte[1024];
 
     public ExportPortableAction(Publisher publisher) {

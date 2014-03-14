@@ -24,8 +24,9 @@ package songscribe.music;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 
 /**
  * @author Csaba Kávai
@@ -38,7 +39,7 @@ public class Line {
     private int keys;
     private KeyType keyType;
 
-    private Vector<Note> notes = new Vector<Note>(25, 10);
+    private List<Note> notes = new ArrayList<Note>();
 
     private final IntervalSet beamings = new IntervalSet();
     private final IntervalSet ties = new IntervalSet();

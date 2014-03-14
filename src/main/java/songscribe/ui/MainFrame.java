@@ -43,7 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 /**
@@ -115,7 +115,7 @@ public class MainFrame extends JFrame {
         }
     }
     private final ProfileManager profileManager = new ProfileManager(this);
-    private Vector<PropertyChangeListener> propertyChangeListeners = new Vector<PropertyChangeListener>();
+    private ArrayList<PropertyChangeListener> propertyChangeListeners = new ArrayList<PropertyChangeListener>();
 
     private SelectSelectionPanel selectSelectionPanel;
     private NoteSelectionPanel noteSelectionPanel;

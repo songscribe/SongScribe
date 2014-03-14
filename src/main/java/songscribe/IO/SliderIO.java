@@ -32,7 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -74,7 +74,7 @@ public class SliderIO {
         private String lastTag;
         private StringBuilder value = new StringBuilder(200);
 
-        private Vector<File> files = new Vector<File>();
+        private ArrayList<File> files = new ArrayList<File>();
 
         private int majorVersion, minorVersion;
 
@@ -152,7 +152,7 @@ public class SliderIO {
             }
         }
 
-        public Vector<File> getFiles() {
+        public ArrayList<File> getFiles() {
             return files;
         }
     }

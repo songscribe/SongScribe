@@ -25,7 +25,7 @@ import songscribe.music.*;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -71,7 +71,7 @@ public class NoteXPosAdjustment extends Adjustment{
     }
     private static final int ENDSNAPLIMIT = 30;
 
-    private Vector<AdjustRect> adjustRects = new Vector<AdjustRect>(50, 30);
+    private ArrayList<AdjustRect> adjustRects = new ArrayList<AdjustRect>();
     private AdjustRect draggingRect;
     private float[] stretchHelper;
 

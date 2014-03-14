@@ -44,7 +44,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -139,7 +139,7 @@ public class UpdateDialog extends MyDialog{
             String[] updateBaseURLs = { mainFrame.getProperties().getProperty(Constants.UPDATEURL1),
                                         mainFrame.getProperties().getProperty(Constants.UPDATEURL2)};
             UpdateProcessDialog upd = null;
-            Vector<TempFilePair> tempFilePairs = new Vector<TempFilePair>(20, 20);
+            ArrayList<TempFilePair> tempFilePairs = new ArrayList<TempFilePair>();
             int fileSum = 0;
             HttpClient httpClient = new HttpClient();
             try {

@@ -24,13 +24,13 @@ package songscribe.publisher.newsteps;
 import songscribe.ui.MainFrame;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
  */
 public class Data {
-    public Vector<File> files;
+    public ArrayList<File> files;
     public int paperWidth, paperHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin;
     public boolean mirrored;
     public int songsPerPage = 2;

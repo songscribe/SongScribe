@@ -2,7 +2,7 @@ package songscribe.converter;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class ArgumentumReader {
     private String[] args;
@@ -84,7 +84,7 @@ public class ArgumentumReader {
 
             //reading the files
             if(fileType!=FileType.NONE){
-                Vector<File> files = new Vector<File>();
+                ArrayList<File> files = new ArrayList<File>();
                 for(String arg:args){
                     if(arg.charAt(0)=='-')continue;
                     File file = new File(arg);

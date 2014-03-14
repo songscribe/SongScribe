@@ -1449,7 +1449,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
-    private Vector<Object> focusLostExceptions = new Vector<Object>(5, 5);
+    private ArrayList<Object> focusLostExceptions = new ArrayList<Object>();
 
     public void addFocusLostExceptions(Object exception){
         focusLostExceptions.add(exception);
@@ -1509,7 +1509,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     class CopyAction extends AbstractAction {
-        Vector<Note> copyBuffer = new Vector<Note>(10, 30);
+        ArrayList<Note> copyBuffer = new ArrayList<Note>();
         IntervalSet[] intervalSetsCopyBuffer;
 
         public CopyAction() {

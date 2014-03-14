@@ -29,7 +29,7 @@ import songscribe.ui.mainframeactions.DialogOpenAction;
 import javax.swing.*;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -51,7 +51,7 @@ public class PlayMenu extends JMenu implements PropertyChangeListener{
     private ButtonGroup tempoChangeGroup = new ButtonGroup();
     private JMenu tempoChangeMenu;
 
-    private Vector<PlaybackListener> playbackListeners = new Vector<PlaybackListener>(3, 2);
+    private ArrayList<PlaybackListener> playbackListeners = new ArrayList<PlaybackListener>();
 
     public PlayMenu(MainFrame mainFrame) {
         super("Play");

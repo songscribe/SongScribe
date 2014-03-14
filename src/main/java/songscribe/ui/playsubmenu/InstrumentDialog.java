@@ -31,14 +31,14 @@ import javax.sound.midi.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
  */
 public class InstrumentDialog extends MyDialog{
     private static final Logger logger = Logger.getLogger(InstrumentDialog.class);
-    public static final Vector<String> INSTRUMENTSTRING = instrumentComboFactory();
+    public static final String[] INSTRUMENTSTRING = instrumentComboFactory();
 
     private JList instrumentList = new JList(INSTRUMENTSTRING);
 
@@ -62,16 +62,16 @@ public class InstrumentDialog extends MyDialog{
     }
 
 
-    private static Vector<String> instrumentComboFactory(){
-        Vector<String> vs = new Vector<String>(128, 2);
+    private static String[] instrumentComboFactory(){
+        ArrayList<String> vs = new ArrayList<String>(128);
         if(MainFrame.synthesizer!=null){
             int i=1;
             for(Instrument instrument : MainFrame.synthesizer.getLoadedInstruments()){
-                vs.addElement(i + " - " + instrument.getName());
+                vs.add(i + " - " + instrument.getName());
                 if(i++==128)break;
             }
         }
-        return vs;
+        return vs.toArray(new String[vs.size()]);
     }
 
     protected void getData() {

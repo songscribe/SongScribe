@@ -28,7 +28,7 @@ import songscribe.ui.*;
 import javax.sound.midi.*;
 import java.awt.*;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -65,7 +65,7 @@ public final class Composition{
     private int rowHeight;
     private int lineWidth;
 
-    private Vector<Line> lines = new Vector<Line>(3, 2);
+    private ArrayList<Line> lines = new ArrayList<Line>();
 
     //sequence data
     private Sequence sequence;

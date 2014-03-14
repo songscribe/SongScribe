@@ -42,7 +42,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Csaba Kávai
@@ -63,7 +63,7 @@ public class SlideFrame extends MainFrame{
     private NewAction newAction = new NewAction();
     private OpenAction openAction = new OpenAction();
 
-    private Vector<File> files = new Vector<File>(20, 10);
+    private ArrayList<File> files = new ArrayList<File>();
     private FullScreenSheet fullScreenSheet;
     private SAXParser saxParser;
 
