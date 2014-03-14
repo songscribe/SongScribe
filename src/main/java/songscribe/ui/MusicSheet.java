@@ -847,6 +847,30 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
+    public void invertFractionBeamOrientation() {
+        try {
+            if (selectedNotesLine == -1 || selectionBegin != selectionEnd) {
+                throw new IllegalArgumentException();
+            }
+
+            Line line = composition.getLine(selectedNotesLine);
+
+            if (!line.getBeamings().isInsideAnyInterval(selectionBegin)) {
+                throw new IllegalArgumentException();
+            }
+
+            Note note = line.getNote(selectionBegin);
+            note.setInvertFractionBeamOrientation(!note.isInvertFractionBeamOrientation());
+
+            composition.modifiedComposition();
+            repaintImage = true;
+            repaint();
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(mainFrame, "You must select one beamed note to invert fraction beam orientation.",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
     public void invertStemDirectionOnSelectedNotes(){
         if(selectedNotesLine==-1){
             JOptionPane.showMessageDialog(mainFrame, "You must select at least one note to invert its/their stem direction.",

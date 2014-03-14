@@ -45,100 +45,91 @@ public class NotesMenu extends JMenu {
         this.mainFrame = mainFrame;
         final MusicSheet musicSheet = mainFrame.getMusicSheet();
 
-        add(new NotesMenuItem("Beam", "beam_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Beam", "beam_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.beamSelectedNotes(true);
             }
         }));
-        add(new NotesMenuItem("Unbeam", "unbeam_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Unbeam", "unbeam_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.beamSelectedNotes(false);
             }
         }));
         
         addSeparator();
-        add(new NotesMenuItem("Triplet", "triplet_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Triplet", "triplet_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.tupletSelectedNotes(3);
             }
         }));
         add(createTupletMenu());
-        add(new NotesMenuItem("Untuplet", "untriplet_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Untuplet", "untriplet_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.untupletSelectedNotes();
             }
         }));
         addSeparator();
         
-        add(new NotesMenuItem("Tie", "tie_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Tie", "tie_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.tieSelectedNotes(true);
             }
         }));
-        add(new NotesMenuItem("Untie", "untie_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Untie", "untie_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.tieSelectedNotes(false);
             }
         }));
         addSeparator();
 
-        add(new NotesMenuItem("Add Slur", "blank.png", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Add Slur", "addslur_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.slurSelectedNotes(true);
             }
         }));
         add(new NotesMenuItem("Remove Slur", "blank.png", new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 musicSheet.slurSelectedNotes(false);
             }
         }));
         addSeparator();
 
-        add(new NotesMenuItem("First-second ending", "fsending_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("First-second ending", "fsending_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.makeFsEndingOnSelectedNotes(true);
             }
         }));
-        add(new NotesMenuItem("Remove first-second ending", "unfsending_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Remove first-second ending", "unfsending_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.makeFsEndingOnSelectedNotes(false);
             }
         }));
         addSeparator();
 
-        add(new NotesMenuItem("Trill", "trill_menu.gif", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Trill", "trill_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.makeTrillOnSelectedNotes(true);
             }
         }));
         add(new NotesMenuItem("Remove Trill", "blank.png", new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 musicSheet.makeTrillOnSelectedNotes(false);
             }
         }));
         addSeparator();
         add(new NotesMenuItem("Invert Stem Direction", "upsidedown.gif", new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 musicSheet.invertStemDirectionOnSelectedNotes();
             }
         }));
-        add(new NotesMenuItem("Allow / Disallow Lyrics Under Rest", "blank.png", new ActionListener() {
-            @Override
+        add(new NotesMenuItem("Allow / Disallow Lyrics Under Rest", "lyricsunderrest_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.invertLyricsUnderRests();
+            }
+        }));
+        add(new NotesMenuItem("Invert orientation of fractional beams", "invertfractionalbeam_menu.png", new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                musicSheet.invertFractionBeamOrientation();
             }
         }));
     }
@@ -152,7 +143,6 @@ public class NotesMenu extends JMenu {
             final int iFinal = i;
             JMenuItem tupletButton = new JMenuItem(tuplets[i], mainFrame.blankIcon);
             tupletButton.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     mainFrame.getMusicSheet().tupletSelectedNotes(tupletValues[iFinal]);
                 }

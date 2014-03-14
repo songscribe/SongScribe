@@ -37,7 +37,7 @@ public class LineWidthChangeDialog extends MyDialog implements ActionListener, C
     private JSlider lineWidthSlider = new JSlider((int)Math.round(MINIMUMLINEWIDTH*MusicSheet.RESOLUTION), (int)Math.round(MAXIMUMLINEWIDTH*MusicSheet.RESOLUTION));
     private int origWidth;
     private boolean stopChange;
-    public static final double MINIMUMLINEWIDTH = 4.0;
+    public static final double MINIMUMLINEWIDTH = 2.0;
     public static final double MAXIMUMLINEWIDTH = 10.0;
 
     public LineWidthChangeDialog(MainFrame mainFrame) {

@@ -544,28 +544,26 @@ public abstract class BaseMsDrawer {
         //clipping
         boolean leftOriented;
         if(begin==end){
-            if(line.getNote(begin).getNoteType().isGraceNote()) return;
+            Note note = line.getNote(begin);
+            if(note.getNoteType().isGraceNote()) return;
             double startBeamLineX;
             double endBeamLineX;
+            leftOriented = prevBegin==prevEnd ? isPrevLeft : begin!=prevBegin ^ note.isInvertFractionBeamOrientation();
             if(upper){
-                if(begin!=prevBegin || prevBegin==prevEnd && isPrevLeft){
-                    startBeamLineX = line.getNote(begin).getXPos() - 1;
-                    endBeamLineX = line.getNote(begin).getXPos() + crotchetWidth;
-                    leftOriented = true;
+                if(leftOriented){
+                    startBeamLineX = note.getXPos() - 1;
+                    endBeamLineX = note.getXPos() + crotchetWidth;
                 }else{
-                    startBeamLineX = line.getNote(begin).getXPos() + crotchetWidth;
-                    endBeamLineX = line.getNote(begin).getXPos() + 2*crotchetWidth + 2;
-                    leftOriented = false;
+                    startBeamLineX = note.getXPos() + crotchetWidth;
+                    endBeamLineX = note.getXPos() + 2*crotchetWidth + 2;
                 }
             }else{
-                if(begin!=prevBegin || prevBegin==prevEnd && isPrevLeft){
-                    startBeamLineX = line.getNote(end).getXPos() - crotchetWidth - 2;
-                    endBeamLineX = line.getNote(end).getXPos();
-                    leftOriented = true;
+                if(leftOriented){
+                    startBeamLineX = note.getXPos() - crotchetWidth - 2;
+                    endBeamLineX = note.getXPos();
                 }else{
-                    startBeamLineX = line.getNote(end).getXPos();
-                    endBeamLineX = line.getNote(end).getXPos() + crotchetWidth + 2;
-                    leftOriented = false;
+                    startBeamLineX = note.getXPos();
+                    endBeamLineX = note.getXPos() + crotchetWidth + 2;
                 }
             }
             g2.setClip(new Rectangle2D.Double(startBeamLineX, Math.min(beamLine.y1,beamLine.y2)-3,

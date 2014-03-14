@@ -141,6 +141,8 @@ public abstract class Note implements Cloneable {
 
     protected boolean forceSyllable;
 
+    protected boolean invertFractionBeamOrientation;
+
     public enum SyllableRelation{NO, EXTENDER, DASH, ONEDASH}
 
     public class Acceleration{
@@ -180,6 +182,7 @@ public abstract class Note implements Cloneable {
         syllableMovement = note.syllableMovement;
         syllableRelationMovement = note.syllableRelationMovement;
         forceSyllable = note.forceSyllable;
+        invertFractionBeamOrientation = note.invertFractionBeamOrientation;
     }
 
     public abstract Image getUpImage();
@@ -332,6 +335,14 @@ public abstract class Note implements Cloneable {
 
     public void setForceSyllable(boolean forceSyllable) {
         this.forceSyllable = forceSyllable;
+    }
+
+    public boolean isInvertFractionBeamOrientation() {
+        return invertFractionBeamOrientation;
+    }
+
+    public void setInvertFractionBeamOrientation(boolean invertFractionBeamOrientation) {
+        this.invertFractionBeamOrientation = invertFractionBeamOrientation;
     }
 
     public int getPitch(){
