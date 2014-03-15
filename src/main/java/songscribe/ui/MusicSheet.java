@@ -23,10 +23,7 @@ Created on 2005.01.05.,14:24:51
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
-import songscribe.data.Interval;
-import songscribe.data.IntervalSet;
-import songscribe.data.MyBorder;
-import songscribe.data.PropertyChangeListener;
+import songscribe.data.*;
 import songscribe.music.*;
 import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.adjustment.NoteXPosAdjustment;
@@ -698,7 +695,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             beamSelectedNotes(true);
         }
 
-        line.getTuplets().addInterval(selectionBegin, selectionEnd, Integer.toString(numeral));
+        Interval interval = line.getTuplets().addInterval(selectionBegin, selectionEnd);
+        TupletIntervalData.setGrade(interval, numeral);
 
         composition.modifiedComposition();
         repaintImage = true;
@@ -1697,7 +1695,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                             Interval tupletInterval = line.getTuplets().findInterval(selectionEnd);
                             if(tupletInterval==null){
                                 tupletSelectedNotes(3);
-                            }else if(tupletInterval.getData().equals("3")){
+                            }else if(TupletIntervalData.getGrade(tupletInterval) == 3){
                                 untupletSelectedNotes();
                             }
                         }

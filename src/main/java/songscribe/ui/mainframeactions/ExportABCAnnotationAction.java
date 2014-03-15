@@ -22,10 +22,7 @@ Created on Aug 6, 2006
 package songscribe.ui.mainframeactions;
 
 import org.apache.log4j.Logger;
-import songscribe.data.Fraction;
-import songscribe.data.Interval;
-import songscribe.data.MyAcceptFilter;
-import songscribe.data.PlatformFileDialog;
+import songscribe.data.*;
 import songscribe.music.*;
 import songscribe.ui.Constants;
 import songscribe.ui.MainFrame;
@@ -324,7 +321,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
             if (line.getTuplets().isStartOfAnyInterval(n)) {
                 Interval tupletInterval = line.getTuplets().findInterval(n);
                 int numberOfNotes = tupletInterval.getB() - tupletInterval.getA() + 1;
-                sb.append("(").append(tupletInterval.getData()).append("::").append(numberOfNotes);
+                sb.append("(").append(TupletIntervalData.getGrade(tupletInterval)).append("::").append(numberOfNotes);
             }
             if (isSlurOrGlissandoBegin(line, n)) {
                 sb.append("(");

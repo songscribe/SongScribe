@@ -23,6 +23,7 @@ package songscribe.ui.adjustment;
 
 import songscribe.data.Interval;
 import songscribe.data.SlurData;
+import songscribe.data.TupletIntervalData;
 import songscribe.music.Annotation;
 import songscribe.music.Composition;
 import songscribe.music.Line;
@@ -48,7 +49,8 @@ public class VerticalAdjustment extends Adjustment{
         TRILL(Color.pink),
         SLURPOS1(Color.orange),
         SLURPOS2(Color.orange),
-        SLURCTRLY(Color.orange);
+        SLURCTRLY(Color.orange),
+        TUPLET(Color.pink);
 
 
         private Color color;
@@ -103,13 +105,14 @@ public class VerticalAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.ROWHEIGHT){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, 0));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, Integer.MAX_VALUE);
-            }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE || draggingRect.adjustType==AdjustType.FSENDING || draggingRect.adjustType==AdjustType.TRILL || draggingRect.adjustType==AdjustType.BEATCHANGE){
+            }else if(draggingRect.adjustType==AdjustType.TEMPOCHANGE || draggingRect.adjustType==AdjustType.FSENDING
+                    || draggingRect.adjustType==AdjustType.TRILL || draggingRect.adjustType==AdjustType.BEATCHANGE ){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-4, draggingRect.line));
             }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-6, draggingRect.line+1));
-            }else if(draggingRect.adjustType==AdjustType.SLURCTRLY){
+            }else if(draggingRect.adjustType==AdjustType.SLURCTRLY || draggingRect.adjustType == AdjustType.TUPLET){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, 0);
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, Integer.MAX_VALUE);
             } else {
@@ -141,10 +144,10 @@ public class VerticalAdjustment extends Adjustment{
             line.setFsEndingYPos(line.getFsEndingYPos()+diffY);
         }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
             Annotation a = musicSheet.getComposition().getLine(draggingRect.line).getNote(draggingRect.xIndex).getAnnotation();
-            a.setyPos(a.getyPos()+diffY);
+            a.setyPos(a.getyPos() + diffY);
         }else if(draggingRect.adjustType==AdjustType.TRILL){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
-            line.setTrillYPos(line.getTrillYPos()+diffY);
+            line.setTrillYPos(line.getTrillYPos() + diffY);
         }else if(draggingRect.adjustType==AdjustType.SLURPOS1 || draggingRect.adjustType==AdjustType.SLURPOS2 || draggingRect.adjustType==AdjustType.SLURCTRLY){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
             Interval interval = line.getSlurs().findInterval(draggingRect.xIndex);
@@ -164,6 +167,9 @@ public class VerticalAdjustment extends Adjustment{
                     slurData.setCtrly(slurData.getCtrly()+diffY);
             }
             interval.setData(slurData.toString());
+        }else if(draggingRect.adjustType==AdjustType.TUPLET){
+            Interval interval = musicSheet.getComposition().getLine(draggingRect.line).getTuplets().findInterval(draggingRect.xIndex);
+            TupletIntervalData.setVerticalPosition(interval, TupletIntervalData.getVerticalPosition(interval) + diffY);
         }
         musicSheet.viewChanged();
         musicSheet.getComposition().modifiedComposition();
@@ -220,6 +226,11 @@ public class VerticalAdjustment extends Adjustment{
                     adjustRects.add(new AdjustRect(l, AdjustType.SLURPOS2, interval.getB()));
                     adjustRects.add(new AdjustRect(l, AdjustType.SLURCTRLY, interval.getA()));
                 }
+
+                for(ListIterator<Interval> li = line.getTuplets().listIterator();li.hasNext();){
+                    Interval interval = li.next();
+                    adjustRects.add(new AdjustRect(l, AdjustType.TUPLET, interval.getA()));
+                }
             }
 
         }else{
@@ -275,6 +286,12 @@ public class VerticalAdjustment extends Adjustment{
                     break;
             }
             ar.rectangle.x -= 4;
+        }else if(ar.adjustType==AdjustType.TUPLET){
+            Line line = musicSheet.getComposition().getLine(ar.line);
+            Interval interval = line.getTuplets().findInterval(ar.xIndex);
+            Note note = line.getNote(interval.getA());
+            ar.rectangle.x = note.getXPos() + (note.isUpper() ? 0 : -10);
+            ar.rectangle.y = musicSheet.getNoteYPos(note.getYPos() + (note.isUpper() ? -10 : -3), ar.line) + TupletIntervalData.getVerticalPosition(interval);
         }
         ar.rectangle.width = ar.rectangle.height = 8;
     }

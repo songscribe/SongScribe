@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
 import songscribe.data.SlurData;
+import songscribe.data.TupletIntervalData;
 import songscribe.music.*;
 import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
@@ -393,6 +394,10 @@ public abstract class BaseMsDrawer {
                     rx-=(int)crotchetWidth/2;
                     ry+=Note.HOTSPOT.y-3;
                 }
+                if (TupletIntervalData.isVerticalAdjusted(iv)) {
+                    ly += TupletIntervalData.getVerticalPosition(iv);
+                    ry += TupletIntervalData.getVerticalPosition(iv);
+                }
                 g2.setStroke(lineStroke);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 TupletCalc tc = new TupletCalc(lx, ly, rx, ry);
@@ -401,7 +406,7 @@ public abstract class BaseMsDrawer {
                 g2.draw(new QuadCurve2D.Float(cx+7, tc.getRate(cx+7)-8, (float)(rx-cx)*3/4+cx, tc.getRate((rx-cx)*3/4+cx)-10, rx, ry));
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 g2.setFont(tupletFont);
-                drawAntialiasedString(g2, iv.getData(), cx-3, tc.getRate(cx-3)-5);
+                drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(iv)), cx-3, tc.getRate(cx-3)-5);
 
                 /*g2.setColor(Color.red);
                 g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
