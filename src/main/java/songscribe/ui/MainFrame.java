@@ -381,11 +381,11 @@ public class MainFrame extends JFrame {
         toolBar.addSeparator(separator);
         toolBar.addSeparator(new Dimension());//this is important, because when publisher opens mainframe for editing a song, it removes all buttons antil the double separator found
         bg = new ButtonGroup();
-        for(int i=0;i<2;i++){
-            JToggleButton b = new JToggleButton(modeActions[i]);
+        for (ModeAction modeAction : modeActions) {
+            JToggleButton b = new JToggleButton(modeAction);
             b.setText(null);
             toolBar.add(b);
-            modeActions[i].addAbstractButton(b);
+            modeAction.addAbstractButton(b);
             bg.add(b);
         }
         toolBar.addSeparator(separator);
