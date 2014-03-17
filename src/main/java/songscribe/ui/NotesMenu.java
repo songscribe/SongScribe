@@ -117,6 +117,10 @@ public class NotesMenu extends JMenu {
             }
         }));
         addSeparator();
+
+        add(createCresDecrMenu());
+
+        addSeparator();
         add(new NotesMenuItem("Invert Stem Direction", "upsidedown.gif", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.invertStemDirectionOnSelectedNotes();
@@ -150,5 +154,26 @@ public class NotesMenu extends JMenu {
             tupletMenu.add(tupletButton);
         }
         return tupletMenu;
+    }
+
+    private JMenu createCresDecrMenu() {
+        JMenu menu = new JMenu("Crescendo & Diminuendo");
+        menu.setIcon(mainFrame.blankIcon);
+        menu.add(new NotesMenuItem("Crescendo", "blank.png", new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.getMusicSheet().crescendoOrDiminuendoSelectedNotes(true);
+            }
+        }));
+        menu.add(new NotesMenuItem("Diminuendo", "blank.png", new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.getMusicSheet().crescendoOrDiminuendoSelectedNotes(false);
+            }
+        }));
+        menu.add(new NotesMenuItem("Remove", "blank.png", new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.getMusicSheet().removeCrescendoOrDiminuendoSelectedNotes();
+            }
+        }));
+        return menu;
     }
 }

@@ -769,6 +769,51 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
+    public void crescendoOrDiminuendoSelectedNotes(boolean crescendoOrDiminuendo){
+        String typeString = crescendoOrDiminuendo ? "crescendo" : "diminuendo";
+        if(selectedNotesLine==-1 || selectionBegin==selectionEnd){
+            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to create " + typeString,
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        Line line = composition.getLine(selectedNotesLine);
+        IntervalSet intervalSet = crescendoOrDiminuendo ? line.getCrescendo() : line.getDiminuendo();
+        intervalSet.addInterval(selectionBegin, selectionEnd);
+
+        repaintImage = true;
+        repaint();
+    }
+
+    public void removeCrescendoOrDiminuendoSelectedNotes() {
+        if(selectedNotesLine==-1){
+            JOptionPane.showMessageDialog(mainFrame, "You must select at least one note first to remove crescendo and diminuendo",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Line line = composition.getLine(selectedNotesLine);
+        boolean removed = false;
+        for (int i = selectionBegin; i <= selectionEnd; i++) {
+            Interval cresInterval = line.getCrescendo().findInterval(i);
+            if (cresInterval != null) {
+                line.getCrescendo().removeInterval(cresInterval);
+                removed = true;
+            }
+            Interval dimInterval = line.getDiminuendo().findInterval(i);
+            if (dimInterval != null) {
+                line.getDiminuendo().removeInterval(dimInterval);
+                removed = true;
+            }
+        }
+        if (!removed) {
+            JOptionPane.showMessageDialog(mainFrame, "You must select a note which is part of a crescendo and diminuendo",
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        repaintImage = true;
+        repaint();
+    }
+
     public void makeFsEndingOnSelectedNotes(boolean fsEnding){
         if(selectedNotesLine==-1 || selectionBegin==selectionEnd){
             JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to "+(fsEnding?"make":"remove")+" first-second endings.",

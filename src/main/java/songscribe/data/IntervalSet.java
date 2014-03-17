@@ -67,6 +67,9 @@ public class IntervalSet {
         removeOverlaps(a, b);
     }
 
+    public void removeInterval(Interval i){
+        is.remove(i);
+    }
 
     public ListIterator<Interval> listIterator(){
         return is.listIterator();

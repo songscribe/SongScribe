@@ -52,6 +52,8 @@ public class LineIO {
     private static final String XMLTUPLETS = "tuplets";
     private static final String XMLFSENDINGS = "fsendings";
     private static final String XMLNOTES = "notes";
+    private static final String XMLCRESCENDO = "crescendo";
+    private static final String XMLDIMINUENDO = "diminuendo";
 
 
     public static void writeLine(Line l, PrintWriter pw) throws IOException {
@@ -72,6 +74,8 @@ public class LineIO {
         if(!l.getSlurs().isEmpty())XML.writeValue(pw, XMLSLURS, intervalToString(l.getSlurs()));
         if(!l.getTuplets().isEmpty())XML.writeValue(pw, XMLTUPLETS, intervalToString(l.getTuplets()));
         if(!l.getFsEndings().isEmpty())XML.writeValue(pw, XMLFSENDINGS, intervalToString(l.getFsEndings()));
+        if(!l.getCrescendo().isEmpty())XML.writeValue(pw, XMLCRESCENDO, intervalToString(l.getCrescendo()));
+        if(!l.getDiminuendo().isEmpty())XML.writeValue(pw, XMLDIMINUENDO, intervalToString(l.getDiminuendo()));
         pw.println("      <"+XMLNOTES+">");
         for(int i=0;i<l.noteCount();i++){
             NoteIO.writeNote(l.getNote(i), pw);
@@ -176,6 +180,10 @@ public class LineIO {
                         stringToIntervalSet(line.getTies(), str);
                     }else if(lastTag.equals(XMLSLURS)){
                         stringToIntervalSet(line.getSlurs(), str);
+                    }else if(lastTag.equals(XMLCRESCENDO)){
+                        stringToIntervalSet(line.getCrescendo(), str);
+                    }else if(lastTag.equals(XMLDIMINUENDO)){
+                        stringToIntervalSet(line.getDiminuendo(), str);
                     }else if(lastTag.equals(XMLTUPLETS) || lastTag.equals(XMLTRIPLETS)){
                         stringToIntervalSet(line.getTuplets(), str);
                         for(ListIterator<Interval> li = line.getTuplets().listIterator();li.hasNext();){

@@ -46,8 +46,10 @@ public class Line {
     private final IntervalSet slurs = new IntervalSet();
     private final IntervalSet tuplets = new IntervalSet();
     private final IntervalSet fsEndings = new IntervalSet();
+    private final IntervalSet crescendo = new IntervalSet();
+    private final IntervalSet diminuendo = new IntervalSet();
 
-    private final IntervalSet[] intervalSets = {beamings, ties, tuplets, fsEndings, slurs};
+    private final IntervalSet[] intervalSets = {beamings, ties, tuplets, fsEndings, slurs, crescendo, diminuendo};
 
     //view properties
     private int tempoChangeYPos;
@@ -213,6 +215,14 @@ public class Line {
 
     public IntervalSet getFsEndings() {
         return fsEndings;
+    }
+
+    public IntervalSet getCrescendo() {
+        return crescendo;
+    }
+
+    public IntervalSet getDiminuendo() {
+        return diminuendo;
     }
 
     public void removeInterval(int a, int b){

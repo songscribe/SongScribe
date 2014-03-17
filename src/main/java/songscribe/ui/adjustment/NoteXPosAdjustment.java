@@ -21,11 +21,15 @@ Created on Mar 26, 2006
 */
 package songscribe.ui.adjustment;
 
+import songscribe.data.CrescendoDiminuendoIntervalData;
+import songscribe.data.Interval;
+import songscribe.data.IntervalSet;
 import songscribe.music.*;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * @author Csaba Kávai
@@ -38,7 +42,13 @@ public class NoteXPosAdjustment extends Adjustment{
         FIRSTXPOS(Color.green, -4),
         GLISSANDOX1(Color.magenta, -2),
         GLISSANDOX2(Color.magenta, -2),
-        GRACESEMIQUAVER2NDPART(Color.white, -1);
+        GRACESEMIQUAVER2NDPART(Color.white, -1),
+        CRESCENDOX1(Color.orange, 6),
+        CRESCENDOX2(Color.orange, 6),
+        DIMINUENDOX1(Color.orange, 6),
+        DIMINUENDOX2(Color.orange, 6);
+
+
 
         private Color color;
         private int yPos;
@@ -115,6 +125,13 @@ public class NoteXPosAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.GLISSANDOX2){
                 upLeftDragBounds.setLocation(adjustRects.get(adjustRects.indexOf(draggingRect)-1).rectangle.x+draggingRect.rectangle.width, draggingRect.rectangle.y);
                 downRightDragBounds.setLocation(musicSheet.getComposition().getLineWidth(), draggingRect.rectangle.y);
+            }else if(draggingRect.adjustType == AdjustType.CRESCENDOX1 || draggingRect.adjustType == AdjustType.CRESCENDOX2 ||
+                    draggingRect.adjustType == AdjustType.DIMINUENDOX1 || draggingRect.adjustType == AdjustType.DIMINUENDOX2){
+                upLeftDragBounds.setLocation(draggingRect.xIndex == 0 ? 0 : line.getNote(draggingRect.xIndex - 1).getXPos(),
+                        draggingRect.rectangle.y);
+                downRightDragBounds.setLocation(draggingRect.xIndex == line.noteCount() - 1 ?
+                        musicSheet.getComposition().getLineWidth() :
+                        line.getNote(draggingRect.xIndex + 1).getXPos(), draggingRect.rectangle.y);
             }else if(draggingRect.adjustType==AdjustType.GRACESEMIQUAVER2NDPART){
                 upLeftDragBounds.setLocation(line.getNote(draggingRect.xIndex).getXPos()+draggingRect.rectangle.width, draggingRect.rectangle.y);
                 downRightDragBounds.setLocation(draggingRect.xIndex<line.noteCount()-1 ? line.getNote(draggingRect.xIndex+1).getXPos() - draggingRect.rectangle.width : musicSheet.getComposition().getLineWidth(), draggingRect.rectangle.y);
@@ -163,6 +180,12 @@ public class NoteXPosAdjustment extends Adjustment{
             note.getGlissando().x2Translate-=endPoint.x-diffX;
         }else if(draggingRect.adjustType==AdjustType.GRACESEMIQUAVER2NDPART){
             ((GraceSemiQuaver) note).setX2DiffPos(endPoint.x - note.getXPos());
+        }else if(draggingRect.adjustType==AdjustType.CRESCENDOX1 || draggingRect.adjustType==AdjustType.DIMINUENDOX1){
+            Interval interval = getCresDecrIntervalSet(line, draggingRect.adjustType).findInterval(draggingRect.xIndex);
+            CrescendoDiminuendoIntervalData.setX1Shift(interval, CrescendoDiminuendoIntervalData.getX1Shift(interval) + endPoint.x-diffX);
+        }else if(draggingRect.adjustType==AdjustType.CRESCENDOX2 || draggingRect.adjustType==AdjustType.DIMINUENDOX2){
+            Interval interval = getCresDecrIntervalSet(line, draggingRect.adjustType).findInterval(draggingRect.xIndex);
+            CrescendoDiminuendoIntervalData.setX2Shift(interval, CrescendoDiminuendoIntervalData.getX2Shift(interval) + endPoint.x-diffX);
         }
         musicSheet.getComposition().modifiedComposition();
         revalidateRects();
@@ -212,6 +235,20 @@ public class NoteXPosAdjustment extends Adjustment{
 
                 //adding STRETCH
                 if(line.noteCount()>0)adjustRects.add(new AdjustRect(l, line.noteCount()-1, AdjustType.STRETCH));
+
+                //adding CRESCENDO
+                for(ListIterator<Interval> li = line.getCrescendo().listIterator();li.hasNext();){
+                    Interval interval = li.next();
+                    adjustRects.add(new AdjustRect(l, interval.getA(), AdjustType.CRESCENDOX1));
+                    adjustRects.add(new AdjustRect(l, interval.getB(), AdjustType.CRESCENDOX2));
+                }
+
+                //adding DIMINUENDO
+                for(ListIterator<Interval> li = line.getDiminuendo().listIterator();li.hasNext();){
+                    Interval interval = li.next();
+                    adjustRects.add(new AdjustRect(l, interval.getA(), AdjustType.DIMINUENDOX1));
+                    adjustRects.add(new AdjustRect(l, interval.getB(), AdjustType.DIMINUENDOX2));
+                }
             }
 
             //adding FIRSTNOTE
@@ -222,7 +259,9 @@ public class NoteXPosAdjustment extends Adjustment{
     }
 
     private void getRectangle(AdjustRect ar){
-        Note note = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex);
+        Line line = musicSheet.getComposition().getLine(ar.line);
+        Note note = line.getNote(ar.xIndex);
+        ar.rectangle.y = musicSheet.getNoteYPos(ar.adjustType.getyPos(), ar.line)-Note.HOTSPOT.y;
         switch(ar.adjustType){
             case GLISSANDOX1:
                 ar.rectangle.x = musicSheet.getDrawer().getGlissandoX1Pos(ar.xIndex, note.getGlissando(), ar.line)-4;
@@ -233,16 +272,41 @@ public class NoteXPosAdjustment extends Adjustment{
             case GRACESEMIQUAVER2NDPART:
                 ar.rectangle.x = note.getXPos() + ((GraceSemiQuaver) note).getX2DiffPos() + 1;
                 break;
+            case CRESCENDOX1:
+            case DIMINUENDOX1:
+                Interval x1Interval = getCresDecrIntervalSet(line, ar.adjustType).findInterval(ar.xIndex);
+                ar.rectangle.x = line.getNote(ar.xIndex).getXPos()-12+CrescendoDiminuendoIntervalData.getX1Shift(x1Interval);
+                ar.rectangle.y = musicSheet.getNoteYPos(6, ar.line)-4+CrescendoDiminuendoIntervalData.getYShift(x1Interval);
+                break;
+            case CRESCENDOX2:
+            case DIMINUENDOX2:
+                Interval x2Interval = getCresDecrIntervalSet(line, ar.adjustType).findInterval(ar.xIndex);
+                ar.rectangle.x = line.getNote(ar.xIndex).getXPos()+16+CrescendoDiminuendoIntervalData.getX2Shift(x2Interval);
+                ar.rectangle.y = musicSheet.getNoteYPos(6, ar.line)-4+CrescendoDiminuendoIntervalData.getYShift(x2Interval);
+                break;
             default:
                 ar.rectangle.x = note.getXPos()+1;
         }
-        ar.rectangle.y = musicSheet.getNoteYPos(ar.adjustType.getyPos(), ar.line)-Note.HOTSPOT.y;
+
         ar.rectangle.width = ar.rectangle.height = 8;
     }
 
     private void revalidateRects(){
         for(AdjustRect ar: adjustRects){
             getRectangle(ar);
+        }
+    }
+
+    private IntervalSet getCresDecrIntervalSet(Line line, AdjustType adjustType) {
+        switch (adjustType) {
+            case CRESCENDOX1:
+            case CRESCENDOX2:
+                return line.getCrescendo();
+            case DIMINUENDOX1:
+            case DIMINUENDOX2:
+                return line.getDiminuendo();
+            default:
+                throw new IllegalArgumentException(String.valueOf(adjustType));
         }
     }
 }

@@ -21,9 +21,7 @@ Created on Jul 22, 2006
 */
 package songscribe.ui.adjustment;
 
-import songscribe.data.Interval;
-import songscribe.data.SlurData;
-import songscribe.data.TupletIntervalData;
+import songscribe.data.*;
 import songscribe.music.Annotation;
 import songscribe.music.Composition;
 import songscribe.music.Line;
@@ -50,6 +48,8 @@ public class VerticalAdjustment extends Adjustment{
         SLURPOS1(Color.orange),
         SLURPOS2(Color.orange),
         SLURCTRLY(Color.orange),
+        CRESCENDOY(Color.green),
+        DIMINUENDOY(Color.green),
         TUPLET(Color.pink);
 
 
@@ -112,9 +112,10 @@ public class VerticalAdjustment extends Adjustment{
             }else if(draggingRect.adjustType==AdjustType.ANNOTATION){
                 upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
                 downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-6, draggingRect.line+1));
-            }else if(draggingRect.adjustType==AdjustType.SLURCTRLY || draggingRect.adjustType == AdjustType.TUPLET){
-                upLeftDragBounds.setLocation(draggingRect.rectangle.x, 0);
-                downRightDragBounds.setLocation(draggingRect.rectangle.x, Integer.MAX_VALUE);
+            }else if(draggingRect.adjustType==AdjustType.SLURCTRLY || draggingRect.adjustType == AdjustType.TUPLET ||
+                    draggingRect.adjustType == AdjustType.CRESCENDOY || draggingRect.adjustType == AdjustType.DIMINUENDOY){
+                upLeftDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(6, draggingRect.line-1));
+                downRightDragBounds.setLocation(draggingRect.rectangle.x, musicSheet.getNoteYPos(-6, draggingRect.line+1));
             } else {
                 upLeftDragBounds.setLocation(0, 0);
                 downRightDragBounds.setLocation(Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -148,6 +149,10 @@ public class VerticalAdjustment extends Adjustment{
         }else if(draggingRect.adjustType==AdjustType.TRILL){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
             line.setTrillYPos(line.getTrillYPos() + diffY);
+        }else if(draggingRect.adjustType==AdjustType.CRESCENDOY || draggingRect.adjustType==AdjustType.DIMINUENDOY){
+            Line line = musicSheet.getComposition().getLine(draggingRect.line);
+            Interval interval = getCresDecrIntervalSet(line, draggingRect.adjustType).findInterval(draggingRect.xIndex);
+            CrescendoDiminuendoIntervalData.setYShift(interval, CrescendoDiminuendoIntervalData.getYShift(interval) + diffY);
         }else if(draggingRect.adjustType==AdjustType.SLURPOS1 || draggingRect.adjustType==AdjustType.SLURPOS2 || draggingRect.adjustType==AdjustType.SLURCTRLY){
             Line line = musicSheet.getComposition().getLine(draggingRect.line);
             Interval interval = line.getSlurs().findInterval(draggingRect.xIndex);
@@ -227,6 +232,16 @@ public class VerticalAdjustment extends Adjustment{
                     adjustRects.add(new AdjustRect(l, AdjustType.SLURCTRLY, interval.getA()));
                 }
 
+                for(ListIterator<Interval> li = line.getCrescendo().listIterator();li.hasNext();){
+                    Interval interval = li.next();
+                    adjustRects.add(new AdjustRect(l, AdjustType.CRESCENDOY, interval.getA()));
+                }
+
+                for(ListIterator<Interval> li = line.getDiminuendo().listIterator();li.hasNext();){
+                    Interval interval = li.next();
+                    adjustRects.add(new AdjustRect(l, AdjustType.DIMINUENDOY, interval.getA()));
+                }
+
                 for(ListIterator<Interval> li = line.getTuplets().listIterator();li.hasNext();){
                     Interval interval = li.next();
                     adjustRects.add(new AdjustRect(l, AdjustType.TUPLET, interval.getA()));
@@ -261,6 +276,11 @@ public class VerticalAdjustment extends Adjustment{
         }else if(ar.adjustType==AdjustType.TRILL){
             ar.rectangle.x = musicSheet.getComposition().getLine(ar.line).getNote(ar.xIndex).getXPos()-12;
             ar.rectangle.y = musicSheet.getNoteYPos(0, ar.line)+musicSheet.getComposition().getLine(ar.line).getTrillYPos()-8;
+        }else if(ar.adjustType==AdjustType.CRESCENDOY || ar.adjustType==AdjustType.DIMINUENDOY){
+            Line line = musicSheet.getComposition().getLine(ar.line);
+            Interval interval = getCresDecrIntervalSet(line, ar.adjustType).findInterval(ar.xIndex);
+            ar.rectangle.x = (line.getNote(interval.getA()).getXPos()+line.getNote(interval.getB()).getXPos()+12)/2;
+            ar.rectangle.y = musicSheet.getNoteYPos(6, ar.line)-4+CrescendoDiminuendoIntervalData.getYShift(interval);
         }else if(ar.adjustType==AdjustType.SLURPOS1 || ar.adjustType==AdjustType.SLURPOS2 || ar.adjustType==AdjustType.SLURCTRLY){
             Line line = musicSheet.getComposition().getLine(ar.line);
             Interval interval = line.getSlurs().findInterval(ar.xIndex);
@@ -299,6 +319,17 @@ public class VerticalAdjustment extends Adjustment{
     private void revalidateRects(){
         for(AdjustRect ar: adjustRects){
             getRectangle(ar);
+        }
+    }
+
+    private IntervalSet getCresDecrIntervalSet(Line line, AdjustType adjustType) {
+        switch (adjustType) {
+            case CRESCENDOY:
+                return line.getCrescendo();
+            case DIMINUENDOY:
+                return line.getDiminuendo();
+            default:
+                throw new IllegalArgumentException(String.valueOf(adjustType));
         }
     }
 }

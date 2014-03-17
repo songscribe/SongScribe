@@ -22,10 +22,7 @@ Created on Jun 24, 2006
 package songscribe.ui.musicsheetdrawer;
 
 import org.apache.log4j.Logger;
-import songscribe.data.Interval;
-import songscribe.data.IntervalSet;
-import songscribe.data.SlurData;
-import songscribe.data.TupletIntervalData;
+import songscribe.data.*;
 import songscribe.music.*;
 import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
@@ -451,6 +448,37 @@ public abstract class BaseMsDrawer {
                     drawEndings(g2, l, line.getNote(repeatRightPos+1).getXPos(), line.getNote(iv.getB()).getXPos()+2*(int)crotchetWidth, "2.");
                 }
             }
+
+            // drawing crescendo and diminuendo
+            g2.setStroke(lineStroke);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            for(ListIterator<Interval> li = line.getCrescendo().listIterator();li.hasNext();){
+                Interval iv = li.next();
+                Note startNote = line.getNote(iv.getA());
+                Note endNote = line.getNote(iv.getB());
+                g2.drawLine(startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
+                            ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
+                            endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
+                            ms.getNoteYPos(5, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
+                g2.drawLine(startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
+                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
+                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
+                        ms.getNoteYPos(7, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
+            }
+            for(ListIterator<Interval> li = line.getDiminuendo().listIterator();li.hasNext();){
+                Interval iv = li.next();
+                Note startNote = line.getNote(iv.getA());
+                Note endNote = line.getNote(iv.getB());
+                g2.drawLine(startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
+                        ms.getNoteYPos(5, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
+                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
+                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
+                g2.drawLine(startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
+                        ms.getNoteYPos(7, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
+                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
+                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
+            }
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
     }
 
