@@ -158,13 +158,13 @@ public class NotesMenu extends JMenu {
 
     private JMenu createCresDecrMenu() {
         JMenu menu = new JMenu("Crescendo & Diminuendo");
-        menu.setIcon(mainFrame.blankIcon);
-        menu.add(new NotesMenuItem("Crescendo", "blank.png", new ActionListener() {
+        menu.setIcon(new ImageIcon(MainFrame.getImage("crescendo.png")));
+        menu.add(new NotesMenuItem("Crescendo", "crescendo.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.getMusicSheet().crescendoOrDiminuendoSelectedNotes(true);
             }
         }));
-        menu.add(new NotesMenuItem("Diminuendo", "blank.png", new ActionListener() {
+        menu.add(new NotesMenuItem("Diminuendo", "diminuendo.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.getMusicSheet().crescendoOrDiminuendoSelectedNotes(false);
             }

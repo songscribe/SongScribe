@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.xml.sax.SAXException;
 import songscribe.IO.CompositionIO;
+import songscribe.Version;
 import songscribe.data.PropertyChangeListener;
 import songscribe.music.*;
 import songscribe.ui.mainframeactions.*;
@@ -405,6 +406,9 @@ public class MainFrame extends JFrame {
     protected void makeCommonHelpMenu(JMenu helpMenu) {
         helpMenu.add(new DialogOpenAction(this, "Check for Update...", new ImageIcon(getImage("download_manager.png")), UpdateDialog.class));
         helpMenu.add(new DialogOpenAction(this, "Report a Bug", new ImageIcon(getImage("bug.png")), ReportBugDialog.class));
+        if (new File(WhatsNewDialog.WHATSNEWFILE).exists()) {
+            helpMenu.add(new DialogOpenAction(this, "What's new in " + Version.PUBLIC_VERSION, "blank.png", WhatsNewDialog.class));
+        }
         if(!Utilities.isMac()) {
             helpMenu.add(aboutAction);
         }
@@ -603,14 +607,20 @@ public class MainFrame extends JFrame {
         try{
             MainFrame mf = new MainFrame();
             mf.initFrame();
-            try{
-                if(mf.properties.getProperty(Constants.SHOWTIP).equals(Constants.TRUEVALUE)){
-                    new TipFrame(mf);
+
+            if (mf.properties.getProperty(Constants.SHOWWHATSNEW + Version.PUBLIC_VERSION) == null &&
+                    new File(WhatsNewDialog.WHATSNEWFILE).exists()) {
+                mf.properties.setProperty(Constants.SHOWWHATSNEW + Version.PUBLIC_VERSION, Constants.TRUEVALUE);
+                new WhatsNewDialog(mf).setVisible(true);
+            } else {
+                try{
+                    if(mf.properties.getProperty(Constants.SHOWTIP).equals(Constants.TRUEVALUE)){
+                        new TipFrame(mf);
+                    }
+                }catch(IOException e){
+                    hideSplash();
+                    mf.properties.setProperty(Constants.SHOWTIP, Constants.FALSEVALUE);
                 }
-            }catch(IOException e){
-                hideSplash();
-                mf.showErrorMessage("Cannot read the tip file");
-                mf.properties.setProperty(Constants.SHOWTIP, Constants.FALSEVALUE);
             }
 
             if (Utilities.isMac())

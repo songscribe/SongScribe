@@ -41,6 +41,7 @@ public class Constants {
     public static final String COLORIZENOTE = "colorizenote";
     public static final String TIPINDEX = "tipindex";
     public static final String SHOWTIP = "showtip";
+    public static final String SHOWWHATSNEW = "showwhatsnew";
     public static final String TRUEVALUE = "true";
     public static final String FALSEVALUE = "false";
     public static final String ACCELERATOR_KEYS = "AcceleratorKeys";
