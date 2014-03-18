@@ -43,8 +43,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -134,6 +135,14 @@ public class UpdateDialog extends MyDialog{
         }
 
         public void run() {
+            if (!automatic && !isWriteEnabledForUpdate())
+            {
+                mainFrame.showErrorMessage("In order to update you need to quit " + MainFrame.PACKAGENAME
+                        + " and launch it in administrator mode.\n" + "Right click on " + mainFrame.PROGNAME
+                        + " and click on 'Run as administrator', then try the update again.");
+                return;
+            }
+            
             byte buf[] = new byte[1024];
 
             String[] updateBaseURLs = { mainFrame.getProperties().getProperty(Constants.UPDATEURL1),
@@ -224,8 +233,15 @@ public class UpdateDialog extends MyDialog{
                     if(!automatic)JOptionPane.showMessageDialog(dialogPanel, "No update is available. You already have the lastest version.", mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }else if(automatic){
-                    int answ = JOptionPane.showConfirmDialog(dialogPanel, "New update is available.\nThe size to download is "+formatBytes(fileSum)+"\nDo you want to update?", mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION);
-                    if(answ==JOptionPane.NO_OPTION)return;
+                    if (isWriteEnabledForUpdate()) {
+                        int answ = JOptionPane.showConfirmDialog(dialogPanel, "New update is available.\nThe size to download is "+formatBytes(fileSum)+"\nDo you want to update?", mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION);
+                        if(answ==JOptionPane.NO_OPTION)return;
+                    } else {
+                        mainFrame.showErrorMessage("New update is available, however you cannot update, because " + MainFrame.PACKAGENAME + " is not running in administrator mode.\n" +
+                                "Quit " + MainFrame.PACKAGENAME + " now, right click on " + mainFrame.PROGNAME + " icon and click on 'Run as administrator'");
+                        mainFrame.properties.setProperty(Constants.LASTAUTOUPDATE, "0");
+                        return;
+                    }
                 }
 
                 downloadCancelled = false;
@@ -288,6 +304,24 @@ public class UpdateDialog extends MyDialog{
             } catch (CannotUpdateException e) {
                 if(upd!=null)upd.setVisible(false);
                 mainFrame.showErrorMessage("Updating failed.");
+            }
+        }
+
+        public boolean isWriteEnabledForUpdate()
+        {
+            File file = new File("probeupdate" + new Random().nextInt());
+
+            try
+            {
+                return file.createNewFile();
+            }
+            catch (IOException e)
+            {
+                return false;
+            }
+            finally
+            {
+                file.delete();
             }
         }
     }
