@@ -23,8 +23,18 @@ Created on 2005.01.05.,14:24:51
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
-import songscribe.data.*;
-import songscribe.music.*;
+import songscribe.data.Interval;
+import songscribe.data.IntervalSet;
+import songscribe.data.MyBorder;
+import songscribe.data.PropertyChangeListener;
+import songscribe.data.TupletIntervalData;
+import songscribe.music.Composition;
+import songscribe.music.Crotchet;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.RepeatLeftRight;
 import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.adjustment.NoteXPosAdjustment;
 import songscribe.ui.adjustment.VerticalAdjustment;
@@ -37,9 +47,19 @@ import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Csaba Kávai
@@ -554,7 +574,10 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     private void insertActiveNote(int xIndex, Line line) {
         if (activeNote != null) {
-            if(commonAddInsertModifyActiveNoteCommands(xIndex, line))return;
+            if(commonAddInsertModifyActiveNoteCommands(xIndex, line)) {
+                postCommonAddInsertModifyActiveNoteCommands(line, line.noteCount()-1);
+                return;
+            }
             //if the user tries to insert into triplet, he will get an error message
             Interval iv = line.getTuplets().findInterval(xIndex-1);
             if(iv!=null && xIndex-1<iv.getB()){
@@ -575,7 +598,10 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     private void modifyActiveNote(int xIndex, Line line) {
         if (activeNote != null) {
-            if(commonAddInsertModifyActiveNoteCommands(xIndex, line))return;
+            if(commonAddInsertModifyActiveNoteCommands(xIndex, line)) {
+                postCommonAddInsertModifyActiveNoteCommands(line, line.noteCount()-1);
+                return;
+            }
             Note oldNote = line.getNote(xIndex);
             if(line.getTuplets().findInterval(xIndex)!=null && oldNote.getNoteType()!=activeNote.getNoteType()){
                 mainFrame.showErrorMessage("Cannot modify a triplet with different note type.");
