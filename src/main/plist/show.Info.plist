@@ -50,7 +50,7 @@
 		<key>MainClass</key>
 		<string>songscribe.Runner</string>
 		<key>VMOptions</key>
-		<string>-Dsongscribe=ss -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Dapple.awt.graphics.UseQuartz=true</string>
+		<string>-Dsongscribe=ss -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true</string>
 		<key>WorkingDirectory</key>
 		<string>$APP_PACKAGE/Contents/Resources/Java</string>
 	</dict>
