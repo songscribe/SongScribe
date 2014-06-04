@@ -23,7 +23,11 @@ package songscribe.ui.musicsheetdrawer;
 
 import org.apache.log4j.Logger;
 import songscribe.data.FileGeneralPath;
-import songscribe.music.*;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
@@ -75,6 +79,7 @@ public class FughettaDrawer extends BaseMsDrawer{
     private static final double lowerFlag3Y = size/0.9078014d;
     private static final double flagYLength = 7;
     private static final double graceNoteScale = 0.6;
+    private static final float SEMIQUAVER_AND_DEMISEMIQUAVER_FLAG_COLLAPSE = 5f;
 
     private static final String trebleclef = "\uf026";
                                                                      //  NATURAL   FLAT      SHARP     DOUBLE-NATURAL  DOUBLE-FLAT     D-SHARP   NATURAL-FLAT    NATURAL-SHARP
@@ -281,8 +286,8 @@ public class FughettaDrawer extends BaseMsDrawer{
         if(nt.isNote() && nt!=NoteType.SEMIBREVE){
             double stemLongitude = 0;
             if (isTempoNote) stemLongitude -= tempoStemShortitude;
-            if (nt==NoteType.SEMIQUAVER && !beamed) stemLongitude+=flagYLength;
-            if (nt==NoteType.DEMISEMIQUAVER  && !beamed) stemLongitude+=2*flagYLength;
+            if (nt==NoteType.SEMIQUAVER && !beamed) stemLongitude+=flagYLength-SEMIQUAVER_AND_DEMISEMIQUAVER_FLAG_COLLAPSE;
+            if (nt==NoteType.DEMISEMIQUAVER  && !beamed) stemLongitude+=2*flagYLength-SEMIQUAVER_AND_DEMISEMIQUAVER_FLAG_COLLAPSE;
             if(upper){
                 double stemX = nt==NoteType.MINIM?upperMinimStemX:upperCrotchetStemX;
                 g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2()-stemLongitude));
@@ -293,26 +298,27 @@ public class FughettaDrawer extends BaseMsDrawer{
         //drawing the flag(s)
         if(!beamed && nt.isBeamable()){
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            float shortitude = nt==NoteType.QUAVER ? 0f : SEMIQUAVER_AND_DEMISEMIQUAVER_FLAG_COLLAPSE;
             if(upper){
-                if (isTempoNote) g2.translate(0, tempoStemShortitude);;
-                g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY);
+                if (isTempoNote) g2.translate(0, tempoStemShortitude);
+                g2.drawString(mainUpperFlag, (float)upperFlagX, (float)upperFlagY+shortitude);
                 if(nt!=NoteType.QUAVER){
-                    g2.drawString(secondUpperFlag, (float)upperFlagX, (float)upperFlag2Y);
+                    g2.drawString(secondUpperFlag, (float)upperFlagX, (float)upperFlag2Y+shortitude);
                     if(nt!=NoteType.SEMIQUAVER){
-                        g2.drawString(secondUpperFlag, (float)upperFlagX, (float)upperFlag3Y);
+                        g2.drawString(secondUpperFlag, (float)upperFlagX, (float)upperFlag3Y+shortitude);
                     }
                 }
-                if (isTempoNote) g2.translate(0, -tempoStemShortitude);;
+                if (isTempoNote) g2.translate(0, -tempoStemShortitude);
             }else{
-                if (isTempoNote) g2.translate(0, -tempoStemShortitude);;
-                g2.drawString(mainLowerFlag, 0, (float)lowerFlagY);
+                if (isTempoNote) g2.translate(0, -tempoStemShortitude);
+                g2.drawString(mainLowerFlag, 0, (float)lowerFlagY-shortitude);
                 if(nt!=NoteType.QUAVER){
-                    g2.drawString(secondLowerFlag, 0, (float)lowerFlag2Y);
+                    g2.drawString(secondLowerFlag, 0, (float)lowerFlag2Y-shortitude);
                     if(nt!=NoteType.SEMIQUAVER){
-                        g2.drawString(secondLowerFlag, 0, (float)lowerFlag3Y);
+                        g2.drawString(secondLowerFlag, 0, (float)lowerFlag3Y-shortitude);
                     }
                 }
-                if (isTempoNote) g2.translate(0, tempoStemShortitude);;
+                if (isTempoNote) g2.translate(0, tempoStemShortitude);
             }
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
@@ -321,7 +327,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         AffineTransform at = g2.getTransform();
         if(note.getYPos()%2==0)g2.translate(0, -size/8);
         if(note.getNoteType()==NoteType.SEMIBREVE)g2.translate(3.5, 0);
-        if(note.getNoteType().isBeamable() && !beamed && upper)g2.translate(5, 0);
+        if(note.getNoteType().isBeamable() && !beamed && upper)g2.translate(8, 0);
         for(int i=0;i<note.getDotted();i++){
             g2.fill(noteDots[i]);
         }
