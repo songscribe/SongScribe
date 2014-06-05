@@ -39,18 +39,24 @@
 	<string>${project.version}.${build.version}</string>
 	<key>CFBundleShortVersionString</key>
 	<string>${project.version}</string>
-	<key>Java</key>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>JavaVM</key>
 	<dict>
 		<key>ClassPath</key>
-		<array>
-			<string>$JAVAROOT/SongScribe.jar</string>
-		</array>
+		<string>$APP_PACKAGE/Contents/Resources/Java/SongScribe.jar</string>
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
 		<string>songscribe.Runner</string>
-		<key>VMOptions</key>
-		<string>-Dsongscribe=sb -Xms256m -Xmx512m -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true</string>
+		<key>VMOptionArray</key>
+		<array>
+			<string>-Dsongscribe=sb</string>
+			<string>-Xms256m</string>
+			<string>-Xmx512m</string>
+			<string>-Dapple.laf.useScreenMenuBar=true</string>
+			<string>-Dsun.java2d.d3d=false</string>
+		</array>
 		<key>WorkingDirectory</key>
 		<string>$APP_PACKAGE/Contents/Resources/Java</string>
 	</dict>
