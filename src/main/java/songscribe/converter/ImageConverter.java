@@ -18,13 +18,16 @@ public class ImageConverter {
     @ArgumentDescribe("Resolution in DPI")
     public int resolution=100;
 
+    @ArgumentDescribe("Suffix to add to filename")
+    public String suffix="";
+
     @ArgumentDescribe("Export image without lyrics under the song")
     public boolean withoutLyrics;
 
     @ArgumentDescribe("Export image without song title")
     public boolean withoutSongTitle;
 
-    @ArgumentDescribe("Margin around the image in pixels.")
+    @ArgumentDescribe("Margin around the image in pixels")
     public int margin=10;
 
     @ArgumentDescribe("Top margin. If not present, the size of margin parameter is applied.")
@@ -38,7 +41,7 @@ public class ImageConverter {
     @ArgumentDescribe("Bottom margin. If not present, the size of margin parameter is applied.")
     @NoDefault
     public int bottommargin=-1;
-    
+
     @ArgumentDescribe("Right margin. If not present, the size of margin parameter is applied.")
     @NoDefault
     public int rightmargin=-1;
@@ -78,8 +81,10 @@ public class ImageConverter {
             String fileName = file.getName();
             int dotPos = fileName.indexOf('.');
             if(dotPos>0)fileName=fileName.substring(0, dotPos);
+            String parent = file.getParent();
+            String path = parent + File.separator + fileName + suffix;
             try {
-                ImageIO.write(image, type, new File(fileName+"."+type.toLowerCase()));
+                ImageIO.write(image, type, new File(path+"."+type.toLowerCase()));
             } catch (IOException e) {
                 System.out.println("Could not convert "+file.getName());
             }
