@@ -12,8 +12,8 @@ import java.io.IOException;
 
 public class ImageConverter {
 
-    @ArgumentDescribe("The type of resulting image. Values: [ GIF | JPG | PNG | BMP ]")
-    public String type="GIF";
+    @ArgumentDescribe("The type of resulting image. Values: [ gif | jpg | png | bmp ]")
+    public String type="png";
 
     @ArgumentDescribe("Resolution in DPI")
     public int resolution=100;
@@ -84,7 +84,7 @@ public class ImageConverter {
             String parent = file.getParent();
             String path = parent + File.separator + fileName + suffix;
             try {
-                ImageIO.write(image, type, new File(path+"."+type.toLowerCase()));
+                ImageIO.write(image, type.toUpperCase(), new File(path+"."+type.toLowerCase()));
             } catch (IOException e) {
                 System.out.println("Could not convert "+file.getName());
             }
