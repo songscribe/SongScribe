@@ -184,10 +184,8 @@ public class MainFrame extends JFrame {
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
         init();
-        pack();
         musicSheet.requestFocusInWindow();
-        Rectangle mxBound = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        setSize(Math.min(getSize().width, mxBound.width), Math.min(getSize().height, mxBound.height));
+        setFrameSize();
         setLocation(Math.max(CENTERPOINT.x-getWidth()/2, 0), Math.max(CENTERPOINT.y-getHeight()/2, 0));
         setVisible(true);
         fireMusicChanged(this);
@@ -401,6 +399,13 @@ public class MainFrame extends JFrame {
         modeActions[musicSheet.getMode().ordinal()].actionPerformed(null);
         controlActions[musicSheet.getControl().ordinal()].actionPerformed(null);
         insertMenu.doClickNote(NoteType.CROTCHET.name());
+    }
+
+    private void setFrameSize() {
+        Dimension size = getLayout().preferredLayoutSize(this);
+        int scrollBarWidth = ((Integer) UIManager.get("ScrollBar.width")).intValue();
+        Rectangle mxBound = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        setSize(Math.min(size.width + scrollBarWidth, mxBound.width), Math.min(size.height, mxBound.height));
     }
 
     protected void makeCommonHelpMenu(JMenu helpMenu) {
@@ -706,6 +711,7 @@ public class MainFrame extends JFrame {
             CompositionIO.DocumentReader dr = new CompositionIO.DocumentReader(this);
             saxParser.parse(openFile, dr);
             musicSheet.setComposition(dr.getComposion());
+            setFrameSize();
             if(setTitle)setSaveFile(openFile);
         } catch (SAXException e1) {
             showErrorMessage("Could not open the file "+openFile.getName()+", because it is damaged.");
