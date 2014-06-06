@@ -97,7 +97,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         NOTEDIST.put(NoteType.PASTE, 0);
     }
 
-    private static final int INVISIBLELINESNUMBELOW = 3;
+    private static final int INVISIBLELINESNUMBELOW = 4;
     private static final int INVISIBLELINESNUMABOVE = 3;
     public static final int VISIBLELINENUM = 5;
 
