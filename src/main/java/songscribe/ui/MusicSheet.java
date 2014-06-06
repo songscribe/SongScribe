@@ -117,7 +117,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     //musicsheet image acceleration
     private boolean repaintImage = true;
     private int playingLine=-1, playingNote=-1;
-    private Point sheetSize;
+    private Dimension sheetSize;
 
     private boolean playInsertingNote;
     private NoteXPosAdjustment noteXPosAdjustment;
@@ -242,7 +242,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void initComponent(){
         composition = new Composition(mainFrame);
-        sheetSize = new Point((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH));
+        sheetSize = new Dimension((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH));
         viewChanged();
         noteXPosAdjustment = new NoteXPosAdjustment(this);
         verticalAdjustment = new VerticalAdjustment(this);
@@ -315,7 +315,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(Color.white);
-        g2.fillRect(0, 0, sheetSize.x, sheetSize.y);
+        g2.fillRect(0, 0, sheetSize.width, sheetSize.height);
         drawer.drawMusicSheet(g2, true, 1d);
 
         if(mode==Mode.NOTEEDIT){
