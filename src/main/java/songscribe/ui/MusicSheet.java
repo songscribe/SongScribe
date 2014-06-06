@@ -116,8 +116,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     //musicsheet image acceleration
     private boolean repaintImage = true;
-    private BufferedImage msImage;
     private int playingLine=-1, playingNote=-1;
+    private Point sheetSize;
 
     private boolean playInsertingNote;
     private NoteXPosAdjustment noteXPosAdjustment;
@@ -235,12 +235,14 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         } catch (Exception e) {
             drawers[1] = null;
         }
-        drawer = drawers[0];
+
+        // We use the FughettaDrawer as the default now
+        drawer = drawers[1];
     }
 
     public void initComponent(){
         composition = new Composition(mainFrame);
-        msImage = new BufferedImage((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH), BufferedImage.TYPE_INT_RGB);
+        sheetSize = new Point((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH));
         viewChanged();
         noteXPosAdjustment = new NoteXPosAdjustment(this);
         verticalAdjustment = new VerticalAdjustment(this);
@@ -310,18 +312,11 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(msImage==null)return;
         Graphics2D g2 = (Graphics2D) g;
-
-        if(repaintImage){
-            Graphics2D g2MsImage = msImage.createGraphics();
-            g2MsImage.setPaint(Color.white);
-            g2MsImage.fillRect(0, 0, msImage.getWidth(), msImage.getHeight());
-            drawer.drawMusicSheet(g2MsImage, true, 1d);
-            g2MsImage.dispose();
-            repaintImage = false;
-        }
-        g2.drawImage(msImage, 0, 0, null);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(Color.white);
+        g2.fillRect(0, 0, sheetSize.x, sheetSize.y);
+        drawer.drawMusicSheet(g2, true, 1d);
 
         if(mode==Mode.NOTEEDIT){
             //drawing the activeNote
