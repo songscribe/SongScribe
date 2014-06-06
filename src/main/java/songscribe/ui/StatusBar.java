@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -37,6 +37,7 @@ import java.util.TimerTask;
  */
 public class StatusBar extends JPanel{
     private static final long MEMPROGRESSREFRESHRATE = 1000;
+    private static final int HEIGHT = 26;
     private final MemoryMXBean mmb = ManagementFactory.getMemoryMXBean();
 
     private MainFrame mainFrame;
@@ -49,7 +50,7 @@ public class StatusBar extends JPanel{
         this.mainFrame = mainFrame;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBorder(BorderFactory.createEtchedBorder());
-        Dimension size = new Dimension(120, 20);
+        Dimension size = new Dimension(120, HEIGHT);
         JPanel pitchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pitchPanel.add(pitchLabel);
         pitchPanel.setPreferredSize(size);
@@ -74,15 +75,15 @@ public class StatusBar extends JPanel{
         controlPanel.setToolTipText("Control");
         controlPanel.addMouseListener(new ControlMouseListener());
         add(controlPanel);
-        if(mainFrame.getProperties().getProperty(Constants.SHOWMEMUSEAGE).equals(Constants.TRUEVALUE)) { 
+        if(mainFrame.getProperties().getProperty(Constants.SHOWMEMUSEAGE).equals(Constants.TRUEVALUE)) {
             memProgress = new JProgressBar();
-            memProgress.setMaximumSize(new Dimension(50, 20));
+            memProgress.setMaximumSize(new Dimension(50, HEIGHT));
             memProgress.setStringPainted(true);
             add(createSeparator());
             add(Box.createHorizontalStrut(4));
             add(memProgress);
             JButton trashButton = new JButton(new ImageIcon(MainFrame.getImage("trashcan_full.png")));
-            size = new Dimension(20, 20);
+            size = new Dimension(20, HEIGHT);
             trashButton.setPreferredSize(size);
             trashButton.setMaximumSize(size);
             trashButton.setToolTipText("Run Garbage Collector");
@@ -99,7 +100,7 @@ public class StatusBar extends JPanel{
 
     private JSeparator createSeparator() {
         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-        separator.setMaximumSize(new Dimension(2, 20));
+        separator.setMaximumSize(new Dimension(2, HEIGHT));
         return separator;
     }
 
