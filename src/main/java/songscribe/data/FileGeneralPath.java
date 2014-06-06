@@ -92,6 +92,7 @@ public class FileGeneralPath {
         JFrame f = new JFrame();
         f.pack();
         Graphics2D g2 = (Graphics2D) f.getGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Shape outline = maestro.createGlyphVector(g2.getFontRenderContext(), Character.toString(ch)).getOutline();
         return outline;
     }
@@ -109,6 +110,7 @@ public class FileGeneralPath {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.translate(50, 50);
                 g2.fill(gm);
                 //g2.translate(50, 0);

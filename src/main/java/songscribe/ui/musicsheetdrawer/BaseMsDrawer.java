@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -190,7 +190,6 @@ public abstract class BaseMsDrawer {
                     }
                     int yPos = ms.getNoteYPos(note.getYPos(), l)+(tieUpper ? MusicSheet.LINEDIST/2+2 : -MusicSheet.LINEDIST/2-2);
                     g2.setStroke(lineStroke);
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
                     tie.moveTo(xPos, yPos);
                     tie.quadTo(xPos+gap/2, yPos+(tieUpper?6:-6), xPos+gap, yPos);
@@ -198,7 +197,6 @@ public abstract class BaseMsDrawer {
                     tie.closePath();
                     g2.draw(tie);
                     g2.fill(tie);
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                     /*g2.setPaint(Color.red);
                     g2.drawRect(xPos, yPos, 1, 1);
                     g2.setPaint(Color.green);
@@ -267,7 +265,7 @@ public abstract class BaseMsDrawer {
                     drawAntialiasedString(g2, note.getAnnotation().getAnnotation(), getAnnotationXPos(g2, note), getAnnotationYPos(l, note));
                 }
 
-                //drawing the trill                
+                //drawing the trill
                 if(note.isTrill() && (n==0 || !line.getNote(n-1).isTrill())){
                     int trillEnd=n+1;
                     while(trillEnd<line.noteCount() && line.getNote(trillEnd).isTrill())trillEnd++;
@@ -307,7 +305,6 @@ public abstract class BaseMsDrawer {
                     slurData = new SlurData(interval.getData());
                 }
                 g2.setStroke(lineStroke);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
                 int xPos1 = firstNote.getXPos()+slurData.getxPos1();
                 int xPos2 = lastNote.getXPos()+slurData.getxPos2();
@@ -321,7 +318,6 @@ public abstract class BaseMsDrawer {
                 tie.closePath();
                 g2.draw(tie);
                 g2.fill(tie);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 /*g2.setPaint(Color.red);
                 g2.drawRect(xPos, yPos, 1, 1);
                 g2.setPaint(Color.green);
@@ -333,7 +329,6 @@ public abstract class BaseMsDrawer {
             //drawing beamings
             for(ListIterator<Interval> li = line.getBeamings().listIterator();li.hasNext();){
                 Interval interval = li.next();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 Line2D.Double beamLine;
                 Note firstNote = line.getNote(interval.getA());
                 Note lastNote = line.getNote(interval.getB());
@@ -356,7 +351,6 @@ public abstract class BaseMsDrawer {
                                             beamLine.x2+10, beamLine.y2-10*(beamLine.y1-beamLine.y2)/(beamLine.x2-beamLine.x1));
                 drawBeaming(BEAMLEVELS.length-1, interval.getA(), interval.getB(), line, beamLine, g2, interval.getA(), interval.getB(), false);
                 g2.setClip(clip);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
             //drawing the tuplets
@@ -396,12 +390,10 @@ public abstract class BaseMsDrawer {
                     ry += TupletIntervalData.getVerticalPosition(iv);
                 }
                 g2.setStroke(lineStroke);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 TupletCalc tc = new TupletCalc(lx, ly, rx, ry);
 
                 g2.draw(new QuadCurve2D.Float(lx, ly, (float)(cx-lx)/4+lx, tc.getRate((cx-lx)/4+lx)-10, cx-7, tc.getRate(cx-7)-8));
                 g2.draw(new QuadCurve2D.Float(cx+7, tc.getRate(cx+7)-8, (float)(rx-cx)*3/4+cx, tc.getRate((rx-cx)*3/4+cx)-10, rx, ry));
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 g2.setFont(tupletFont);
                 drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(iv)), cx-3, tc.getRate(cx-3)-5);
 
@@ -451,7 +443,6 @@ public abstract class BaseMsDrawer {
 
             // drawing crescendo and diminuendo
             g2.setStroke(lineStroke);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             for(ListIterator<Interval> li = line.getCrescendo().listIterator();li.hasNext();){
                 Interval iv = li.next();
                 Note startNote = line.getNote(iv.getA());
@@ -478,7 +469,6 @@ public abstract class BaseMsDrawer {
                         endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
                         ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
             }
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
     }
 
@@ -567,7 +557,7 @@ public abstract class BaseMsDrawer {
             int begin=noteIndex-1, end=noteIndex+1;
             while(begin>0 && line.getNote(begin).getNoteType().isGraceNote())begin--;
             while(end<line.noteCount() && line.getNote(end).getNoteType().isGraceNote())end++;
-            return begin>=0 && isNoteTypeInLevel(line, begin, level) && end<line.noteCount() && isNoteTypeInLevel(line, end, level); 
+            return begin>=0 && isNoteTypeInLevel(line, begin, level) && end<line.noteCount() && isNoteTypeInLevel(line, end, level);
         }
     }
 
@@ -719,7 +709,7 @@ public abstract class BaseMsDrawer {
         g2.setFont(ms.getComposition().getGeneralFont());
         drawAntialiasedString(g2, tempoBuilder.toString(),
                 n.getXPos()+(tempo.isShowTempo()?crotchetWidth+5+(tempoTypeNote.getDotted()==1 || tempoTypeNote.getNoteType()==NoteType.QUAVER ? 6 : 0) : 0),
-                        yPos);        
+                        yPos);
     }
 
     private void drawBeatChange(Graphics2D g2, int line, Note note){
@@ -770,7 +760,6 @@ public abstract class BaseMsDrawer {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.drawLine(x1, y-3, x2, y);
             g2.drawLine(x1, y+3, x2, y);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
         int dir = note.isUpper() ? 1 : -1;
         int durY = ms.getNoteYPos(note.getYPos()+dir*2+dir*(1-note.getYPos()%2), line);
@@ -789,25 +778,21 @@ public abstract class BaseMsDrawer {
     protected void drawAntialiasedString(Graphics2D g2, String str, int x, int y){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(str, x, y);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     protected void drawAntialiasedString(Graphics2D g2, String str, double x, double y){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(str, (float)x, (float)y);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     protected void drawAntialiasedStringZoomed(Graphics2D g2, String str, int x, int y, float zoom){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(str, x/zoom, y/zoom);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     protected void drawAntialiasedStringZoomed(Graphics2D g2, String str, float x, float y, float zoom){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(str, x/zoom, y/zoom);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     private void drawTextBox(Graphics2D g2, String str, int y, float xAlignment, int xTranslate){
@@ -870,7 +855,6 @@ public abstract class BaseMsDrawer {
         yUpper1 += -3 * dir * MusicSheet.HALFLINEDIST + dir * 5;
         yUpper2 += dir * MusicSheet.HALFLINEDIST + dir * 4;
         g2.drawLine(x1-5, yUpper1, x2-3, yUpper2);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
         //drawing steve-longitudes
         g2.setStroke(lineStroke);

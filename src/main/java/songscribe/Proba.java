@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on 2005.10.18. 
+Created on 2005.10.18.
 */
 package songscribe;
 
@@ -36,7 +36,7 @@ public class Proba {
 
         /*Calendar c = Calendar.getInstance();
         c.set(2007, 11, 31, 23, 59, 59);
-        System.out.println(c.getTimeInMillis());*/        
+        System.out.println(c.getTimeInMillis());*/
         /*MyComponent c = new MyComponent();
         JFrame frame = new JFrame("Proba");
         frame.addKeyListener(c);
@@ -82,12 +82,11 @@ public class Proba {
 
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
-            //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.drawString(Integer.toString(s), 0, 20);
 
             g2.setFont(fughetta.deriveFont((float)s));
 
-            //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             //for(int i=-2;i<=2;i++){
             //    g2.drawLine(0, y+i*s/4, 400, y+i*s/4);
             //}

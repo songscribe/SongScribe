@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -420,7 +420,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         if(activeNote.getNoteType()==NoteType.REPEATRIGHT &&
                 xIndex<line.noteCount() && line.getNote(xIndex).getNoteType()==NoteType.REPEATLEFT){
             Note repeatLeftRight = new RepeatLeftRight();
-            repeatLeftRight.setXPos(line.getNote(xIndex).getXPos());                        
+            repeatLeftRight.setXPos(line.getNote(xIndex).getXPos());
             line.setNote(xIndex, repeatLeftRight);
             return true;
         }
@@ -890,7 +890,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         repaintImage = true;
         repaint();
     }
-    
+
     public void invertLyricsUnderRests() {
         try {
             if (selectedNotesLine == -1 || selectionBegin != selectionEnd) {
@@ -899,20 +899,20 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
             Line line = composition.getLine(selectedNotesLine);
             Note note = line.getNote(selectionBegin);
-    
+
             if (!note.getNoteType().isRest()) {
-                throw new IllegalArgumentException();     
+                throw new IllegalArgumentException();
             }
-            
+
             note.setForceSyllable(!note.isForceSyllable());
-    
+
             spellLyrics(line);
             composition.modifiedComposition();
             repaintImage = true;
             repaint();
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(mainFrame, "You must select one rest to allow / disallow lyrics.",
-                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);    
+                    mainFrame.PROGNAME, JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -1079,7 +1079,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
         spellLyrics();
         setActiveNotePositionToEnd();
-        mainFrame.setMode(Mode.NOTEEDIT);        
+        mainFrame.setMode(Mode.NOTEEDIT);
         mainFrame.fireMusicChanged(null);
         viewChanged();
         repaintImage = true;
@@ -1662,7 +1662,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                        if(activeNotePoint.line<composition.lineCount()-1){
                            activeNotePoint.line++;
                            activeNotePoint.xIndex=0;
-                           activeNotePoint.movement=composition.getLine(activeNotePoint.line).noteCount()==0 ? 0 : FIRSTNOTEINLINEMOVEMENT;      
+                           activeNotePoint.movement=composition.getLine(activeNotePoint.line).noteCount()==0 ? 0 : FIRSTNOTEINLINEMOVEMENT;
                        }else return;
                    }else if(activeNotePoint.movement==0){
                        activeNotePoint.xIndex++;
@@ -1796,6 +1796,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void createMusicSheetImageForExport(BufferedImage image, Color background, double scale, MyBorder border){
         Graphics2D g2 = image.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(background);
         g2.fillRect(0, 0, image.getWidth(), image.getHeight());
         BaseMsDrawer origDrawer = drawer;

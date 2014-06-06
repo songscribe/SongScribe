@@ -649,8 +649,8 @@ public class MainFrame extends JFrame {
         splashWindow.setVisible(true);
         splashWindow.getRootPane().setGlassPane(new JComponent(){
             protected void paintComponent(Graphics g) {
-                g.setFont(new Font("Serif", Font.BOLD, 20));
                 ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setFont(new Font("Serif", Font.BOLD, 20));
                 g.drawString("Version " + Utilities.getPublicVersion(), 20, 503);
                 g.drawString("© 2006-" + Utilities.getYear() + " Himádri", 305, 503);
             }

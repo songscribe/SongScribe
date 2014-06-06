@@ -105,7 +105,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         borderPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
         borderPanel.add(this);
         borderPanel.setAlignmentX(0.5f);
-        scroll = new JScrollPane(borderPanel);        
+        scroll = new JScrollPane(borderPanel);
         int[] keyCodes = {KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT};
         for(int keyCode: keyCodes){
             Object o = new Object();
@@ -248,6 +248,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         repaintRect.add(selectionRect);
         intersection(repaintRect, currentAccRect);
         Graphics2D g2 = accImage.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.translate(repaintRect.x-currentAccRect.x, repaintRect.y-currentAccRect.y);
         paintStuff(g2, repaintRect);
         g2.dispose();
@@ -256,6 +257,8 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
 
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         if(!currentAccRect.contains(scroll.getViewport().getViewRect().intersection(new Rectangle(size)))){
             paintAcceleration();
         }
@@ -281,6 +284,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
 
     private void paintAcceleration(){
         Graphics2D g2 = accImage.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(getBackground());
         g2.fill(accShape);
         //calculating currentAccRect
@@ -340,7 +344,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
     public int getTotalPage(){
         return pages.size();
     }
-    
+
     private class BorderPanel extends JPanel implements Scrollable{
         public Dimension getPreferredScrollableViewportSize() {
             return size;

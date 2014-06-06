@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -169,6 +169,8 @@ public class FullScreenSheet extends JFrame implements MetaEventListener, Playba
             super.paintComponent(g);
 
             Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
             if(zoomedImage!=null){
                 g2.translate((getWidth()-zoomedImage.getWidth())/2, (getHeight()-zoomedImage.getHeight())/2);
                 g2.drawImage(zoomedImage, 0, 0, null);

@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -56,9 +56,9 @@ public class FontLister {
             int height = 360;
             image = new BufferedImage(256*width+1, 2*height+1, BufferedImage.TYPE_BYTE_GRAY);
             Graphics2D g2 = image.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setPaint(getBackground());
             g2.fillRect(0, 0, image.getWidth(), image.getHeight());
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             FontMetrics labelMetrics = g2.getFontMetrics(labelFont);
             g2.setPaint(Color.black);
             char[] ch = new char[1];

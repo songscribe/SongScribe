@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -54,8 +54,8 @@ public class Text extends PageComponent{
     }
 
     public void paintComponent(Graphics2D g2) {
-        g2.setFont(font);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setFont(font);
         int yPos = pos.y+firstLineHeight;
         for(Line line:lines){
             int xPos = pos.x;
@@ -66,7 +66,6 @@ public class Text extends PageComponent{
             g2.drawString(line.text, xPos, yPos);
             yPos+= lineHeight;
         }
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
 

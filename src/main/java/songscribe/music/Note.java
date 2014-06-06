@@ -401,7 +401,7 @@ public abstract class Note implements Cloneable {
     }
 
     public Accidental findLastPrefix(){
-        int thisPitchType = getPitchType();        
+        int thisPitchType = getPitchType();
         for(int i=line.getNoteIndex(this)-1;i>=0;i--){
             Note note = line.getNote(i);
             if(note.getPitchType()==thisPitchType && note.getAccidental()!=Accidental.NONE){
@@ -419,6 +419,7 @@ public abstract class Note implements Cloneable {
     public static Image clipNoteImage(Image noteImage, Rectangle noteRect, Color borderColor, Dimension size) {
         BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(Color.white);
         g2.fillRect(0, 0, img.getWidth(), img.getHeight());
         g2.drawImage(noteImage, (img.getWidth() - noteRect.width) / 2 - noteRect.x, (img.getHeight() - noteRect.height) / 2 - noteRect.y, null);

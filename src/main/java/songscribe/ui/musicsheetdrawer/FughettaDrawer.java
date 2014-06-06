@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -194,9 +194,7 @@ public class FughettaDrawer extends BaseMsDrawer{
                     break;
                 case BREATHMARK:
                     g2.scale(0.0625, 0.0625);
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.fill(breathMark);
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             }
             g2.setTransform(translatedTransform);
         }
@@ -252,9 +250,7 @@ public class FughettaDrawer extends BaseMsDrawer{
             g2.translate(note.getXPos()-5, ms.getNoteYPos(getFermataYPos(note), line)+12);
             g2.scale(0.0625, 0.0625);
             g2.scale(0.9, 0.8);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.fill(fermata);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             g2.setTransform(origTransform);
         }
 
@@ -278,9 +274,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         NoteType nt = note.getNoteType();
         String headStr = noteHead.get(nt);
         //drawing the notehead
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(headStr, 0, 0);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         //drawing the stem
         g2.setStroke(stemStroke);
         if(nt.isNote() && nt!=NoteType.SEMIBREVE){
@@ -297,7 +291,6 @@ public class FughettaDrawer extends BaseMsDrawer{
         }
         //drawing the flag(s)
         if(!beamed && nt.isBeamable()){
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             float shortitude = nt==NoteType.QUAVER ? 0f : SEMIQUAVER_AND_DEMISEMIQUAVER_FLAG_COLLAPSE;
             if(upper){
                 if (isTempoNote) g2.translate(0, tempoStemShortitude);
@@ -320,7 +313,6 @@ public class FughettaDrawer extends BaseMsDrawer{
                 }
                 if (isTempoNote) g2.translate(0, tempoStemShortitude);
             }
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
 
         //drawing the dots
@@ -331,7 +323,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         for(int i=0;i<note.getDotted();i++){
             g2.fill(noteDots[i]);
         }
-        g2.setTransform(at);        
+        g2.setTransform(at);
     }
 
     private void drawBarLine(Graphics2D g2, NoteType nt){
@@ -403,7 +395,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         g2.translate(x, y-size*tempoChangeZoomY/8.0);
         g2.scale(tempoChangeZoomX, tempoChangeZoomY);
         paintSimpleNote(g2, tempoNote, false, true, true);
-        g2.setTransform(at);        
+        g2.setTransform(at);
     }
 
     private static float[] baseAccidentalWidths=null;

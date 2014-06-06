@@ -1,4 +1,4 @@
-/*  
+/*
 Music of The Supreme song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -57,7 +57,7 @@ public class BeatChangeDialog extends MyDialog{
             component.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     bg.setSelected(rb.getModel(), true);
-                }                   
+                }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
                 public void mouseEntered(MouseEvent e) {}
@@ -123,7 +123,7 @@ public class BeatChangeDialog extends MyDialog{
             Dimension size = new Dimension(50, 30);
 
             public Dimension getPreferredSize() {
-                return size;                
+                return size;
             }
 
             public Dimension getSize() {
@@ -131,7 +131,9 @@ public class BeatChangeDialog extends MyDialog{
             }
 
             protected void paintComponent(Graphics g) {
-                mainFrame.getMusicSheet().getBestDrawer().drawBeatChange((Graphics2D)g, beatChange, 2, 27);
+                Graphics2D g2 = (Graphics2D)g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                mainFrame.getMusicSheet().getBestDrawer().drawBeatChange(g2, beatChange, 2, 27);
             }
         };
     }

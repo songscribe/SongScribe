@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -103,13 +103,12 @@ public final class NoteSelectionPanel extends SelectionPanel{
         Dimension vid = new Dimension(14, 8);
         BufferedImage louderImage = new BufferedImage(vid.width, vid.height, BufferedImage.TYPE_INT_RGB);
         g2 = louderImage.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(Color.white);
         g2.fillRect(0, 0, vid.width, vid.height);
         g2.setPaint(Color.black);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawLine(0, 0, vid.width-1, vid.height/2-1);
         g2.drawLine(0, vid.height-1, vid.width-1, vid.height/2-1);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g2.dispose();
         accentButton.setIcon(new ImageIcon(Note.clipNoteImage(louderImage, new Rectangle(vid), Color.orange, SELECTIONIMAGEDIM)));
         accentButton.setToolTipText("Accent (>)");

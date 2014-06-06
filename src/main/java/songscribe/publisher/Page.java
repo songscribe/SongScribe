@@ -41,6 +41,7 @@ public class Page {
     }
 
     public void paint(Graphics2D g2, int pageNumber, boolean drawDecorations, int startY, int endY) {
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Rectangle pageSize = book.getPageSize();
         Rectangle margin = book.getMargin(pageNumber);
         Shape clip = g2.getClip();
@@ -79,7 +80,7 @@ public class Page {
                     pn.getAlignment()==PageNumber.Alignment.BOOKINNER && pageNumber%2==1 ||
                     pn.getAlignment()==PageNumber.Alignment.BOOKOUTER && pageNumber%2==0){
                 pnX = margin.width-width;
-            }            
+            }
             int pnY = pn.getPlacement()==PageNumber.Placement.BOTTOM ? margin.height+pn.getSpaceFromMargin()+pn.getFont().getSize() : -pn.getSpaceFromMargin();
             g2.drawString(Integer.toString(pageNumber+1), pnX, pnY);
         }

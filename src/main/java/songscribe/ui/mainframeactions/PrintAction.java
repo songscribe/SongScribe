@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -63,7 +63,9 @@ public class PrintAction extends AbstractAction implements Printable{
         }
         double scale = pageFormat.getImageableWidth()/mainFrame.getMusicSheet().getSheetWidth();
         graphics.translate((int)pageFormat.getImageableX(), (int)pageFormat.getImageableY());
-        mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet((Graphics2D)graphics, false, scale);
+        Graphics2D g2 = (Graphics2D)graphics;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
         return PAGE_EXISTS;
     }
 }
