@@ -22,12 +22,10 @@ Created on Aug 6, 2006
 package songscribe.ui.mainframeactions;
 
 import org.apache.log4j.Logger;
-
 import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.TupletIntervalData;
-
 import songscribe.music.Composition;
 import songscribe.music.GraceSemiQuaver;
 import songscribe.music.KeyType;
@@ -35,19 +33,14 @@ import songscribe.music.Line;
 import songscribe.music.Note;
 import songscribe.music.NoteType;
 import songscribe.music.Tempo;
-
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JOptionPane;
 
 public class ExportLilypondAnnotationAction extends AbstractAction
 {
@@ -114,12 +107,17 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     public void writeLilypond(PrintWriter writer)
     {
         Composition composition = mainFrame.getMusicSheet().getComposition();
-
-        writer.println("\\relative c' {");
+        writer.println("\\version \"2.18.2\"");
+        writer.println("\\header {");
+        writer.println("title = \"" + composition.getSongTitle() + "\"");
+        writer.println("composer = \"" + composition.getRightInfo().replace('\n', ' ')+ "\"");
+        writer.println("}");
+        writer.println("\\score {");
         writer.println("\\autoBeamOff");
-        writer.println("\\clef \"treble\" ");
-        writer.print(translateTempo(composition.getTempo()));
-        writer.println();
+        writer.println(translateTempo(composition.getTempo()));
+        for (int i = 0; i < composition.lineCount();i++){
+            writer.println(translateLine(composition.getLine(i)));
+        }
         writer.println("}");
     }
 
@@ -303,11 +301,16 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     String translateLine(Line line)
     {
         StringBuilder sb = new StringBuilder();
-
-        sb.append(translateKey(line.getKeyType(), line.getKeys()));
-        sb.append(translateImlicitRepeatLeftAtLineBeginning(line));
-        sb.append(translateImlicitRepeatRightAtLineEnd(line));
-
+        sb.append("\\new Staff \\relative c' {\n");
+        sb.append("\\clef \"treble\" ");
+        sb.append(translateKey(line.getKeyType(), line.getKeys())).append("\n");
+        sb.append(translateImlicitRepeatLeftAtLineBeginning(line)).append(' ');
+        for (int n = 0; n < line.noteCount(); n++) {
+            sb.append(translateNote(line.getNote(n))).append(' ');
+        }
+        sb.append(translateImlicitRepeatRightAtLineEnd(line)).append("\n");
+        sb.append("}");
+        
         return sb.toString();
     }
 
@@ -315,7 +318,10 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     {
         StringBuilder sb = new StringBuilder();
         NoteType noteType = note.getNoteType();
-
+        if (note.getTempoChange() != null) {
+            sb.append(translateTempo(note.getTempoChange())).append(' ');
+        }
+        
         if (noteType.isGraceNote())
         {
             sb.append("\\acciaccatura ");
@@ -363,7 +369,8 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     String translatePitch(Note note)
     {
         int pitch = note.getPitch() - 60;
-        StringBuilder sb = new StringBuilder(PITCH_TYPES[pitch % 12]);
+        int pitchTypeIndex = pitch % 12 < 0 ? 12 + pitch % 12 : pitch % 12;
+        StringBuilder sb = new StringBuilder(PITCH_TYPES[pitchTypeIndex]);
         int type = pitch / 12;
 
         if (pitch < 0)

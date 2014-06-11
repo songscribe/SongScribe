@@ -121,7 +121,8 @@ public class FughettaDrawer extends BaseMsDrawer{
     public FughettaDrawer(MusicSheet ms) throws IOException{
         super(ms);
         crotchetWidth = upperCrotchetStemX;
-        beamX1Correction = beamX2Correction = 0d;
+        beamX1Correction = 0.3d;
+        beamX2Correction = 0.3d;
         breathMark = FileGeneralPath.readGeneralPath(new File("fonts/bm"));
         fermata = FileGeneralPath.readGeneralPath(new File("fonts/fm"));
     }
@@ -141,9 +142,9 @@ public class FughettaDrawer extends BaseMsDrawer{
             g2.setStroke(stemStroke);
             if(beamed){
                 if(note.isUpper()){
-                    g2.draw(new Line2D.Double(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX, upperStem.y2-note.a.lengthening));
+                    g2.draw(new Line2D.Double(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX, upperStem.y2-note.a.lengthening-1));
                 }else{
-                    g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1, lowerStem.x2, lowerStem.y2-note.a.lengthening));
+                    g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1, lowerStem.x2, lowerStem.y2-note.a.lengthening+1));
                 }
             }
         }else{
@@ -319,7 +320,8 @@ public class FughettaDrawer extends BaseMsDrawer{
         AffineTransform at = g2.getTransform();
         if(note.getYPos()%2==0)g2.translate(0, -size/8);
         if(note.getNoteType()==NoteType.SEMIBREVE)g2.translate(3.5, 0);
-        if(note.getNoteType().isBeamable() && !beamed && upper)g2.translate(8, 0);
+        if(note.getNoteType()==NoteType.MINIM)g2.translate(1.4, 0);
+        if(note.getNoteType().isBeamable() && !beamed && upper) g2.translate(note.getNoteType() == NoteType.QUAVER ? 5 : 8, 0);            
         for(int i=0;i<note.getDotted();i++){
             g2.fill(noteDots[i]);
         }

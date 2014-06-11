@@ -1,12 +1,7 @@
 package songscribe.ui.mainframeactions;
 
-import static junit.framework.Assert.assertEquals;
-
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import songscribe.music.BreathMark;
 import songscribe.music.Crotchet;
 import songscribe.music.CrotchetRest;
@@ -31,6 +26,9 @@ import songscribe.music.SemibreveRest;
 import songscribe.music.Semiquaver;
 import songscribe.music.SemiquaverRest;
 import songscribe.music.SingleBarLine;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Kávai on 2014.05.03..
@@ -75,8 +73,8 @@ public class ExportLilypondAnnotationActionTest
         assertEquals("8", action.translateDuration(new QuaverRest()));
         assertEquals("16", action.translateDuration(new SemiquaverRest()));
         assertEquals("32", action.translateDuration(new DemisemiquaverRest()));
-        assertEquals("", action.translateDuration(new GraceQuaver()));
-        assertEquals("", action.translateDuration(new GraceSemiQuaver()));
+        assertEquals("8", action.translateDuration(new GraceQuaver()));
+        assertEquals("16", action.translateDuration(new GraceSemiQuaver()));
         assertEquals("", action.translateDuration(new RepeatLeft()));
         assertEquals("", action.translateDuration(new RepeatRight()));
         assertEquals("", action.translateDuration(new RepeatLeftRight()));
