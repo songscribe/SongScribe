@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -45,7 +45,7 @@ public class LyricsDialog extends MyDialog{
     protected JButton takeButton;
     protected JPanel morePanel;
     protected JButton nonBreakingHyphenButton;
-    protected JPanel syllablifiedLyricsPanel;
+    protected JPanel syllabifiedLyricsPanel;
     protected JPanel underLyricsPanel;
     protected JPanel translatedLyricsPanel;
 

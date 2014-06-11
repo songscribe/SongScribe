@@ -35,7 +35,7 @@ public class LyricsModePanel extends LyricsDialog {
 
     public LyricsModePanel(MainFrame mainFrame) {
         super(mainFrame);
-        lyricsSplitPane.setLeftComponent(syllablifiedLyricsPanel);
+        lyricsSplitPane.setLeftComponent(syllabifiedLyricsPanel);
         subSplitPane.setTopComponent(underLyricsPanel);
         subSplitPane.setBottomComponent(translatedLyricsPanel);
         MusicSheet musicSheet = mainFrame.getMusicSheet();
