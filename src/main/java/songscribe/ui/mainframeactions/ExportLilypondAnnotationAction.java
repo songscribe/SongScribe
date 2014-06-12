@@ -295,7 +295,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
             key = flatKeys[number];
         }
 
-        return "\\key" + key + " \\major";
+        return "\\key " + key + " \\major";
     }
 
     String translateLine(Line line)

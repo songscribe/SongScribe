@@ -21,16 +21,25 @@ Created on Jun 24, 2006
 */
 package songscribe.ui.musicsheetdrawer;
 
-import songscribe.music.*;
+import songscribe.music.Crotchet;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
 
 /**
  * @author Csaba Kávai
+ */
+@Deprecated
+/**
+ * This class is set to deprecated, beacause we don't use anymore. We prefer the FughettaDrawer for edit mode, too.
+ * 
  */
 public class ImageMsDrawer extends BaseMsDrawer{
     private static final Image TREBLECLEFIMAGE = MainFrame.getImage("trebleClef.gif");

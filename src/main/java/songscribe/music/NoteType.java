@@ -123,6 +123,10 @@ public enum NoteType {
     public boolean isNote() {
         return isRealNote() || isGraceNote();
     }
+    
+    public boolean isNoteWithStem() {
+        return isNote() && this != SEMIBREVE;
+    }
 
     public boolean isRest() {
         return ordinal()>=SEMIBREVEREST.ordinal() && ordinal()<=DEMISEMIQUAVERREST.ordinal();

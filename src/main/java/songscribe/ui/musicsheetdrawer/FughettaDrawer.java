@@ -275,10 +275,14 @@ public class FughettaDrawer extends BaseMsDrawer{
         NoteType nt = note.getNoteType();
         String headStr = noteHead.get(nt);
         //drawing the notehead
-        g2.drawString(headStr, 0, 0);
+        float noteHeadXPos = 0;
+        if (nt.isNoteWithStem() && !upper) {
+            noteHeadXPos -= 0.4f;    
+        }
+        g2.drawString(headStr, noteHeadXPos, 0f);
         //drawing the stem
         g2.setStroke(stemStroke);
-        if(nt.isNote() && nt!=NoteType.SEMIBREVE){
+        if(nt.isNoteWithStem()){
             double stemLongitude = 0;
             if (isTempoNote) stemLongitude -= tempoStemShortitude;
             if (nt==NoteType.SEMIQUAVER && !beamed) stemLongitude+=flagYLength-SEMIQUAVER_AND_DEMISEMIQUAVER_FLAG_COLLAPSE;
