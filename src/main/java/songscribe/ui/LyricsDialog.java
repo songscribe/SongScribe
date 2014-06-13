@@ -119,7 +119,7 @@ public class LyricsDialog extends MyDialog{
 
     private class TakeUnderSongLyricsFromSyllabifiedLyricsAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String underLyrics = Utilities.removeSyllablifyMarkings(lyricsArea.getText());
+            String underLyrics = Utilities.removeSyllabifyMarkings(lyricsArea.getText());
             underSongArea.setText(underLyrics);
         }
     }

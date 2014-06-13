@@ -377,7 +377,7 @@ public class Utilities {
     }
 
 
-    public static String removeSyllablifyMarkings(String lyrics) {
+    public static String removeSyllabifyMarkings(String lyrics) {
         char[] lyricsChars = lyrics.toCharArray();
         boolean inParanthesis = false;
         StringBuilder sb = new StringBuilder(lyrics.length());
