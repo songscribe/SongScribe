@@ -31,8 +31,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ListIterator;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * @author Csaba Kávai

@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -29,8 +29,8 @@ import songscribe.music.Note;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
-import java.util.ListIterator;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * @author Csaba Kávai

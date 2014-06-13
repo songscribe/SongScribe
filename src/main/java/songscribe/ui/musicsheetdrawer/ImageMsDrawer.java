@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -118,7 +118,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
         //drawing the dots
         for(int i=0;i<note.getDotted();i++){
             g2.drawImage(color==Color.black ? Note.DOTIMAGE : Note.getColoredImage(Note.DOTIMAGE, color),
-                    xPos+i*4+(note.getNoteType()==NoteType.SEMIBREVE ? 4 : 0), 
+                    xPos+i*4+(note.getNoteType()==NoteType.SEMIBREVE ? 4 : 0),
                     note.getYPos()%2==0 ? yPos-(int)MusicSheet.HALFLINEDIST: yPos, null);
         }
 
@@ -173,7 +173,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
         g2.setPaint(Color.black);
      }
 
-    protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {        
+    protected void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y) {
         AffineTransform at = g2.getTransform();
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2.translate(x, y-19);

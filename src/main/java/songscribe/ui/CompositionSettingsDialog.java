@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -58,11 +58,11 @@ public class CompositionSettingsDialog extends MyDialog{
     JComboBox titleFontCombo, lyricsFontCombo, generalFontCombo;
     SpinnerModel titleFontSizeSpinner, lyricsFontSizeSpinner, generalFontSizeSpinner;
     JToggleButton titleBoldToggle, titleItalicToggle, lyricsBoldToggle, lyricsItalicToggle;
-    JButton setDeafultButton = new JButton("Reset to default");
+    JButton setDefaultButton = new JButton("Reset to default");
 
     JComboBox profileCombo;
     JLabel profileInfoLabel = new JLabel();
-    JButton setAsDefaultButton = new JButton("Set as default");    
+    JButton setAsDefaultButton = new JButton("Set as default");
 
 
     public CompositionSettingsDialog(MainFrame owner) {
@@ -71,7 +71,7 @@ public class CompositionSettingsDialog extends MyDialog{
         //----------------------basic center------------------------
         JPanel basicCenter = new JPanel();
         basicCenter.setLayout(new BoxLayout(basicCenter, BoxLayout.Y_AXIS));
-        basicCenter.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));        
+        basicCenter.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         Dimension small = new Dimension(0, 5);
         Dimension large = new Dimension(0, 15);
 
@@ -216,9 +216,9 @@ public class CompositionSettingsDialog extends MyDialog{
 
         JPanel fontCenterHelper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         fontCenterHelper.add(fontCenter);
-        setDeafultButton.addActionListener(new SetDefaultFontsAction());
+        setDefaultButton.addActionListener(new SetDefaultFontsAction());
         JPanel setDefaultButtonHelper = new JPanel();
-        setDefaultButtonHelper.add(setDeafultButton);
+        setDefaultButtonHelper.add(setDefaultButton);
         setDefaultButtonHelper.setAlignmentX(0f);
         fontCenter.add(Box.createRigidArea(large));
         fontCenter.add(setDefaultButtonHelper);
@@ -298,7 +298,7 @@ public class CompositionSettingsDialog extends MyDialog{
                 Integer.parseInt(numberField.getText());
             }
             c.setNumber(numberField.getText());
-        }catch(NumberFormatException e){            
+        }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(dialogPanel, "The number of the song is not a number", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
         }
         c.setSongTitle(titleField.getText());

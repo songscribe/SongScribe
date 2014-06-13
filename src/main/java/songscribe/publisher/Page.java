@@ -25,8 +25,8 @@ import songscribe.publisher.pagecomponents.PageComponent;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.util.ListIterator;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * @author Csaba Kávai

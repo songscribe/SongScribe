@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -34,14 +34,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -142,7 +135,7 @@ public class UpdateDialog extends MyDialog{
                         + " and click on 'Run as administrator', then try the update again.");
                 return;
             }
-            
+
             byte buf[] = new byte[1024];
 
             String[] updateBaseURLs = { mainFrame.getProperties().getProperty(Constants.UPDATEURL1),

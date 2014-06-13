@@ -26,13 +26,7 @@ import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.TupletIntervalData;
-import songscribe.music.Composition;
-import songscribe.music.GraceSemiQuaver;
-import songscribe.music.KeyType;
-import songscribe.music.Line;
-import songscribe.music.Note;
-import songscribe.music.NoteType;
-import songscribe.music.Tempo;
+import songscribe.music.*;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
@@ -310,7 +304,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         }
         sb.append(translateImlicitRepeatRightAtLineEnd(line)).append("\n");
         sb.append("}");
-        
+
         return sb.toString();
     }
 
@@ -321,7 +315,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         if (note.getTempoChange() != null) {
             sb.append(translateTempo(note.getTempoChange())).append(' ');
         }
-        
+
         if (noteType.isGraceNote())
         {
             sb.append("\\acciaccatura ");

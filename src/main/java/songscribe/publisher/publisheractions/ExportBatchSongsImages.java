@@ -17,8 +17,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ListIterator;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class ExportBatchSongsImages extends AbstractAction {
     private static Logger logger = Logger.getLogger(ExportBatchSongsImages.class);

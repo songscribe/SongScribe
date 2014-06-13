@@ -25,18 +25,8 @@ package songscribe.ui;
 import com.bulenkov.iconloader.JBHiDPIScaledImage;
 import com.bulenkov.iconloader.util.UIUtil;
 import org.apache.log4j.Logger;
-import songscribe.data.Interval;
-import songscribe.data.IntervalSet;
-import songscribe.data.MyBorder;
-import songscribe.data.PropertyChangeListener;
-import songscribe.data.TupletIntervalData;
-import songscribe.music.Composition;
-import songscribe.music.Crotchet;
-import songscribe.music.GraceSemiQuaver;
-import songscribe.music.Line;
-import songscribe.music.Note;
-import songscribe.music.NoteType;
-import songscribe.music.RepeatLeftRight;
+import songscribe.data.*;
+import songscribe.music.*;
 import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.adjustment.NoteXPosAdjustment;
 import songscribe.ui.adjustment.VerticalAdjustment;
@@ -49,19 +39,9 @@ import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author Csaba Kávai
@@ -233,7 +213,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             mainFrame.showErrorMessage("Could not open a necessary font. The program cannot work without it.");
             System.exit(0);
         }
-        try{
+        try {
             drawers[1] = new FughettaDrawer(this);
         } catch (Exception e) {
             drawers[1] = null;

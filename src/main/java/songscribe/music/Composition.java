@@ -27,8 +27,8 @@ import songscribe.ui.*;
 
 import javax.sound.midi.*;
 import java.awt.*;
-import java.util.Properties;
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * @author Csaba Kávai
@@ -206,7 +206,7 @@ public final class Composition{
             MetaMessage finalMessage = new MetaMessage();
             finalMessage.setMessage(0, new byte[]{(byte)(-1>>8), (byte)-1, (byte)(-1>>8), (byte)-1}, 4);
             track.add(new MidiEvent(finalMessage, ticks));
-        } catch (InvalidMidiDataException e) {            
+        } catch (InvalidMidiDataException e) {
             mainFrame.showErrorMessage("Could not get the MIDI sequence because of an unexpected error.");
             logger.error("Creating MIDI sequence", e);
         }
@@ -352,7 +352,7 @@ public final class Composition{
             }else{
                 newDuration = (float)Math.pow(2, Math.floor(Math.log(duration)/ LOG2));
             }
-            
+
             return newDuration / duration;
         }else{
             return 1;

@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -24,13 +24,10 @@ package songscribe.ui;
 import org.apache.log4j.Logger;
 import songscribe.Version;
 import songscribe.data.DoNotShowException;
-import songscribe.data.MyDesktop;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * @author Csaba Kávai

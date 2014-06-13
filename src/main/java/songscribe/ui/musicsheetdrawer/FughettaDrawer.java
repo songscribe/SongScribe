@@ -23,11 +23,7 @@ package songscribe.ui.musicsheetdrawer;
 
 import org.apache.log4j.Logger;
 import songscribe.data.FileGeneralPath;
-import songscribe.music.GraceSemiQuaver;
-import songscribe.music.KeyType;
-import songscribe.music.Line;
-import songscribe.music.Note;
-import songscribe.music.NoteType;
+import songscribe.music.*;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
@@ -325,7 +321,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         if(note.getYPos()%2==0)g2.translate(0, -size/8);
         if(note.getNoteType()==NoteType.SEMIBREVE)g2.translate(3.5, 0);
         if(note.getNoteType()==NoteType.MINIM)g2.translate(1.4, 0);
-        if(note.getNoteType().isBeamable() && !beamed && upper) g2.translate(note.getNoteType() == NoteType.QUAVER ? 5 : 8, 0);            
+        if(note.getNoteType().isBeamable() && !beamed && upper) g2.translate(note.getNoteType() == NoteType.QUAVER ? 5 : 8, 0);
         for(int i=0;i<note.getDotted();i++){
             g2.fill(noteDots[i]);
         }

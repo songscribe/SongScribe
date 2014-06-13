@@ -1,4 +1,4 @@
-/*  
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -40,7 +40,7 @@ import java.util.Enumeration;
 public class PageNumberDialog extends MyDialog {
 
     JToggleButton boldButton;
-    JComboBox fontComboBox;    
+    JComboBox fontComboBox;
     JToggleButton italicButton;
     JComboBox marginSpaceComboBox;
     SpinnerNumberModel sizeSpinnerModel = new SpinnerNumberModel(12, 1, 256, 1);
@@ -112,7 +112,7 @@ public class PageNumberDialog extends MyDialog {
             JRadioButton rb = new JRadioButton(pna.getDescription());
             rb.setActionCommand(pna.name());
             alignmentGroup.add(rb);
-            alignmentPanel.add(rb);            
+            alignmentPanel.add(rb);
         }
         alignmentGroup.setSelected(alignmentGroup.getElements().nextElement().getModel(), true);
 
