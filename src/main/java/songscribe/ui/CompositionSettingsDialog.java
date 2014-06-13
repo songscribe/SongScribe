@@ -329,13 +329,13 @@ public class CompositionSettingsDialog extends MyDialog{
                 l.setKeyType(c.getDefaultKeyType());
             }
         }
-        c.setSongTitleFont(new Font((String)titleFontCombo.getSelectedItem(),
+        c.setSongTitleFont(Utilities.createFont((String)titleFontCombo.getSelectedItem(),
                 (titleBoldToggle.isSelected() ? Font.BOLD : 0) | (titleItalicToggle.isSelected() ? Font.ITALIC : 0),
                 (Integer)titleFontSizeSpinner.getValue()));
-        c.setLyricsFont(new Font((String)lyricsFontCombo.getSelectedItem(),
+        c.setLyricsFont(Utilities.createFont((String)lyricsFontCombo.getSelectedItem(),
                 (lyricsBoldToggle.isSelected() ? Font.BOLD : 0) | (lyricsItalicToggle.isSelected() ? Font.ITALIC : 0),
                 (Integer)lyricsFontSizeSpinner.getValue()));
-        c.setGeneralFont(new Font((String)generalFontCombo.getSelectedItem(),
+        c.setGeneralFont(Utilities.createFont((String)generalFontCombo.getSelectedItem(),
                 Font.PLAIN,
                 (Integer)generalFontSizeSpinner.getValue()));
         c.recalcTopSpace();

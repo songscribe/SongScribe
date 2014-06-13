@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -25,12 +25,15 @@ import org.apache.log4j.Logger;
 import songscribe.Version;
 import songscribe.data.GifEncoder;
 import songscribe.data.MyDesktop;
+import sun.font.Font2D;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.zip.ZipEntry;
@@ -61,12 +64,12 @@ public class Utilities {
         }
         return sb.toString();
     }
-    
+
     private static Character mapSpecialChar(char c) {
         for(int i=0;i<LyricsDialog.specChars.length;i++){
             for(int j=0;j<LyricsDialog.specChars[i].length;j++){
                 if(c==LyricsDialog.specChars[i][j]){
-                    return LyricsDialog.specCharsMap[i][j]; 
+                    return LyricsDialog.specCharsMap[i][j];
                 }
             }
         }
@@ -112,13 +115,40 @@ public class Utilities {
     private static boolean isMac;
     private static boolean isWindows;
     private static boolean isLinux;
+
+    // An array of every actual font in the system, including all stylistic variations.
+    private static Font[] systemFonts;
+
+    // An array of base font names for each font in systemFonts.
+    // For example, if the systemFont name is "MyriadPro-It", the base name is "MyriadPro".
+    // This saves a lot of time when trying to find font names.
+    private static String[] systemFontBaseNames;
+
+    // For each font style, there are several possible font name suffix components
+    // that might appear in the full font name.
+    private static String[] plainFontSuffixNames = {"", "Regular", "Medium"};
+    private static String[] italicFontSuffixNames = {"It", "Italic", "Oblique", "ItalicMT"};
+    private static String[] boldFontSuffixNames = {"Bold", "Semibold", "Demibold", "BoldMT"};
+
     static{
-        isMac = System.getProperty("os.name").toLowerCase().indexOf("mac")!=-1;
-        isWindows = System.getProperty("os.name").toLowerCase().indexOf("windows")!=-1;
-        isLinux = System.getProperty("os.name").toLowerCase().indexOf("linux")!=-1;
+        isMac = System.getProperty("os.name").toLowerCase().contains("mac");
+        isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
+        isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        systemFonts = ge.getAllFonts();
+        systemFontBaseNames = new String[systemFonts.length];
+
+        for (int i = 0; i < systemFonts.length; ++i)
+        {
+            Font font = systemFonts[i];
+            String name = font.getFontName();
+            String[] parts = name.split("-");
+            systemFontBaseNames[i] = parts[0];
+        }
     }
 
-    public static boolean isMac() {        
+    public static boolean isMac() {
         return isMac;
     }
 
@@ -128,6 +158,142 @@ public class Utilities {
 
     public static boolean isLinux() {
         return isLinux;
+    }
+
+    /*
+        Given a font, base font name, and set of suffixes to add to the base name,
+        return the matching base+suffix. If exactMatch is false, it's a match if
+        the font name starts with base+suffix. If there is no match, return null.
+    */
+    private static String matchFontName(Font font, String baseName, String[] suffixes, boolean exactMatch) {
+        String fontName = font.getFontName();
+        boolean hasSuffix = baseName.contains("-");
+
+        for (String suffix : suffixes) {
+            if (!hasSuffix && suffix.length() > 0)
+                suffix = "-" + suffix;
+
+            String name = baseName + suffix;
+
+            if (exactMatch) {
+                if (fontName.equals(name))
+                    return name;
+            }
+            else if (fontName.startsWith(name))
+                return name;
+        }
+
+        return null;
+    }
+
+    /*
+        Major hack alert!
+
+        There is a bug in Oracle Java's Font2D.setStyle method
+        that does not set the style of the Font2D correctly for
+        some fonts, because the style matching algorithm is broken.
+        This method forces the Font2D style to be the requested style.
+    */
+    public static void fixFont2DStyle(Font font, int style) {
+        try {
+            Class<?>[] params = new Class[0];
+            Method method = font.getClass().getDeclaredMethod("getFont2D", params);
+            method.setAccessible(true);
+            Font2D font2d = (Font2D) method.invoke(font);
+
+            if (font2d != null) {
+                // The style field we want to set is in the Font2D class, get that class
+                Field styleField = Font2D.class.getDeclaredField("style");
+                styleField.setAccessible(true);
+                styleField.setInt(font2d, style);
+            }
+        }
+        catch (Exception ex) {
+            // Oh well, we tried
+        }
+    }
+
+    /*
+        The built in Java font matching algorithms are pretty useless.
+        This method will return the closest matching font for a given style.
+        If bold+italic is requested, it will fall back to bold if available.
+        Any style other than plain if not available will fall back to plain.
+        If plain is not available, null is returned.
+
+        The fixFont2D hack is applied if a matching font is found.
+    */
+    public static Font createFont(String familyName, int style, int size) {
+        Font foundFont = null;
+
+        for (int i = 0; i < systemFonts.length; ++i) {
+            Font font = systemFonts[i];
+
+            if (font.getFamily().equals(familyName)) {
+                String baseName = systemFontBaseNames[i];
+                String fontName = font.getFontName();
+
+                if (style == Font.PLAIN) {
+                    String name = matchFontName(font, baseName, plainFontSuffixNames, true);
+
+                    // If we can't find the plain font, fail
+                    if (name != null) {
+                        foundFont = font;
+                        break;
+                    }
+                }
+                else if ((style & Font.BOLD) != 0) {
+                    boolean wantItalic = (style & Font.ITALIC) != 0;
+                    String name = matchFontName(font, baseName, boldFontSuffixNames, !wantItalic);
+
+                    // If italic is also desired, try adding italic suffixes
+                    if (name != null && wantItalic) {
+                        if (wantItalic)
+                            name = matchFontName(font, name, italicFontSuffixNames, true);
+                    }
+
+                    if (name != null) {
+                        foundFont = font;
+                        break;
+                    }
+                }
+                else if (style == Font.ITALIC) {
+                    String name = matchFontName(font, baseName, italicFontSuffixNames, true);
+
+                    if (name != null) {
+                        foundFont = font;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (foundFont == null) {
+            if (style == (Font.BOLD | Font.ITALIC)) {
+                // If we can't find bold+italic, fall back to bold
+                foundFont = createFont(familyName, Font.BOLD, size);
+            }
+            else if (style != Font.PLAIN) {
+                // If we get here and no styled font is found, fall back to plain.
+                foundFont = createFont(familyName, Font.PLAIN, size);
+            }
+        }
+
+        // If all attempts fail, use Java's built in search
+        if (foundFont == null) {
+            foundFont = new Font(familyName, style, size);
+        }
+        else {
+            // Always use plain for the style, if we get here we have
+            // a styled font variant already.
+            foundFont = foundFont.deriveFont(Font.PLAIN, (float)size);
+            fixFont2DStyle(foundFont, style);
+        }
+
+        return foundFont;
+    }
+
+    public static Font deriveFont(Font font, int style, int size) {
+        return createFont(font.getFamily(), style, size);
     }
 
     public static String getPublicVersion() {

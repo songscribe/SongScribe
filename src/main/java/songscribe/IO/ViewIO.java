@@ -24,6 +24,7 @@ package songscribe.IO;
 import org.xml.sax.Attributes;
 import songscribe.music.Composition;
 import songscribe.ui.ProfileManager;
+import songscribe.ui.Utilities;
 
 import java.awt.*;
 import java.io.IOException;
@@ -68,7 +69,7 @@ public class ViewIO {
             }
 
             Font getFont(){
-                return new Font(name, ProfileManager.intFontStyle(style), Integer.parseInt(size));
+                return Utilities.createFont(name, ProfileManager.intFontStyle(style), Integer.parseInt(size));
             }
         }
         private StringFont title;

@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -31,6 +31,7 @@ import songscribe.publisher.pagecomponents.PImage;
 import songscribe.publisher.pagecomponents.PageComponent;
 import songscribe.publisher.pagecomponents.Song;
 import songscribe.publisher.pagecomponents.Text;
+import songscribe.ui.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -168,7 +169,7 @@ public class PageIO {
                 }
                 absoluteFile = null;
             }else if(qName.equals(XMLTEXT)){
-                page.addPageComponent(new Text(string, new Font(fontName, fontStyle, fontSize), alignment, pos.x, pos.y));
+                page.addPageComponent(new Text(string, Utilities.createFont(fontName, fontStyle, fontSize), alignment, pos.x, pos.y));
             }
 
             value.delete(0, value.length());

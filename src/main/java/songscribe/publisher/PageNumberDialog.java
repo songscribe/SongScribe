@@ -239,7 +239,7 @@ public class PageNumberDialog extends MyDialog {
         Publisher publisher = (Publisher) mainFrame;
         PageNumber pn = publisher.getBook().getPageNumber();
         if(pn==null)pn=new PageNumber();
-        pn.setFont(new Font(fontComboBox.getSelectedItem().toString(), (boldButton.isSelected()?Font.BOLD:0)|(italicButton.isSelected()?Font.ITALIC:0), (Integer)sizeSpinnerModel.getValue()));
+        pn.setFont(songscribe.ui.Utilities.createFont(fontComboBox.getSelectedItem().toString(), (boldButton.isSelected() ? Font.BOLD : 0) | (italicButton.isSelected() ? Font.ITALIC : 0), (Integer) sizeSpinnerModel.getValue()));
         pn.setAlignment(PageNumber.Alignment.valueOf(alignmentGroup.getSelection().getActionCommand()));
         pn.setPlacement(PageNumber.Placement.valueOf(placementGroup.getSelection().getActionCommand()));
         pn.setFromPage((Integer)fromPageSpinnerModel.getValue());

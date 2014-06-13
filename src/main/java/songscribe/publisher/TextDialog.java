@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -119,8 +119,10 @@ public class TextDialog extends MyDialog {
     }
 
     private Font getSelectedFont() {
-        return new Font(fontCombo.getSelectedItem().toString(),
-                (boldToggle.isSelected() ? Font.BOLD : 0) | (italicToggle.isSelected() ? Font.ITALIC : 0), (Integer)fontSizeSpinner.getValue());
+        return songscribe.ui.Utilities.createFont(
+                fontCombo.getSelectedItem().toString(),
+                (boldToggle.isSelected() ? Font.BOLD : Font.PLAIN) | (italicToggle.isSelected() ? Font.ITALIC : Font.PLAIN),
+                (Integer) fontSizeSpinner.getValue());
     }
 
     private Text.Alignment getSelectedAlignment(){

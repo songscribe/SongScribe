@@ -531,7 +531,7 @@ public abstract class BaseMsDrawer {
     private Font getAnnotationFont(){
         if(oldGeneralFont!=ms.getComposition().getGeneralFont()){
             oldGeneralFont = ms.getComposition().getGeneralFont();
-            annotationFont = oldGeneralFont.deriveFont(Font.ITALIC);
+            annotationFont = Utilities.deriveFont(oldGeneralFont, Font.ITALIC, oldGeneralFont.getSize());
         }
         return annotationFont;
     }

@@ -100,13 +100,13 @@ public final class Composition{
                 true);
         defaultKeys = Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.KEYS));
         defaultKeyType = KeyType.valueOf(pm.getDefaultProperty(ProfileManager.ProfileKey.KEYTYPE));
-        songTitleFont = new Font(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONT),
+        songTitleFont = Utilities.createFont(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONT),
                 ProfileManager.intFontStyle(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONTSTYLE)),
                 Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONTSIZE)));
-        lyricsFont = new Font(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONT),
+        lyricsFont = Utilities.createFont(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONT),
                 ProfileManager.intFontStyle(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONTSTYLE)),
                 Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONTSIZE)));
-        generalFont = new Font(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERALFONT),
+        generalFont = Utilities.createFont(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERALFONT),
                 Font.PLAIN, Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERALFONTSIZE)));
         recalcTopSpace();
         lineWidth = MusicSheet.PAGESIZE.width;

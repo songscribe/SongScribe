@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -29,8 +29,8 @@ import songscribe.publisher.Book;
 import songscribe.publisher.Page;
 import songscribe.publisher.PageNumber;
 import songscribe.publisher.Publisher;
+import songscribe.ui.Utilities;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -217,7 +217,7 @@ public class BookIO {
                 }else if(qName.equals(XMLBOOKATTRIBUTES)){
                     book = new Book(publisher, pageWidth, pageHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin, mirroredMargin);
                 }else if(qName.equals(XMLPAGENUMBER)){
-                   pageNumber.setFont(new Font(fontName, fontStyle, fontSize));
+                   pageNumber.setFont(Utilities.createFont(fontName, fontStyle, fontSize));
                    book.setPageNumber(pageNumber);
                }
             }
