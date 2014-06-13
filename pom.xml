@@ -89,6 +89,13 @@
             <systemPath>${project.basedir}/libs/jdirectorychooser-1.1.0.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>com.bulenkov</groupId>
+            <artifactId>iconloader</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/iconloader.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms_rt</artifactId>
             <version>7.0.3</version>
