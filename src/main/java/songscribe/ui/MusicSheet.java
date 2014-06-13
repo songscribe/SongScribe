@@ -22,6 +22,8 @@ Created on 2005.01.05.,14:24:51
 
 package songscribe.ui;
 
+import com.bulenkov.iconloader.JBHiDPIScaledImage;
+import com.bulenkov.iconloader.util.UIUtil;
 import org.apache.log4j.Logger;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
@@ -116,6 +118,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     //musicsheet image acceleration
     private boolean repaintImage = true;
+    private BufferedImage msImage;
     private int playingLine=-1, playingNote=-1;
     private Dimension sheetSize;
 
@@ -243,6 +246,12 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     public void initComponent(){
         composition = new Composition(mainFrame);
         sheetSize = new Dimension((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH));
+
+        if (UIUtil.isRetina())
+            msImage = new JBHiDPIScaledImage(sheetSize.width, sheetSize.height, BufferedImage.TYPE_INT_RGB);
+        else
+            msImage = new BufferedImage(sheetSize.width, sheetSize.height, BufferedImage.TYPE_INT_RGB);
+
         viewChanged();
         noteXPosAdjustment = new NoteXPosAdjustment(this);
         verticalAdjustment = new VerticalAdjustment(this);
@@ -312,18 +321,30 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setPaint(Color.white);
-        g2.fillRect(0, 0, sheetSize.width, sheetSize.height);
-        drawer.drawMusicSheet(g2, true, 1d);
 
-        if(mode==Mode.NOTEEDIT){
+        if (msImage == null)
+            return;
+
+        Graphics2D g2 = (Graphics2D) g;
+
+        if (repaintImage) {
+            Graphics2D g2MsImage = msImage.createGraphics();
+            g2MsImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2MsImage.setPaint(Color.white);
+            g2MsImage.fillRect(0, 0, msImage.getWidth(), msImage.getHeight());
+            drawer.drawMusicSheet(g2MsImage, true, 1d);
+            g2MsImage.dispose();
+            repaintImage = false;
+        }
+
+        UIUtil.drawImage(g2, msImage, 0, 0, null);
+
+        if (mode==Mode.NOTEEDIT) {
             //drawing the activeNote
             if (activeNote != null && (control==MusicSheet.Control.KEYBOARD || isActiveNoteIn)) {
-                if(activeNote!=Note.GLISSANDONOTE){
+                if (activeNote!=Note.GLISSANDONOTE) {
                     int actX = activeNote.getXPos();
-                    if(actX>composition.getLineWidth()-10){
+                    if (actX>composition.getLineWidth()-10) {
                         activeNote.setXPos(composition.getLineWidth()-12);
                     }
                     drawer.paintNote(g2, activeNote, activeNotePoint.line, false, activeNoteColor);
