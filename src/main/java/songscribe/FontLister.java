@@ -45,7 +45,7 @@ public class FontLister {
 
     private static class FontComponent extends JComponent{
         BufferedImage image;
-        Font labelFont = new Font("Arial", 0, 10);
+        Font labelFont = new Font(Font.SANS_SERIF, 0, 10);
 
         public FontComponent(Font[] font) {
             setDisplayFont(font);

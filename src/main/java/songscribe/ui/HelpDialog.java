@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -81,7 +81,7 @@ public class HelpDialog extends MyDialog implements ListCellRenderer, ListSelect
         if(lo.component==null){
             lo.component = new JPanel();
             JLabel label = new JLabel(lo.name);
-            label.setFont(new Font("Times New Roman", 0, 20));
+            label.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
             label.setPreferredSize(new Dimension(200, 30));
             ((JPanel)lo.component).add(label);
         }

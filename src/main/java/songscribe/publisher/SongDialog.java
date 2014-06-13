@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -126,13 +126,13 @@ public class SongDialog extends MyDialog {
 
         rLabel.setText("Ratio:");
 
-        note1.setFont(new Font("Dialog", 2, 12));
+        note1.setFont(new Font("Dialog", Font.ITALIC, 12));
         note1.setText("Note: Since the graphics is vector-based");
 
-        note2.setFont(new Font("Dialog", 2, 12));
+        note2.setFont(new Font("Dialog", Font.ITALIC, 12));
         note2.setText("it does not ruin the quality if you enlarge");
 
-        note3.setFont(new Font("Dialog", 2, 12));
+        note3.setFont(new Font("Dialog", Font.ITALIC, 12));
         note3.setText("the song on more than 1.0 ratio.");
 
         JPanel returnPanel = new JPanel();

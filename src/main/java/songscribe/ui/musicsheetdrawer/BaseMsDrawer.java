@@ -56,8 +56,8 @@ public abstract class BaseMsDrawer {
     private static final Ellipse2D.Float staccatoEllipse = new Ellipse2D.Float(0f, 0f, 3.5f, 3.5f);
     private static final Color selectionColor = new Color(254, 45, 125);
     private static final float beamTranslateY = 7;
-    private static final Font tupletFont = new Font("Times New Roman", Font.BOLD, 14);
-    private static final Font fsEndingFont = new Font("Times New Roman", Font.BOLD, 14);
+    private static final Font tupletFont = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+    private static final Font fsEndingFont = new Font(Font.SERIF, Font.BOLD, 14);
     protected static final Font fughetta;
     protected static final Font fughettaGrace;
     private static final String GLISSANDO = "\uf07e";

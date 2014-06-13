@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -76,12 +76,12 @@ public class TipFrame extends JFrame {
         nextButton = new JButton();
         previousButton = new JButton();
 
-        didyouknowLabel.setFont(new Font("Arial", 0, 18));
+        didyouknowLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
         didyouknowLabel.setIcon(new ImageIcon(MainFrame.getImage("idea.png")));
         didyouknowLabel.setText("Did you know ... ?");
 
         tipPane.setEditable(false);
-        tipPane.setFont(new Font("Arial", 0, 16));
+        tipPane.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
         tipScroll.setViewportView(tipPane);
 
         showTip.setSelected(mainFrame.getProperties().getProperty(Constants.SHOWTIP).equals(Constants.TRUEVALUE));

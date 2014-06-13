@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -109,10 +109,10 @@ public class PImageDialog extends MyDialog {
 
         unitCombo.setModel(new DefaultComboBoxModel(new String[] { INCH, MM, PX }));
 
-        note1.setFont(new Font("Dialog", 2, 12));
+        note1.setFont(new Font("Dialog", Font.ITALIC, 12));
         note1.setText("Note: If the ratio is higher then 1, the quality");
 
-        note2.setFont(new Font("Dialog", 2, 12));
+        note2.setFont(new Font("Dialog", Font.ITALIC, 12));
         note2.setText("of the image becomes worse.");
 
         JPanel panel = new JPanel();

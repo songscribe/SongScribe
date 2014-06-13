@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -105,39 +105,39 @@ public class AboutDialog extends MyDialog{
 
         iconLabel.setIcon(new javax.swing.ImageIcon(mainFrame.getIconImage()));
 
-        progNameLabel.setFont(new java.awt.Font("Arial", 0, 30));
+        progNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 30));
         progNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         progNameLabel.setText(mainFrame.PROGNAME);
 
-        versionLabel.setFont(new java.awt.Font("Arial", 1, 14));
+        versionLabel.setFont(new java.awt.Font("Arial", Font.BOLD, 14));
         versionLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         versionLabel.setText("Version:");
 
-        version.setFont(new java.awt.Font("Arial", 0, 14));
+        version.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
         version.setText(Utilities.getPublicVersion());
 
-        copyrightLabel.setFont(new java.awt.Font("Arial", 1, 14));
+        copyrightLabel.setFont(new java.awt.Font("Arial", Font.BOLD, 14));
         copyrightLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         copyrightLabel.setText("Copyright:");
 
-        copyRight1.setFont(new java.awt.Font("Arial", 0, 14));
+        copyRight1.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
         copyRight1.setText("\u00a9 2006-" + new GregorianCalendar().get(Calendar.YEAR) + " Csaba Kavai");
 
-        copyRight2.setFont(new java.awt.Font("Arial", 0, 14));
+        copyRight2.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
         copyRight2.setText("All rights reserved.");
 
-        licenseLabel.setFont(new java.awt.Font("Arial", 1, 14));
+        licenseLabel.setFont(new java.awt.Font("Arial", Font.BOLD, 14));
         licenseLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         licenseLabel.setText("License:");
 
-        license.setFont(new java.awt.Font("Arial", 0, 14));
+        license.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
         license.setText(LICENSE);
 
-        webLabel.setFont(new java.awt.Font("Arial", 1, 14));
+        webLabel.setFont(new java.awt.Font("Arial", Font.BOLD, 14));
         webLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         webLabel.setText("Web:");
 
-        web.setFont(new java.awt.Font("Arial", 0, 14));
+        web.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
         web.setText(WEB);
         if(MyDesktop.isDesktopSupported()){
             web.setForeground(new java.awt.Color(0, 0, 204));
