@@ -22,6 +22,7 @@ Created on Oct 8, 2006
 package songscribe.ui.playsubmenu;
 
 import org.apache.log4j.Logger;
+import songscribe.ui.AbstractTextFocusRejectingAction;
 import songscribe.ui.Constants;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
@@ -31,22 +32,25 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * @author Csaba Kávai
  */
-class PlayAction extends AbstractAction {
+class PlayAction extends AbstractTextFocusRejectingAction {
     private static final Logger logger = Logger.getLogger(PlayAction.class);
     private PlayMenu playMenu;
 
     public PlayAction(PlayMenu playMenu) {
+        super(playMenu.getMainFrame());
         this.playMenu = playMenu;
         putValue(Action.NAME, "Play");
         putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("player_play.png")));
+        putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
         setEnabled(MainFrame.sequencer!=null);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void doActionPerformed(ActionEvent e) {
         try {
             if(MainFrame.sequencer==null)return;
             MusicSheet musicSheet = playMenu.getMainFrame().getMusicSheet();

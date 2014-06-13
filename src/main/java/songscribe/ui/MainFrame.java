@@ -28,16 +28,48 @@ import org.xml.sax.SAXException;
 import songscribe.IO.CompositionIO;
 import songscribe.Version;
 import songscribe.data.PropertyChangeListener;
-import songscribe.music.*;
-import songscribe.ui.mainframeactions.*;
+import songscribe.music.Crotchet;
+import songscribe.music.CrotchetRest;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.RepeatLeft;
+import songscribe.ui.mainframeactions.AddLineAction;
+import songscribe.ui.mainframeactions.AnnotationAction;
+import songscribe.ui.mainframeactions.BeatChangeAction;
+import songscribe.ui.mainframeactions.ControlAction;
+import songscribe.ui.mainframeactions.DialogOpenAction;
+import songscribe.ui.mainframeactions.ExportABCAnnotationAction;
+import songscribe.ui.mainframeactions.ExportMidiAction;
+import songscribe.ui.mainframeactions.ExportMusicSheetImageAction;
+import songscribe.ui.mainframeactions.ExportPDFAction;
+import songscribe.ui.mainframeactions.FullScreenAction;
+import songscribe.ui.mainframeactions.InsertLineAction;
+import songscribe.ui.mainframeactions.KeySignatureChangeAction;
+import songscribe.ui.mainframeactions.ModeAction;
+import songscribe.ui.mainframeactions.NewAction;
+import songscribe.ui.mainframeactions.OpenAction;
+import songscribe.ui.mainframeactions.PDFTutorialOpenAction;
+import songscribe.ui.mainframeactions.PrintAction;
+import songscribe.ui.mainframeactions.SaveAction;
+import songscribe.ui.mainframeactions.SaveAsAction;
+import songscribe.ui.mainframeactions.TempoChangeAction;
+import songscribe.ui.mainframeactions.TipAction;
 import songscribe.ui.playsubmenu.PlayMenu;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -183,11 +215,11 @@ public class MainFrame extends JFrame {
     public void initFrame(){
         setTitle(PROGNAME);
         setIconImage(getImage("swicon.png"));
-        init();
-        musicSheet.requestFocusInWindow();
+        init();        
         setFrameSize();
         setLocation(Math.max(CENTERPOINT.x-getWidth()/2, 0), Math.max(CENTERPOINT.y-getHeight()/2, 0));
         setVisible(true);
+        musicSheet.requestFocusInWindow();
         fireMusicChanged(this);
         automaticCheckForUpdate();
     }
@@ -298,27 +330,7 @@ public class MainFrame extends JFrame {
         editMenu.add(controlMenu);
         if(!Utilities.isMac()) {
             editMenu.add(prefAction);
-        }
-        /*JMenu renderMenu = new JMenu("Rendering");
-        renderMenu.setIcon(new ImageIcon(getImage("looknfeel.png")));
-        ButtonGroup renderGroup = new ButtonGroup();
-        for(final MusicSheet.DrawerType dt:MusicSheet.DrawerType.values()){
-            JCheckBoxMenuItem item = new JCheckBoxMenuItem(dt.getMenuName());
-            item.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    musicSheet.setDrawer(dt);
-                    properties.setProperty(Constants.RENDERING, dt.name());
-                    musicSheet.setRepaintImage(true);
-                    musicSheet.repaint();
-                }
-            });
-            renderGroup.add(item);
-            renderMenu.add(item);
-            if(dt.name().equals(properties.getProperty(Constants.RENDERING))){
-                item.setSelected(true);
-            }
-        }
-        editMenu.add(renderMenu);    */
+        }        
 
         JMenu modeMenu = new JMenu("Mode");
         bg = new ButtonGroup();
@@ -396,7 +408,7 @@ public class MainFrame extends JFrame {
         toolBar.getInputMap().clear();
         toolBar.getActionMap().clear();
         getContentPane().add(toolBar, BorderLayout.NORTH);
-
+        
         modeActions[musicSheet.getMode().ordinal()].actionPerformed(null);
         controlActions[musicSheet.getControl().ordinal()].actionPerformed(null);
         insertMenu.doClickNote(NoteType.CROTCHET.name());

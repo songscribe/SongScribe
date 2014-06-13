@@ -122,7 +122,7 @@
                             <classpathPrefix>libs</classpathPrefix>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>libs/jdirectorychooser-1.1.0.jar</Class-Path>
+                            <Class-Path>libs/jdirectorychooser-1.1.0.jar libs/iconloader.jar</Class-Path>
                             <Implementation-Build>${project.version}.${build.version}</Implementation-Build>
                         </manifestEntries>
                     </archive>

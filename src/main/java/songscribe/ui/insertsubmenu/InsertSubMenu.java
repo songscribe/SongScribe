@@ -27,6 +27,7 @@ import songscribe.ui.MainFrame;
 import songscribe.ui.SelectionPanel;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -45,10 +46,13 @@ public abstract class InsertSubMenu extends JMenu implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent e) {
-        realActionPerformed(e.getActionCommand());
-        if(selectionPanel!=null){
-            selectionPanel.setSelected(e.getActionCommand());
-            mainFrame.setSelectedTool(selectionPanel);
+        // we don't want to receive actions when the focus is on text panels
+        if (!(mainFrame.getFocusOwner() instanceof JTextComponent)) { 
+            realActionPerformed(e.getActionCommand());
+            if(selectionPanel!=null){
+                selectionPanel.setSelected(e.getActionCommand());
+                mainFrame.setSelectedTool(selectionPanel);
+            }
         }
     }
 

@@ -25,8 +25,18 @@ package songscribe.ui;
 import com.bulenkov.iconloader.JBHiDPIScaledImage;
 import com.bulenkov.iconloader.util.UIUtil;
 import org.apache.log4j.Logger;
-import songscribe.data.*;
-import songscribe.music.*;
+import songscribe.data.Interval;
+import songscribe.data.IntervalSet;
+import songscribe.data.MyBorder;
+import songscribe.data.PropertyChangeListener;
+import songscribe.data.TupletIntervalData;
+import songscribe.music.Composition;
+import songscribe.music.Crotchet;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.RepeatLeftRight;
 import songscribe.ui.adjustment.LyricsAdjustment;
 import songscribe.ui.adjustment.NoteXPosAdjustment;
 import songscribe.ui.adjustment.VerticalAdjustment;
@@ -39,9 +49,19 @@ import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Csaba Kávai
@@ -221,6 +241,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
         // We use the FughettaDrawer as the default now
         drawer = drawers[1];
+        setFocusable(true);
     }
 
     public void initComponent(){
@@ -1457,6 +1478,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     */
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
+            requestFocusInWindow();
             if (inSelection) {
                 unSetNoteSelections();
                 startDrag.setLocation(e.getX(), e.getY());
@@ -1545,14 +1567,15 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
-    class DeleteAction extends AbstractAction {
+    class DeleteAction extends AbstractTextFocusRejectingAction {
         public DeleteAction() {
+            super(mainFrame);
             putValue(Action.NAME, "Delete");
             putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("editdelete.png")));
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
         }
 
-        public void actionPerformed(ActionEvent e) {
+        public void doActionPerformed(ActionEvent e) {
             if(selectedNotesLine!=-1){
                 Line line = composition.getLine(selectedNotesLine);
                 for (int i=selectionEnd;i>=selectionBegin;i--) {
@@ -1573,17 +1596,18 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
-    class CopyAction extends AbstractAction {
+    class CopyAction extends AbstractTextFocusRejectingAction {
         ArrayList<Note> copyBuffer = new ArrayList<Note>();
         IntervalSet[] intervalSetsCopyBuffer;
 
         public CopyAction() {
+            super(mainFrame);
             putValue(Action.NAME, "Copy");
             putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("editcopy.png")));
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 
-        public void actionPerformed(ActionEvent e) {
+        public void doActionPerformed(ActionEvent e) {
             if(selectedNotesLine>-1){
                 Line line = composition.getLine(selectedNotesLine);
                 copyBuffer.clear();
@@ -1595,29 +1619,31 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
     }
 
-    class CutAction extends AbstractAction {
+    class CutAction extends AbstractTextFocusRejectingAction {
         public CutAction() {
+            super(mainFrame);
             putValue(Action.NAME, "Cut");
             putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("editcut.png")));
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 
-        public void actionPerformed(ActionEvent e) {
+        public void doActionPerformed(ActionEvent e) {
             copyAction.actionPerformed(e);
             deleteAction.actionPerformed(e);
         }
     }
 
-    class PasteAction extends AbstractAction {
+    class PasteAction extends AbstractTextFocusRejectingAction {
         Control prevPasteControl;
 
         public PasteAction() {
+            super(mainFrame);
             putValue(Action.NAME, "Paste");
             putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("editpaste.png")));
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         }
 
-        public void actionPerformed(ActionEvent e) {
+        public void doActionPerformed(ActionEvent e) {
            if(copyAction.copyBuffer.size()>0){
                prevPasteControl = control;
                setActiveNote(Note.PASTENOTE);

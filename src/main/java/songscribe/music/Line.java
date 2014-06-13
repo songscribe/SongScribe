@@ -260,7 +260,7 @@ public class Line {
     }
 
     public int getFirstTempoChange(){
-        if(composition.indexOfLine(this)==0)return 0;
+        if(composition.indexOfLine(this)==0 && noteCount() > 0)return 0;
         for(int n=0;n<noteCount();n++){
             if(getNote(n).getTempoChange()!=null){
                 return n;

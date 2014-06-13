@@ -22,6 +22,7 @@ Created on Aug 6, 2006
 package songscribe.ui.mainframeactions;
 
 import songscribe.music.Line;
+import songscribe.ui.AbstractTextFocusRejectingAction;
 import songscribe.ui.MainFrame;
 
 import javax.swing.*;
@@ -32,10 +33,11 @@ import java.awt.event.KeyEvent;
 /**
  * @author Csaba Kávai
  */
-public class AddLineAction extends AbstractAction {
+public class AddLineAction extends AbstractTextFocusRejectingAction {
     private MainFrame mainFrame;
 
     public AddLineAction(MainFrame mainFrame) {
+        super(mainFrame);
         this.mainFrame = mainFrame;
         putValue(Action.NAME, "At the end");
         putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -43,7 +45,7 @@ public class AddLineAction extends AbstractAction {
         putValue(Action.SHORT_DESCRIPTION, "Add a new line at the end");
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void doActionPerformed(ActionEvent e) {
         mainFrame.getMusicSheet().getComposition().addLine(new Line());
         mainFrame.modifiedDocument();
         mainFrame.getMusicSheet().setRepaintImage(true);
