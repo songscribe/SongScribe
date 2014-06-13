@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -21,25 +21,29 @@ Created on Oct 8, 2006
 */
 package songscribe.ui.playsubmenu;
 
+import songscribe.ui.AbstractTextFocusRejectingAction;
 import songscribe.ui.MainFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * @author Csaba Kávai
  */
-class PauseAction extends AbstractAction {
+class PauseAction extends AbstractTextFocusRejectingAction {
     private PlayMenu playMenu;
 
     public PauseAction(PlayMenu playMenu) {
+        super(playMenu.getMainFrame());
         this.playMenu = playMenu;
         putValue(Action.NAME, "Pause");
         putValue(Action.SMALL_ICON, new ImageIcon(MainFrame.getImage("player_pause.png")));
+        putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
         setEnabled(MainFrame.sequencer!=null);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void doActionPerformed(ActionEvent e) {
         if(MainFrame.sequencer==null)return;
         MainFrame.sequencer.stop();
         playMenu.enableAllComponents(true);

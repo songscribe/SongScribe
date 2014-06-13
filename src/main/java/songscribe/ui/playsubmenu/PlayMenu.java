@@ -39,8 +39,9 @@ public class PlayMenu extends JMenu implements PropertyChangeListener{
 
     DisableComponentsThread disableComponentsThread = new DisableComponentsThread(this, 0);
 
-    private PlayAction playAction = new PlayAction(this);
-    private PauseAction pauseAction = new PauseAction(this);
+    // Can't init these here, their constructors rely on mainFrame being set
+    private PlayAction playAction;
+    private PauseAction pauseAction;
     private StopAction stopAction = new StopAction(this);
     private WithRepeatAction withRepeatAction = new WithRepeatAction(this);
 
@@ -56,6 +57,8 @@ public class PlayMenu extends JMenu implements PropertyChangeListener{
     public PlayMenu(MainFrame mainFrame) {
         super("Play");
         this.mainFrame = mainFrame;
+        playAction = new PlayAction(this);
+        pauseAction = new PauseAction(this);
         playPauseMenu = new JMenuItem(playAction);
         add(playPauseMenu);
         add(new JMenuItem(stopAction));

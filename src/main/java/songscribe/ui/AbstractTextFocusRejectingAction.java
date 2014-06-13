@@ -1,7 +1,8 @@
 package songscribe.ui;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import javax.swing.text.JTextComponent;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 /**
@@ -15,11 +16,13 @@ public abstract class AbstractTextFocusRejectingAction extends AbstractAction {
     }
 
     public final void actionPerformed(ActionEvent e) {
-        if (!(mainFrame.getFocusOwner() instanceof JTextComponent)) {
+        Component focusOwner = mainFrame.getFocusOwner();
+
+        if (focusOwner == null || !(focusOwner instanceof JTextComponent)) {
             // we don't want to receive actions when the focus is on text panels
             doActionPerformed(e);
-        }   
+        }
     }
-    
-    public abstract void doActionPerformed(ActionEvent e); 
+
+    public abstract void doActionPerformed(ActionEvent e);
 }
