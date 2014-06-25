@@ -21,12 +21,22 @@ Created on Aug 6, 2006
 */
 package songscribe.ui.mainframeactions;
 
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import org.apache.log4j.Logger;
 import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.TupletIntervalData;
-import songscribe.music.*;
+import songscribe.music.Composition;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.Tempo;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
@@ -35,21 +45,32 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExportLilypondAnnotationAction extends AbstractAction
 {
 
     // left http://www.lilypond.org/doc/v2.18/Documentation/learning-big-page#fundamental-concepts
-    private static final String[] PITCH_TYPES = { "c", "des", "d", "ees", "e", "f", "ges", "g", "aes", "a", "bes", "b" };
+    private static final String[] PITCH_TYPES = { "c", "des", "d", "es", "e", "f", "ges", "g", "aes", "a", "bes", "b" };
     private Logger logger = Logger.getLogger(ExportLilypondAnnotationAction.class);
     private MainFrame mainFrame;
     private PlatformFileDialog pfd;
+    private Configuration cfg = new Configuration();
 
     public ExportLilypondAnnotationAction(MainFrame mainFrame)
     {
         this.mainFrame = mainFrame;
         putValue(Action.NAME, "Export as LilyPond Notation...");
         pfd = new PlatformFileDialog(mainFrame, "Export as LilyPond Notation", false, new MyAcceptFilter("LilyPond Files", "ly"));
+        try {
+            cfg.setDirectoryForTemplateLoading(new File("conf/lilypond-templates"));
+        } catch (IOException e) {
+            logger.error("Template directory does not exists", e);  
+        }
+        cfg.setObjectWrapper(new DefaultObjectWrapper());
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 
     public void actionPerformed(ActionEvent e)
@@ -83,6 +104,11 @@ public class ExportLilypondAnnotationAction extends AbstractAction
                 writer = new PrintWriter(saveFile);
                 writeLilypond(writer);
             }
+            catch (TemplateException e1)
+            {
+                mainFrame.showErrorMessage("Wrong tempate: " + e1.getMessage());
+                logger.error("Template exception", e1);
+            }
             catch (IOException e1)
             {
                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
@@ -98,21 +124,26 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         }
     }
 
-    public void writeLilypond(PrintWriter writer)
-    {
+    public void writeLilypond(PrintWriter writer) throws IOException, TemplateException {
+        
         Composition composition = mainFrame.getMusicSheet().getComposition();
-        writer.println("\\version \"2.18.2\"");
-        writer.println("\\header {");
-        writer.println("title = \"" + composition.getSongTitle() + "\"");
-        writer.println("composer = \"" + composition.getRightInfo().replace('\n', ' ')+ "\"");
-        writer.println("}");
-        writer.println("\\score {");
-        writer.println("\\autoBeamOff");
-        writer.println(translateTempo(composition.getTempo()));
+        Map<String, Object> root = new HashMap<String, Object>();
+        root.put("rightinfo", "\"" + composition.getRightInfo().replace("\n", "\" \"")+ "\"");
+        root.put("title", "\"" + composition.getSongTitle() + "\"");
+        root.put("tempo", translateTempo(composition.getTempo()));
+        root.put("key", translateKey(composition.getDefaultKeyType(), composition.getDefaultKeys()));
+        root.put("score", translateScore(composition));
+        root.put("lyrics", "");
+
+        cfg.getTemplate("main.ftl").process(root, writer);        
+    }
+
+    String translateScore(Composition composition) {
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < composition.lineCount();i++){
-            writer.println(translateLine(composition.getLine(i)));
+            sb.append(translateLine(composition.getLine(i)));
         }
-        writer.println("}");
+        return sb.toString();
     }
 
     /**
@@ -277,7 +308,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     String translateKey(KeyType keyType, int number)
     {
         String[] sharpKeys = { "c", "g", "d", "a", "e", "b", "fis", "cis" };
-        String[] flatKeys = { "c", "f", "bes", "ees", "aes", "des", "ges", "ces" };
+        String[] flatKeys = { "c", "f", "bes", "es", "aes", "des", "ges", "ces" };
         String key;
 
         if (keyType == KeyType.SHARPS)
@@ -295,15 +326,13 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     String translateLine(Line line)
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("\\new Staff \\relative c' {\n");
-        sb.append("\\clef \"treble\" ");
         sb.append(translateKey(line.getKeyType(), line.getKeys())).append("\n");
         sb.append(translateImlicitRepeatLeftAtLineBeginning(line)).append(' ');
         for (int n = 0; n < line.noteCount(); n++) {
             sb.append(translateNote(line.getNote(n))).append(' ');
         }
-        sb.append(translateImlicitRepeatRightAtLineEnd(line)).append("\n");
-        sb.append("}");
+        sb.append(translateImlicitRepeatRightAtLineEnd(line));
+        sb.append(" \\break").append("\n");
 
         return sb.toString();
     }
@@ -365,7 +394,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         int pitch = note.getPitch() - 60;
         int pitchTypeIndex = pitch % 12 < 0 ? 12 + pitch % 12 : pitch % 12;
         StringBuilder sb = new StringBuilder(PITCH_TYPES[pitchTypeIndex]);
-        int type = pitch / 12;
+        int type = pitch / 12 + 1;
 
         if (pitch < 0)
         {
@@ -374,7 +403,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
         for (int i = 0; i < type; i++)
         {
-            sb.insert(1, (pitch < 0) ? ',' : '\'');
+            sb.append((pitch < 0) ? ',' : '\'');
         }
 
         return sb.toString();
@@ -427,7 +456,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
     String translateTempo(Tempo tempo)
     {
-        return "\\tempo \"" + tempo.getTempoDescription() + "\" " + translateDuration(tempo.getTempoType().getNote()) + " = "
+        return "\"" + tempo.getTempoDescription() + "\" " + translateDuration(tempo.getTempoType().getNote()) + " = "
               + tempo.getVisibleTempo();
     }
 

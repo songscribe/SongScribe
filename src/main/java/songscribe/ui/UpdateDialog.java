@@ -34,7 +34,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -277,6 +284,10 @@ public class UpdateDialog extends MyDialog{
                 try {
                     for(TempFilePair tfp: tempFilePairs){
                         int read;
+                        File parentDir = tfp.originalFile.getParentFile();
+                        if (parentDir != null && !parentDir.exists()) {
+                            parentDir.mkdirs();
+                        }
                         FileInputStream fis = new FileInputStream(tfp.tempFile);
                         FileOutputStream fos = new FileOutputStream(tfp.originalFile);
                         while((read=fis.read(buf))>0)fos.write(buf, 0, read);
