@@ -39,6 +39,7 @@ import songscribe.ui.mainframeactions.BeatChangeAction;
 import songscribe.ui.mainframeactions.ControlAction;
 import songscribe.ui.mainframeactions.DialogOpenAction;
 import songscribe.ui.mainframeactions.ExportABCAnnotationAction;
+import songscribe.ui.mainframeactions.ExportLilypondAnnotationAction;
 import songscribe.ui.mainframeactions.ExportMidiAction;
 import songscribe.ui.mainframeactions.ExportMusicSheetImageAction;
 import songscribe.ui.mainframeactions.ExportPDFAction;
@@ -301,7 +302,7 @@ public class MainFrame extends JFrame {
         ExportPDFAction exportPDFAction = new ExportPDFAction(this);
         fileMenu.add(exportPDFAction);
         fileMenu.add(new ExportABCAnnotationAction(this));
-//        fileMenu.add(new ExportLilypondAnnotationAction(this));
+        fileMenu.add(new ExportLilypondAnnotationAction(this));
         fileMenu.addSeparator();
         printAction = new PrintAction(this);
         fileMenu.add(printAction);

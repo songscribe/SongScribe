@@ -31,6 +31,7 @@ import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.TupletIntervalData;
 import songscribe.music.Composition;
+import songscribe.music.Crotchet;
 import songscribe.music.GraceSemiQuaver;
 import songscribe.music.KeyType;
 import songscribe.music.Line;
@@ -131,7 +132,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         root.put("rightinfo", "\"" + composition.getRightInfo().replace("\n", "\" \"")+ "\"");
         root.put("title", "\"" + composition.getSongTitle() + "\"");
         root.put("tempo", translateTempo(composition.getTempo()));
-        root.put("key", translateKey(composition.getDefaultKeyType(), composition.getDefaultKeys()));
+        root.put("key", translateKey(composition.getLine(0).getKeyType(), composition.getLine(0).getKeys()));
         root.put("score", translateScore(composition));
         root.put("lyrics", "");
 
@@ -141,7 +142,14 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     String translateScore(Composition composition) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < composition.lineCount();i++){
-            sb.append(translateLine(composition.getLine(i)));
+            Line line = composition.getLine(i);
+            if (i > 0) {
+                Line previousLine = composition.getLine(i-1);
+                if (previousLine.getKeys() != line.getKeys() || previousLine.getKeyType() != line.getKeyType()) {
+                    sb.append(translateKey(line.getKeyType(), line.getKeys())).append(' ');
+                }
+            }
+            sb.append(translateLine(line));
         }
         return sb.toString();
     }
@@ -325,14 +333,13 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
     String translateLine(Line line)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(translateKey(line.getKeyType(), line.getKeys())).append("\n");
+        StringBuilder sb = new StringBuilder();        
         sb.append(translateImlicitRepeatLeftAtLineBeginning(line)).append(' ');
         for (int n = 0; n < line.noteCount(); n++) {
             sb.append(translateNote(line.getNote(n))).append(' ');
         }
         sb.append(translateImlicitRepeatRightAtLineEnd(line));
-        sb.append(" \\break").append("\n");
+        sb.append(" \\bar \"\" \\break").append("\n");
 
         return sb.toString();
     }
@@ -344,7 +351,6 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         if (note.getTempoChange() != null) {
             sb.append(translateTempo(note.getTempoChange())).append(' ');
         }
-
         if (noteType.isGraceNote())
         {
             sb.append("\\acciaccatura ");
@@ -356,7 +362,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
             int origY = note.getYPos();
 
             note.setYPos(((GraceSemiQuaver) note).getY0Pos());
-            sb.append(translatePitch(note));
+            sb.append(translatePitch(note.getPitch()));
             note.setYPos(origY);
             sb.append(translateDuration(note));
             sb.append(' ');
@@ -364,13 +370,22 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
         if (noteType.isNote())
         {
-            sb.append(translatePitch(note));
+            sb.append(translatePitch(note.getPitch()));
         }
 
         if (noteType.isRest())
         {
             sb.append("r");
         }
+        
+        if (noteType.isRepeat() || noteType.isBarLine()) {
+            sb.append(translateRepeatAndBarLine(noteType));
+        }
+        
+        if (noteType == NoteType.BREATHMARK) {
+            sb.append("\\breathe");
+        }
+        
 
         sb.append(translateDuration(note));
         sb.append(translateDotted(note));
@@ -378,9 +393,13 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         sb.append(translateSlur(note));
         sb.append(translateArticulation(note));
         sb.append(translateDynamics(note));
+        sb.append(translateFermata(note));
+        sb.append(translateTrill(note));
+        sb.append(translateGlissando(note));
         sb.append(translateBeams(note));
         sb.append(translateText(note));
         sb.append(translateTuplet(note));
+        
         if (noteType == NoteType.GRACESEMIQUAVER)
         {
             sb.append("}");
@@ -389,9 +408,53 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         return sb.toString();
     }
 
-    String translatePitch(Note note)
+    private String translateGlissando(Note note) {
+        if (note.getGlissando() == Note.NOGLISSANDO) {
+            return "";
+        } else {
+            Line line = note.getLine();
+            int noteIndex = line.getNoteIndex(note);
+            if (noteIndex < line.noteCount() - 1 && line.getNote(noteIndex + 1).getYPos() == note.getGlissando().pitch) {
+                return "\\glissando";
+            } else {
+                Note hiddenNote = new Crotchet();
+                hiddenNote.setYPos(note.getGlissando().pitch);
+                hiddenNote.setLine(line);
+                line.getNotes().add(noteIndex + 1, hiddenNote);
+                String pitch = translatePitch(hiddenNote.getPitch());
+                line.getNotes().remove(noteIndex + 1);
+                return "\\glissando \\hideNotes " + pitch + "4 \\unHideNotes";
+            }
+        }
+    }
+    
+    private String translateTrill(Note note) {
+        if (!note.isTrill()) {
+            return "";
+        } else {
+            Line line = note.getLine();
+            int noteIndex = line.getNoteIndex(note);
+            boolean firstTrill = noteIndex > 0 && !line.getNote(noteIndex - 1).isTrill();
+            boolean lastTrill = noteIndex < line.noteCount() - 1 && !line.getNote(noteIndex + 1).isTrill();
+            if (firstTrill && lastTrill) {
+                return "\\trill";
+            } else if (firstTrill) {
+                return "\\startTrillSpan";
+            } else if (lastTrill) {
+                return "\\stopTrillSpan";
+            } else {
+                return "";
+            }
+        }
+    }
+
+    private String translateFermata(Note note) {
+        return note.isFermata() ? "\\fermata" : "";
+    }
+
+    String translatePitch(int notePitch)
     {
-        int pitch = note.getPitch() - 60;
+        int pitch = notePitch - 60;
         int pitchTypeIndex = pitch % 12 < 0 ? 12 + pitch % 12 : pitch % 12;
         StringBuilder sb = new StringBuilder(PITCH_TYPES[pitchTypeIndex]);
         int type = pitch / 12 + 1;
@@ -411,26 +474,27 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
     String translateRepeatAndBarLine(NoteType noteType)
     {
+        String repeatVisibility = "\\once \\revert Staff.BarLine #'break-visibility ";
         switch (noteType)
         {
 
             case REPEATLEFT:
-                return "\\repeat volta 2 {";
+                return repeatVisibility + "\\repeat volta 2 {";
 
             case REPEATRIGHT:
                 return "}";
 
             case REPEATLEFTRIGHT:
-                return "} \\repeat volta 2 {";
+                return "} " + repeatVisibility + "\\repeat volta 2 {";
 
             case SINGLEBARLINE:
-                return "\\bar \"|\"";
+                return repeatVisibility + "\\bar \"|\"";
 
             case DOUBLEBARLINE:
-                return "\\bar \"||\"";
+                return repeatVisibility + "\\bar \"||\"";
 
             case FINALDOUBLEBARLINE:
-                return "\\bar \"|.\"";
+                return repeatVisibility + "\\bar \"|.\"";
 
             default:
                 return "";
@@ -456,8 +520,19 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
     String translateTempo(Tempo tempo)
     {
-        return "\"" + tempo.getTempoDescription() + "\" " + translateDuration(tempo.getTempoType().getNote()) + " = "
-              + tempo.getVisibleTempo();
+        // \tempo \markup \medium { \note #"4." #1 = 144 Moderate-Fast}
+        StringBuilder sb = new StringBuilder("\\tempo \\markup \\medium { ");
+        if (tempo.isShowTempo()) {
+            sb.append("\\note #\"");
+            Note note = tempo.getTempoType().getNote();
+            sb.append(translateDuration(note));
+            for (int i = 0; i < note.getDotted(); i++) {
+                sb.append('.');
+            }
+            sb.append("\" #1 = ").append(tempo.getVisibleTempo()).append(' ');
+        }
+        sb.append(tempo.getTempoDescription()).append(" }");
+        return sb.toString();
     }
 
     String translateText(Note note)

@@ -111,6 +111,10 @@ public class Line {
         return notes.get(index);
     }
 
+    public List<Note> getNotes() {
+        return notes;
+    }
+
     public void removeNote(int index) throws ArrayIndexOutOfBoundsException {
         modifiedComposition();
         notes.remove(index);

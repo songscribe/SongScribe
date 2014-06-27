@@ -54,7 +54,7 @@ PartPOneVoiceOne =  \absolute {
       	\override Staff.Slur.stencil = ##f
     
 
-        \tempo ${tempo}
+        ${tempo}
       
         \clef "treble" ${key} 
         ${score} 
