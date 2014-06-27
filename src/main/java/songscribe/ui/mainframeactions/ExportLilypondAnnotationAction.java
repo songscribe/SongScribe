@@ -351,6 +351,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         if (note.getTempoChange() != null) {
             sb.append(translateTempo(note.getTempoChange())).append(' ');
         }
+        sb.append(translateTupletStart(note));
         if (noteType.isGraceNote())
         {
             sb.append("\\acciaccatura ");
@@ -398,7 +399,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         sb.append(translateGlissando(note));
         sb.append(translateBeams(note));
         sb.append(translateText(note));
-        sb.append(translateTuplet(note));
+        sb.append(translateTupletEnd(note));
         
         if (noteType == NoteType.GRACESEMIQUAVER)
         {
@@ -555,7 +556,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         return note.getLine().getTies().isStartOfAnyInterval(note.getLine().getNoteIndex(note)) ? "~" : "";
     }
 
-    String translateTuplet(Note note)
+    String translateTupletStart(Note note)
     {
         int noteIndex = note.getLine().getNoteIndex(note);
 
@@ -565,13 +566,21 @@ public class ExportLilypondAnnotationAction extends AbstractAction
             int grade = TupletIntervalData.getGrade(interval);
 
             return "\\tuplet " + grade + "/" + (grade - 1) + " {";
+        } else {
+            return "";
         }
+    }
 
-        if (note.getLine().getSlurs().isEndOfAnyInterval(noteIndex))
+    String translateTupletEnd(Note note)
+    {
+        int noteIndex = note.getLine().getNoteIndex(note);
+
+        
+        if (note.getLine().getTuplets().isEndOfAnyInterval(noteIndex))
         {
             return "}";
+        } else {
+            return "";
         }
-
-        return "";
     }
 }
