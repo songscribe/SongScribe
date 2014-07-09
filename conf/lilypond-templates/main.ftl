@@ -38,8 +38,9 @@
 
     
 PartPOneVoiceOne =  \absolute {
-\autoBeamOff            
-\override Staff.BarLine #'break-visibility = #'#(#t #f #t)
+\autoBeamOff
+\cadenzaOn
+% \override Staff.BarLine #'break-visibility = #'#(#t #f #t)
   \omit Staff.TimeSignature
   \omit Score.BarNumber
     \set Lyrics.includeGraceNotes = ##t
@@ -50,8 +51,8 @@ PartPOneVoiceOne =  \absolute {
     \override Lyrics.LyricHyphen #'dash-period = #2.2
     \override Lyrics.LyricText #'font-size = #-1
     \override Glissando #'style = #'trill
-      \override Score.Glissando #'(bound-details left padding) = #0.5
-      	\override Staff.Slur.stencil = ##f
+    \override Glissando.minimum-length = #4
+    \override Glissando.springs-and-rods = #ly:spanner::set-spacing-rods
     
 
         ${tempo}

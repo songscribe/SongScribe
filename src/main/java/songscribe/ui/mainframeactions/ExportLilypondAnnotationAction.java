@@ -351,10 +351,11 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         if (note.getTempoChange() != null) {
             sb.append(translateTempo(note.getTempoChange())).append(' ');
         }
+        sb.append(translateFSEndingStart(note));
         sb.append(translateTupletStart(note));
         if (noteType.isGraceNote())
         {
-            sb.append("\\acciaccatura ");
+            sb.append("\\slashedGrace ");
         }
 
         if (noteType == NoteType.GRACESEMIQUAVER)
@@ -381,6 +382,9 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         
         if (noteType.isRepeat() || noteType.isBarLine()) {
             sb.append(translateRepeatAndBarLine(noteType));
+            if (noteType == NoteType.REPEATRIGHT && note.getLine().getFsEndings().isInsideAnyInterval(note.getLine().getNoteIndex(note))) {
+                sb.append(" {");
+            }
         }
         
         if (noteType == NoteType.BREATHMARK) {
@@ -397,9 +401,11 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         sb.append(translateFermata(note));
         sb.append(translateTrill(note));
         sb.append(translateGlissando(note));
+        sb.append(translateBeatChange(note));
         sb.append(translateBeams(note));
         sb.append(translateText(note));
         sb.append(translateTupletEnd(note));
+        sb.append(translateFSEndingEnd(note));
         
         if (noteType == NoteType.GRACESEMIQUAVER)
         {
@@ -407,6 +413,22 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         }
 
         return sb.toString();
+    }
+
+    private String translateBeatChange(Note note) {
+        if (note.getBeatChange() == null)  return "";
+        Note firstNote = note.getBeatChange().getFirstNote();
+        Note secondNote = note.getBeatChange().getSecondNote();
+        return String.format("^\\markup  \\concat { \\override #'(font-size . -2.7) \\smaller \\general-align #Y #DOWN \\note #\"%s\" #1 = \\override #'(font-size . -2.9) \\smaller \\general-align #Y #DOWN \\note #\"%s\" #1 }",
+                translateDuration(firstNote) + translateDotted(firstNote), translateDuration(secondNote) + translateDotted(secondNote));
+    }
+
+    private String translateFSEndingStart(Note note) {
+        return note.getLine().getFsEndings().isStartOfAnyInterval(note.getLine().getNoteIndex(note)) ? "} \\alternative { {" : "";
+    }
+
+    private String translateFSEndingEnd(Note note) {
+        return note.getLine().getFsEndings().isEndOfAnyInterval(note.getLine().getNoteIndex(note)) ? "} }" : "";
     }
 
     private String translateGlissando(Note note) {
@@ -475,27 +497,26 @@ public class ExportLilypondAnnotationAction extends AbstractAction
 
     String translateRepeatAndBarLine(NoteType noteType)
     {
-        String repeatVisibility = "\\once \\revert Staff.BarLine #'break-visibility ";
         switch (noteType)
         {
 
             case REPEATLEFT:
-                return repeatVisibility + "\\repeat volta 2 {";
+                return "\\repeat volta 2 {";
 
             case REPEATRIGHT:
                 return "}";
 
             case REPEATLEFTRIGHT:
-                return "} " + repeatVisibility + "\\repeat volta 2 {";
+                return "} \\repeat volta 2 {";
 
             case SINGLEBARLINE:
-                return repeatVisibility + "\\bar \"|\"";
+                return "\\bar \"|\"";
 
             case DOUBLEBARLINE:
-                return repeatVisibility + "\\bar \"||\"";
+                return "\\bar \"||\"";
 
             case FINALDOUBLEBARLINE:
-                return repeatVisibility + "\\bar \"|.\"";
+                return "\\bar \"|.\"";
 
             default:
                 return "";
@@ -527,9 +548,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
             sb.append("\\note #\"");
             Note note = tempo.getTempoType().getNote();
             sb.append(translateDuration(note));
-            for (int i = 0; i < note.getDotted(); i++) {
-                sb.append('.');
-            }
+            sb.append(translateDotted(note));
             sb.append("\" #1 = ").append(tempo.getVisibleTempo()).append(' ');
         }
         sb.append(tempo.getTempoDescription()).append(" }");
