@@ -353,21 +353,21 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         }
         sb.append(translateFSEndingStart(note));
         sb.append(translateTupletStart(note));
-        if (noteType.isGraceNote())
+        if (noteType == NoteType.GRACEQUAVER)
         {
             sb.append("\\slashedGrace ");
         }
 
         if (noteType == NoteType.GRACESEMIQUAVER)
         {
-            sb.append("{");
+            sb.append("\\grace {\\slash ");
             int origY = note.getYPos();
 
             note.setYPos(((GraceSemiQuaver) note).getY0Pos());
             sb.append(translatePitch(note.getPitch()));
             note.setYPos(origY);
             sb.append(translateDuration(note));
-            sb.append(' ');
+            sb.append(" [");
         }
 
         if (noteType.isNote())
@@ -409,7 +409,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction
         
         if (noteType == NoteType.GRACESEMIQUAVER)
         {
-            sb.append("}");
+            sb.append("]}");
         }
 
         return sb.toString();
@@ -424,7 +424,17 @@ public class ExportLilypondAnnotationAction extends AbstractAction
     }
 
     private String translateFSEndingStart(Note note) {
-        return note.getLine().getFsEndings().isStartOfAnyInterval(note.getLine().getNoteIndex(note)) ? "} \\alternative { {" : "";
+        StringBuilder sb = new StringBuilder();
+        Line line = note.getLine();
+        int noteIndex = line.getNoteIndex(note);
+        if (line.getFsEndings().isStartOfAnyInterval(noteIndex)) {
+            if (noteIndex == 0 || line.getNote(noteIndex - 1).getNoteType().isRepeat()) {
+                sb.append(" \\bar \"\"");
+            }
+            sb.append(" } \\alternative { {");
+        }
+
+        return sb.toString();
     }
 
     private String translateFSEndingEnd(Note note) {
