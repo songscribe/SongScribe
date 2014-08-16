@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public class MidiConverter {
     @ArgumentDescribe("MIDI Instrument (0-127)")
-    public int instrument = 0;    
+    public int instrument = 0;
 
     @ArgumentDescribe("Export with repeats")
     public boolean withRepeat = false;
@@ -49,16 +49,19 @@ public class MidiConverter {
         props.setProperty(Constants.WITHREPEATPROP, withRepeat ? Constants.TRUEVALUE : Constants.FALSEVALUE);
         props.setProperty(Constants.INSTRUMENTPROP, Integer.toString(instrument));
         props.setProperty(Constants.TEMPOCHANGEPROP, Integer.toString(tempoChange));
-        
-        for(File file:files){
+
+        for (File file:files) {
             try {
                 mf.getMusicSheet().setComposition(null);
                 mf.openMusicSheet(file, false);
                 mf.getMusicSheet().getComposition().musicChanged(props);
-                String fileName = file.getName();
-                int dotPos = fileName.indexOf('.');
-                if(dotPos>0)fileName=fileName.substring(0, dotPos);
-                MidiSystem.write(mf.getMusicSheet().getComposition().getSequence(), 1, new File(fileName+".midi"));
+                String path = file.getCanonicalPath();
+                int dotPos = path.lastIndexOf('.');
+
+                if (dotPos > 0)
+                    path = path.substring(0, dotPos);
+
+                MidiSystem.write(mf.getMusicSheet().getComposition().getSequence(), 1, new File(path + ".midi"));
             } catch (IOException e) {
                 System.out.println("Could not convert "+file.getName());
             }

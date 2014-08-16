@@ -78,13 +78,15 @@ public class ImageConverter {
                 mf.getMusicSheet().getComposition().setSongTitle("");
             }
             BufferedImage image = mf.getMusicSheet().createMusicSheetImageForExport(Color.WHITE, (double)resolution/MusicSheet.RESOLUTION, myBorder);
-            String fileName = file.getName();
-            int dotPos = fileName.indexOf('.');
-            if(dotPos>0)fileName=fileName.substring(0, dotPos);
-            String parent = file.getParent();
-            String path = parent + File.separator + fileName + suffix;
             try {
-                ImageIO.write(image, type.toUpperCase(), new File(path+"."+type.toLowerCase()));
+                String path = file.getCanonicalPath();
+                int dotPos = path.lastIndexOf('.');
+
+                if (dotPos > 0)
+                    path = path.substring(0, dotPos);
+
+                path += suffix;
+                ImageIO.write(image, type.toUpperCase(), new File(path + "." + type.toLowerCase()));
             } catch (IOException e) {
                 System.out.println("Could not convert "+file.getName());
             }
