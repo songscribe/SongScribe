@@ -6,7 +6,7 @@
 
     <groupId>SongScribe</groupId>
     <artifactId>SongScribe</artifactId>
-    <version>1.20</version>
+    <version>1.21</version>
     <packaging>jar</packaging>
 
     <description>
