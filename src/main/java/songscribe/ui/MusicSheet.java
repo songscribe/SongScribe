@@ -120,7 +120,6 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     private boolean repaintImage = true;
     private BufferedImage msImage;
     private int playingLine=-1, playingNote=-1;
-    private Dimension sheetSize;
 
     private boolean playInsertingNote;
     private NoteXPosAdjustment noteXPosAdjustment;
@@ -246,7 +245,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void initComponent(){
         composition = new Composition(mainFrame);
-        sheetSize = new Dimension((int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION), (int)(LineWidthChangeDialog.MAXIMUMLINEWIDTH*RESOLUTION*PAGEHEIGHT/PAGEWIDTH));
+        Dimension sheetSize = new Dimension((int) (LineWidthChangeDialog.MAXIMUMLINEWIDTH * RESOLUTION), (int) (LineWidthChangeDialog.MAXIMUMLINEWIDTH * RESOLUTION * PAGEHEIGHT / PAGEWIDTH));
 
         if (UIUtil.isRetina())
             msImage = new JBHiDPIScaledImage(sheetSize.width, sheetSize.height, BufferedImage.TYPE_INT_RGB);
