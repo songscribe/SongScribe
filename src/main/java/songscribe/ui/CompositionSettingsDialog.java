@@ -185,10 +185,10 @@ public class CompositionSettingsDialog extends MyDialog{
         titleFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
         lyricsFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
         generalFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
-        titleBoldToggle = new JToggleButton("<html><b>B</b></html>");
-        titleItalicToggle = new JToggleButton("<html><i>I</i></html>");
-        lyricsBoldToggle = new JToggleButton("<html><b>B</b></html>");
-        lyricsItalicToggle = new JToggleButton("<html><i>I</i></html>");
+        titleBoldToggle = new JCheckBox("Bold");
+        titleItalicToggle = new JCheckBox("Italic");
+        lyricsBoldToggle = new JCheckBox("Bold");
+        lyricsItalicToggle = new JCheckBox("Italic");
         MyDialog.addLabelToBox(fontCenter, "Title font:", 5);
         tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         tempPanel.add(titleFontCombo);
