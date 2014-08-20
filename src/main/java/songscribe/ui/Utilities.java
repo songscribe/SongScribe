@@ -142,7 +142,7 @@ public class Utilities {
         for (int i = 0; i < systemFonts.length; ++i)
         {
             Font font = systemFonts[i];
-            String name = font.getFontName();
+            String name = font.getPSName();
             String[] parts = name.split("-");
             systemFontBaseNames[i] = parts[0];
         }
@@ -166,7 +166,7 @@ public class Utilities {
         the font name starts with base+suffix. If there is no match, return null.
     */
     private static String matchFontName(Font font, String baseName, String[] suffixes, boolean exactMatch) {
-        String fontName = font.getFontName();
+        String fontName = font.getPSName();
         boolean hasSuffix = baseName.contains("-");
 
         for (String suffix : suffixes) {
@@ -230,7 +230,6 @@ public class Utilities {
 
             if (font.getFamily().equals(familyName)) {
                 String baseName = systemFontBaseNames[i];
-                String fontName = font.getFontName();
 
                 if (style == Font.PLAIN) {
                     String name = matchFontName(font, baseName, plainFontSuffixNames, true);
@@ -247,8 +246,7 @@ public class Utilities {
 
                     // If italic is also desired, try adding italic suffixes
                     if (name != null && wantItalic) {
-                        if (wantItalic)
-                            name = matchFontName(font, name, italicFontSuffixNames, true);
+                        name = matchFontName(font, name, italicFontSuffixNames, true);
                     }
 
                     if (name != null) {
