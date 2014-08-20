@@ -41,6 +41,7 @@ public final class Composition{
     public static final int[] VELOCITY = {98, 127};
 
     public static final int GRACEQUAVER_DURATION = PPQ/8;
+    public static final int TOP_LINE_OFFSET = 31;
 
     //music data
     private Tempo tempo;
@@ -62,7 +63,7 @@ public final class Composition{
     private Font generalFont;
     private int topSpace;
     private int rightInfoStartY;
-    private int rowHeight;
+    private int rowHeight = 4;
     private int lineWidth;
 
     private ArrayList<Line> lines = new ArrayList<Line>();
@@ -86,8 +87,8 @@ public final class Composition{
         this.mainFrame = mainFrame;
 
         ProfileManager pm = mainFrame.getProfileManager();
-        number = "";
-        songTitle = "";
+        number = "1";
+        songTitle = "A New Song";
         place = "";
         year = "";
         lyrics = "";
@@ -541,7 +542,7 @@ public final class Composition{
 
     public void recalcTopSpace(){
         if(!userSetTopSpace){
-            topSpace = 2*songTitleFont.getSize()+Utilities.lineCount(rightInfo)*generalFont.getSize()-2*MusicSheet.LINEDIST;
+            topSpace = (2 * songTitleFont.getSize()) + (Utilities.lineCount(rightInfo) * generalFont.getSize()) - (2 * MusicSheet.LINEDIST) + TOP_LINE_OFFSET;
         }
     }
 

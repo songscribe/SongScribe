@@ -54,7 +54,7 @@ public class Line {
     //view properties
     private int tempoChangeYPos;
     private int beatChangeYPos = -24;
-    private int lyricsYPos = 48;
+    private int lyricsYPos = 50;
     private int fsEndingYPos = -25;
     private int trillYPos = -27;
     private float noteDistChangeRatio = 1f;
