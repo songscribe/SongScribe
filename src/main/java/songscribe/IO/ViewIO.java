@@ -47,10 +47,10 @@ public class ViewIO {
         XML.indent = 4;
         XML.writeValue(pw, XMLTITLEFONT, c.getSongTitleFont().getFamily());
         XML.writeValue(pw, XMLTITLEFONTSIZE, Integer.toString(c.getSongTitleFont().getSize()));
-        XML.writeValue(pw, XMLTITLEFONTSTYLE, ProfileManager.stringFontStyle(c.getSongTitleFont().isBold(), c.getSongTitleFont().isItalic()));
+        XML.writeValue(pw, XMLTITLEFONTSTYLE, ProfileManager.stringFontStyle(Utilities.isBold(c.getSongTitleFont()), Utilities.isItalic(c.getSongTitleFont())));
         XML.writeValue(pw, XMLLYRICSFONT, c.getLyricsFont().getFamily());
         XML.writeValue(pw, XMLLYRICSFONTSIZE, Integer.toString(c.getLyricsFont().getSize()));
-        XML.writeValue(pw, XMLLYRICSFONTSTYLE, ProfileManager.stringFontStyle(c.getLyricsFont().isBold(), c.getLyricsFont().isItalic()));
+        XML.writeValue(pw, XMLLYRICSFONTSTYLE, ProfileManager.stringFontStyle(Utilities.isBold(c.getLyricsFont()), Utilities.isItalic(c.getLyricsFont())));
         XML.writeValue(pw, XMLGENERALFONT, c.getGeneralFont().getFamily());
         XML.writeValue(pw, XMLGENERALFONTSIZE, Integer.toString(c.getGeneralFont().getSize()));
     }
