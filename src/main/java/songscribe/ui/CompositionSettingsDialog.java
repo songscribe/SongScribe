@@ -284,10 +284,10 @@ public class CompositionSettingsDialog extends MyDialog{
         titleFontSizeSpinner.setValue(c.getSongTitleFont().getSize());
         lyricsFontSizeSpinner.setValue(c.getLyricsFont().getSize());
         generalFontSizeSpinner.setValue(c.getGeneralFont().getSize());
-        titleBoldToggle.setSelected(c.getSongTitleFont().isBold());
-        titleItalicToggle.setSelected(c.getSongTitleFont().isItalic());
-        lyricsBoldToggle.setSelected(c.getLyricsFont().isBold());
-        lyricsItalicToggle.setSelected(c.getLyricsFont().isItalic());
+        titleBoldToggle.setSelected(Utilities.isBold(c.getSongTitleFont()));
+        titleItalicToggle.setSelected(Utilities.isItalic(c.getSongTitleFont()));
+        lyricsBoldToggle.setSelected(Utilities.isBold(c.getLyricsFont()));
+        lyricsItalicToggle.setSelected(Utilities.isItalic(c.getLyricsFont()));
     }
 
     protected void setData(){

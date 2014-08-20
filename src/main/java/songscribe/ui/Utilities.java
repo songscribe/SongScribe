@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -195,6 +196,21 @@ public class Utilities {
         This method forces the Font2D style to be the requested style.
     */
     public static void fixFont2DStyle(Font font, int style) {
+        HashMap<String, Object> result = get2DStyleFieldForFont(font);
+
+        if (result != null) {
+            try {
+                Field styleField = (Field) result.get("field");
+                Font2D font2d = (Font2D) result.get("font");
+                styleField.setInt(font2d, style);
+            }
+            catch (Exception ex) {
+                // Oh well, we tried
+            }
+        }
+    }
+
+    public static HashMap<String, Object> get2DStyleFieldForFont(Font font) {
         try {
             Class<?>[] params = new Class[0];
             Method method = font.getClass().getDeclaredMethod("getFont2D", params);
@@ -205,12 +221,17 @@ public class Utilities {
                 // The style field we want to set is in the Font2D class, get that class
                 Field styleField = Font2D.class.getDeclaredField("style");
                 styleField.setAccessible(true);
-                styleField.setInt(font2d, style);
+                HashMap<String, Object> result = new HashMap<String, Object>();
+                result.put("font", font2d);
+                result.put("field", styleField);
+                return result;
             }
         }
         catch (Exception ex) {
             // Oh well, we tried
         }
+
+        return null;
     }
 
     /*
@@ -288,6 +309,79 @@ public class Utilities {
         }
 
         return foundFont;
+    }
+
+    public static boolean fontHasStyle(Font font, int style) {
+        boolean isBold = false, isItalic = false;
+        HashMap<String, Object> result = get2DStyleFieldForFont(font);
+
+        if (result != null) {
+            try {
+                Font2D font2d = (Font2D) result.get("font");
+                Field styleField = (Field) result.get("field");
+                int style2d = styleField.getInt(font2d);
+                isBold = (style2d & Font.BOLD) != 0;
+                isItalic = (style2d & Font.ITALIC) != 0;
+            }
+            catch (Exception ex) {
+                result = null;
+            }
+        }
+
+        if (result == null) {
+            String fontName = font.getPSName();
+            boolean hasDash = fontName.indexOf("-") > 0;
+
+            for (String suffix : boldFontSuffixNames) {
+                if (isBold)
+                    break;
+
+                if (hasDash)
+                    suffix = "-" + suffix;
+
+                if (fontName.endsWith(suffix)) {
+                    isBold = true;
+                    break;
+                } else {
+                    for (String italicSuffix : italicFontSuffixNames) {
+                        if (fontName.endsWith(suffix + italicSuffix)) {
+                            isBold = true;
+                            isItalic = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!isBold) {
+                for (String suffix : italicFontSuffixNames) {
+                    if (hasDash)
+                        suffix = "-" + suffix;
+
+                    if (fontName.endsWith(suffix)) {
+                        isItalic = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (style == Font.PLAIN)
+            return (!isBold && !isItalic);
+        else if ((style & Font.BOLD) != 0)
+            return isBold;
+        else if ((style & Font.ITALIC) != 0)
+            return isItalic;
+
+        return false;
+    }
+
+    public static boolean isBold(Font font) {
+        return fontHasStyle(font, Font.BOLD);
+    }
+
+    public static boolean isItalic(Font font) {
+        return fontHasStyle(font, Font.ITALIC);
     }
 
     public static Font deriveFont(Font font, int style, int size) {
