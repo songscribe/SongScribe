@@ -818,7 +818,7 @@ public abstract class BaseMsDrawer {
         }
         x+=xTranslate;
         for(int i=0;i<rightVector.size();i++){
-            drawAntialiasedString(g2, rightVector.get(i), x, y+i*Math.round(g2.getFontMetrics().getHeight()*0.9f));
+            drawAntialiasedString(g2, rightVector.get(i), x, y+i*Math.round(g2.getFontMetrics().getHeight()));
         }
     }
 
