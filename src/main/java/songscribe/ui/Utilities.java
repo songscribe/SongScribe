@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -196,7 +197,7 @@ public class Utilities {
         This method forces the Font2D style to be the requested style.
     */
     public static void fixFont2DStyle(Font font, int style) {
-        HashMap<String, Object> result = get2DStyleFieldForFont(font);
+        Map<String, Object> result = get2DStyleFieldForFont(font);
 
         if (result != null) {
             try {
@@ -210,7 +211,7 @@ public class Utilities {
         }
     }
 
-    public static HashMap<String, Object> get2DStyleFieldForFont(Font font) {
+    public static Map<String, Object> get2DStyleFieldForFont(Font font) {
         try {
             Class<?>[] params = new Class[0];
             Method method = font.getClass().getDeclaredMethod("getFont2D", params);
@@ -221,7 +222,7 @@ public class Utilities {
                 // The style field we want to set is in the Font2D class, get that class
                 Field styleField = Font2D.class.getDeclaredField("style");
                 styleField.setAccessible(true);
-                HashMap<String, Object> result = new HashMap<String, Object>();
+                Map<String, Object> result = new HashMap<String, Object>();
                 result.put("font", font2d);
                 result.put("field", styleField);
                 return result;
@@ -313,7 +314,7 @@ public class Utilities {
 
     public static boolean fontHasStyle(Font font, int style) {
         boolean isBold = false, isItalic = false;
-        HashMap<String, Object> result = get2DStyleFieldForFont(font);
+        Map<String, Object> result = get2DStyleFieldForFont(font);
 
         if (result != null) {
             try {
