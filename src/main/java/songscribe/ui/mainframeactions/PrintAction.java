@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
+import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -35,8 +36,11 @@ import java.awt.print.PrinterJob;
 /**
  * @author Csaba Kávai
  */
-public class PrintAction extends AbstractAction implements Printable{
+
+public class PrintAction extends AbstractAction implements Printable {
+    private static final double PRINT_EXTRA_MARGIN = 0.25 * 72;
     private MainFrame mainFrame;
+    private PrinterJob printerJob;
 
     public PrintAction(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -46,9 +50,10 @@ public class PrintAction extends AbstractAction implements Printable{
     }
 
     public void actionPerformed(ActionEvent e) {
-        PrinterJob printerJob = PrinterJob.getPrinterJob();
+        printerJob = PrinterJob.getPrinterJob();
         printerJob.setPrintable(this);
-        if(printerJob.printDialog()){
+
+        if (printerJob.printDialog()) {
             try {
                 printerJob.print();
             } catch (PrinterException e1) {
@@ -61,11 +66,23 @@ public class PrintAction extends AbstractAction implements Printable{
         if(pageIndex>=1){
             return NO_SUCH_PAGE;
         }
-        double scale = pageFormat.getImageableWidth()/mainFrame.getMusicSheet().getSheetWidth();
-        graphics.translate((int)pageFormat.getImageableX(), (int)pageFormat.getImageableY());
+
+        // Add 1/4 inch margin to ensure it's within the printable area
+        pageFormat = printerJob.validatePage(pageFormat);
+        Paper paper = pageFormat.getPaper();
+        double width = paper.getImageableWidth();
+        double x = pageFormat.getImageableX();
+        x += PRINT_EXTRA_MARGIN;
+        width -= PRINT_EXTRA_MARGIN * 2;
+        paper.setImageableArea(x, paper.getImageableY(), width, paper.getImageableHeight());
+        pageFormat.setPaper(paper);
+
+        double scale = pageFormat.getImageableWidth() / mainFrame.getMusicSheet().getSheetWidth();
+        graphics.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
         Graphics2D g2 = (Graphics2D)graphics;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
+
         return PAGE_EXISTS;
     }
 }
