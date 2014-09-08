@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -67,9 +67,9 @@ public class ExportPDFAction extends AbstractAction{
                 saveFile = new File(saveFile.getAbsolutePath()+".pdf");
             }
             if(saveFile.exists()){
-                int answ = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
+                int answer = JOptionPane.showConfirmDialog(mainFrame, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
                         mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION);
-                if(answ==JOptionPane.NO_OPTION){
+                if(answer==JOptionPane.NO_OPTION){
                     return;
                 }
             }
@@ -81,7 +81,7 @@ public class ExportPDFAction extends AbstractAction{
             Data data = exportPDFDialog.getPaperSizeData();
             if(data==null)return;
 
-            float msres = 72f/ MusicSheet.RESOLUTION;
+            float msres = 72f / MusicSheet.RESOLUTION;
             float paperWidth = data.paperWidth * msres;
             float paperHeight = data.paperHeight * msres;
             Document document = new Document(new com.lowagie.text.Rectangle(0, 0, paperWidth, paperHeight), 0, 0, 0, 0);
@@ -89,20 +89,24 @@ public class ExportPDFAction extends AbstractAction{
             document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
             int sheetWidth = mainFrame.getMusicSheet().getSheetWidth();
             int sheetHeight = mainFrame.getMusicSheet().getSheetHeight();
-            double resolution = Math.min((double)msres, Math.min((double)(paperWidth-(data.leftInnerMargin+data.rightOuterMargin)*msres)/sheetWidth,
-                    (double)(paperHeight-(data.topMargin+data.bottomMargin)*msres)/sheetHeight));
+            double margin = (data.leftInnerMargin + data.rightOuterMargin) * msres;
+            double verticalScale = (paperWidth - margin) / sheetWidth;
+            margin = (data.topMargin + data.bottomMargin) * msres;
+            double horizontalScale = (paperHeight - margin) / sheetHeight;
+            double scale = Math.min((double) msres, Math.min(verticalScale, horizontalScale));
+
             try {
                 PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(saveFile));
                 document.open();
                 PdfContentByte cb = writer.getDirectContent();
                 Graphics2D g2 = cb.createGraphicsShapes(paperWidth, paperHeight);
-                g2.translate((paperWidth-(data.leftInnerMargin+data.rightOuterMargin+sheetWidth)*msres)/2+data.leftInnerMargin*msres, data.topMargin*msres);
-                mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, resolution);
+                g2.translate(data.leftInnerMargin * msres, data.topMargin * msres);
+                mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
                 g2.dispose();
                 document.close();
                 Utilities.openExportFile(mainFrame, saveFile);
             } catch (DocumentException e1) {
-                mainFrame.showErrorMessage("An unexprected error occured and could not export into PDF.");
+                mainFrame.showErrorMessage("An unexpected error occurred and could not export as PDF.");
                 logger.error("PDF save", e1);
             } catch (FileNotFoundException e1) {
                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
