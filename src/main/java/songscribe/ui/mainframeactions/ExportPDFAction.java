@@ -23,6 +23,7 @@ package songscribe.ui.mainframeactions;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
 import org.apache.log4j.Logger;
@@ -81,37 +82,48 @@ public class ExportPDFAction extends AbstractAction{
             Data data = exportPDFDialog.getPaperSizeData();
             if(data==null)return;
 
-            float msres = 72f / MusicSheet.RESOLUTION;
-            float paperWidth = data.paperWidth * msres;
-            float paperHeight = data.paperHeight * msres;
-            Document document = new Document(new com.lowagie.text.Rectangle(0, 0, paperWidth, paperHeight), 0, 0, 0, 0);
-            document.addCreator(mainFrame.PROGNAME);
-            document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
-            int sheetWidth = mainFrame.getMusicSheet().getSheetWidth();
-            int sheetHeight = mainFrame.getMusicSheet().getSheetHeight();
-            double margin = (data.leftInnerMargin + data.rightOuterMargin) * msres;
-            double verticalScale = (paperWidth - margin) / sheetWidth;
-            margin = (data.topMargin + data.bottomMargin) * msres;
-            double horizontalScale = (paperHeight - margin) / sheetHeight;
-            double scale = Math.min((double) msres, Math.min(verticalScale, horizontalScale));
+            createPDF(data, saveFile, true);
+        }
+    }
 
-            try {
-                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(saveFile));
-                document.open();
-                PdfContentByte cb = writer.getDirectContent();
-                Graphics2D g2 = cb.createGraphicsShapes(paperWidth, paperHeight);
-                g2.translate(data.leftInnerMargin * msres, data.topMargin * msres);
-                mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
-                g2.dispose();
-                document.close();
-                Utilities.openExportFile(mainFrame, saveFile);
-            } catch (DocumentException e1) {
+    public static void createPDF(Data data, File outputFile, Boolean isGUI) {
+        float resolution = 72f / MusicSheet.RESOLUTION;
+        float paperWidth = data.paperWidth * resolution;
+        float paperHeight = data.paperHeight * resolution;
+        MainFrame mainFrame = data.mainFrame;
+        Document document = new Document(new Rectangle(0, 0, paperWidth, paperHeight), 0, 0, 0, 0);
+        document.addCreator(mainFrame.PROGNAME);
+        document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
+        int sheetWidth = mainFrame.getMusicSheet().getSheetWidth();
+        int sheetHeight = mainFrame.getMusicSheet().getSheetHeight();
+        double margin = (data.leftInnerMargin + data.rightOuterMargin) * resolution;
+        double verticalScale = (paperWidth - margin) / sheetWidth;
+        margin = (data.topMargin + data.bottomMargin) * resolution;
+        double horizontalScale = (paperHeight - margin) / sheetHeight;
+        double scale = Math.min((double) resolution, Math.min(verticalScale, horizontalScale));
+
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputFile));
+            document.open();
+            PdfContentByte cb = writer.getDirectContent();
+            Graphics2D g2 = cb.createGraphicsShapes(paperWidth, paperHeight);
+            g2.translate(data.leftInnerMargin * resolution, data.topMargin * resolution);
+            mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
+            g2.dispose();
+            document.close();
+
+            if (isGUI)
+                Utilities.openExportFile(mainFrame, outputFile);
+        } catch (DocumentException e1) {
+            if (isGUI)
                 mainFrame.showErrorMessage("An unexpected error occurred and could not export as PDF.");
-                logger.error("PDF save", e1);
-            } catch (FileNotFoundException e1) {
+
+            logger.error("PDF save", e1);
+        } catch (FileNotFoundException e1) {
+            if (isGUI)
                 mainFrame.showErrorMessage(MainFrame.COULDNOTSAVEMESSAGE);
-                logger.error("PDF save", e1);
-            }
+
+            logger.error("PDF save", e1);
         }
     }
 }

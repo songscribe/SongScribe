@@ -38,5 +38,6 @@ Command line tools:
 ------------------------------------------------------------------
 Image Converter: java -Dsongscribe=image_converter -jar SongScribe.jar -help
 Midi Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar -help
-ABC Annotation Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar <mssw_file> 
+PDF Converter: java -Dsongscribe=pdf_converter -jar SongScribe.jar -help
+ABC Annotation Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar <mssw_file>
 Version Info: java -Dsongscribe=version -jar SongScribe.jar

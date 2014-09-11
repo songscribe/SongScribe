@@ -25,6 +25,7 @@ import org.apache.log4j.PropertyConfigurator;
 import songscribe.converter.AbcConverter;
 import songscribe.converter.ImageConverter;
 import songscribe.converter.MidiConverter;
+import songscribe.converter.PDFConverter;
 import songscribe.publisher.Publisher;
 import songscribe.ui.MainFrame;
 import songscribe.ui.SlideFrame;
@@ -56,6 +57,7 @@ public class Runner {
         else if("sb".equals(ss))Publisher.main(args);
         else if("image_converter".equals(ss)) ImageConverter.main(args);
         else if("midi_converter".equals(ss)) MidiConverter.main(args);
+        else if("pdf_converter".equals(ss)) PDFConverter.main(args);
         else if("ui_converter".equals(ss)) UIConverter.main(args);
         else if("abc_converter".equals(ss)) AbcConverter.main(args);
         else if("version".equals(ss)) System.out.println(Utilities.getFullVersion());
@@ -91,7 +93,7 @@ public class Runner {
                 frame.setVisible(false);
                 if(sw.isSelected())MainFrame.main(args);
                 else if(ss.isSelected())SlideFrame.main(args);
-                else if(sb.isSelected())Publisher.main(args);                
+                else if(sb.isSelected())Publisher.main(args);
             }
         });
         JPanel south = new JPanel();
