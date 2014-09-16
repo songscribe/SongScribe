@@ -41,7 +41,7 @@ public final class Composition{
     public static final int[] VELOCITY = {98, 127};
 
     public static final int GRACEQUAVER_DURATION = PPQ/8;
-    public static final int TOP_LINE_OFFSET = 31;
+    public static final int TOP_LINE_OFFSET = 0;
 
     //music data
     private Tempo tempo;
@@ -111,7 +111,7 @@ public final class Composition{
                 Font.PLAIN, Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERALFONTSIZE)));
         recalcTopSpace();
         lineWidth = MusicSheet.PAGESIZE.width;
-        rightInfoStartY = songTitleFont.getSize()*2;
+        rightInfoStartY = (int) (songTitleFont.getSize() * 1.5);
         addLine(new Line());
     }
 
