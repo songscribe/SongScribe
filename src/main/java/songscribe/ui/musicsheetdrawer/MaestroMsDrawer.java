@@ -1,4 +1,4 @@
-/* 
+/*
 SongScribe song notation program
 Copyright (C) 2006-2007 Csaba Kavai
 
@@ -39,7 +39,7 @@ import java.util.Map;
  * @author Csaba Kávai
  */
 @Deprecated
-public class MaestroMsDrawer extends BaseMsDrawer{    
+public class MaestroMsDrawer extends BaseMsDrawer{
     private static final float size8 = size/8;
     private static final Font maestro = new Font("Maestro", 0, (int)size);
 
@@ -193,7 +193,7 @@ public class MaestroMsDrawer extends BaseMsDrawer{
         g2.setPaint(Color.black);
     }
 
-    protected void drawLineBeginning(Graphics2D g2, Line line, int l) {
+    protected int drawLineBeginning(Graphics2D g2, Line line, int l) {
         g2.setFont(maestro);
         //drawing the trebleClef
         drawAntialiasedString(g2, trebleclef, 5, ms.getMiddleLine()+MusicSheet.LINEDIST+l*ms.getRowHeight());
@@ -207,6 +207,8 @@ public class MaestroMsDrawer extends BaseMsDrawer{
                 fsPos+=8;
             }
         }
+
+        return 0;
     }
 
     protected void drawKeySignatureChange(Graphics2D g2, int l, KeyType[] keyTypes, int[] keys, int[] froms, boolean[] isNatural) {

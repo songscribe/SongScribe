@@ -81,6 +81,8 @@ public abstract class BaseMsDrawer {
     private int[] froms = new int[2];
     private boolean[] isNaturals = new boolean[2];
 
+    private int height = 0;
+
     protected double crotchetWidth;
     protected double beamX1Correction, beamX2Correction;
 
@@ -101,6 +103,7 @@ public abstract class BaseMsDrawer {
     }
 
     public void drawMusicSheet(Graphics2D g2, boolean drawEditingComponents, double scale){
+        height = 0;
         FughettaDrawer.calculateAccidentalWidths(g2);
         Composition composition = ms.getComposition();
         if(scale!=1d) g2.scale(scale, scale);
@@ -129,11 +132,15 @@ public abstract class BaseMsDrawer {
 
         //drawing the under lyrics and the translated lyrics
         g2.setFont(composition.getLyricsFont());
+        FontMetrics lyricsMetrics = g2.getFontMetrics(composition.getLyricsFont());
+        int lyricsMaxDescent = lyricsMetrics.getMaxDescent();
+        int lyricsMaxY = 0;
+
         if(composition.getUnderLyrics().length()>0){
-            drawTextBox(g2, composition.getUnderLyrics(), ms.getUnderLyricsYPos(), Component.CENTER_ALIGNMENT, 0);
+            lyricsMaxY = drawTextBox(g2, composition.getUnderLyrics(), ms.getUnderLyricsYPos(), Component.CENTER_ALIGNMENT, 0);
         }
         if(composition.getTranslatedLyrics().length()>0){
-            drawTextBox(g2, composition.getTranslatedLyrics(), ms.getUnderLyricsYPos()+(Utilities.lineCount(composition.getUnderLyrics())+1)*g2.getFontMetrics().getAscent(), Component.CENTER_ALIGNMENT, 0);
+            lyricsMaxY = drawTextBox(g2, composition.getTranslatedLyrics(), ms.getUnderLyricsYPos()+(Utilities.lineCount(composition.getUnderLyrics())+1)*g2.getFontMetrics().getAscent(), Component.CENTER_ALIGNMENT, 0);
         }
 
         //drawing the tempo
@@ -142,7 +149,9 @@ public abstract class BaseMsDrawer {
         }
 
         //drawing the composition
+
         for (int l = 0; l < composition.lineCount(); l++) {
+            Boolean lastLine = l == composition.lineCount() - 1;
             Line line = composition.getLine(l);
             g2.setPaint(l!=ms.getSelectedLine() ? Color.black : selectionColor);
             g2.setStroke(lineStroke);
@@ -156,7 +165,10 @@ public abstract class BaseMsDrawer {
             g2.setPaint(Color.black);
 
             //drawing the trebleclef and the leading keys
-            drawLineBeginning(g2, line, l);
+            int maxY = drawLineBeginning(g2, line, l);
+
+            if (lyricsMaxY == 0)
+                height = maxY;
 
             //drawing the notes
             int lyricsDrawn = 0;
@@ -207,6 +219,8 @@ public abstract class BaseMsDrawer {
 
                 //drawing the lyrics
                 int lyricsY = ms.getNoteYPos(0, l)+line.getLyricsYPos();
+                if (lastLine && lyricsMaxY == 0)
+                    height = lyricsY + lyricsMaxDescent;
                 int dashY = lyricsY - composition.getLyricsFont().getSize() / 4;
                 g2.setFont(composition.getLyricsFont());
                 int syllableWidth = 0;
@@ -262,7 +276,15 @@ public abstract class BaseMsDrawer {
                 //drawing the annotation
                 if(note.getAnnotation()!=null){
                     g2.setFont(getAnnotationFont());
-                    drawAntialiasedString(g2, note.getAnnotation().getAnnotation(), getAnnotationXPos(g2, note), getAnnotationYPos(l, note));
+                    int y = getAnnotationYPos(l, note);
+                    drawAntialiasedString(g2, note.getAnnotation().getAnnotation(), getAnnotationXPos(g2, note), y);
+
+                    if (lastLine && lyricsMaxY == 0) {
+                        y += g2.getFontMetrics().getMaxDescent();
+
+                        if (y > height)
+                            height = y;
+                    }
                 }
 
                 //drawing the trill
@@ -470,6 +492,12 @@ public abstract class BaseMsDrawer {
                         ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
             }
         }
+
+        if (lyricsMaxY != 0)
+            height = lyricsMaxY;
+
+        g2.setColor(Color.BLUE);
+        g2.drawRect(0, 0, composition.getLineWidth() - 1, height - 1);
     }
 
     private void drawWithEmptySyllablesExclusion(Graphics2D g2, int x1, int y1, int x2, int y2, Line line, int startIndex, int endIndex) {
@@ -795,7 +823,7 @@ public abstract class BaseMsDrawer {
         g2.drawString(str, x/zoom, y/zoom);
     }
 
-    private void drawTextBox(Graphics2D g2, String str, int y, float xAlignment, int xTranslate){
+    private int drawTextBox(Graphics2D g2, String str, int y, float xAlignment, int xTranslate){
         ArrayList<String> rightVector = new ArrayList<String>(4);
         int prevIndex = 0;
         int maxWidth = 0;
@@ -817,9 +845,14 @@ public abstract class BaseMsDrawer {
             x = (ms.getComposition().getLineWidth()-maxWidth)/2;
         }
         x+=xTranslate;
+        FontMetrics metrics = g2.getFontMetrics();
+        int height = Math.round(metrics.getHeight());
         for(int i=0;i<rightVector.size();i++){
-            drawAntialiasedString(g2, rightVector.get(i), x, y+i*Math.round(g2.getFontMetrics().getHeight()));
+            drawAntialiasedString(g2, rightVector.get(i), x, y+i*height);
         }
+
+        int lastBaseline = y + ((rightVector.size() - 1) * height);
+        return lastBaseline + metrics.getMaxDescent();
     }
 
     protected void drawGraceSemiQuaverBeam(Graphics2D g2, Note note, int line) {
@@ -873,7 +906,11 @@ public abstract class BaseMsDrawer {
 
     public abstract void paintNote(Graphics2D g2, Note note, int line, boolean beamed, Color color);
 
-    protected abstract void drawLineBeginning(Graphics2D g2, Line line, int l);
+    public int getHeight() {
+        return height;
+    }
+
+    protected abstract int drawLineBeginning(Graphics2D g2, Line line, int l);
 
     protected abstract void drawKeySignatureChange(Graphics2D g2, int l, KeyType[] keyTypes, int[] keys, int[] froms, boolean[] isNatural);
 

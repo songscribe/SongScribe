@@ -1219,18 +1219,18 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public int getSheetHeight(){
-        int height = composition.lineCount()*rowHeight+composition.getTopSpace()+composition.getLyricsFont().getSize()*2/3;
-        if(composition.getUnderLyrics().length()!=0 || composition.getTranslatedLyrics().length()!=0){
-            height+=rowHeight/2+underLyricsYPos;
-            height+=(Utilities.lineCount(composition.getUnderLyrics())+Utilities.lineCount(composition.getTranslatedLyrics())-1)*composition.getLyricsFont().getSize()*1.5;
-            if(composition.getTranslatedLyrics().length()!=0){
-                height+=composition.getLyricsFont().getSize();
-            }
-        }else{
-            height+=-rowHeight/2+composition.getLine(composition.lineCount()-1).getLyricsYPos();
+        if (drawer.getHeight() == 0) {
+            Dimension sheetSize = new Dimension((int) (LineWidthChangeDialog.MAXIMUMLINEWIDTH * RESOLUTION), (int) (LineWidthChangeDialog.MAXIMUMLINEWIDTH * RESOLUTION * PAGEHEIGHT / PAGEWIDTH));
+            BufferedImage image = new BufferedImage(sheetSize.width, sheetSize.height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = image.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setPaint(Color.white);
+            g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+            drawer.drawMusicSheet(g2, true, 1d);
+            g2.dispose();
         }
-        height-=getStartY();
-        return height;
+
+        return drawer.getHeight();
     }
 
     public void drawWidthIfWiderLine(Line line, boolean strict){

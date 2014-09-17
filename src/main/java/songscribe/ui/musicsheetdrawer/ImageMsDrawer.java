@@ -39,7 +39,7 @@ import java.awt.geom.AffineTransform;
 @Deprecated
 /**
  * This class is set to deprecated, beacause we don't use anymore. We prefer the FughettaDrawer for edit mode, too.
- * 
+ *
  */
 public class ImageMsDrawer extends BaseMsDrawer{
     private static final Image TREBLECLEFIMAGE = MainFrame.getImage("trebleClef.gif");
@@ -55,9 +55,12 @@ public class ImageMsDrawer extends BaseMsDrawer{
         beamX2Correction = 0;
     }
 
-    protected void drawLineBeginning(Graphics2D g2, Line line, int l) {
+    protected int drawLineBeginning(Graphics2D g2, Line line, int l) {
         //drawing the trebleClef
-        g2.drawImage(TREBLECLEFIMAGE, 5, ms.getMiddleLine() - 32 + l * ms.getRowHeight(), null);
+        int baseline = ms.getMiddleLine() - 32 + l * ms.getRowHeight();
+        g2.drawImage(TREBLECLEFIMAGE, 5, baseline, null);
+        FontMetrics metrics = g2.getFontMetrics();
+        int maxY = baseline + metrics.getMaxDescent();
 
         //drawing the leading sharps or flats
         if(line.getKeys()>0){
@@ -68,6 +71,8 @@ public class ImageMsDrawer extends BaseMsDrawer{
                 fsPos+=8;
             }
         }
+
+        return maxY;
     }
 
     protected void drawKeySignatureChange(Graphics2D g2, int l, KeyType[] keyTypes, int[] keys, int[] froms, boolean[] isNatural) {

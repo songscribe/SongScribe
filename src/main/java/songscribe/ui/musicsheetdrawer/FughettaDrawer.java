@@ -273,7 +273,7 @@ public class FughettaDrawer extends BaseMsDrawer{
         //drawing the notehead
         float noteHeadXPos = 0;
         if (nt.isNoteWithStem() && !upper) {
-            noteHeadXPos -= 0.4f;    
+            noteHeadXPos -= 0.4f;
         }
         g2.drawString(headStr, noteHeadXPos, 0f);
         //drawing the stem
@@ -361,10 +361,13 @@ public class FughettaDrawer extends BaseMsDrawer{
         g2.setTransform(at);
     }
 
-    protected void drawLineBeginning(Graphics2D g2, Line line, int l) {
+    protected int drawLineBeginning(Graphics2D g2, Line line, int l) {
         g2.setFont(fughetta);
         //drawing the trebleClef
-        drawAntialiasedString(g2, trebleclef, 5, ms.getMiddleLine()+MusicSheet.LINEDIST+l*ms.getRowHeight());
+        int baseline = ms.getMiddleLine()+MusicSheet.LINEDIST+l*ms.getRowHeight();
+        drawAntialiasedString(g2, trebleclef, 5, baseline);
+        FontMetrics metrics = g2.getFontMetrics();
+        int maxY = baseline + metrics.getMaxDescent();
 
         //drawing the leading sharps or flats
         if(line.getKeys()>0){
@@ -375,6 +378,8 @@ public class FughettaDrawer extends BaseMsDrawer{
                 fsPos+=8;
             }
         }
+
+        return maxY;
     }
 
     protected void drawKeySignatureChange(Graphics2D g2, int l, KeyType[] keyTypes, int[] keys, int[] froms, boolean[] isNatural) {
