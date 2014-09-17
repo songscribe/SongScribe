@@ -94,20 +94,37 @@ public class ExportPDFAction extends AbstractAction{
         Document document = new Document(new Rectangle(0, 0, paperWidth, paperHeight), 0, 0, 0, 0);
         document.addCreator(mainFrame.PROGNAME);
         document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
+
+        // Scale to fit
         int sheetWidth = mainFrame.getMusicSheet().getSheetWidth();
         int sheetHeight = mainFrame.getMusicSheet().getSheetHeight();
-        double margin = (data.leftInnerMargin + data.rightOuterMargin) * resolution;
-        double verticalScale = (paperWidth - margin) / sheetWidth;
-        margin = (data.topMargin + data.bottomMargin) * resolution;
-        double horizontalScale = (paperHeight - margin) / sheetHeight;
-        double scale = Math.min((double) resolution, Math.min(verticalScale, horizontalScale));
+        double horizontalMargin = (data.leftInnerMargin + data.rightOuterMargin) * resolution;
+        double horizontalScale = (paperWidth - horizontalMargin) / sheetWidth;
+        double verticalMargin = (data.topMargin + data.bottomMargin) * resolution;
+        double verticalScale = (paperHeight - verticalMargin) / sheetHeight;
+        double scale;
+        double leftMargin = data.leftInnerMargin * resolution;
+
+        if (horizontalScale < verticalScale) {
+            scale = horizontalScale;
+        }
+        else {
+            // If scaling vertically, the horizontal margin will be larger than
+            // what is specified in Data. So we calculate the total margin available,
+            // then give the left margin the same fraction of the total margin
+            // it would have had before scaling.
+            scale = verticalScale;
+            double scaledMargin = paperWidth - (sheetWidth * scale);
+            double leftMarginFactor = (double) data.leftInnerMargin / (double) (data.leftInnerMargin + data.rightOuterMargin);
+            leftMargin = scaledMargin * leftMarginFactor;
+        }
 
         try {
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputFile));
             document.open();
             PdfContentByte cb = writer.getDirectContent();
             Graphics2D g2 = cb.createGraphicsShapes(paperWidth, paperHeight);
-            g2.translate(data.leftInnerMargin * resolution, data.topMargin * resolution);
+            g2.translate(leftMargin, data.topMargin * resolution);
             mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
             g2.dispose();
             document.close();
