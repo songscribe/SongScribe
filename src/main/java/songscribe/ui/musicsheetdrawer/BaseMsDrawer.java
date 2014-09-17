@@ -495,9 +495,6 @@ public abstract class BaseMsDrawer {
 
         if (lyricsMaxY != 0)
             height = lyricsMaxY;
-
-        g2.setColor(Color.BLUE);
-        g2.drawRect(0, 0, composition.getLineWidth() - 1, height - 1);
     }
 
     private void drawWithEmptySyllablesExclusion(Graphics2D g2, int x1, int y1, int x2, int y2, Line line, int startIndex, int endIndex) {
