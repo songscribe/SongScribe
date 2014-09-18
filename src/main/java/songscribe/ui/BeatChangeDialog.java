@@ -133,6 +133,7 @@ public class BeatChangeDialog extends MyDialog{
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D)g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 mainFrame.getMusicSheet().getBestDrawer().drawBeatChange(g2, beatChange, 2, 27);
             }
         };

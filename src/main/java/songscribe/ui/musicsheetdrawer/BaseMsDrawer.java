@@ -801,22 +801,22 @@ public abstract class BaseMsDrawer {
     }
 
     protected void drawAntialiasedString(Graphics2D g2, String str, int x, int y){
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString(str, x, y);
     }
 
     protected void drawAntialiasedString(Graphics2D g2, String str, double x, double y){
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString(str, (float)x, (float)y);
     }
 
     protected void drawAntialiasedStringZoomed(Graphics2D g2, String str, int x, int y, float zoom){
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString(str, x/zoom, y/zoom);
     }
 
     protected void drawAntialiasedStringZoomed(Graphics2D g2, String str, float x, float y, float zoom){
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString(str, x/zoom, y/zoom);
     }
 

@@ -81,6 +81,7 @@ public class PrintAction extends AbstractAction implements Printable {
         graphics.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
         Graphics2D g2 = (Graphics2D)graphics;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, scale);
 
         return PAGE_EXISTS;

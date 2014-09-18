@@ -330,6 +330,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         if (repaintImage) {
             Graphics2D g2MsImage = msImage.createGraphics();
             g2MsImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2MsImage.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2MsImage.setPaint(Color.white);
             g2MsImage.fillRect(0, 0, msImage.getWidth(), msImage.getHeight());
             drawer.drawMusicSheet(g2MsImage, true, 1d);
@@ -1224,6 +1225,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             BufferedImage image = new BufferedImage(sheetSize.width, sheetSize.height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = image.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint(Color.white);
             g2.fillRect(0, 0, image.getWidth(), image.getHeight());
             drawer.drawMusicSheet(g2, true, 1d);
@@ -1818,6 +1820,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     public void createMusicSheetImageForExport(BufferedImage image, Color background, double scale, MyBorder border){
         Graphics2D g2 = image.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setPaint(background);
         g2.fillRect(0, 0, image.getWidth(), image.getHeight());
         BaseMsDrawer origDrawer = drawer;

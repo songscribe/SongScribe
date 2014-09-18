@@ -57,6 +57,7 @@ public class FontLister {
             image = new BufferedImage(256*width+1, 2*height+1, BufferedImage.TYPE_BYTE_GRAY);
             Graphics2D g2 = image.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint(getBackground());
             g2.fillRect(0, 0, image.getWidth(), image.getHeight());
             FontMetrics labelMetrics = g2.getFontMetrics(labelFont);

@@ -42,6 +42,7 @@ public class Page {
 
     public void paint(Graphics2D g2, int pageNumber, boolean drawDecorations, int startY, int endY) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         Rectangle pageSize = book.getPageSize();
         Rectangle margin = book.getMargin(pageNumber);
         Shape clip = g2.getClip();

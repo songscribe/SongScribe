@@ -49,6 +49,7 @@ public class Song extends PageComponent{
 
     public void paintComponent(Graphics2D g2){
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         AffineTransform at = g2.getTransform();
         g2.translate(pos.x, pos.y);
         musicSheet.getBestDrawer().drawMusicSheet(g2, false, resolution);
