@@ -23,7 +23,7 @@ public class MidiConverter {
     public File[] files;
 
     public static void main(String[] args) {
-        ArgumentumReader am = new ArgumentumReader(args, MidiConverter.class);
+        ArgumentReader am = new ArgumentReader(args, MidiConverter.class);
         ((MidiConverter) am.getObj()).convert();
     }
 

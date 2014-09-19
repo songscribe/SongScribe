@@ -50,7 +50,7 @@ public class ImageConverter {
     public File[] files;
 
     public static void main(String[] args) {
-        ArgumentumReader ar = new ArgumentumReader(args, ImageConverter.class);
+        ArgumentReader ar = new ArgumentReader(args, ImageConverter.class);
         ((ImageConverter) ar.getObj()).convert();
     }
 

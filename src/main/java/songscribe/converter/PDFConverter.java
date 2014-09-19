@@ -51,7 +51,7 @@ public class PDFConverter {
     public File[] files;
 
     public static void main(String[] args) {
-        ArgumentumReader ar = new ArgumentumReader(args, PDFConverter.class);
+        ArgumentReader ar = new ArgumentReader(args, PDFConverter.class);
         ((PDFConverter) ar.getObj()).convert();
     }
 

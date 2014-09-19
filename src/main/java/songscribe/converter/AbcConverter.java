@@ -12,12 +12,12 @@ public class AbcConverter {
     public File file;
 
     public static void main(String[] args) {
-        ArgumentumReader am = new ArgumentumReader(args, AbcConverter.class);
+        ArgumentReader am = new ArgumentReader(args, AbcConverter.class);
         ((AbcConverter) am.getObj()).convert();
     }
 
     public void convert() {
-        MainFrame mf = new MainFrame(){
+        MainFrame mf = new MainFrame() {
             @Override
             public void showErrorMessage(String message) {
                 System.out.println(message);
@@ -32,6 +32,6 @@ public class AbcConverter {
         PrintWriter writer = new PrintWriter(System.out);
         exportABCAnnotation.writeABC(writer);
         writer.close();
-        
+
     }
 }
