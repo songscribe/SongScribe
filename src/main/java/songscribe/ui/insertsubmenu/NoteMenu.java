@@ -1,6 +1,6 @@
-/* 
+/*
 SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+Copyright (C) 2006 Csaba Kavai
 
 This file is part of SongScribe.
 
@@ -33,7 +33,7 @@ public class NoteMenu extends InsertSubMenu{
         super(mainFrame, "Note", "crotchet22.gif", mainFrame.getNoteSelectionPanel());
         for(NoteType nt:NoteType.values()){
             if(nt.isNote() || nt==NoteType.GLISSANDO){
-                String actionCommand = nt!=NoteType.GRACESEMIQUAVER ? nt.name() : NoteType.GRACESEMIQUAVEREDITSTEP1.name();
+                String actionCommand = nt!=NoteType.GRACE_SEMIQUAVER ? nt.name() : NoteType.GRACE_SEMIQUAVER_EDIT_STEP1.name();
                 createCheckBoxMenuItem(nt.getName(), actionCommand, nt.name().toLowerCase()+"16.gif", nt.getAcceleratorKey());
             }
         }

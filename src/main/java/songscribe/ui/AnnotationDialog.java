@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jul 23, 2006
+    Created on Jul 23, 2006
 */
 package songscribe.ui;
 
@@ -33,26 +33,12 @@ import java.io.File;
 /**
  * @author Csaba Kávai
  */
-public class AnnotationDialog extends MyDialog{
+public class AnnotationDialog extends MyDialog {
     Note selectedNote;
     JComboBox annotationCombo;
     JButton removeButton;
     JRadioButton aboveButton, belowButton;
     ButtonGroup alignmentGroup = new ButtonGroup();
-
-    private enum Alignment{
-        left(Component.LEFT_ALIGNMENT),
-        center(Component.CENTER_ALIGNMENT),
-        right(Component.RIGHT_ALIGNMENT);
-
-        JRadioButton button;
-        float value;
-
-        Alignment(float value) {
-            this.button = new JRadioButton();
-            this.value = value;
-        }
-    }
 
     public AnnotationDialog(MainFrame mainFrame) {
         super(mainFrame, "Annotation");
@@ -96,25 +82,8 @@ public class AnnotationDialog extends MyDialog{
 
         org.jdesktop.layout.GroupLayout xPanelLayout = new org.jdesktop.layout.GroupLayout(xPanel);
         xPanel.setLayout(xPanelLayout);
-        xPanelLayout.setHorizontalGroup(
-            xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(xPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(Alignment.left.button)
-                    .add(Alignment.center.button)
-                    .add(Alignment.right.button))
-                .addContainerGap(39, Short.MAX_VALUE))
-        );
-        xPanelLayout.setVerticalGroup(
-            xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(xPanelLayout.createSequentialGroup()
-                .add(Alignment.left.button)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(Alignment.center.button)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(Alignment.right.button))
-        );
+        xPanelLayout.setHorizontalGroup(xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(xPanelLayout.createSequentialGroup().addContainerGap().add(xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(Alignment.left.button).add(Alignment.center.button).add(Alignment.right.button)).addContainerGap(39, Short.MAX_VALUE)));
+        xPanelLayout.setVerticalGroup(xPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(xPanelLayout.createSequentialGroup().add(Alignment.left.button).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(Alignment.center.button).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(Alignment.right.button)));
 
         verticalPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Vertical position"));
         aboveButton.setText("Above the staff");
@@ -131,60 +100,18 @@ public class AnnotationDialog extends MyDialog{
 
         org.jdesktop.layout.GroupLayout verticalPanelLayout = new org.jdesktop.layout.GroupLayout(verticalPanel);
         verticalPanel.setLayout(verticalPanelLayout);
-        verticalPanelLayout.setHorizontalGroup(
-            verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(verticalPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(belowButton)
-                    .add(aboveButton))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        verticalPanelLayout.setVerticalGroup(
-            verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, verticalPanelLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(aboveButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(belowButton)
-                .addContainerGap())
-        );
+        verticalPanelLayout.setHorizontalGroup(verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(verticalPanelLayout.createSequentialGroup().addContainerGap().add(verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(belowButton).add(aboveButton)).addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+        verticalPanelLayout.setVerticalGroup(verticalPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(org.jdesktop.layout.GroupLayout.TRAILING, verticalPanelLayout.createSequentialGroup().addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(aboveButton).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(belowButton).addContainerGap()));
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(centerPanel);
         centerPanel.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
-                        .add(annotationLabel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(annotationCombo, 0, 190, Short.MAX_VALUE)))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(annotationLabel)
-                    .add(annotationCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 88, Short.MAX_VALUE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(layout.createSequentialGroup().addContainerGap().add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(layout.createSequentialGroup().add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).add(layout.createSequentialGroup().add(annotationLabel).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(annotationCombo, 0, 190, Short.MAX_VALUE))).addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+        layout.setVerticalGroup(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(layout.createSequentialGroup().addContainerGap().add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE).add(annotationLabel).add(annotationCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false).add(verticalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(xPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 88, Short.MAX_VALUE)).addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
         dialogPanel.add(centerPanel);
 
         //----------------------south------------------------
         JPanel south = new JPanel();
-        removeButton = new JButton("Remove", REMOVEICON);
+        removeButton = new JButton("Remove", REMOVE_ICON);
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MusicSheet ms = AnnotationDialog.this.mainFrame.getMusicSheet();
@@ -206,24 +133,30 @@ public class AnnotationDialog extends MyDialog{
         MusicSheet ms = mainFrame.getMusicSheet();
         selectedNote = ms.getSingleSelectedNote();
         Annotation tc = selectedNote.getAnnotation();
-        boolean tcnull = tc==null;
-        if(tcnull){
+        boolean tcnull = tc == null;
+
+        if (tcnull) {
             tc = new Annotation("fine");
         }
+
         annotationCombo.setSelectedItem(tc.getAnnotation());
 
-        for(Alignment a:Alignment.values()){
-            if(tc.getXalignment()==a.value)a.button.setSelected(true);
+        for (Alignment a : Alignment.values()) {
+            if (tc.getXAlignment() == a.value) {
+                a.button.setSelected(true);
+            }
         }
 
-        JRadioButton oldVerticalButton = tc.getyPos()<0 ? aboveButton : belowButton;
+        JRadioButton oldVerticalButton = tc.getYPos() < 0 ? aboveButton : belowButton;
         oldVerticalButton.setSelected(true);
 
         removeButton.setEnabled(!tcnull);
-        if(tcnull){
+
+        if (tcnull) {
             okButton.setText("Add");
             applyButton.setText("Apply addition");
-        }else{
+        }
+        else {
             okButton.setText("Modify");
             applyButton.setText("Apply modification");
         }
@@ -237,23 +170,27 @@ public class AnnotationDialog extends MyDialog{
             annotation = null;
         }
         else {
-            //horizontal alignment
+            // horizontal alignment
             Alignment horizontalAlignment = null;
-            for(Alignment alignment: Alignment.values()){
-                if(alignment.button.isSelected()){
+
+            for (Alignment alignment : Alignment.values()) {
+                if (alignment.button.isSelected()) {
                     horizontalAlignment = alignment;
                     break;
                 }
             }
+
             if (horizontalAlignment == null) {
                 String message = "Programmer's error: no such horizontal annotation.";
                 mainFrame.showErrorMessage(message);
                 throw new RuntimeException(message);
             }
+
             annotation = new Annotation(annotationText, horizontalAlignment.value);
 
-            //vertical alignment
+            // vertical alignment
             int yPos;
+
             if (aboveButton.isSelected()) {
                 yPos = Annotation.ABOVE;
             }
@@ -265,10 +202,25 @@ public class AnnotationDialog extends MyDialog{
                 mainFrame.showErrorMessage(message);
                 throw new RuntimeException(message);
             }
-            annotation.setyPos(yPos);
+
+            annotation.setYPos(yPos);
         }
 
         selectedNote.setAnnotation(annotation);
         mainFrame.modifiedDocument();
+    }
+
+    private enum Alignment {
+        left(Component.LEFT_ALIGNMENT),
+        center(Component.CENTER_ALIGNMENT),
+        right(Component.RIGHT_ALIGNMENT);
+
+        JRadioButton button;
+        float value;
+
+        Alignment(float value) {
+            this.button = new JRadioButton();
+            this.value = value;
+        }
     }
 }

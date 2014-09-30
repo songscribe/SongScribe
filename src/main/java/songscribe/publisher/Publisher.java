@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Sep 21, 2006
+    Created on Sep 21, 2006
 */
 package songscribe.publisher;
 
@@ -45,14 +45,11 @@ import java.io.IOException;
  */
 public class Publisher extends MainFrame {
     private static Logger logger = Logger.getLogger(Publisher.class);
+    private static Graphics graphics;
     private SAXParser saxParser;
-
-    private JComboBox zoomCombo = new JComboBox(new String[]{"25%", "50%", "75%", "100%", "150%", "200%"});
-
+    private JComboBox zoomCombo = new JComboBox(new String[] { "25%", "50%", "75%", "100%", "150%", "200%" });
     private Book book;
     private StatusBar statusBar;
-    private static Graphics graphics;
-
     private RaiseComponentAction raiseComponentAction = new RaiseComponentAction(this);
     private LowerComponentAction lowerComponentAction = new LowerComponentAction(this);
     private ToTopComponentAction toTopComponentAction = new ToTopComponentAction(this);
@@ -73,31 +70,55 @@ public class Publisher extends MainFrame {
     private DialogOpenAction paperSizeDialogOpenAction = new DialogOpenAction(this, "Page format", "pageproperties.png", PaperSizeDialog.class);
 
     public Publisher() {
-        PROGNAME = "Song Book";
+        PROG_NAME = "Song Book";
         lastWordForDoYouWannaSaveDialog = "song book";
-        setTitle(PROGNAME);
+        setTitle(PROG_NAME);
         setIconImage(getImage("sbicon.png"));
         Rectangle maximumWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        setPreferredSize(new Dimension(maximumWindowBounds.width*3/4, maximumWindowBounds.height));
+        setPreferredSize(new Dimension(maximumWindowBounds.width * 3 / 4, maximumWindowBounds.height));
+
         try {
             saxParser = SAXParserFactory.newInstance().newSAXParser();
-        } catch (Exception e) {
-            showErrorMessage(PROGNAME+" cannot start because of an initialization error.");
+        }
+        catch (Exception e) {
+            showErrorMessage(PROG_NAME + " cannot start because of an initialization error.");
             logger.error("SaxParser configuration", e);
             System.exit(0);
         }
+
         init();
         pack();
-        setLocation(CENTERPOINT.x-getWidth()/2, CENTERPOINT.y-getHeight()/2);
+        setLocation(CENTER_POINT.x - getWidth() / 2, CENTER_POINT.y - getHeight() / 2);
         setVisible(true);
         graphics = getGraphics();
         automaticCheckForUpdate();
     }
 
-    private void init(){
-        //menu
+    public static void main(String[] args) {
+        showSplash("sbsplash.png");
+        PropertyConfigurator.configure("conf/logger.properties");
+        openMidi();
+        Publisher pub = new Publisher();
+        hideSplash();
+
+        if (Utilities.isMac()) {
+            MacAdapter.attachTo(pub, true);
+        }
+    }
+
+    public static FontMetrics getStaticFontMetrics(Font font) {
+        if (graphics == null) {
+            return null;
+        }
+
+        return graphics.getFontMetrics(font);
+    }
+
+    private void init() {
+        // menu bar
         JMenuBar menuBar = new JMenuBar();
-        //file menu
+
+        // file menu
         JMenu fileMenu = new JMenu("File");
         NewAction newAction = new NewAction(this);
         fileMenu.add(newAction);
@@ -113,14 +134,15 @@ public class Publisher extends MainFrame {
         fileMenu.add(exportPDFAction);
         fileMenu.add(new ExportPortableAction(this));
         fileMenu.add(new ImportPortableAction(this));
-        if(!songscribe.ui.Utilities.isMac()){
+
+        if (!songscribe.ui.Utilities.isMac()) {
             fileMenu.addSeparator();
             fileMenu.add(exitAction);
         }
 
         menuBar.add(fileMenu);
 
-        //edit menu
+        // edit menu
         JMenu editMenu = new JMenu("Edit");
         editMenu.add(removeAction);
         editMenu.add(propertiesAction);
@@ -130,30 +152,30 @@ public class Publisher extends MainFrame {
         editMenu.add(new RefreshAction(this));
         menuBar.add(editMenu);
 
-        //insert menu
+        // insert menu
         JMenu insertMenu = insertMenuFactory();
         insertMenu.setIcon(null);
         menuBar.add(insertMenu);
 
-        //tools menu
+        // tools menu
         JMenu toolsMenu = new JMenu("Tools");
         toolsMenu.add(new DialogOpenAction(this, "Page number ...", blankIcon, PageNumberDialog.class));
         toolsMenu.add(new ExportBatchSongsImages(this));
         toolsMenu.add(new ExportBatchSongsMidi(this));
         menuBar.add(toolsMenu);
 
-        //help menu
+        // help menu
         JMenu helpMenu = new JMenu("Help");
         makeCommonHelpMenu(helpMenu);
         menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
 
-        //default popup
+        // default popup
         defaultPopup = new JPopupMenu();
         defaultPopup.add(insertMenuFactory());
 
-        //toolbar
+        // toolbar
         JToolBar toolBar = new JToolBar();
         toolBar.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         addActionToToolBarToShowShortDescription(toolBar, newAction);
@@ -173,11 +195,11 @@ public class Publisher extends MainFrame {
 
         getContentPane().add(BorderLayout.WEST, new WestTools(this));
 
-        //SOUTH
+        // SOUTH
         statusBar = new StatusBar(this);
         getContentPane().add(BorderLayout.SOUTH, statusBar);
 
-        
+
     }
 
     public JMenu insertMenuFactory() {
@@ -214,21 +236,11 @@ public class Publisher extends MainFrame {
     }
 
     public boolean isBookNull() {
-        if(book==null) {
+        if (book == null) {
             showErrorMessage("You must begin with a new document. Click on File | New menu");
         }
-        return book==null;
-    }
 
-    public static void main(String[] args) {
-        showSplash("sbsplash.png");
-        PropertyConfigurator.configure("conf/logger.properties");
-        openMidi();
-        Publisher pub = new Publisher();
-        hideSplash();
-
-        if (Utilities.isMac())
-            MacAdapter.attachTo(pub, true);
+        return book == null;
     }
 
     public MusicSheet openMusicSheet(File openFile) {
@@ -243,17 +255,27 @@ public class Publisher extends MainFrame {
             saxParser.parse(openFile, dr);
             setBook(dr.getBook());
             setSaveFile(openFile);
-        } catch (SAXException e1) {
-            showErrorMessage("Could not open the file "+openFile.getName()+", because it is damaged.");
+        }
+        catch (SAXException e1) {
+            showErrorMessage("Could not open the file " + openFile.getName() + ", because it is damaged.");
             logger.error("SaxParser parse", e1);
-        } catch (IOException e1) {
-            showErrorMessage("Could not open the file "+openFile.getName()+". Check if you have the permission to open it.");
+        }
+        catch (IOException e1) {
+            showErrorMessage(
+                    "Could not open the file " + openFile.getName() + ". Check if you have the permission to open it.");
             logger.error("Song open", e1);
         }
     }
 
+    public Book getBook() {
+        return book;
+    }
+
     public void setBook(Book book) {
-        if(this.book!=null)getContentPane().remove(this.book.getScrolledBook());
+        if (this.book != null) {
+            getContentPane().remove(this.book.getScrolledBook());
+        }
+
         this.book = book;
         getContentPane().add(book.getScrolledBook());
         zoomCombo.setSelectedItem("100%");
@@ -261,14 +283,9 @@ public class Publisher extends MainFrame {
         validate();
     }
 
-    public Book getBook() {
-        return book;
-    }
-
     public JComboBox getZoomCombo() {
         return zoomCombo;
     }
-
 
     public InsertImageAction getInsertImageAction() {
         return insertImageAction;
@@ -298,17 +315,15 @@ public class Publisher extends MainFrame {
         return statusBar;
     }
 
-    public static FontMetrics getStaticFontMetrics(Font font){
-        if(graphics==null)return null;
-        return graphics.getFontMetrics(font);
-    }
-
     public DialogOpenAction getPaperSizeDialogOpenAction() {
         return paperSizeDialogOpenAction;
     }
 
     public void handleOpenFile(File file) {
-        if(!showSaveDialog())return;
+        if (!showSaveDialog()) {
+            return;
+        }
+
         openBook(file);
         unmodifiedDocument();
     }

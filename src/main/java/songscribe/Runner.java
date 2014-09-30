@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jul 17, 2006
+    Created on Jul 17, 2006
 */
 package songscribe;
 
@@ -45,27 +45,48 @@ public class Runner {
         PropertyConfigurator.configure("conf/logger.properties");
         String ss = System.getProperty("songscribe");
 
-        //look and feel
+        // look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
+            // pass
         }
 
-        //launching ss
-        if("sw".equals(ss))MainFrame.main(args);
-        else if("ss".equals(ss))SlideFrame.main(args);
-        else if("sb".equals(ss))Publisher.main(args);
-        else if("image_converter".equals(ss)) ImageConverter.main(args);
-        else if("midi_converter".equals(ss)) MidiConverter.main(args);
-        else if("pdf_converter".equals(ss)) PDFConverter.main(args);
-        else if("ui_converter".equals(ss)) UIConverter.main(args);
-        else if("abc_converter".equals(ss)) AbcConverter.main(args);
-        else if("version".equals(ss)) System.out.println(Utilities.getFullVersion());
-        else startFrame(args);
+        if ("sw".equals(ss)) {
+            MainFrame.main(args);
+        }
+        else if ("ss".equals(ss)) {
+            SlideFrame.main(args);
+        }
+        else if ("sb".equals(ss)) {
+            Publisher.main(args);
+        }
+        else if ("image_converter".equals(ss)) {
+            ImageConverter.main(args);
+        }
+        else if ("midi_converter".equals(ss)) {
+            MidiConverter.main(args);
+        }
+        else if ("pdf_converter".equals(ss)) {
+            PDFConverter.main(args);
+        }
+        else if ("ui_converter".equals(ss)) {
+            UIConverter.main(args);
+        }
+        else if ("abc_converter".equals(ss)) {
+            AbcConverter.main(args);
+        }
+        else if ("version".equals(ss)) {
+            System.out.println(Utilities.getFullVersion());
+        }
+        else {
+            startFrame(args);
+        }
     }
 
-    private static void startFrame(final String[] args){
-        final JFrame frame = new JFrame(MainFrame.PACKAGENAME);
+    private static void startFrame(final String[] args) {
+        final JFrame frame = new JFrame(MainFrame.PACKAGE_NAME);
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -88,12 +109,19 @@ public class Runner {
         panel.add(sb);
         frame.getContentPane().add(panel);
         JButton start = new JButton("Start");
-        start.addActionListener(new ActionListener(){
+        start.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setVisible(false);
-                if(sw.isSelected())MainFrame.main(args);
-                else if(ss.isSelected())SlideFrame.main(args);
-                else if(sb.isSelected())Publisher.main(args);
+
+                if (sw.isSelected()) {
+                    MainFrame.main(args);
+                }
+                else if (ss.isSelected()) {
+                    SlideFrame.main(args);
+                }
+                else if (sb.isSelected()) {
+                    Publisher.main(args);
+                }
             }
         });
         JPanel south = new JPanel();
@@ -102,7 +130,8 @@ public class Runner {
         frame.getContentPane().add(BorderLayout.SOUTH, south);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setLocation(MainFrame.CENTERPOINT.x-frame.getWidth()/2, MainFrame.CENTERPOINT.y-frame.getHeight()/2);
+        frame.setLocation(
+                MainFrame.CENTER_POINT.x - frame.getWidth() / 2, MainFrame.CENTER_POINT.y - frame.getHeight() / 2);
         frame.setVisible(true);
     }
 }

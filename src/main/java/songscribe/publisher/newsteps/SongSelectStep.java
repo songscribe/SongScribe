@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Aug 4, 2006
+    Created on Aug 4, 2006
 */
 package songscribe.publisher.newsteps;
 
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 /**
  * @author Csaba Kávai
  */
-class SongSelectStep extends Step{
+class SongSelectStep extends Step {
     private static final String INFO = "<html><ul><li>Select the songs you want to publish.<li>Use the add button the add one or more songs to the list.<li>Use the arrows to change the order.</ul></html>";
 
     private DefaultListModel listModel = new DefaultListModel();
@@ -48,7 +48,7 @@ class SongSelectStep extends Step{
         data.files = files;
         setLayout(new BorderLayout());
 
-        //CENTER
+        // CENTER
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         center.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
@@ -59,12 +59,11 @@ class SongSelectStep extends Step{
         center.add(scrollPane);
         add(BorderLayout.CENTER, center);
 
-        //EAST
+        // EAST
         JButton addButton = new JButton(new AddAction());
         JButton addFolderButton = new JButton(new AddFolderAction());
         JButton removeButton = new JButton(new RemoveAction());
-        Dimension butPrefSize = new Dimension(Math.max(addFolderButton.getPreferredSize().width, removeButton.getPreferredSize().width),
-                Math.max(addFolderButton.getPreferredSize().height, removeButton.getPreferredSize().height));
+        Dimension butPrefSize = new Dimension(Math.max(addFolderButton.getPreferredSize().width, removeButton.getPreferredSize().width), Math.max(addFolderButton.getPreferredSize().height, removeButton.getPreferredSize().height));
         addButton.setMinimumSize(butPrefSize);
         addButton.setPreferredSize(butPrefSize);
         addButton.setMaximumSize(butPrefSize);
@@ -116,7 +115,16 @@ class SongSelectStep extends Step{
     public void end() {
     }
 
-    private class AddAction extends AbstractAction{
+    private String getListName(String fileName) {
+        if (fileName.endsWith(FileExtensions.SONGWRITER)) {
+            return fileName.substring(0, fileName.length() - 5);
+        }
+        else {
+            return fileName;
+        }
+    }
+
+    private class AddAction extends AbstractAction {
         private PlatformFileDialog pfd;
 
         public AddAction() {
@@ -127,9 +135,10 @@ class SongSelectStep extends Step{
         }
 
         public void actionPerformed(ActionEvent e) {
-            if(pfd.showDialog()){
+            if (pfd.showDialog()) {
                 File[] openFile = pfd.getFiles();
-                for(File of:openFile){
+
+                for (File of : openFile) {
                     files.add(of);
                     listModel.addElement(getListName(of.getName()));
                 }
@@ -137,7 +146,7 @@ class SongSelectStep extends Step{
         }
     }
 
-    private class AddFolderAction extends AbstractAction{
+    private class AddFolderAction extends AbstractAction {
         private PlatformFileDialog pfd;
 
         public AddFolderAction() {
@@ -147,29 +156,36 @@ class SongSelectStep extends Step{
         }
 
         public void actionPerformed(ActionEvent e) {
-            if(pfd.showDialog()){
+            if (pfd.showDialog()) {
                 boolean isThereDir = false;
-                for(File file:pfd.getFile().listFiles()){
-                    if(file.isDirectory()){
-                        isThereDir=true;
+
+                for (File file : pfd.getFile().listFiles()) {
+                    if (file.isDirectory()) {
+                        isThereDir = true;
                         break;
                     }
                 }
-                int answ=JOptionPane.NO_OPTION;
-                if(isThereDir){
-                    answ = JOptionPane.showConfirmDialog(data.mainFrame, "All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?",
-                            data.mainFrame.PROGNAME, JOptionPane.YES_NO_CANCEL_OPTION);
-                    if(answ==JOptionPane.CANCEL_OPTION)return;
+
+                int answ = JOptionPane.NO_OPTION;
+
+                if (isThereDir) {
+                    answ = JOptionPane.showConfirmDialog(data.mainFrame, "All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?", data.mainFrame.PROG_NAME, JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    if (answ == JOptionPane.CANCEL_OPTION) {
+                        return;
+                    }
                 }
-                addSongFiles(pfd.getFile(), answ==JOptionPane.YES_OPTION);
+
+                addSongFiles(pfd.getFile(), answ == JOptionPane.YES_OPTION);
             }
         }
 
-        private void addSongFiles(File dir, boolean descend){
-            for(File file:dir.listFiles()){
-                if(file.isDirectory() && descend){
+        private void addSongFiles(File dir, boolean descend) {
+            for (File file : dir.listFiles()) {
+                if (file.isDirectory() && descend) {
                     addSongFiles(file, descend);
-                }else if(file.isFile() && file.getName().endsWith(FileExtensions.SONGWRITER)){
+                }
+                else if (file.isFile() && file.getName().endsWith(FileExtensions.SONGWRITER)) {
                     files.add(file);
                     listModel.addElement(getListName(file.getName()));
                 }
@@ -177,8 +193,7 @@ class SongSelectStep extends Step{
         }
     }
 
-
-    private class RemoveAction extends AbstractAction{
+    private class RemoveAction extends AbstractAction {
         public RemoveAction() {
             putValue(Action.NAME, "Remove");
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("remove.png")));
@@ -186,14 +201,15 @@ class SongSelectStep extends Step{
 
         public void actionPerformed(ActionEvent e) {
             int[] sel = list.getSelectedIndices();
-            for(int i=sel.length-1;i>=0;i--){
+
+            for (int i = sel.length - 1; i >= 0; i--) {
                 files.remove(sel[i]);
                 listModel.remove(sel[i]);
             }
         }
     }
 
-    private class UpAction extends AbstractAction{
+    private class UpAction extends AbstractAction {
         public UpAction() {
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("1uparrow32.png")));
             putValue(Action.SHORT_DESCRIPTION, "Move the selected item up in the list");
@@ -201,24 +217,27 @@ class SongSelectStep extends Step{
 
         public void actionPerformed(ActionEvent e) {
             int[] sels = list.getSelectedIndices();
-            if(sels.length>0 && sels[0]>0){
-                for(int sel:sels){
+
+            if (sels.length > 0 && sels[0] > 0) {
+                for (int sel : sels) {
                     File f = files.get(sel);
-                    files.set(sel, files.get(sel-1));
-                    files.set(sel-1, f);
+                    files.set(sel, files.get(sel - 1));
+                    files.set(sel - 1, f);
                     Object o = listModel.get(sel);
-                    listModel.set(sel, listModel.get(sel-1));
-                    listModel.set(sel-1, o);
+                    listModel.set(sel, listModel.get(sel - 1));
+                    listModel.set(sel - 1, o);
                 }
-                for(int i=0;i<sels.length;i++){
-                    sels[i]=sels[i]-1;
+
+                for (int i = 0; i < sels.length; i++) {
+                    sels[i] = sels[i] - 1;
                 }
+
                 list.setSelectedIndices(sels);
             }
         }
     }
 
-    private class DownAction extends AbstractAction{
+    private class DownAction extends AbstractAction {
         public DownAction() {
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("1downarrow32.png")));
             putValue(Action.SHORT_DESCRIPTION, "Move the selected item down in the list");
@@ -226,8 +245,9 @@ class SongSelectStep extends Step{
 
         public void actionPerformed(ActionEvent e) {
             int[] sels = list.getSelectedIndices();
-            if(sels.length>0 && sels[sels.length-1]<listModel.size()-1){
-                for (int i=sels.length-1;i>=0;i--) {
+
+            if (sels.length > 0 && sels[sels.length - 1] < listModel.size() - 1) {
+                for (int i = sels.length - 1; i >= 0; i--) {
                     int sel = sels[i];
                     File f = files.get(sel);
                     files.set(sel, files.get(sel + 1));
@@ -236,19 +256,13 @@ class SongSelectStep extends Step{
                     listModel.set(sel, listModel.get(sel + 1));
                     listModel.set(sel + 1, o);
                 }
-                for(int i=0;i<sels.length;i++){
-                    sels[i]=sels[i]+1;
+
+                for (int i = 0; i < sels.length; i++) {
+                    sels[i] = sels[i] + 1;
                 }
+
                 list.setSelectedIndices(sels);
             }
-        }
-    }
-
-    private String getListName(String fileName){
-        if(fileName.endsWith(FileExtensions.SONGWRITER)){
-            return fileName.substring(0, fileName.length()-5);
-        }else{
-            return fileName;
         }
     }
 }

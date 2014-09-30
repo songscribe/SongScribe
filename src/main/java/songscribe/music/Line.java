@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Feb 11, 2006
+    Created on Feb 11, 2006
 */
 package songscribe.music;
 
@@ -32,15 +32,7 @@ import java.util.ListIterator;
  * @author Csaba Kávai
  */
 public class Line {
-    private static final int[][] FLATSHARPORDEAL = {{0, 3, 6, 2, 5, 1, 4},{4, 1, 5, 2, 6, 3, 0}};
-
-    private Composition composition;
-
-    private int keys;
-    private KeyType keyType;
-
-    private List<Note> notes = new ArrayList<Note>();
-
+    private static final int[][] FLAT_SHARP_ORDINAL = { { 0, 3, 6, 2, 5, 1, 4 }, { 4, 1, 5, 2, 6, 3, 0 } };
     private final IntervalSet beamings = new IntervalSet();
     private final IntervalSet ties = new IntervalSet();
     private final IntervalSet slurs = new IntervalSet();
@@ -48,19 +40,20 @@ public class Line {
     private final IntervalSet fsEndings = new IntervalSet();
     private final IntervalSet crescendo = new IntervalSet();
     private final IntervalSet diminuendo = new IntervalSet();
-
-    private final IntervalSet[] intervalSets = {beamings, ties, tuplets, fsEndings, slurs, crescendo, diminuendo};
-
-    //view properties
+    private final IntervalSet[] intervalSets = { beamings, ties, tuplets, fsEndings, slurs, crescendo, diminuendo };
+    // acceleration
+    public Note.SyllableRelation beginRelation = Note.SyllableRelation.NO;
+    private Composition composition;
+    private int keys;
+    private KeyType keyType;
+    private List<Note> notes = new ArrayList<Note>();
+    // view properties
     private int tempoChangeYPos;
     private int beatChangeYPos = -24;
     private int lyricsYPos = 50;
     private int fsEndingYPos = -25;
     private int trillYPos = -27;
     private float noteDistChangeRatio = 1f;
-
-    //acceleration
-    public Note.SyllableRelation beginRelation = Note.SyllableRelation.NO;
 
     public Composition getComposition() {
         return composition;
@@ -122,28 +115,30 @@ public class Line {
     }
 
     private void modifiedComposition() {
-        if(composition!=null)composition.modifiedComposition();
+        if (composition != null) {
+            composition.modifiedComposition();
+        }
     }
 
     public int noteCount() {
         return notes.size();
     }
 
-    public int getNoteIndex(Note note){
+    public int getNoteIndex(Note note) {
         return notes.indexOf(note);
     }
 
     /**
-     *
      * @param pitchType 0 for B, 1 for C, 2 for D, ..., 6 for A
-     * @return true if there is a leading key for that pitchtype
+     * @return true if there is a leading key for that pitch type
      */
-    public boolean existsKey(int pitchType){
-        for(int i=0;i<keys;i++){
-            if(FLATSHARPORDEAL[keyType.ordinal()-1][i]==pitchType){
+    public boolean keyExists(int pitchType) {
+        for (int i = 0; i < keys; i++) {
+            if (FLAT_SHARP_ORDINAL[keyType.ordinal() - 1][i] == pitchType) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -192,8 +187,8 @@ public class Line {
         modifiedComposition();
     }
 
-    public void mulNoteDistChange(float ratio){
-        noteDistChangeRatio*=ratio;
+    public void mulNoteDistChange(float ratio) {
+        noteDistChangeRatio *= ratio;
         modifiedComposition();
     }
 
@@ -229,74 +224,84 @@ public class Line {
         return diminuendo;
     }
 
-    public void removeInterval(int a, int b){
-        for(IntervalSet is:intervalSets){
+    public void removeInterval(int a, int b) {
+        for (IntervalSet is : intervalSets) {
             is.removeInterval(a, b);
         }
     }
 
-    public IntervalSet[] copyIntervals(int a, int b){
+    public IntervalSet[] copyIntervals(int a, int b) {
         IntervalSet[] retIs = new IntervalSet[intervalSets.length];
-        for(int i=0;i<intervalSets.length;i++){
+
+        for (int i = 0; i < intervalSets.length; i++) {
             retIs[i] = intervalSets[i].copyInterval(a, b);
         }
+
         shiftIntervals(retIs, 0, -a);
         return retIs;
     }
 
-    public void pasteIntervals(IntervalSet[] copyIntervalSets, int xIndex){
+    public void pasteIntervals(IntervalSet[] copyIntervalSets, int xIndex) {
         shiftIntervals(copyIntervalSets, 0, xIndex);
-        for(int i=0;i<intervalSets.length;i++){
-            for(ListIterator<Interval> li=copyIntervalSets[i].listIterator();li.hasNext();){
+        for (int i = 0; i < intervalSets.length; i++) {
+            for (ListIterator<Interval> li = copyIntervalSets[i].listIterator(); li.hasNext(); ) {
                 Interval iv = li.next();
                 intervalSets[i].addInterval(iv.getA(), iv.getB(), iv.getData());
             }
         }
+
         shiftIntervals(copyIntervalSets, 0, -xIndex);
     }
 
-    private void shiftIntervals(IntervalSet[] iss, int from, int shift){
-        for(IntervalSet is:iss){
+    private void shiftIntervals(IntervalSet[] iss, int from, int shift) {
+        for (IntervalSet is : iss) {
             is.shiftValues(from, shift);
             is.removeInterval(Integer.MIN_VALUE, 0);
-            is.removeInterval(notes.size()-1, Integer.MAX_VALUE);
+            is.removeInterval(notes.size() - 1, Integer.MAX_VALUE);
         }
     }
 
-    public int getFirstTempoChange(){
-        if(composition.indexOfLine(this)==0 && noteCount() > 0)return 0;
-        for(int n=0;n<noteCount();n++){
-            if(getNote(n).getTempoChange()!=null){
+    public int getFirstTempoChange() {
+        if (composition.indexOfLine(this) == 0 && noteCount() > 0) {
+            return 0;
+        }
+
+        for (int n = 0; n < noteCount(); n++) {
+            if (getNote(n).getTempoChange() != null) {
                 return n;
             }
         }
+
         return -1;
     }
 
-    public boolean isAnnotation(){
-        for(int n=0;n<noteCount();n++){
-            if(getNote(n).getAnnotation()!=null){
+    public boolean isAnnotation() {
+        for (int n = 0; n < noteCount(); n++) {
+            if (getNote(n).getAnnotation() != null) {
                 return true;
             }
         }
+
         return false;
     }
 
-    public int getFirstTrill(){
-        for(int n=0;n<noteCount();n++){
-            if(getNote(n).isTrill()){
+    public int getFirstTrill() {
+        for (int n = 0; n < noteCount(); n++) {
+            if (getNote(n).isTrill()) {
                 return n;
             }
         }
+
         return -1;
     }
 
-    public int getFirstBeatChange(){
-        for(int n=0;n<noteCount();n++){
-            if(getNote(n).getBeatChange()!=null){
+    public int getFirstBeatChange() {
+        for (int n = 0; n < noteCount(); n++) {
+            if (getNote(n).getBeatChange() != null) {
                 return n;
             }
         }
+
         return -1;
     }
 }

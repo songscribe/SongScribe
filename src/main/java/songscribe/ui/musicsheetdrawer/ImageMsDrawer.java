@@ -1,6 +1,6 @@
 /*
 SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+Copyright (C) 2006 Csaba Kavai
 
 This file is part of SongScribe.
 
@@ -46,7 +46,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
     private static final Image BEGINPARENTHESISIMAGE = MainFrame.getImage("beginparenthesis.gif");
     private static final Image ENDPARENTHESISIMAGE = MainFrame.getImage("endparenthesis.gif");
     private static final Image FERMATAIMAGE = MainFrame.getImage("fermata32.png");
-    private static final Dimension crotchetDim = new Dimension(Crotchet.REALUPNOTERECT.width-1, Note.IMAGEDIM.height);
+    private static final Dimension crotchetDim = new Dimension(Crotchet.REAL_UP_NOTE_RECT.width-1, Note.IMAGE_DIM.height);
 
     public ImageMsDrawer(MusicSheet ms) {
         super(ms);
@@ -67,7 +67,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
             int fsPos = ms.getLeadingKeysPos();
             int fs = line.getKeyType().ordinal();
             for(int i=0;i<line.getKeys();i++){
-                g2.drawImage(Note.NATURALFLATSHARPIMAGE[fs], fsPos, ms.getNoteYPos(FLATSHARPORDER[fs][i%7], l)-Note.HOTSPOT.y, null);
+                g2.drawImage(Note.NATURAL_FLAT_SHARP_IMAGE[fs], fsPos, ms.getNoteYPos(FLAT_SHARP_ORDER[fs][i%7], l)-Note.HOT_SPOT.y, null);
                 fsPos+=8;
             }
         }
@@ -82,7 +82,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
             if(keyTypes[kt]==null)break;
             int fs = keyTypes[kt].ordinal();
             for(int i=0;i<keys[kt];i++){
-                g2.drawImage(Note.NATURALFLATSHARPIMAGE[isNatural[kt] ? 0 : fs], fsPos, ms.getNoteYPos(FLATSHARPORDER[fs][(i+froms[kt])%7], l)-Note.HOTSPOT.y, null);
+                g2.drawImage(Note.NATURAL_FLAT_SHARP_IMAGE[isNatural[kt] ? 0 : fs], fsPos, ms.getNoteYPos(FLAT_SHARP_ORDER[fs][(i+froms[kt])%7], l)-Note.HOT_SPOT.y, null);
                 fsPos+=8;
             }
         }
@@ -90,21 +90,21 @@ public class ImageMsDrawer extends BaseMsDrawer{
 
     public void paintNote(Graphics2D g2, Note note, int line, boolean beamed, Color color) {
         int xPos = note.getXPos();
-        int yPos = ms.getNoteYPos(note.getYPos(), line)-Note.HOTSPOT.y;
+        int yPos = ms.getNoteYPos(note.getYPos(), line)-Note.HOT_SPOT.y;
         Image noteImg;
         if(color==Color.black){
             if(beamed){
-                noteImg = note.isUpper() ? Crotchet.UPIMAGE : Crotchet.DOWNIMAGE;
+                noteImg = note.isUpper() ? Crotchet.UP_IMAGE : Crotchet.DOWN_IMAGE;
             }else{
                 noteImg = note.isUpper() ? note.getUpImage() : note.getDownImage();
             }
         }else{
             noteImg = Note.getColoredNote(beamed ? NoteType.CROTCHET : note.getNoteType(), color, note.isUpper());
         }
-        if (note.getNoteType() != NoteType.GRACESEMIQUAVER) {
+        if (note.getNoteType() != NoteType.GRACE_SEMIQUAVER) {
             g2.drawImage(noteImg, xPos, yPos, null);
         } else {
-            g2.drawImage(noteImg, xPos, ms.getNoteYPos(((GraceSemiQuaver)note).getY0Pos(), line)-Note.HOTSPOT.y, null);
+            g2.drawImage(noteImg, xPos, ms.getNoteYPos(((GraceSemiQuaver)note).getY0Pos(), line)-Note.HOT_SPOT.y, null);
             g2.drawImage(noteImg, xPos + ((GraceSemiQuaver)note).getX2DiffPos(), yPos, null);
             g2.setPaint(color);
             drawGraceSemiQuaverBeam(g2, note, line);
@@ -115,16 +115,16 @@ public class ImageMsDrawer extends BaseMsDrawer{
         g2.setStroke(lineStroke);
         //drawing the stave-longitude
         if (note.getNoteType().drawStaveLongitude()) {
-            drawStaveLongitude(g2, note.getYPos(), line, xPos+Note.HOTSPOT.x-8, xPos + Note.HOTSPOT.x+(note.getNoteType()!=NoteType.SEMIBREVE ? 8 : 12));
+            drawStaveLongitude(g2, note.getYPos(), line, xPos+Note.HOT_SPOT.x-8, xPos + Note.HOT_SPOT.x+(note.getNoteType()!=NoteType.SEMIBREVE ? 8 : 12));
         }
 
         g2.setPaint(color);
 
         //drawing the dots
         for(int i=0;i<note.getDotted();i++){
-            g2.drawImage(color==Color.black ? Note.DOTIMAGE : Note.getColoredImage(Note.DOTIMAGE, color),
+            g2.drawImage(color==Color.black ? Note.DOT_IMAGE : Note.getColoredImage(Note.DOT_IMAGE, color),
                     xPos+i*4+(note.getNoteType()==NoteType.SEMIBREVE ? 4 : 0),
-                    note.getYPos()%2==0 ? yPos-(int)MusicSheet.HALFLINEDIST: yPos, null);
+                    note.getYPos()%2==0 ? yPos-(int)MusicSheet.HALF_LINE_DIST : yPos, null);
         }
 
         //drawing accidentals
@@ -136,14 +136,14 @@ public class ImageMsDrawer extends BaseMsDrawer{
             g2.drawImage(ENDPARENTHESISIMAGE, Math.round(prefXPos), yPos, null);
             float startX = xPos - spaceBtwNoteAndAccidental - FughettaDrawer.getAccidentalWidth(note);
             g2.drawImage(BEGINPARENTHESISIMAGE, Math.round(startX), yPos, null);
-            float width = Note.REALNATURALFLATSHARPRECT[accidental.getComponent(0)].width;
-            if(accidental.getNb()==2)width+=spaceBtwTwoAccidentals+Note.REALNATURALFLATSHARPRECT[accidental.getComponent(1)].width;
+            float width = Note.REAL_NATURAL_FLAT_SHARP_RECT[accidental.getComponent(0)].width;
+            if(accidental.getNb()==2)width+=spaceBtwTwoAccidentals+Note.REAL_NATURAL_FLAT_SHARP_RECT[accidental.getComponent(1)].width;
             prefXPos = (prefXPos-startX)/2f+width/2f+startX+2.5f;
         }
         for(int i=accidental.getNb()-1;i>=0;i--){
-            prefXPos-=Note.REALNATURALFLATSHARPRECT[accidental.getComponent(i)].width;
-            Image prefixImg = color==Color.black ? Note.NATURALFLATSHARPIMAGE[accidental.getComponent(i)] :
-                    Note.getColoredImage(Note.NATURALFLATSHARPIMAGE[accidental.getComponent(i)], color);
+            prefXPos-=Note.REAL_NATURAL_FLAT_SHARP_RECT[accidental.getComponent(i)].width;
+            Image prefixImg = color==Color.black ? Note.NATURAL_FLAT_SHARP_IMAGE[accidental.getComponent(i)] :
+                    Note.getColoredImage(Note.NATURAL_FLAT_SHARP_IMAGE[accidental.getComponent(i)], color);
             g2.drawImage(prefixImg, Math.round(prefXPos), yPos, null);
             prefXPos-=spaceBtwTwoAccidentals;
         }
@@ -163,7 +163,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
         }
 
         //drawing the glissando
-        if(note.getGlissando()!=Note.NOGLISSANDO){
+        if(note.getGlissando()!=Note.NO_GLISSANDO){
             drawGlissando(g2, ms.getComposition().getLine(line).getNoteIndex(note), note.getGlissando(), line);
         }
 
@@ -185,7 +185,7 @@ public class ImageMsDrawer extends BaseMsDrawer{
         g2.scale(tempoChangeZoomX, tempoChangeZoomY);
         g2.drawImage(tempoNote.getUpImage(), 0, 0, null);
         for(int i=0;i<tempoNote.getDotted();i++){
-            g2.drawImage(Note.DOTIMAGE, i*4, 0, null);
+            g2.drawImage(Note.DOT_IMAGE, i*4, 0, null);
         }
         g2.setTransform(at);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_DEFAULT);

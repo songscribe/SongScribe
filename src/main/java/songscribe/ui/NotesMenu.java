@@ -1,23 +1,23 @@
-/*  
-Music of The Supreme song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Sep 15, 2007
+    Created on Sep 15, 2007
 */
 package songscribe.ui;
 
@@ -29,16 +29,7 @@ import java.awt.event.ActionListener;
  * @author Csaba Kávai
  */
 public class NotesMenu extends JMenu {
-    public static final String SEPARATOR = "|";
     private MainFrame mainFrame;
-    private JMenuItem[] buttons;
-    
-    private class NotesMenuItem extends JMenuItem {
-        private NotesMenuItem(String name, String image, ActionListener actionListener) {
-            super(name, new ImageIcon(MainFrame.getImage(image)));
-            addActionListener(actionListener);
-        }
-    }
 
     public NotesMenu(MainFrame mainFrame) {
         super("Notes");
@@ -55,7 +46,7 @@ public class NotesMenu extends JMenu {
                 musicSheet.beamSelectedNotes(false);
             }
         }));
-        
+
         addSeparator();
         add(new NotesMenuItem("Triplet", "triplet_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -69,7 +60,7 @@ public class NotesMenu extends JMenu {
             }
         }));
         addSeparator();
-        
+
         add(new NotesMenuItem("Tie", "tie_menu.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 musicSheet.tieSelectedNotes(true);
@@ -139,11 +130,12 @@ public class NotesMenu extends JMenu {
     }
 
     private JMenu createTupletMenu() {
-        String[] tuplets = {"Duplet (2)", "Quadruplet (4)", "Quintuplet (5)", "Sextuplet (6)", "Septuplet (7)"};
-        final int[] tupletValues = new int[]{2, 4, 5, 6, 7};
+        String[] tuplets = { "Duplet (2)", "Quadruplet (4)", "Quintuplet (5)", "Sextuplet (6)", "Septuplet (7)" };
+        final int[] tupletValues = new int[] { 2, 4, 5, 6, 7 };
         JMenu tupletMenu = new JMenu("Other tuplets");
         tupletMenu.setIcon(mainFrame.blankIcon);
-        for(int i=0;i<tuplets.length;i++){
+
+        for (int i = 0; i < tuplets.length; i++) {
             final int iFinal = i;
             JMenuItem tupletButton = new JMenuItem(tuplets[i], mainFrame.blankIcon);
             tupletButton.addActionListener(new ActionListener() {
@@ -153,6 +145,7 @@ public class NotesMenu extends JMenu {
             });
             tupletMenu.add(tupletButton);
         }
+
         return tupletMenu;
     }
 
@@ -175,5 +168,12 @@ public class NotesMenu extends JMenu {
             }
         }));
         return menu;
+    }
+
+    private class NotesMenuItem extends JMenuItem {
+        private NotesMenuItem(String name, String image, ActionListener actionListener) {
+            super(name, new ImageIcon(MainFrame.getImage(image)));
+            addActionListener(actionListener);
+        }
     }
 }

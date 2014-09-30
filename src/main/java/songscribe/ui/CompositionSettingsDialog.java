@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Sep 4, 2005
+    Created on Sep 4, 2005
 */
 package songscribe.ui;
 
@@ -38,13 +38,27 @@ import java.util.Properties;
 /**
  * @author Csaba Kávai
  */
-public class CompositionSettingsDialog extends MyDialog{
+public class CompositionSettingsDialog extends MyDialog {
     private static Logger logger = Logger.getLogger(CompositionSettingsDialog.class);
     JTextField numberField = new JTextField(3);
     JTextArea titleField = new JTextArea(2, 25);
     SpinnerModel takeFirstWordsSpinner = new SpinnerNumberModel(4, 1, 10, 1);
     JTextField placeField = new JTextField(10);
-    JComboBox monthCombo = new JComboBox(new String[]{"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"});
+    JComboBox monthCombo = new JComboBox(new String[] {
+            "",
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+    });
     JComboBox dayCombo;
     JTextField yearField = new JTextField(5);
     JTextArea rightInfoArea = new MyJTextArea(4, 20);
@@ -75,7 +89,7 @@ public class CompositionSettingsDialog extends MyDialog{
         Dimension small = new Dimension(0, 5);
         Dimension large = new Dimension(0, 15);
 
-        //title of the song section
+        // title of the song section
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Title of song"));
@@ -103,11 +117,15 @@ public class CompositionSettingsDialog extends MyDialog{
         basicCenter.add(titlePanel);
         basicCenter.add(Box.createRigidArea(large));
 
-        //place and date
+        // place and date
         monthCombo.setEditable(false);
         String[] days = new String[32];
         days[0] = "";
-        for(int i=1;i<=31;i++)days[i] = Integer.toString(i);
+
+        for (int i = 1; i <= 31; i++) {
+            days[i] = Integer.toString(i);
+        }
+
         dayCombo = new JComboBox(days);
         dayCombo.setEditable(false);
         JPanel placeAndDatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
@@ -120,7 +138,7 @@ public class CompositionSettingsDialog extends MyDialog{
         basicCenter.add(placeAndDatePanel);
         basicCenter.add(Box.createRigidArea(large));
 
-        //information on right side
+        // information on right side
         JPanel informationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         informationPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Information on right side"));
         rightInfoArea.setFont(numberField.getFont());
@@ -132,14 +150,15 @@ public class CompositionSettingsDialog extends MyDialog{
         addPlaceAndOrDatePanel.add(addDateButton, gbc);
         JButton addPlaceAndDateButton = new JButton("<html><center>Append place<br>and date</center><html>");
         addPlaceAndDateButton.addActionListener(new AddPlaceAndDateAction(true));
-        gbc.gridy=1;gbc.insets=new Insets(5, 0, 0, 0);
+        gbc.gridy = 1;
+        gbc.insets = new Insets(5, 0, 0, 0);
         addPlaceAndOrDatePanel.add(addPlaceAndDateButton, gbc);
         informationPanel.add(addPlaceAndOrDatePanel);
         informationPanel.setAlignmentX(0f);
         basicCenter.add(informationPanel);
         basicCenter.add(Box.createRigidArea(large));
 
-        //tempo section
+        // tempo section
         JPanel upperTempoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         tempoTypeCombo = new JComboBox(Tempo.Type.values());
         tempoTypeCombo.setRenderer(new NoteImageListCellRenderer());
@@ -162,9 +181,9 @@ public class CompositionSettingsDialog extends MyDialog{
         basicCenter.add(tempoPanel);
         basicCenter.add(Box.createRigidArea(large));
 
-        //leading keys section
+        // leading keys section
         JPanel keysPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        keysCombo = new JComboBox(new KeyType[]{KeyType.FLATS, KeyType.SHARPS});
+        keysCombo = new JComboBox(new KeyType[] { KeyType.FLATS, KeyType.SHARPS });
         keysCombo.setRenderer(new KeysImageListCellRenderer());
         keysPanel.add(keysCombo);
         JSpinner ks = new JSpinner(keysSpinner);
@@ -179,9 +198,9 @@ public class CompositionSettingsDialog extends MyDialog{
         fontCenter.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         fontCenter.setLayout(new BoxLayout(fontCenter, BoxLayout.Y_AXIS));
 
-        titleFontCombo = new JComboBox(MainFrame.FONTFAMILIES);
-        lyricsFontCombo = new JComboBox(MainFrame.FONTFAMILIES);
-        generalFontCombo = new JComboBox(MainFrame.FONTFAMILIES);
+        titleFontCombo = new JComboBox(MainFrame.FONT_FAMILIES);
+        lyricsFontCombo = new JComboBox(MainFrame.FONT_FAMILIES);
+        generalFontCombo = new JComboBox(MainFrame.FONT_FAMILIES);
         titleFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
         lyricsFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
         generalFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
@@ -252,7 +271,7 @@ public class CompositionSettingsDialog extends MyDialog{
         southProfilePanel.add(deleteProfileButton);
         profileCenter.add(BorderLayout.SOUTH, southProfilePanel);
 
-        //tabbed pane
+        // tabbed pane
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Basic", basicCenter);
         tabbedPane.addTab("Fonts", fontCenterHelper);
@@ -262,7 +281,7 @@ public class CompositionSettingsDialog extends MyDialog{
         dialogPanel.add(BorderLayout.SOUTH, southPanel);
     }
 
-    protected void getData(){
+    protected void getData() {
         MusicSheet ms = mainFrame.getMusicSheet();
         Composition c = ms.getComposition();
         numberField.setText(c.getNumber());
@@ -290,59 +309,68 @@ public class CompositionSettingsDialog extends MyDialog{
         lyricsItalicToggle.setSelected(Utilities.isItalic(c.getLyricsFont()));
     }
 
-    protected void setData(){
+    protected void setData() {
         MusicSheet ms = mainFrame.getMusicSheet();
         Composition c = ms.getComposition();
-        try{
-            if(numberField.getText().length()>0){
+
+        try {
+            if (numberField.getText().length() > 0) {
                 Integer.parseInt(numberField.getText());
             }
+
             c.setNumber(numberField.getText());
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(dialogPanel, "The number of the song is not a number", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
         }
+        catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(dialogPanel, "The song number is not a number", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
+        }
+
         c.setSongTitle(titleField.getText());
         c.setPlace(placeField.getText());
         c.setMonth(monthCombo.getSelectedIndex());
         c.setDay(dayCombo.getSelectedIndex());
-        try{
-            if(yearField.getText().length()>0){
+
+        try {
+            if (yearField.getText().length() > 0) {
                 Integer.parseInt(yearField.getText());
             }
+
             c.setYear(yearField.getText());
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(dialogPanel, "The year of the song is not a number", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
         }
+        catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(dialogPanel, "The year is not a number", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
+        }
+
         c.setRightInfo(rightInfoArea.getText());
         c.getTempo().setTempoType((Tempo.Type) tempoTypeCombo.getSelectedItem());
         c.getTempo().setVisibleTempo((Integer) tempoSpinner.getValue());
-        c.getTempo().setTempoDescription((String)tempoDescriptionCombo.getSelectedItem());
+        c.getTempo().setTempoDescription((String) tempoDescriptionCombo.getSelectedItem());
         c.getTempo().setShowTempo(!showOnlyDescriptionCheckBox.isSelected());
         int oldDefKeys = c.getDefaultKeys();
         KeyType oldDefKeyType = c.getDefaultKeyType();
         c.setDefaultKeys((Integer) keysSpinner.getValue());
-        c.setDefaultKeyType((KeyType)keysCombo.getSelectedItem());
-        for(int i=0;i<c.lineCount();i++){
+        c.setDefaultKeyType((KeyType) keysCombo.getSelectedItem());
+
+        for (int i = 0; i < c.lineCount(); i++) {
             Line l = c.getLine(i);
-            if(l.getKeys()==oldDefKeys && l.getKeyType()==oldDefKeyType){
+
+            if (l.getKeys() == oldDefKeys && l.getKeyType() == oldDefKeyType) {
                 l.setKeys(c.getDefaultKeys());
                 l.setKeyType(c.getDefaultKeyType());
             }
         }
-        c.setSongTitleFont(Utilities.createFont((String)titleFontCombo.getSelectedItem(),
-                (titleBoldToggle.isSelected() ? Font.BOLD : 0) | (titleItalicToggle.isSelected() ? Font.ITALIC : 0),
-                (Integer)titleFontSizeSpinner.getValue()));
-        c.setLyricsFont(Utilities.createFont((String)lyricsFontCombo.getSelectedItem(),
-                (lyricsBoldToggle.isSelected() ? Font.BOLD : 0) | (lyricsItalicToggle.isSelected() ? Font.ITALIC : 0),
-                (Integer)lyricsFontSizeSpinner.getValue()));
-        c.setGeneralFont(Utilities.createFont((String)generalFontCombo.getSelectedItem(),
-                Font.PLAIN,
-                (Integer)generalFontSizeSpinner.getValue()));
+
+        c.setSongTitleFont(Utilities.createFont((String) titleFontCombo.getSelectedItem(),
+                (titleBoldToggle.isSelected() ? Font.BOLD : 0) |
+                (titleItalicToggle.isSelected() ? Font.ITALIC : 0), (Integer) titleFontSizeSpinner.getValue()));
+        c.setLyricsFont(Utilities.createFont((String) lyricsFontCombo.getSelectedItem(),
+                (lyricsBoldToggle.isSelected() ? Font.BOLD : 0) |
+                (lyricsItalicToggle.isSelected() ? Font.ITALIC : 0), (Integer) lyricsFontSizeSpinner.getValue()));
+        c.setGeneralFont(Utilities.createFont((String) generalFontCombo.getSelectedItem(), Font.PLAIN, (Integer) generalFontSizeSpinner.getValue()));
         c.recalcTopSpace();
         ms.viewChanged();
     }
 
-    private JPanel createTitleAndInputPanel(String title, JComponent input){
+    private JPanel createTitleAndInputPanel(String title, JComponent input) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         MyDialog.addLabelToBox(panel, title, 5);
@@ -351,25 +379,30 @@ public class CompositionSettingsDialog extends MyDialog{
         return panel;
     }
 
-    static class NoteImageListCellRenderer implements ListCellRenderer{
+    static class NoteImageListCellRenderer implements ListCellRenderer {
         JLabel[] labels = new JLabel[Tempo.Type.values().length];
 
         public NoteImageListCellRenderer() {
             Dimension imgDim = new Dimension(35, 35);
             Dimension prefDim = new Dimension(35, 37);
-            int i=0;
-            for(Tempo.Type t:Tempo.Type.values()){
+            int i = 0;
+
+            for (Tempo.Type t : Tempo.Type.values()) {
                 Rectangle noteRect = t.getNote().getRealUpNoteRect();
-                BufferedImage noteImg = (BufferedImage)Note.clipNoteImage(t.getNote().getUpImage(),
-                        noteRect, Color.blue, imgDim);
-                if(t.getNote().getDotted()>0){
+                BufferedImage noteImg = (BufferedImage) Note.clipNoteImage(t.getNote().getUpImage(), noteRect, Color.blue, imgDim);
+
+                if (t.getNote().getDotted() > 0) {
                     Graphics2D g2 = noteImg.createGraphics();
-                    for(int j=0;j<t.getNote().getDotted();j++){
-                        g2.drawImage(Note.DOTIMAGE, j*4+(imgDim.width-noteRect.width)/2-noteRect.x,
-                                (imgDim.height-noteRect.height)/2-noteRect.y, null);
+
+                    for (int j = 0; j < t.getNote().getDotted(); j++) {
+                        g2.drawImage(Note.DOT_IMAGE,
+                                j * 4 + (imgDim.width - noteRect.width) / 2 - noteRect.x,
+                                (imgDim.height - noteRect.height) / 2 - noteRect.y, null);
                     }
+
                     g2.dispose();
                 }
+
                 labels[i] = new JLabel(new ImageIcon(noteImg));
                 labels[i].setPreferredSize(prefDim);
                 i++;
@@ -377,73 +410,91 @@ public class CompositionSettingsDialog extends MyDialog{
         }
 
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            return labels[value==null ? 0 : ((Tempo.Type)value).ordinal()];
+            return labels[value == null ? 0 : ((Tempo.Type) value).ordinal()];
         }
     }
 
-    static class KeysImageListCellRenderer implements ListCellRenderer{
+    static class KeysImageListCellRenderer implements ListCellRenderer {
         JLabel[] labels = new JLabel[2];
 
         public KeysImageListCellRenderer() {
             Dimension imgDim = new Dimension(35, 35);
             Dimension prefDim = new Dimension(35, 37);
-            for(int i=0;i<2;i++){
-                labels[i] = new JLabel(new ImageIcon(Note.clipNoteImage(Note.NATURALFLATSHARPIMAGE[i+1],
-                            Note.REALNATURALFLATSHARPRECT[i+1], Color.blue, imgDim)));
+
+            for (int i = 0; i < 2; i++) {
+                Image image = Note.clipNoteImage(
+                        Note.NATURAL_FLAT_SHARP_IMAGE[i + 1],
+                        Note.REAL_NATURAL_FLAT_SHARP_RECT[i + 1],
+                        Color.blue,
+                        imgDim);
+                labels[i] = new JLabel(new ImageIcon(image));
                 labels[i].setPreferredSize(prefDim);
             }
         }
 
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            return labels[value ==KeyType.FLATS ? 0 : 1];
+            return labels[value == KeyType.FLATS ? 0 : 1];
         }
     }
 
-    private class TakeFirstLyricsWordAction implements ActionListener{
+    private class TakeFirstLyricsWordAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String lyrics = mainFrame.getMusicSheet().getComposition().getLyrics();
-            if(lyrics.length()==0){
-                JOptionPane.showMessageDialog(dialogPanel, "You have not entered lyrics yet!", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
+
+            if (lyrics.length() == 0) {
+                JOptionPane.showMessageDialog(dialogPanel, "You have not entered lyrics yet!", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
                 return;
             }
             StringBuilder words = new StringBuilder(50);
-            int wordsCount=0;
+            int wordsCount = 0;
             boolean firstLetter = false;
             boolean lastHyphen = false;
             goThruString:
-            for(int i=0;i<lyrics.length();i++){
-                switch(lyrics.charAt(i)){
+
+            for (int i = 0; i < lyrics.length(); i++) {
+                switch (lyrics.charAt(i)) {
                     case ' ':
                     case '\n':
                         wordsCount++;
-                        if(wordsCount>=((Number)takeFirstWordsSpinner.getValue()).intValue()){
-                           break goThruString;
+
+                        if (wordsCount >= ((Number) takeFirstWordsSpinner.getValue()).intValue()) {
+                            break goThruString;
                         }
+
                         words.append(' ');
                         firstLetter = true;
                         break;
+
                     case '-':
-                        if(lastHyphen){
+                        if (lastHyphen) {
                             words.append('-');
                             wordsCount++;
-                            firstLetter=true;
+                            firstLetter = true;
                         }
+
                         lastHyphen = !lastHyphen;
+                        break;
+
                     case '_':
                         break;
+
                     default:
-                        if(firstLetter){
-                            words.append(new String(new char[]{lyrics.charAt(i)}).toUpperCase());
+                        if (firstLetter) {
+                            words.append(new String(new char[] { lyrics.charAt(i) }).toUpperCase());
                             firstLetter = false;
-                        }else{
+                        }
+                        else {
                             words.append(lyrics.charAt(i));
                         }
+
                         lastHyphen = false;
                 }
             }
-            if(!Character.isLetter(words.charAt(words.length()-1))){
-                words.deleteCharAt(words.length()-1);
+
+            if (!Character.isLetter(words.charAt(words.length() - 1))) {
+                words.deleteCharAt(words.length() - 1);
             }
+
             titleField.setText(words.toString());
         }
     }
@@ -458,24 +509,34 @@ public class CompositionSettingsDialog extends MyDialog{
         public void actionPerformed(ActionEvent e) {
             StringBuilder sb = new StringBuilder(30);
             String rightInfo = rightInfoArea.getText();
-            if(rightInfo.charAt(rightInfo.length()-1)!='\n')sb.append('\n');
-            if(monthCombo.getSelectedIndex()>0){
+
+            if (rightInfo.charAt(rightInfo.length() - 1) != '\n') {
+                sb.append('\n');
+            }
+
+            if (monthCombo.getSelectedIndex() > 0) {
                 sb.append(monthCombo.getSelectedItem());
-                if(dayCombo.getSelectedIndex()>0){
+
+                if (dayCombo.getSelectedIndex() > 0) {
                     sb.append(' ');
                     sb.append(dayCombo.getSelectedItem());
                 }
+
                 sb.append(", ");
             }
+
             try {
                 sb.append(Integer.toString(Integer.parseInt(yearField.getText())));
-            } catch (NumberFormatException e1) {
-                JOptionPane.showMessageDialog(dialogPanel, "The year of the song is not a number", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
             }
-            if(withPlace){
+            catch (NumberFormatException e1) {
+                JOptionPane.showMessageDialog(dialogPanel, "The year of the song is not a number", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
+            }
+
+            if (withPlace) {
                 sb.append('\n');
                 sb.append(placeField.getText());
             }
+
             rightInfoArea.append(sb.toString());
         }
     }
@@ -483,39 +544,44 @@ public class CompositionSettingsDialog extends MyDialog{
     private class SetDefaultFontsAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             ProfileManager pm = mainFrame.getProfileManager();
-            titleFontCombo.setSelectedItem(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONT));
-            lyricsFontCombo.setSelectedItem(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONT));
-            generalFontCombo.setSelectedItem(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERALFONT));
-            titleFontSizeSpinner.setValue(Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONTSIZE)));
-            lyricsFontSizeSpinner.setValue(Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONTSIZE)));
-            generalFontSizeSpinner.setValue(Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERALFONTSIZE)));
+            titleFontCombo.setSelectedItem(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLE_FONT));
+            lyricsFontCombo.setSelectedItem(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICS_FONT));
+            generalFontCombo.setSelectedItem(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERAL_FONT));
+            titleFontSizeSpinner.setValue(Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLE_FONT_SIZE)));
+            lyricsFontSizeSpinner.setValue(Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICS_FONT_SIZE)));
+            generalFontSizeSpinner.setValue(Integer.parseInt(pm.getDefaultProperty(ProfileManager.ProfileKey.GENERAL_FONT_SIZE)));
 
-            int titleStyle = ProfileManager.intFontStyle(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLEFONTSTYLE));
-            titleBoldToggle.setSelected((titleStyle&Font.BOLD)!=0);
-            titleItalicToggle.setSelected((titleStyle&Font.ITALIC)!=0);
-            int lyricsStyle = ProfileManager.intFontStyle(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICSFONTSTYLE));
-            lyricsBoldToggle.setSelected((lyricsStyle&Font.BOLD)!=0);
-            lyricsItalicToggle.setSelected((lyricsStyle&Font.ITALIC)!=0);
+            int titleStyle = ProfileManager.intFontStyle(pm.getDefaultProperty(ProfileManager.ProfileKey.TITLE_FONT_STYLE));
+            titleBoldToggle.setSelected((titleStyle & Font.BOLD) != 0);
+            titleItalicToggle.setSelected((titleStyle & Font.ITALIC) != 0);
+            int lyricsStyle = ProfileManager.intFontStyle(pm.getDefaultProperty(ProfileManager.ProfileKey.LYRICS_FONT_STYLE));
+            lyricsBoldToggle.setSelected((lyricsStyle & Font.BOLD) != 0);
+            lyricsItalicToggle.setSelected((lyricsStyle & Font.ITALIC) != 0);
         }
     }
 
     private class SetAsDefaultProfileAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            mainFrame.getProfileManager().setDefaultProfile((String)profileCombo.getSelectedItem());
+            mainFrame.getProfileManager().setDefaultProfile((String) profileCombo.getSelectedItem());
             setAsDefaultButton.setEnabled(false);
         }
     }
 
-    private class NewProfileAction implements ActionListener{
+    private class NewProfileAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String name = JOptionPane.showInputDialog(dialogPanel, "Enter the name of the new profile:", mainFrame.PROGNAME, JOptionPane.QUESTION_MESSAGE);
-            if(name==null)return;
+            String name = JOptionPane.showInputDialog(dialogPanel, "Enter the name of the new profile:", mainFrame.PROG_NAME, JOptionPane.QUESTION_MESSAGE);
+
+            if (name == null) {
+                return;
+            }
+
             try {
                 mainFrame.getProfileManager().saveProfile(name);
                 profileCombo.addItem(name);
                 profileCombo.setSelectedItem(name);
-            } catch (IOException e1) {
-                JOptionPane.showMessageDialog(dialogPanel, "Could not create a new profile.", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
+            }
+            catch (IOException e1) {
+                JOptionPane.showMessageDialog(dialogPanel, "Could not create a new profile.", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
                 logger.error("Profile creating", e1);
             }
         }
@@ -523,40 +589,62 @@ public class CompositionSettingsDialog extends MyDialog{
 
     private class DeleteProfileAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if(profileCombo.getItemCount()<=1){
-                JOptionPane.showMessageDialog(dialogPanel, "You cannot delete the last profile", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
+            if (profileCombo.getItemCount() <= 1) {
+                JOptionPane.showMessageDialog(dialogPanel, "You cannot delete the last profile", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int answer = JOptionPane.showConfirmDialog(dialogPanel, "Are you sure to delete the selected profile?", mainFrame.PROGNAME, JOptionPane.YES_NO_OPTION);
-            if(answer==JOptionPane.YES_OPTION){
-                String selected = (String)profileCombo.getSelectedItem();
-                if(new File(ProfileManager.DEFAULTDIR, selected).delete()){
+
+            int answer = JOptionPane.showConfirmDialog(dialogPanel, "Are you sure to delete the selected profile?", mainFrame.PROG_NAME, JOptionPane.YES_NO_OPTION);
+
+            if (answer == JOptionPane.YES_OPTION) {
+                String selected = (String) profileCombo.getSelectedItem();
+
+                if (new File(ProfileManager.DEFAULT_DIR, selected).delete()) {
                     profileCombo.removeItem(selected);
-                    if(selected.equals(mainFrame.getProfileManager().getDefaultProfileName())){
+
+                    if (selected.equals(mainFrame.getProfileManager().getDefaultProfileName())) {
                         setAsDefaultButton.doClick();
                     }
-                }else{
-                    JOptionPane.showMessageDialog(dialogPanel, "Could not delete the profile", mainFrame.PROGNAME, JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(dialogPanel, "Could not delete the profile", mainFrame.PROG_NAME, JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
 
-    private class ProfileComboAction implements ActionListener{
+    private class ProfileComboAction implements ActionListener {
         StringBuilder sb = new StringBuilder(200);
 
+        private String splitKey(String key) {
+            String split = "";
+
+            for (int i = 0; i < key.length(); ++i) {
+                Character c = key.charAt(i);
+
+                if (i > 0 && Character.isUpperCase(c))
+                    split += " " + Character.toLowerCase(c);
+                else
+                    split += c;
+            }
+
+            return split;
+        }
+
         public void actionPerformed(ActionEvent e) {
-            String selected = (String)profileCombo.getSelectedItem();
+            String selected = (String) profileCombo.getSelectedItem();
             Properties props = mainFrame.getProfileManager().getProfile(selected);
             sb.delete(0, sb.length());
             sb.append("<html><table border=0>");
-            for(ProfileManager.ProfileKey pk : ProfileManager.ProfileKey.values()){
+
+            for (ProfileManager.ProfileKey pk : ProfileManager.ProfileKey.values()) {
                 sb.append("<tr><td>");
-                sb.append(pk.getKey());
+                sb.append(splitKey(pk.getKey()));
                 sb.append(":</td><td>");
                 sb.append(props.getProperty(pk.getKey()));
                 sb.append("</td></tr>");
             }
+
             sb.append("</table></html>");
             profileInfoLabel.setText(sb.toString());
             setAsDefaultButton.setEnabled(!selected.equals(mainFrame.getProfileManager().getDefaultProfileName()));

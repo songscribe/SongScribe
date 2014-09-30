@@ -1,23 +1,23 @@
 /*
-Music of The Supreme song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Nov 2, 2007
+    Created on Nov 2, 2007
 */
 package songscribe.ui;
 
@@ -36,7 +36,7 @@ import java.util.Enumeration;
 /**
  * @author Csaba Kávai
  */
-public class BeatChangeDialog extends MyDialog{
+public class BeatChangeDialog extends MyDialog {
     private Note selectedNote;
     private JButton removeButton;
     private ButtonGroup bg;
@@ -47,7 +47,8 @@ public class BeatChangeDialog extends MyDialog{
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         center.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         bg = new ButtonGroup();
-        for(BeatChange bc:BeatChange.values()){
+
+        for (BeatChange bc : BeatChange.values()) {
             final JRadioButton rb = new JRadioButton();
             rb.setActionCommand(bc.name());
             bg.add(rb);
@@ -58,19 +59,28 @@ public class BeatChangeDialog extends MyDialog{
                 public void mouseClicked(MouseEvent e) {
                     bg.setSelected(rb.getModel(), true);
                 }
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
+
+                public void mousePressed(MouseEvent e) {
+                }
+
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                public void mouseExited(MouseEvent e) {
+                }
             });
             panel.add(component);
             center.add(panel);
         }
+
         dialogPanel.add(center);
 
         //----------------------south------------------------
         JPanel south = new JPanel();
-        removeButton = new JButton("Remove", REMOVEICON);
+        removeButton = new JButton("Remove", REMOVE_ICON);
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MusicSheet ms = BeatChangeDialog.this.mainFrame.getMusicSheet();
@@ -92,33 +102,40 @@ public class BeatChangeDialog extends MyDialog{
         MusicSheet ms = mainFrame.getMusicSheet();
         selectedNote = ms.getSingleSelectedNote();
         BeatChange bc = selectedNote.getBeatChange();
-        boolean bcnull = bc==null;
-        if(!bcnull){
-            for(Enumeration<AbstractButton> e = bg.getElements();e.hasMoreElements();){
+        boolean bcnull = bc == null;
+
+        if (!bcnull) {
+            for (Enumeration<AbstractButton> e = bg.getElements(); e.hasMoreElements(); ) {
                 AbstractButton ab = e.nextElement();
-                if(ab.getActionCommand().equals(bc.name()))bg.setSelected(ab.getModel(), true);
+
+                if (ab.getActionCommand().equals(bc.name())) {
+                    bg.setSelected(ab.getModel(), true);
+                }
             }
         }
 
         removeButton.setEnabled(!bcnull);
-        if(bcnull){
+
+        if (bcnull) {
             okButton.setText("Add");
             applyButton.setText("Apply addition");
-        }else{
+        }
+        else {
             okButton.setText("Modify");
             applyButton.setText("Apply modification");
         }
     }
 
     protected void setData() {
-        if(bg.getSelection()==null){
+        if (bg.getSelection() == null) {
             mainFrame.showErrorMessage("You must select one of the beat change type!");
             return;
         }
+
         selectedNote.setBeatChange(BeatChange.valueOf(bg.getSelection().getActionCommand()));
     }
 
-    private JComponent getBeatChangeComponent(final BeatChange beatChange){
+    private JComponent getBeatChangeComponent(final BeatChange beatChange) {
         return new JComponent() {
             Dimension size = new Dimension(50, 30);
 
@@ -131,7 +148,7 @@ public class BeatChangeDialog extends MyDialog{
             }
 
             protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D)g;
+                Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 mainFrame.getMusicSheet().getBestDrawer().drawBeatChange(g2, beatChange, 2, 27);

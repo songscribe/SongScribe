@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on 2005.10.08.
+    Created on 2005.10.08.
 */
 package songscribe.music;
 
@@ -25,41 +25,12 @@ package songscribe.music;
  * @author Csaba Kávai
  */
 public class Tempo {
-    public static enum Type{
-        SEMIBREVE(new Semibreve()),
-        MINIMDOTTED(new Minim()),
-        MINIM(new Minim()),
-        CROTCHETDOTTED(new Crotchet()),
-        CROTCHET(new Crotchet()),
-        QUAVERDOTTED(new Quaver()),
-        QUAVER(new Quaver());
-
-        static{
-            MINIMDOTTED.getNote().setDotted(1);
-            MINIMDOTTED.getNote().setYPos(1);//beacuse of the dot to be in the right place
-            CROTCHETDOTTED.getNote().setDotted(1);
-            CROTCHETDOTTED.getNote().setYPos(1);//beacuse of the dot to be in the right place
-            QUAVERDOTTED.getNote().setDotted(1);
-            QUAVERDOTTED.getNote().setYPos(1);//beacuse of the dot to be in the right place
-        }
-
-        private Note note;
-
-        private Type(Note note) {
-            this.note = note;
-        }
-
-        public Note getNote() {
-            return note;
-        }
-    }
-
     private int visibleTempo;
     private Type tempoType;
     private String tempoDescription;
     private boolean showTempo;
 
-    public Tempo(){
+    public Tempo() {
         this(120, Type.CROTCHET, "Moderate", true);
     }
 
@@ -95,7 +66,7 @@ public class Tempo {
     }
 
     public int getRealTempo() {
-        return visibleTempo*tempoType.getNote().getDuration()/Composition.PPQ;
+        return visibleTempo * tempoType.getNote().getDuration() / Composition.PPQ;
     }
 
     public boolean isShowTempo() {
@@ -104,5 +75,44 @@ public class Tempo {
 
     public void setShowTempo(boolean showTempo) {
         this.showTempo = showTempo;
+    }
+
+    public static enum Type {
+        SEMI_BREVE(new Semibreve()),
+        MINIM_DOTTED(new Minim()),
+        MINIM(new Minim()),
+        CROTCHET_DOTTED(new Crotchet()),
+        CROTCHET(new Crotchet()),
+        QUAVER_DOTTED(new Quaver()),
+        QUAVER(new Quaver()),
+
+        // IO values
+        SEMIBREVE(Type.SEMI_BREVE),
+        MINIMDOTTED(Type.MINIM_DOTTED),
+        CROTCHETDOTTED(Type.CROTCHET_DOTTED),
+        QUAVERDOTTED(Type.QUAVER_DOTTED);
+
+        private Note note;
+
+        static {
+            MINIM_DOTTED.getNote().setDotted(1);
+            MINIM_DOTTED.getNote().setYPos(1);
+            CROTCHET_DOTTED.getNote().setDotted(1);
+            CROTCHET_DOTTED.getNote().setYPos(1);
+            QUAVER_DOTTED.getNote().setDotted(1);
+            QUAVER_DOTTED.getNote().setYPos(1);
+        }
+
+        private Type(Note note) {
+            this.note = note;
+        }
+
+        private Type(Tempo.Type type) {
+            this.note = type.note;
+        }
+
+        public Note getNote() {
+            return note;
+        }
     }
 }

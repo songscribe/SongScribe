@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jul 23, 2005
+    Created on Jul 23, 2005
 */
 package songscribe;
 
@@ -40,8 +40,6 @@ public class MidiLister {
     static JButton listButton = new JButton("Listáz");
     static JTextArea listArea = new JTextArea(30, 80);
     static File previousFile = new File(".");
-
-    static Sequencer sequencer;
 
     public static void main(String[] args) {
         JPanel north = new JPanel();
@@ -69,7 +67,7 @@ public class MidiLister {
                 //JFileChooser jfc = new JFileChooser(previousFile.isDirectory() ? previousFile : previousFile.getParentFile());
                 JFileChooser jfc = new JFileChooser(previousFile);
                 jfc.showOpenDialog(frame);
-                if(jfc.getSelectedFile()!=null){
+                if (jfc.getSelectedFile() != null) {
                     previousFile = jfc.getSelectedFile();
                     inputFileField.setText(previousFile.getAbsolutePath());
                 }
@@ -85,35 +83,44 @@ public class MidiLister {
         }*/
     }
 
-    private static void list(){
+    private static void list() {
         Sequence seq = null;
+
         try {
             seq = MidiSystem.getSequence(new FileInputStream(inputFileField.getText()));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error opening the file");
             return;
-        } catch (InvalidMidiDataException e) {
+        }
+        catch (InvalidMidiDataException e) {
             JOptionPane.showMessageDialog(frame, "A MIDI file format error");
             return;
         }
-        listArea.append("File name: "+inputFileField.getText()+"\n");
-        listArea.append("Tick length: "+seq.getTickLength()+"\n");
+
+        listArea.append("File name: " + inputFileField.getText() + "\n");
+        listArea.append("Tick length: " + seq.getTickLength() + "\n");
         Track[] tracks = seq.getTracks();
-        listArea.append("Number of tracks: "+tracks.length+"\n");
-        for(int t=0;t<tracks.length;t++){
+        listArea.append("Number of tracks: " + tracks.length + "\n");
+
+        for (int t = 0; t < tracks.length; t++) {
             Track activeTrack = tracks[t];
-            listArea.append("Track "+Integer.toString(t)+"\n");
-            for(int e=0;e<activeTrack.size();e++){
+            listArea.append("Track " + Integer.toString(t) + "\n");
+
+            for (int e = 0; e < activeTrack.size(); e++) {
                 MidiEvent activeEvent = activeTrack.get(e);
                 MidiMessage activeMessage = activeEvent.getMessage();
                 listArea.append("Data: ");
                 byte[] message = activeMessage.getMessage();
-                for(int d=0;d<message.length;d++){
-                    listArea.append(Integer.toHexString(message[d] & 0xFF)+" ");
+
+                for (byte b : message) {
+                    listArea.append(Integer.toHexString(b & 0xFF) + " ");
                 }
-                listArea.append("   Tick: "+activeEvent.getTick()+"\n");
+
+                listArea.append("   Tick: " + activeEvent.getTick() + "\n");
             }
         }
+
         listArea.append("\n");
     }
 }

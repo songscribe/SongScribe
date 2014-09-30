@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Oct 1, 2006
+    Created on Oct 1, 2006
 */
 package songscribe.music;
 
@@ -28,9 +28,9 @@ import java.awt.*;
 /**
  * @author Csaba Kávai
  */
-public class DoubleBarLine extends NotNote{
+public class DoubleBarLine extends NotNote {
     public static final Image IMAGE = MainFrame.getImage("doublebarline.gif");
-    public static final Rectangle REALNOTERECT = new Rectangle(12, 12, 6, 32);
+    public static final Rectangle REAL_NOTE_RECT = new Rectangle(12, 12, 6, 32);
 
     public DoubleBarLine() {
         super();
@@ -53,14 +53,14 @@ public class DoubleBarLine extends NotNote{
     }
 
     public NoteType getNoteType() {
-        return NoteType.DOUBLEBARLINE;
+        return NoteType.DOUBLE_BARLINE;
     }
 
     public Rectangle getRealUpNoteRect() {
-        return REALNOTERECT;
+        return REAL_NOTE_RECT;
     }
 
     public Rectangle getRealDownNoteRect() {
-        return REALNOTERECT;
+        return REAL_NOTE_RECT;
     }
 }

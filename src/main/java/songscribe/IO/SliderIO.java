@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Feb 19, 2006
+    Created on Feb 19, 2006
 */
 package songscribe.IO;
 
@@ -38,31 +38,38 @@ import java.util.ListIterator;
  * @author Csaba Kávai
  */
 public class SliderIO {
-    public static final int IOMAJORVERSION = 1;
-    public static final int IOMINORVERSION = 0;
+    public static final int IO_MAJOR_VERSION = 1;
+    public static final int IO_MINOR_VERSION = 0;
 
-    private static final String XMLSLIDER = "slider";
-    private static final String XMLVERSION = "version";
-    private static final String XMLSONGS = "songs";
-    private static final String XMLSONG = "song";
-    private static final String XMLRELATIVEFILE = "relativefile";
-    private static final String XMLABSOLUTEFILE = "absolutefile";
+    private static final String XML_SLIDER = "slider";
+    private static final String XML_VERSION = "version";
+    private static final String XML_SONGS = "songs";
+    private static final String XML_SONG = "song";
+    private static final String XML_RELATIVE_FILE = "relativefile";
+    private static final String XML_ABSOLUTE_FILE = "absolutefile";
 
     public static void writeSlider(ListIterator<File> songs, File file) throws IOException {
         PrintWriter pw = new PrintWriter(file, "UTF-8");
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        pw.println("<"+ XMLSLIDER +" "+ XMLVERSION +"=\""+IOMAJORVERSION+"."+IOMINORVERSION+"\">");
-        XML.indent = 2;XML.writeBeginTag(pw, XMLSONGS);
-        while(songs.hasNext()) {
-            XML.indent = 4;XML.writeBeginTag(pw, XMLSONG);
+        pw.println("<" + XML_SLIDER + " " + XML_VERSION + "=\"" + IO_MAJOR_VERSION + "." + IO_MINOR_VERSION + "\">");
+        XML.indent = 2;
+        XML.writeBeginTag(pw, XML_SONGS);
+
+        while (songs.hasNext()) {
+            XML.indent = 4;
+            XML.writeBeginTag(pw, XML_SONG);
             XML.indent = 6;
             File songFile = songs.next();
-            XML.writeValue(pw, XMLRELATIVEFILE, RelativePath.getRelativePath(file.getParentFile(), songFile));
-            XML.writeValue(pw, XMLABSOLUTEFILE, songFile.getAbsolutePath());
-            XML.indent = 4;XML.writeEndTag(pw, XMLSONG);
+            XML.writeValue(pw, XML_RELATIVE_FILE, RelativePath.getRelativePath(file.getParentFile(), songFile));
+            XML.writeValue(pw, XML_ABSOLUTE_FILE, songFile.getAbsolutePath());
+            XML.indent = 4;
+            XML.writeEndTag(pw, XML_SONG);
         }
-        XML.indent = 2;XML.writeEndTag(pw, XMLSONGS);
-        XML.indent = 0;XML.writeEndTag(pw, XMLSLIDER);
+
+        XML.indent = 2;
+        XML.writeEndTag(pw, XML_SONGS);
+        XML.indent = 0;
+        XML.writeEndTag(pw, XML_SLIDER);
         pw.close();
     }
 
@@ -84,22 +91,26 @@ public class SliderIO {
         }
 
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-            if(qName.equals(XMLSLIDER)){
-                try{
-                    String version = attributes.getValue(XMLVERSION);
+            if (qName.equals(XML_SLIDER)) {
+                try {
+                    String version = attributes.getValue(XML_VERSION);
                     int dotIndex = version.indexOf('.');
-                    majorVersion = Integer.parseInt(version.substring(0,dotIndex));
-                    minorVersion = Integer.parseInt(version.substring(dotIndex+1));
-                }catch(NumberFormatException e){
+                    majorVersion = Integer.parseInt(version.substring(0, dotIndex));
+                    minorVersion = Integer.parseInt(version.substring(dotIndex + 1));
+                }
+                catch (NumberFormatException e) {
                     throw new SAXException("SongScribe version is not a number.", e);
                 }
-            }else{
-                if(majorVersion==1 && minorVersion==0){
+            }
+            else {
+                if (majorVersion == 1 && minorVersion == 0) {
                     startElement10(qName);
-                }else{
+                }
+                else {
                     throw new SAXException("Unsupported version number.");
                 }
             }
+
             value.delete(0, value.length());
         }
 
@@ -108,46 +119,60 @@ public class SliderIO {
         }
 
         public void endElement(String uri, String localName, String qName) throws SAXException {
-            if(majorVersion==1 && minorVersion==0){
+            if (majorVersion == 1 && minorVersion == 0) {
                 endElement10(qName);
             }
+
             value.delete(0, value.length());
             lastTag = null;
         }
 
-        public void endElement10(String qName){
-            if(qName.equals(XMLSONG)) {
-                if(absoluteFile==null)absoluteFile = new File("");
-                if(relativeFile==null)relativeFile = new File("");
+        public void endElement10(String qName) {
+            if (qName.equals(XML_SONG)) {
+                if (absoluteFile == null) {
+                    absoluteFile = new File("");
+                }
+
+                if (relativeFile == null) {
+                    relativeFile = new File("");
+                }
+
                 File songFile = getAnyFile();
-                if(songFile!=null){
+
+                if (songFile != null) {
                     files.add(songFile);
                 }
+
                 absoluteFile = relativeFile = null;
-            }else if(qName.equals(lastTag)){
+            }
+            else if (qName.equals(lastTag)) {
                 String str = value.toString();
-                if(lastTag.equals(XMLRELATIVEFILE)){
+
+                if (lastTag.equals(XML_RELATIVE_FILE)) {
                     relativeFile = new File(readFile.getParentFile(), str);
-                }else if(lastTag.equals(XMLABSOLUTEFILE)){
+                }
+                else if (lastTag.equals(XML_ABSOLUTE_FILE)) {
                     absoluteFile = new File(str);
                 }
             }
         }
 
         public void characters(char ch[], int start, int length) throws SAXException {
-            if(lastTag!=null){
+            if (lastTag != null) {
                 value.append(ch, start, length);
             }
         }
 
-        private File getAnyFile(){
-            if(!absoluteFile.exists() && !relativeFile.exists()){
-                JOptionPane.showMessageDialog(slideFrame, absoluteFile.getAbsolutePath()+" could not be found");
+        private File getAnyFile() {
+            if (!absoluteFile.exists() && !relativeFile.exists()) {
+                JOptionPane.showMessageDialog(slideFrame, absoluteFile.getAbsolutePath() + " could not be found");
                 //todo the ability to found
                 return null;
-            }else if(absoluteFile.exists()){
+            }
+            else if (absoluteFile.exists()) {
                 return absoluteFile;
-            }else{
+            }
+            else {
                 return relativeFile;
             }
         }

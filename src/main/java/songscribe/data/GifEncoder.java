@@ -36,21 +36,20 @@ public class GifEncoder {
      * @throws AWTException If memory is exhausted or image contains
      *                      more than 256 colors.
      */
-    public GifEncoder(Image image)
-            throws AWTException {
+    public GifEncoder(Image image) throws AWTException {
         imageWidth_ = (short) image.getWidth(null);
         imageHeight_ = (short) image.getHeight(null);
 
         int values[] = new int[imageWidth_ * imageHeight_];
-        PixelGrabber grabber = new PixelGrabber(image, 0, 0,
-                imageWidth_, imageHeight_,
-                values, 0, imageWidth_);
+        PixelGrabber grabber = new PixelGrabber(image, 0, 0, imageWidth_, imageHeight_, values, 0, imageWidth_);
 
         try {
-            if (grabber.grabPixels() != true)
+            if (!grabber.grabPixels()) {
                 throw new AWTException("Grabber returned false: " + grabber.status());
+            }
         }
         catch (InterruptedException exception) {
+            // pass
         }
 
         byte[][] r = new byte[imageWidth_][imageHeight_];
@@ -63,7 +62,7 @@ public class GifEncoder {
             for (int x = 0; x < imageWidth_; x++, index++) {
                 r[x][y] = (byte) ((values[index] >> 16) & 0xFF);
                 g[x][y] = (byte) ((values[index] >> 8) & 0xFF);
-                b[x][y] = (byte) ((values[index] >> 0) & 0xFF);
+                b[x][y] = (byte) (values[index] & 0xFF);
             }
         }
 
@@ -81,8 +80,7 @@ public class GifEncoder {
      * @throws AWTException If memory is exhausted or image contains
      *                      more than 256 colors.
      */
-    public GifEncoder(byte[][] r, byte[][] g, byte[][] b)
-            throws AWTException {
+    public GifEncoder(byte[][] r, byte[][] g, byte[][] b) throws AWTException {
         imageWidth_ = (short) (r.length);
         imageHeight_ = (short) (r[0].length);
 
@@ -96,8 +94,7 @@ public class GifEncoder {
      * @param image Image to write.
      * @param file  File to erite to.
      */
-    public static void writeFile(Image image, File file)
-            throws AWTException, IOException {
+    public static void writeFile(Image image, File file) throws AWTException, IOException {
         GifEncoder gifEncoder = new GifEncoder(image);
         gifEncoder.write(new FileOutputStream(file));
     }
@@ -109,10 +106,8 @@ public class GifEncoder {
      * @param component Component to write.
      * @param file      File to erite to.
      */
-    public static void writeFile(Component component, File file)
-            throws AWTException, IOException {
-        Image image = component.createImage(component.getWidth(),
-                component.getHeight());
+    public static void writeFile(Component component, File file) throws AWTException, IOException {
+        Image image = component.createImage(component.getWidth(), component.getHeight());
         Graphics graphics = image.getGraphics();
         component.printAll(graphics);
 
@@ -128,8 +123,7 @@ public class GifEncoder {
      * @param stream The stream to which to output.
      * @throws IOException Thrown if a write operation fails.
      */
-    public void write(OutputStream stream)
-            throws IOException {
+    public void write(OutputStream stream) throws IOException {
         writeString(stream, "GIF87a");
         writeScreenDescriptor(stream);
 
@@ -138,7 +132,10 @@ public class GifEncoder {
         writeImageDescriptor(stream, imageWidth_, imageHeight_, ',');
 
         byte codeSize = bitsNeeded(nColors_);
-        if (codeSize == 1) codeSize++;
+
+        if (codeSize == 1) {
+            codeSize++;
+        }
 
         stream.write(codeSize);
 
@@ -160,39 +157,40 @@ public class GifEncoder {
      * @param b Blue array of pixels.
      * @throws AWTException Thrown if too many different colours in image.
      */
-    private void toIndexColor(byte[][] r, byte[][] g, byte[][] b)
-            throws AWTException {
+    private void toIndexColor(byte[][] r, byte[][] g, byte[][] b) throws AWTException {
         pixels_ = new byte[imageWidth_ * imageHeight_];
         colors_ = new byte[256 * 3];
-        int colornum = 0;
+        int colorNum = 0;
 
         for (int x = 0; x < imageWidth_; x++) {
             for (int y = 0; y < imageHeight_; y++) {
                 int search;
-                for (search = 0; search < colornum; search++) {
-                    if (colors_[search * 3 + 0] == r[x][y] &&
-                            colors_[search * 3 + 1] == g[x][y] &&
-                            colors_[search * 3 + 2] == b[x][y]) {
+
+                for (search = 0; search < colorNum; search++) {
+                    if (colors_[search * 3    ] == r[x][y] &&
+                        colors_[search * 3 + 1] == g[x][y] &&
+                        colors_[search * 3 + 2] == b[x][y]) {
                         break;
                     }
                 }
 
-                if (search > 255)
+                if (search > 255) {
                     throw new AWTException("Too many colors.");
+                }
 
                 // Row major order y=row x=col
                 pixels_[y * imageWidth_ + x] = (byte) search;
 
-                if (search == colornum) {
-                    colors_[search * 3 + 0] = r[x][y]; // [col][row]
+                if (search == colorNum) {
+                    colors_[search * 3    ] = r[x][y]; // [col][row]
                     colors_[search * 3 + 1] = g[x][y];
                     colors_[search * 3 + 2] = b[x][y];
-                    colornum++;
+                    colorNum++;
                 }
             }
         }
 
-        nColors_ = 1 << bitsNeeded(colornum);
+        nColors_ = 1 << bitsNeeded(colorNum);
         byte copy[] = new byte[nColors_ * 3];
         System.arraycopy(colors_, 0, copy, 0, nColors_ * 3);
 
@@ -201,32 +199,34 @@ public class GifEncoder {
 
 
     private byte bitsNeeded(int n) {
-        if (n-- == 0) return 0;
+        if (n-- == 0) {
+            return 0;
+        }
 
         byte nBitsNeeded = 1;
-        while ((n >>= 1) != 0)
+
+        while ((n >>= 1) != 0) {
             nBitsNeeded++;
+        }
 
         return nBitsNeeded;
     }
 
 
-    private void writeWord(OutputStream stream, short w)
-            throws IOException {
+    private void writeWord(OutputStream stream, short w) throws IOException {
         stream.write(w & 0xFF);
         stream.write((w >> 8) & 0xFF);
     }
 
 
-    private void writeString(OutputStream stream, String string)
-            throws IOException {
-        for (int i = 0; i < string.length(); i++)
+    private void writeString(OutputStream stream, String string) throws IOException {
+        for (int i = 0; i < string.length(); i++) {
             stream.write((byte) (string.charAt(i)));
+        }
     }
 
 
-    private void writeScreenDescriptor(OutputStream stream)
-            throws IOException {
+    private void writeScreenDescriptor(OutputStream stream) throws IOException {
         writeWord(stream, imageWidth_);
         writeWord(stream, imageHeight_);
 
@@ -257,9 +257,7 @@ public class GifEncoder {
     }
 
 
-    private void writeImageDescriptor(OutputStream stream,
-                                      short width, short height, char separator)
-            throws IOException {
+    private void writeImageDescriptor(OutputStream stream, short width, short height, char separator) throws IOException {
         stream.write(separator);
 
         short leftPosition = 0;
@@ -296,50 +294,49 @@ public class GifEncoder {
     }
 
 
-    private void writeLzwCompressed(OutputStream stream, int codeSize,
-                                    byte toCompress[])
-            throws IOException {
-        byte c;
+    private void writeLzwCompressed(OutputStream stream, int codeSize, byte toCompress[]) throws IOException {
         short index;
-        int clearcode, endofinfo, numbits, limit, errcode;
+        int clearCode, endofInfo, numBits, limit;
         short prefix = (short) 0xFFFF;
 
         BitFile bitFile = new BitFile(stream);
         LzwStringTable strings = new LzwStringTable();
 
-        clearcode = 1 << codeSize;
-        endofinfo = clearcode + 1;
+        clearCode = 1 << codeSize;
+        endofInfo = clearCode + 1;
 
-        numbits = codeSize + 1;
-        limit = (1 << numbits) - 1;
+        numBits = codeSize + 1;
+        limit = (1 << numBits) - 1;
 
         strings.clearTable(codeSize);
-        bitFile.writeBits(clearcode, numbits);
+        bitFile.writeBits(clearCode, numBits);
 
-        for (int loop = 0; loop < toCompress.length; loop++) {
-            c = toCompress[loop];
-            if ((index = strings.findCharString(prefix, c)) != -1)
+        for (byte c : toCompress) {
+            if ((index = strings.findCharString(prefix, c)) != -1) {
                 prefix = index;
+            }
             else {
-                bitFile.writeBits(prefix, numbits);
+                bitFile.writeBits(prefix, numBits);
+
                 if (strings.addCharString(prefix, c) > limit) {
-                    if (++numbits > 12) {
-                        bitFile.writeBits(clearcode, numbits - 1);
+                    if (++numBits > 12) {
+                        bitFile.writeBits(clearCode, numBits - 1);
                         strings.clearTable(codeSize);
-                        numbits = codeSize + 1;
+                        numBits = codeSize + 1;
                     }
 
-                    limit = (1 << numbits) - 1;
+                    limit = (1 << numBits) - 1;
                 }
 
                 prefix = (short) ((short) c & 0xFF);
             }
         }
 
-        if (prefix != -1)
-            bitFile.writeBits(prefix, numbits);
+        if (prefix != -1) {
+            bitFile.writeBits(prefix, numBits);
+        }
 
-        bitFile.writeBits(endofinfo, numbits);
+        bitFile.writeBits(endofInfo, numBits);
         bitFile.flush();
     }
 
@@ -369,55 +366,62 @@ public class GifEncoder {
             strHsh_ = new short[HASHSIZE];
         }
 
-
         int addCharString(short index, byte b) {
-            int hshidx;
-            if (nStrings_ >= MAXSTR)
+            int hashIndex;
+
+            if (nStrings_ >= MAXSTR) {
                 return 0xFFFF;
+            }
 
-            hshidx = hash(index, b);
-            while (strHsh_[hshidx] != HASH_FREE)
-                hshidx = (hshidx + HASHSTEP) % HASHSIZE;
+            hashIndex = hash(index, b);
 
-            strHsh_[hshidx] = nStrings_;
+            while (strHsh_[hashIndex] != HASH_FREE) {
+                hashIndex = (hashIndex + HASHSTEP) % HASHSIZE;
+            }
+
+            strHsh_[hashIndex] = nStrings_;
             strChr_[nStrings_] = b;
             strNxt_[nStrings_] = (index != HASH_FREE) ? index : NEXT_FIRST;
 
             return nStrings_++;
         }
 
-
         short findCharString(short index, byte b) {
-            int hshidx, nxtidx;
+            int hashIndex, nextIndex;
 
-            if (index == HASH_FREE)
+            if (index == HASH_FREE) {
                 return b;
+            }
 
-            hshidx = hash(index, b);
-            while ((nxtidx = strHsh_[hshidx]) != HASH_FREE) {
-                if (strNxt_[nxtidx] == index && strChr_[nxtidx] == b)
-                    return (short) nxtidx;
-                hshidx = (hshidx + HASHSTEP) % HASHSIZE;
+            hashIndex = hash(index, b);
+
+            while ((nextIndex = strHsh_[hashIndex]) != HASH_FREE) {
+                if (strNxt_[nextIndex] == index && strChr_[nextIndex] == b) {
+                    return (short) nextIndex;
+                }
+
+                hashIndex = (hashIndex + HASHSTEP) % HASHSIZE;
             }
 
             return (short) 0xFFFF;
         }
 
-
-        void clearTable(int codesize) {
+        void clearTable(int codeSize) {
             nStrings_ = 0;
 
-            for (int q = 0; q < HASHSIZE; q++)
+            for (int q = 0; q < HASHSIZE; q++) {
                 strHsh_[q] = HASH_FREE;
+            }
 
-            int w = (1 << codesize) + RES_CODES;
-            for (int q = 0; q < w; q++)
+            int w = (1 << codeSize) + RES_CODES;
+
+            for (int q = 0; q < w; q++) {
                 this.addCharString((short) 0xFFFF, (byte) q);
+            }
         }
 
-
         int hash(short index, byte lastbyte) {
-            return ((int) ((short) (lastbyte << 8) ^ index) & 0xFFFF) % HASHSIZE;
+            return (((short) (lastbyte << 8) ^ index) & 0xFFFF) % HASHSIZE;
         }
     }
 
@@ -427,7 +431,6 @@ public class GifEncoder {
         private byte[] buffer_;
         private int streamIndex_, bitsLeft_;
 
-
         BitFile(OutputStream stream) {
             stream_ = stream;
             buffer_ = new byte[256];
@@ -435,9 +438,7 @@ public class GifEncoder {
             bitsLeft_ = 8;
         }
 
-
-        void flush()
-                throws IOException {
+        void flush() throws IOException {
             int nBytes = streamIndex_ + ((bitsLeft_ == 8) ? 0 : 1);
 
             if (nBytes > 0) {
@@ -450,9 +451,7 @@ public class GifEncoder {
             }
         }
 
-
-        void writeBits(int bits, int nBits)
-                throws IOException {
+        void writeBits(int bits, int nBits) throws IOException {
             int nBitsWritten = 0;
             int nBytes = 255;
 
@@ -472,9 +471,9 @@ public class GifEncoder {
                     nBitsWritten += nBits;
                     bitsLeft_ -= nBits;
                     nBits = 0;
-                } else {
-                    buffer_[streamIndex_] |= (bits & ((1 << bitsLeft_) - 1)) <<
-                            (8 - bitsLeft_);
+                }
+                else {
+                    buffer_[streamIndex_] |= (bits & ((1 << bitsLeft_) - 1)) << (8 - bitsLeft_);
 
                     nBitsWritten += bitsLeft_;
                     bits >>= bitsLeft_;
@@ -483,7 +482,8 @@ public class GifEncoder {
                     bitsLeft_ = 8;
                 }
 
-            } while (nBits != 0);
+            }
+            while (nBits != 0);
         }
     }
 }

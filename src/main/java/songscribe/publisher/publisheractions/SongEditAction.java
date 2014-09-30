@@ -1,23 +1,23 @@
-/*  
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jul 21, 2007
+    Created on Jul 21, 2007
 */
 package songscribe.publisher.publisheractions;
 
@@ -44,24 +44,29 @@ public class SongEditAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if(editFrame==null){
+        if (editFrame == null) {
             editFrame = new HideMainFrame();
             editFrame.initFrame();
             editFrame.getJMenuBar().remove(0);
-            for(Component c:editFrame.getContentPane().getComponents()){
-                if(c instanceof JToolBar){
-                    JToolBar toolBar = (JToolBar)c;
-                    int separatorCount=0;
-                    while(separatorCount<2){
-                        separatorCount = toolBar.getComponentAtIndex(0) instanceof JToolBar.Separator ? separatorCount+1 : 0;
+
+            for (Component c : editFrame.getContentPane().getComponents()) {
+                if (c instanceof JToolBar) {
+                    JToolBar toolBar = (JToolBar) c;
+                    int separatorCount = 0;
+
+                    while (separatorCount < 2) {
+                        separatorCount = toolBar.getComponentAtIndex(0) instanceof JToolBar.Separator ?
+                                separatorCount + 1 : 0;
                         toolBar.remove(0);
                     }
+
                     toolBar.add(new JButton(editFrame.saveAndDoneAction), 0);
                     toolBar.add(new JToolBar.Separator(new Dimension(10, 0)), 1);
                     break;
                 }
             }
         }
+
         editFrame.setVisible(true);
         song = (Song) publisher.getBook().getSelectedComponent();
         editFrame.openMusicSheet(song.getSongFile(), true);
@@ -69,16 +74,19 @@ public class SongEditAction extends AbstractAction {
         editFrame.getSelectSelectionPanel().setActive();
     }
 
-    private class HideMainFrame extends MainFrame{
+    private class HideMainFrame extends MainFrame {
         SaveAndDoneAction saveAndDoneAction = new SaveAndDoneAction();
 
         public HideMainFrame() {
             exitAction = new HideAction();
         }
 
-        protected class HideAction extends ExitAction{
+        protected class HideAction extends ExitAction {
             public void actionPerformed(ActionEvent e) {
-                if(!showSaveDialog())return;
+                if (!showSaveDialog()) {
+                    return;
+                }
+
                 setVisible(false);
                 song.reload(publisher);
                 publisher.getBook().repaintWhole();

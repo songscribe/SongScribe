@@ -1,6 +1,6 @@
-/*  
+/*
 Music of The Supreme song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+Copyright (C) 2006 Csaba Kavai
 
 This file is part of SongScribe.
 

@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Aug 28, 2007
+    Created on Aug 28, 2007
 */
 package songscribe.publisher.publisheractions;
 
@@ -52,16 +52,6 @@ public class ExportPortableAction extends AbstractAction {
     private Publisher publisher;
 
     private HashMap<String, Integer> fileNames = new HashMap<String, Integer>();
-
-    private class OldFiles {
-        PageComponent pageComponent;
-        File oldFile;
-
-        public OldFiles(PageComponent pageComponent, File oldFile) {
-            this.pageComponent = pageComponent;
-            this.oldFile = oldFile;
-        }
-    }
     private ArrayList<OldFiles> oldFiles = new ArrayList<OldFiles>();
     private byte[] buf = new byte[1024];
 
@@ -74,57 +64,73 @@ public class ExportPortableAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if(publisher.isBookNull())return;
-        if(pfd.showDialog()){
+        if (publisher.isBookNull()) {
+            return;
+        }
+
+        if (pfd.showDialog()) {
             File saveFile = pfd.getFile();
             File saveParent = saveFile.getParentFile();
-            if(!saveFile.getName().toLowerCase().endsWith(FileExtensions.SBPORTABLE)){
-                saveFile = new File(saveFile.getAbsolutePath()+ FileExtensions.SBPORTABLE);
+
+            if (!saveFile.getName().toLowerCase().endsWith(FileExtensions.SBPORTABLE)) {
+                saveFile = new File(saveFile.getAbsolutePath() + FileExtensions.SBPORTABLE);
             }
-            if(saveFile.exists()){
-                int answ = JOptionPane.showConfirmDialog(publisher, "The file "+saveFile.getName()+" already exists. Do you want to overwrite it?",
-                        publisher.PROGNAME, JOptionPane.YES_NO_OPTION);
-                if(answ==JOptionPane.NO_OPTION){
+
+            if (saveFile.exists()) {
+                int answ = JOptionPane.showConfirmDialog(publisher, "The file " + saveFile.getName() +
+                                                                    " already exists. Do you want to overwrite it?", publisher.PROG_NAME, JOptionPane.YES_NO_OPTION);
+                if (answ == JOptionPane.NO_OPTION) {
                     return;
                 }
             }
+
             try {
                 fileNames.clear();
                 oldFiles.clear();
                 ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(saveFile));
-                for(ListIterator<Page> pages = publisher.getBook().pageIterator();pages.hasNext();){
-                    for(ListIterator<PageComponent> comps = pages.next().getPageComponentIterator();comps.hasNext();){
+
+                for (ListIterator<Page> pages = publisher.getBook().pageIterator(); pages.hasNext(); ) {
+                    for (ListIterator<PageComponent> comps = pages.next().getPageComponentIterator();
+                         comps.hasNext(); ) {
                         PageComponent c = comps.next();
-                        if(c instanceof Song){
-                            File oldFile = ((Song)c).getSongFile();
+
+                        if (c instanceof Song) {
+                            File oldFile = ((Song) c).getSongFile();
                             oldFiles.add(new OldFiles(c, oldFile));
                             String newFile = zipFile(zos, oldFile, null);
-                            ((Song)c).setSongFile(new File(saveParent, newFile));
-                        }else if(c instanceof PImage){
-                            File oldFile = ((PImage)c).getImageFile();
+                            ((Song) c).setSongFile(new File(saveParent, newFile));
+                        }
+                        else if (c instanceof PImage) {
+                            File oldFile = ((PImage) c).getImageFile();
                             oldFiles.add(new OldFiles(c, oldFile));
                             String newFile = zipFile(zos, oldFile, null);
-                            ((PImage)c).setImageFile(new File(saveParent, newFile));
+                            ((PImage) c).setImageFile(new File(saveParent, newFile));
                         }
                     }
                 }
+
                 File bookFile = File.createTempFile("exp_port", FileExtensions.SONGBOOK.substring(1), saveParent);
                 BookIO.writeBook(publisher.getBook(), bookFile, false);
                 String saveName = saveFile.getName();
-                zipFile(zos, bookFile, saveName.substring(0, saveName.lastIndexOf('.'))+ FileExtensions.SONGBOOK);
+                zipFile(zos, bookFile, saveName.substring(0, saveName.lastIndexOf('.')) + FileExtensions.SONGBOOK);
                 bookFile.delete();
                 zos.close();
 
-                //restoring the old filenames
-                for(OldFiles of:oldFiles){
-                    if(of.pageComponent instanceof Song){
-                        ((Song)of.pageComponent).setSongFile(of.oldFile);
-                    }else if(of.pageComponent instanceof PImage){
-                        ((PImage)of.pageComponent).setImageFile(of.oldFile);
-                    }else throw new IOException("Unexpected pagecomponent. Programming error!");
+                // restore the old file names
+                for (OldFiles of : oldFiles) {
+                    if (of.pageComponent instanceof Song) {
+                        ((Song) of.pageComponent).setSongFile(of.oldFile);
+                    }
+                    else if (of.pageComponent instanceof PImage) {
+                        ((PImage) of.pageComponent).setImageFile(of.oldFile);
+                    }
+                    else {
+                        throw new IOException("Unexpected pagecomponent. Programming error!");
+                    }
                 }
-            } catch (IOException e1) {
-                publisher.showErrorMessage(Publisher.COULDNOTSAVEMESSAGE);
+            }
+            catch (IOException e1) {
+                publisher.showErrorMessage(Publisher.COULD_NOT_SAVE_MESSAGE);
                 logger.error("Exporting portable", e1);
             }
         }
@@ -133,14 +139,27 @@ public class ExportPortableAction extends AbstractAction {
     private String zipFile(ZipOutputStream zos, File file, String requestName) throws IOException {
         String fileName = requestName == null ? file.getName() : requestName;
         Integer value = fileNames.get(fileName);
-        if(value==null){
+
+        if (value == null) {
             fileNames.put(fileName, 1);
-        }else{
-            fileNames.put(fileName, value+1);
-            int lastdotIndex = fileName.lastIndexOf('.');
-            fileName = fileName.substring(0, lastdotIndex)+"_"+value.toString()+fileName.substring(lastdotIndex);
         }
+        else {
+            fileNames.put(fileName, value + 1);
+            int lastdotIndex = fileName.lastIndexOf('.');
+            fileName = fileName.substring(0, lastdotIndex) + "_" + value.toString() + fileName.substring(lastdotIndex);
+        }
+
         Utilities.zipFile(zos, file, fileName, buf);
         return fileName;
+    }
+
+    private class OldFiles {
+        PageComponent pageComponent;
+        File oldFile;
+
+        public OldFiles(PageComponent pageComponent, File oldFile) {
+            this.pageComponent = pageComponent;
+            this.oldFile = oldFile;
+        }
     }
 }

@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on May 12, 2007
+    Created on May 12, 2007
 */
 package songscribe.publisher.IO;
 
@@ -40,30 +40,30 @@ import java.util.ListIterator;
  * @author Csaba Kávai
  */
 public class BookIO {
-    public static final int IOMAJORVERSION = 1;
-    public static final int IOMINORVERSION = 0;
+    public static final int IO_MAJOR_VERSION = 1;
+    public static final int IO_MINOR_VERSION = 0;
 
-    private static final String XMLPUBLISHER = "publisher";
-    private static final String XMLVERSION = "version";
-    private static final String XMLBOOKATTRIBUTES = "bookattributes";
-    private static final String XMLPAGEWIDTH = "pagewidth";
-    private static final String XMLPAGEHEIGHT = "pageheight";
-    private static final String XMLLEFTINNERMARGIN = "leftinnermargin";
-    private static final String XMLRIGHTOUTERMARGIN = "rightoutermargin";
-    private static final String XMLTOPMARGIN = "topmargin";
-    private static final String XMLBOTTOMMARGIN = "bottommargin";
-    private static final String XMLMIRROREDMARGIN = "mirroredmargin";
-    private static final String XMLPAGE = "page";
+    private static final String XML_PUBLISHER = "publisher";
+    private static final String XML_VERSION = "version";
+    private static final String XML_BOOK_ATTRIBUTES = "bookattributes";
+    private static final String XML_PAGE_WIDTH = "pagewidth";
+    private static final String XML_PAGE_HEIGHT = "pageheight";
+    private static final String XML_LEFT_INNER_MARGIN = "leftinnermargin";
+    private static final String XML_RIGHT_OUTER_MARGIN = "rightoutermargin";
+    private static final String XML_TOP_MARGIN = "topmargin";
+    private static final String XML_BOTTOM_MARGIN = "bottommargin";
+    private static final String XML_MIRRORED_MARGIN = "mirroredmargin";
+    private static final String XML_PAGE = "page";
 
-    //pagenumber properties
-    private static final String XMLPAGENUMBER = "pagenumber";
-    private static final String XMLFONTNAME = "fontname";
-    private static final String XMLFONTSTYLE = "fontstyle";
-    private static final String XMLFONTSIZE = "fontsize";
-    private static final String XMLALIGNMENT = "alignment";
-    private static final String XMLPLACEMENT = "placement";
-    private static final String XMLFROMPAGE = "frompage";
-    private static final String XMLSPACEFROMMARGIN = "spacefrommargin";
+    // page number properties
+    private static final String XML_PAGE_NUMBER = "pagenumber";
+    private static final String XML_FONT_NAME = "fontname";
+    private static final String XML_FONT_STYLE = "fontstyle";
+    private static final String XML_FONT_SIZE = "fontsize";
+    private static final String XML_ALIGNMENT = "alignment";
+    private static final String XML_PLACEMENT = "placement";
+    private static final String XML_FROM_PAGE = "frompage";
+    private static final String XML_SPACE_FROM_MARGIN = "spacefrommargin";
 
     static File file;
 
@@ -71,57 +71,60 @@ public class BookIO {
         BookIO.file = file;
         PrintWriter pw = new PrintWriter(file, "UTF-8");
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        pw.println("<"+ XMLPUBLISHER +" "+XMLVERSION+"=\""+IOMAJORVERSION+"."+IOMINORVERSION+"\">");
+        pw.println("<" + XML_PUBLISHER + " " + XML_VERSION + "=\"" + IO_MAJOR_VERSION + "." + IO_MINOR_VERSION + "\">");
         XML.indent = 2;
 
-        //bookattributes
-        XML.writeBeginTag(pw, XMLBOOKATTRIBUTES);
+        // book attributes
+        XML.writeBeginTag(pw, XML_BOOK_ATTRIBUTES);
         XML.indent = 4;
-        XML.writeValue(pw, XMLPAGEWIDTH, Integer.toString(b.getPageSize().width));
-        XML.writeValue(pw, XMLPAGEHEIGHT, Integer.toString(b.getPageSize().height));
-        XML.writeValue(pw, XMLLEFTINNERMARGIN, Integer.toString(b.getLeftInnerMargin()));
-        XML.writeValue(pw, XMLRIGHTOUTERMARGIN, Integer.toString(b.getRightOuterMargin()));
-        XML.writeValue(pw, XMLTOPMARGIN, Integer.toString(b.getTopMargin()));
-        XML.writeValue(pw, XMLBOTTOMMARGIN, Integer.toString(b.getBottomMargin()));
-        if(b.isMirroredMargin())XML.writeEmptyTag(pw, XMLMIRROREDMARGIN);
+        XML.writeValue(pw, XML_PAGE_WIDTH, Integer.toString(b.getPageSize().width));
+        XML.writeValue(pw, XML_PAGE_HEIGHT, Integer.toString(b.getPageSize().height));
+        XML.writeValue(pw, XML_LEFT_INNER_MARGIN, Integer.toString(b.getLeftInnerMargin()));
+        XML.writeValue(pw, XML_RIGHT_OUTER_MARGIN, Integer.toString(b.getRightOuterMargin()));
+        XML.writeValue(pw, XML_TOP_MARGIN, Integer.toString(b.getTopMargin()));
+        XML.writeValue(pw, XML_BOTTOM_MARGIN, Integer.toString(b.getBottomMargin()));
+
+        if (b.isMirroredMargin()) {
+            XML.writeEmptyTag(pw, XML_MIRRORED_MARGIN);
+        }
+
         XML.indent = 2;
-        XML.writeEndTag(pw, XMLBOOKATTRIBUTES);
+        XML.writeEndTag(pw, XML_BOOK_ATTRIBUTES);
 
-        //pagenumber
+        // page number
         PageNumber pn = b.getPageNumber();
-        if(pn!=null){
-            XML.writeBeginTag(pw, XMLPAGENUMBER);
+
+        if (pn != null) {
+            XML.writeBeginTag(pw, XML_PAGE_NUMBER);
             XML.indent = 4;
-            XML.writeValue(pw, XMLFONTNAME, pn.getFont().getName());
-            XML.writeValue(pw, XMLFONTSTYLE, Integer.toString(pn.getFont().getStyle()));
-            XML.writeValue(pw, XMLFONTSIZE, Integer.toString(pn.getFont().getSize()));
-            XML.writeValue(pw, XMLALIGNMENT, pn.getAlignment().name());
-            XML.writeValue(pw, XMLPLACEMENT, pn.getPlacement().name());
-            XML.writeValue(pw, XMLFROMPAGE, Integer.toString(pn.getFromPage()));
-            XML.writeValue(pw, XMLSPACEFROMMARGIN, Integer.toString(pn.getSpaceFromMargin()));
+            XML.writeValue(pw, XML_FONT_NAME, pn.getFont().getName());
+            XML.writeValue(pw, XML_FONT_STYLE, Integer.toString(pn.getFont().getStyle()));
+            XML.writeValue(pw, XML_FONT_SIZE, Integer.toString(pn.getFont().getSize()));
+            XML.writeValue(pw, XML_ALIGNMENT, pn.getAlignment().name());
+            XML.writeValue(pw, XML_PLACEMENT, pn.getPlacement().name());
+            XML.writeValue(pw, XML_FROM_PAGE, Integer.toString(pn.getFromPage()));
+            XML.writeValue(pw, XML_SPACE_FROM_MARGIN, Integer.toString(pn.getSpaceFromMargin()));
             XML.indent = 2;
-            XML.writeEndTag(pw, XMLPAGENUMBER);
+            XML.writeEndTag(pw, XML_PAGE_NUMBER);
         }
 
-        for(ListIterator<Page> li = b.pageIterator();li.hasNext();){
-            XML.writeBeginTag(pw, XMLPAGE);
+        for (ListIterator<Page> li = b.pageIterator(); li.hasNext(); ) {
+            XML.writeBeginTag(pw, XML_PAGE);
             PageIO.writePage(li.next(), pw, writeAbsolute);
-            XML.writeEndTag(pw, XMLPAGE);
+            XML.writeEndTag(pw, XML_PAGE);
         }
-        pw.println("</"+XMLPUBLISHER+">");
+
+        pw.println("</" + XML_PUBLISHER + ">");
         pw.close();
     }
 
     public static class DocumentReader extends DefaultHandler {
-        private enum Where {BOOK, PAGE}
+        int pageWidth, pageHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin;
+        boolean mirroredMargin;
         private Where where;
         private String lastTag;
         private StringBuilder value = new StringBuilder(200);
-        int pageWidth, pageHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin;
-        boolean mirroredMargin;
-
         private PageIO.PageReader pageReader;
-
         private Book book;
         private int majorVersion, minorVersion;
         private Publisher publisher;
@@ -129,97 +132,120 @@ public class BookIO {
         private String fontName;
         private int fontStyle, fontSize;
 
-
         public DocumentReader(Publisher publisher, File file) {
             this.publisher = publisher;
             BookIO.file = file.getParentFile();
         }
 
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-            if(where==null){
-                if(qName.equals(XMLPUBLISHER)){
-                    try{
-                        String version = attributes.getValue(XMLVERSION);
+            if (where == null) {
+                if (qName.equals(XML_PUBLISHER)) {
+                    try {
+                        String version = attributes.getValue(XML_VERSION);
                         int dotIndex = version.indexOf('.');
-                        majorVersion = Integer.parseInt(version.substring(0,dotIndex));
-                        minorVersion = Integer.parseInt(version.substring(dotIndex+1));
+                        majorVersion = Integer.parseInt(version.substring(0, dotIndex));
+                        minorVersion = Integer.parseInt(version.substring(dotIndex + 1));
                         where = Where.BOOK;
-                    }catch(NumberFormatException e){
+                    }
+                    catch (NumberFormatException e) {
                         throw new SAXException("SongScribe version is not a number.", e);
                     }
                 }
-            }else{
-                if(majorVersion==1 && minorVersion==0){
+            }
+            else {
+                if (majorVersion == 1 && minorVersion == 0) {
                     startElement10(uri, localName, qName, attributes);
-                }else{
+                }
+                else {
                     throw new SAXException("Unsupported version number.");
                 }
             }
+
             value.delete(0, value.length());
         }
 
         public void startElement10(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-            if(where==Where.PAGE){
+            if (where == Where.PAGE) {
                 pageReader.startElement10(qName, attributes);
-            }else if(where==Where.BOOK){
-                if(qName.equals(XMLPAGE)){
+            }
+            else if (where == Where.BOOK) {
+                if (qName.equals(XML_PAGE)) {
                     pageReader = new PageIO.PageReader(book);
                     where = Where.PAGE;
-                }else{
+                }
+                else {
                     lastTag = qName;
                 }
             }
         }
 
         public void endElement(String uri, String localName, String qName) throws SAXException {
-            if(majorVersion==1 && minorVersion==0){
+            if (majorVersion == 1 && minorVersion == 0) {
                 endElement10(qName);
             }
         }
 
-        public void endElement10(String qName){
-            if(qName.equals(XMLPAGE)){
+        public void endElement10(String qName) {
+            if (qName.equals(XML_PAGE)) {
                 where = Where.BOOK;
-            }else if(where==Where.PAGE){
+            }
+            else if (where == Where.PAGE) {
                 pageReader.endElement10(qName);
-            }else if(where==Where.BOOK){
-               if(qName.equals(lastTag)){
+            }
+            else if (where == Where.BOOK) {
+                if (qName.equals(lastTag)) {
                     String str = value.toString();
-                    if(lastTag.equals(XMLPAGEWIDTH)){
+
+                    if (lastTag.equals(XML_PAGE_WIDTH)) {
                         pageWidth = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLPAGEHEIGHT)){
+                    }
+                    else if (lastTag.equals(XML_PAGE_HEIGHT)) {
                         pageHeight = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLLEFTINNERMARGIN)){
+                    }
+                    else if (lastTag.equals(XML_LEFT_INNER_MARGIN)) {
                         leftInnerMargin = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLRIGHTOUTERMARGIN)){
+                    }
+                    else if (lastTag.equals(XML_RIGHT_OUTER_MARGIN)) {
                         rightOuterMargin = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLTOPMARGIN)){
+                    }
+                    else if (lastTag.equals(XML_TOP_MARGIN)) {
                         topMargin = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLBOTTOMMARGIN)){
+                    }
+                    else if (lastTag.equals(XML_BOTTOM_MARGIN)) {
                         bottomMargin = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLMIRROREDMARGIN)){
+                    }
+                    else if (lastTag.equals(XML_MIRRORED_MARGIN)) {
                         mirroredMargin = true;
-                    }else if(lastTag.equals(XMLFONTNAME)){
+                    }
+                    else if (lastTag.equals(XML_FONT_NAME)) {
                         fontName = str;
-                    }else if(lastTag.equals(XMLFONTSIZE)){
+                    }
+                    else if (lastTag.equals(XML_FONT_SIZE)) {
                         fontSize = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLFONTSTYLE)){
+                    }
+                    else if (lastTag.equals(XML_FONT_STYLE)) {
                         fontStyle = Integer.parseInt(str);
-                    }else if(lastTag.equals(XMLALIGNMENT)){
+                    }
+                    else if (lastTag.equals(XML_ALIGNMENT)) {
                         pageNumber.setAlignment(PageNumber.Alignment.valueOf(str));
-                    }else if(lastTag.equals(XMLPLACEMENT)){
+                    }
+                    else if (lastTag.equals(XML_PLACEMENT)) {
                         pageNumber.setPlacement(PageNumber.Placement.valueOf(str));
-                    }else if(lastTag.equals(XMLFROMPAGE)){
+                    }
+                    else if (lastTag.equals(XML_FROM_PAGE)) {
                         pageNumber.setFromPage(Integer.parseInt(str));
-                    }else if(lastTag.equals(XMLSPACEFROMMARGIN)){
+                    }
+                    else if (lastTag.equals(XML_SPACE_FROM_MARGIN)) {
                         pageNumber.setSpaceFromMargin(Integer.parseInt(str));
                     }
-                }else if(qName.equals(XMLBOOKATTRIBUTES)){
+                }
+                else if (qName.equals(XML_BOOK_ATTRIBUTES)) {
                     book = new Book(publisher, pageWidth, pageHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin, mirroredMargin);
-                }else if(qName.equals(XMLPAGENUMBER)){
-                   pageNumber.setFont(Utilities.createFont(fontName, fontStyle, fontSize));
-                   book.setPageNumber(pageNumber);
-               }
+                }
+                else if (qName.equals(XML_PAGE_NUMBER)) {
+                    pageNumber.setFont(Utilities.createFont(fontName, fontStyle, fontSize));
+                    book.setPageNumber(pageNumber);
+                }
             }
 
             value.delete(0, value.length());
@@ -227,9 +253,10 @@ public class BookIO {
         }
 
         public void characters(char ch[], int start, int length) throws SAXException {
-            if(where==Where.PAGE){
+            if (where == Where.PAGE) {
                 pageReader.characters(ch, start, length);
-            }else if(where==Where.BOOK && lastTag!=null){
+            }
+            else if (where == Where.BOOK && lastTag != null) {
                 value.append(ch, start, length);
             }
         }
@@ -237,5 +264,7 @@ public class BookIO {
         public Book getBook() {
             return book;
         }
+
+        private enum Where { BOOK, PAGE }
     }
 }

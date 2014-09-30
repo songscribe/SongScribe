@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on May 12, 2007
+    Created on May 12, 2007
 */
 package songscribe.publisher.IO;
 
@@ -44,72 +44,81 @@ import java.util.ListIterator;
  * @author Csaba Kávai
  */
 public class PageIO {
-    private static final String XMLSONG = "song";
-    private static final String XMLIMAGE = "image";
-    private static final String XMLTEXT = "text";
-    //pagecomponent properties
-    private static final String XMLPOS = "position";
-    private static final String XMLRESOLUTION = "resolution";
-    //song and image properties
-    private static final String XMLRELATIVEFILE = "relativefile";
-    private static final String XMLABSOLUTEFILE = "absolutefile";
-    //text properties
-    private static final String XMLFONTNAME = "fontname";
-    private static final String XMLFONTSTYLE = "fontstyle";
-    private static final String XMLFONTSIZE = "fontsize";
-    private static final String XMLALIGNMENT = "alignment";
-    private static final String XMLSTRING = "string";
-    //pagenumber properties
-    private static final String XMLPAGENUMBER = "pagenumber";
-    private static final String XMLPLACEMENT = "placement";
-    private static final String XMLFROMPAGE = "frompage";
-    private static final String XMLSPACEFROMMARGIN = "spacefrommargin";
+    private static final String XML_SONG = "song";
+    private static final String XML_IMAGE = "image";
+    private static final String XML_TEXT = "text";
+    // page component properties
+    private static final String XML_POS = "position";
+    private static final String XML_RESOLUTION = "resolution";
+    // song and image properties
+    private static final String XML_RELATIVE_FILE = "relativefile";
+    private static final String XML_ABSOLUTE_FILE = "absolutefile";
+    // text properties
+    private static final String XML_FONT_NAME = "fontname";
+    private static final String XML_FONT_STYLE = "fontstyle";
+    private static final String XML_FONT_SIZE = "fontsize";
+    private static final String XML_ALIGNMENT = "alignment";
+    private static final String XML_STRING = "string";
+    // page number properties
+    private static final String XML_PAGE_NUMBER = "pagenumber";
+    private static final String XML_PLACEMENT = "placement";
+    private static final String XML_FROM_PAGE = "frompage";
+    private static final String XML_SPACE_FROM_MARGIN = "spacefrommargin";
 
     public static void writePage(Page p, PrintWriter pw, boolean writeAbsolute) throws IOException {
-        for(ListIterator<PageComponent> li = p.getPageComponentIterator();li.hasNext();){
+        for (ListIterator<PageComponent> li = p.getPageComponentIterator(); li.hasNext(); ) {
             PageComponent pc = li.next();
-            XML.indent+=2;
-            if(pc instanceof Song){
-                XML.writeBeginTag(pw, XMLSONG);
+            XML.indent += 2;
+
+            if (pc instanceof Song) {
+                XML.writeBeginTag(pw, XML_SONG);
                 writePageComponent(pc, pw);
-                XML.indent+=2;
-                if(writeAbsolute)XML.writeValue(pw, XMLABSOLUTEFILE, ((Song)pc).getSongFile().getAbsolutePath());
-                XML.writeValue(pw, XMLRELATIVEFILE, RelativePath.getRelativePath(BookIO.file.getParentFile(), ((Song)pc).getSongFile()));
-                XML.indent-=2;
-                XML.writeEndTag(pw, XMLSONG);
-            }else if(pc instanceof PImage){
-                XML.writeBeginTag(pw, XMLIMAGE);
-                writePageComponent(pc, pw);
-                XML.indent+=2;
-                XML.writeValue(pw, XMLABSOLUTEFILE, ((PImage)pc).getImageFile().getAbsolutePath());
-                XML.writeValue(pw, XMLRELATIVEFILE, RelativePath.getRelativePath(BookIO.file.getParentFile(), ((PImage)pc).getImageFile()));
-                XML.indent-=2;
-                XML.writeEndTag(pw, XMLIMAGE);
-            }else if(pc instanceof Text){
-                Text text = (Text)pc;
-                XML.writeBeginTag(pw, XMLTEXT);
-                writePageComponent(pc, pw);
-                XML.indent+=2;
-                XML.writeValue(pw, XMLFONTNAME, text.getFont().getName());
-                XML.writeValue(pw, XMLFONTSTYLE, Integer.toString(text.getFont().getStyle()));
-                XML.writeValue(pw, XMLFONTSIZE, Integer.toString(text.getFont().getSize()));
-                XML.writeValue(pw, XMLALIGNMENT, text.getAlignment().name());
-                XML.writeValue(pw, XMLSTRING, text.getText());
-                XML.indent-=2;
-                XML.writeEndTag(pw, XMLTEXT);
+                XML.indent += 2;
+
+                if (writeAbsolute) {
+                    XML.writeValue(pw, XML_ABSOLUTE_FILE, ((Song) pc).getSongFile().getAbsolutePath());
+                }
+
+                XML.writeValue(pw, XML_RELATIVE_FILE, RelativePath.getRelativePath(BookIO.file.getParentFile(), ((Song) pc).getSongFile()));
+                XML.indent -= 2;
+                XML.writeEndTag(pw, XML_SONG);
             }
-            XML.indent-=2;
+            else if (pc instanceof PImage) {
+                XML.writeBeginTag(pw, XML_IMAGE);
+                writePageComponent(pc, pw);
+                XML.indent += 2;
+                XML.writeValue(pw, XML_ABSOLUTE_FILE, ((PImage) pc).getImageFile().getAbsolutePath());
+                XML.writeValue(pw, XML_RELATIVE_FILE, RelativePath.getRelativePath(BookIO.file.getParentFile(), ((PImage) pc).getImageFile()));
+                XML.indent -= 2;
+                XML.writeEndTag(pw, XML_IMAGE);
+            }
+            else if (pc instanceof Text) {
+                Text text = (Text) pc;
+                XML.writeBeginTag(pw, XML_TEXT);
+                writePageComponent(pc, pw);
+                XML.indent += 2;
+                XML.writeValue(pw, XML_FONT_NAME, text.getFont().getName());
+                XML.writeValue(pw, XML_FONT_STYLE, Integer.toString(text.getFont().getStyle()));
+                XML.writeValue(pw, XML_FONT_SIZE, Integer.toString(text.getFont().getSize()));
+                XML.writeValue(pw, XML_ALIGNMENT, text.getAlignment().name());
+                XML.writeValue(pw, XML_STRING, text.getText());
+                XML.indent -= 2;
+                XML.writeEndTag(pw, XML_TEXT);
+            }
+
+            XML.indent -= 2;
         }
     }
 
     private static void writePageComponent(PageComponent pc, PrintWriter pw) throws IOException {
-        XML.indent+=2;
-        XML.writeValue(pw, XMLPOS, pc.getPos().x+","+pc.getPos().y+","+pc.getPos().width+","+pc.getPos().height);
-        XML.writeValue(pw, XMLRESOLUTION, Double.toString(pc.getResolution()));
-        XML.indent-=2;
+        XML.indent += 2;
+        XML.writeValue(pw, XML_POS,
+                pc.getPos().x + "," + pc.getPos().y + "," + pc.getPos().width + "," + pc.getPos().height);
+        XML.writeValue(pw, XML_RESOLUTION, Double.toString(pc.getResolution()));
+        XML.indent -= 2;
     }
 
-    public static class PageReader{
+    public static class PageReader {
         private Book book;
         private Page page;
         private String lastTag;
@@ -123,52 +132,66 @@ public class PageIO {
         private Text.Alignment alignment;
         private String string;
 
-
         public PageReader(Book book) {
             this.book = book;
             page = book.addPage();
         }
 
-        public void startElement10(String qName, Attributes attributes){
+        public void startElement10(String qName, Attributes attributes) {
             lastTag = qName;
             value.delete(0, value.length());
         }
 
-        public void endElement10(String qName){
-            if(qName.equals(lastTag)){
+        public void endElement10(String qName) {
+            if (qName.equals(lastTag)) {
                 String str = value.toString();
-                if(lastTag.equals(XMLPOS)){
+
+                if (lastTag.equals(XML_POS)) {
                     String[] p = str.split(",");
                     pos = new Rectangle(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]), Integer.parseInt(p[3]));
-                }else if(lastTag.equals(XMLRESOLUTION)){
+                }
+                else if (lastTag.equals(XML_RESOLUTION)) {
                     resolution = Double.parseDouble(str);
-                }else if(lastTag.equals(XMLRELATIVEFILE)){
+                }
+                else if (lastTag.equals(XML_RELATIVE_FILE)) {
                     relativeFile = new File(BookIO.file, str);
-                }else if(lastTag.equals(XMLABSOLUTEFILE)){
+                }
+                else if (lastTag.equals(XML_ABSOLUTE_FILE)) {
                     absoluteFile = new File(str);
-                }else if(lastTag.equals(XMLFONTNAME)){
+                }
+                else if (lastTag.equals(XML_FONT_NAME)) {
                     fontName = str;
-                }else if(lastTag.equals(XMLFONTSTYLE)){
+                }
+                else if (lastTag.equals(XML_FONT_STYLE)) {
                     fontStyle = Integer.parseInt(str);
-                }else if(lastTag.equals(XMLFONTSIZE)){
+                }
+                else if (lastTag.equals(XML_FONT_SIZE)) {
                     fontSize = Integer.parseInt(str);
-                }else if(lastTag.equals(XMLALIGNMENT)){
+                }
+                else if (lastTag.equals(XML_ALIGNMENT)) {
                     alignment = Text.Alignment.valueOf(str);
-                }else if(lastTag.equals(XMLSTRING)){
+                }
+                else if (lastTag.equals(XML_STRING)) {
                     string = str;
                 }
-            }else if(qName.equals(XMLSONG)){
+            }
+            else if (qName.equals(XML_SONG)) {
                 File openFile = getAnyFile();
-                if(openFile!=null){
+
+                if (openFile != null) {
                     page.addPageComponent(new Song(book.getPublisher().openMusicSheet(openFile), pos.x, pos.y, resolution, openFile));
                 }
-            }else if(qName.equals(XMLIMAGE)){
+            }
+            else if (qName.equals(XML_IMAGE)) {
                 File openFile = getAnyFile();
-                if(openFile!=null){
+
+                if (openFile != null) {
                     page.addPageComponent(new PImage(Publisher.getImage(openFile), pos.x, pos.y, resolution, openFile));
                 }
+
                 absoluteFile = null;
-            }else if(qName.equals(XMLTEXT)){
+            }
+            else if (qName.equals(XML_TEXT)) {
                 page.addPageComponent(new Text(string, Utilities.createFont(fontName, fontStyle, fontSize), alignment, pos.x, pos.y));
             }
 
@@ -176,19 +199,22 @@ public class PageIO {
             lastTag = null;
         }
 
-        private File getAnyFile(){
-            if((absoluteFile==null || !absoluteFile.exists()) && !relativeFile.exists()){
-                JOptionPane.showMessageDialog(book.getPublisher(), absoluteFile.getAbsolutePath()+" could not be found");
+        private File getAnyFile() {
+            if ((absoluteFile == null || !absoluteFile.exists()) && !relativeFile.exists()) {
+                JOptionPane.showMessageDialog(book.getPublisher(),
+                        absoluteFile.getAbsolutePath() + " could not be found");
                 return null;
-            }else if(absoluteFile!=null && absoluteFile.exists()){
+            }
+            else if (absoluteFile != null && absoluteFile.exists()) {
                 return absoluteFile;
-            }else{
+            }
+            else {
                 return relativeFile;
             }
         }
 
-        public void characters(char[] ch, int start, int lenght){
-            if(lastTag!=null){
+        public void characters(char[] ch, int start, int lenght) {
+            if (lastTag != null) {
                 value.append(ch, start, lenght);
             }
         }

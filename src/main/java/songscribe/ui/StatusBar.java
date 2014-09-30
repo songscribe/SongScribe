@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jul 5, 2006
+    Created on Jul 5, 2006
 */
 package songscribe.ui;
 
@@ -35,8 +35,8 @@ import java.util.TimerTask;
 /**
  * @author Csaba Kávai
  */
-public class StatusBar extends JPanel{
-    private static final long MEMPROGRESSREFRESHRATE = 1000;
+public class StatusBar extends JPanel {
+    private static final long MEM_PROGRESS_REFRESH_RATE = 1000;
     private static final int HEIGHT = 26;
     private final MemoryMXBean mmb = ManagementFactory.getMemoryMXBean();
 
@@ -75,7 +75,8 @@ public class StatusBar extends JPanel{
         controlPanel.setToolTipText("Control");
         controlPanel.addMouseListener(new ControlMouseListener());
         add(controlPanel);
-        if(mainFrame.getProperties().getProperty(Constants.SHOWMEMUSEAGE).equals(Constants.TRUEVALUE)) {
+
+        if (mainFrame.getProperties().getProperty(Constants.SHOW_MEM_USAGE).equals(Constants.TRUE_VALUE)) {
             memProgress = new JProgressBar();
             memProgress.setMaximumSize(new Dimension(50, HEIGHT));
             memProgress.setStringPainted(true);
@@ -87,14 +88,14 @@ public class StatusBar extends JPanel{
             trashButton.setPreferredSize(size);
             trashButton.setMaximumSize(size);
             trashButton.setToolTipText("Run Garbage Collector");
-            trashButton.addActionListener(new ActionListener(){
+            trashButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     mmb.gc();
                 }
             });
             add(trashButton);
 
-            new java.util.Timer(true).schedule(new MemProgressTask(), 0, MEMPROGRESSREFRESHRATE);
+            new java.util.Timer(true).schedule(new MemProgressTask(), 0, MEM_PROGRESS_REFRESH_RATE);
         }
     }
 
@@ -104,19 +105,19 @@ public class StatusBar extends JPanel{
         return separator;
     }
 
-    public void setModeLabel(String mode){
+    public void setModeLabel(String mode) {
         modeLabel.setText(mode);
     }
 
-    public void setControlLabel(String control){
+    public void setControlLabel(String control) {
         controlLabel.setText(control);
     }
 
-    public void setPitchString(String pitch){
+    public void setPitchString(String pitch) {
         pitchLabel.setText(pitch);
     }
 
-    private class MemProgressTask extends TimerTask{
+    private class MemProgressTask extends TimerTask {
         private static final String MOF = "M of ";
         private static final String M = "M";
         private static final String MUSED = "M  Used: ";
@@ -126,10 +127,10 @@ public class StatusBar extends JPanel{
 
         public void run() {
             MemoryUsage mu = mmb.getHeapMemoryUsage();
-            memProgress.setMaximum((int)(mu.getCommitted()));
-            memProgress.setValue((int)(mu.getUsed()));
-            int maxMem = (int)(mu.getCommitted()/1048576l);
-            int usedMem = (int)(mu.getUsed()/1048576l);
+            memProgress.setMaximum((int) (mu.getCommitted()));
+            memProgress.setValue((int) (mu.getUsed()));
+            int maxMem = (int) (mu.getCommitted() / 1048576l);
+            int usedMem = (int) (mu.getUsed() / 1048576l);
             sb.delete(0, sb.length());
             sb.append(usedMem);
             sb.append(MOF);
@@ -146,17 +147,17 @@ public class StatusBar extends JPanel{
         }
     }
 
-    private class ModeMouseListener extends MouseAdapter{
+    private class ModeMouseListener extends MouseAdapter {
         public void mouseClicked(MouseEvent e) {
-            if(e.getClickCount()==2){
+            if (e.getClickCount() == 2) {
                 mainFrame.setNextMode();
             }
         }
     }
 
-    private class ControlMouseListener extends MouseAdapter{
+    private class ControlMouseListener extends MouseAdapter {
         public void mouseClicked(MouseEvent e) {
-            if(e.getClickCount()==2){
+            if (e.getClickCount() == 2) {
                 mainFrame.setNextControl();
             }
         }

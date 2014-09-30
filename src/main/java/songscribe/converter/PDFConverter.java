@@ -1,3 +1,22 @@
+/*
+    SongScribe song notation program
+    Copyright (C) 2014 Csaba Kavai
+
+    This file is part of SongScribe.
+
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package songscribe.converter;
 
 import songscribe.publisher.newsteps.Data;
@@ -95,19 +114,23 @@ public class PDFConverter {
         data.topMargin = data.bottomMargin = data.leftInnerMargin = data.rightOuterMargin = 75;
         data.mainFrame = mf;
 
-        if (topMargin > -1)
+        if (topMargin > -1) {
             data.topMargin = topMargin;
+        }
 
-        if (leftMargin > -1)
+        if (leftMargin > -1) {
             data.leftInnerMargin = leftMargin;
+        }
 
-        if (bottomMargin > -1)
+        if (bottomMargin > -1) {
             data.bottomMargin = bottomMargin;
+        }
 
-        if (rightMargin >- 1)
+        if (rightMargin > -1) {
             data.rightOuterMargin = rightMargin;
+        }
 
-        for (File file:files) {
+        for (File file : files) {
             mf.getMusicSheet().setComposition(null);
             mf.openMusicSheet(file, false);
 
@@ -124,12 +147,14 @@ public class PDFConverter {
                 String path = file.getCanonicalPath();
                 int dotPos = path.lastIndexOf(".");
 
-                if (dotPos > 0)
+                if (dotPos > 0) {
                     path = path.substring(0, dotPos);
+                }
 
                 path += ".pdf";
                 ExportPDFAction.createPDF(data, new File(path), false);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 System.out.println("Could not convert " + file.getName());
             }
         }

@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on 2005.10.08. 
+    Created on 2005.10.08.
 */
 package songscribe.ui;
 
@@ -33,7 +33,7 @@ import java.io.File;
 /**
  * @author Csaba Kávai
  */
-public class TempoChangeDialog extends MyDialog{
+public class TempoChangeDialog extends MyDialog {
     Note selectedNote;
     JLabel indexOfSelectedNoteLabel = new JLabel();
     JComboBox tempoTypeCombo;
@@ -59,7 +59,6 @@ public class TempoChangeDialog extends MyDialog{
         center.add(infoPanel);
         center.add(Box.createRigidArea(large));
 
-
         JPanel tempoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         tempoTypeCombo = new JComboBox(Tempo.Type.values());
         tempoTypeCombo.setRenderer(new CompositionSettingsDialog.NoteImageListCellRenderer());
@@ -80,7 +79,7 @@ public class TempoChangeDialog extends MyDialog{
 
         //----------------------south------------------------
         JPanel south = new JPanel();
-        removeButton = new JButton("Remove", REMOVEICON);
+        removeButton = new JButton("Remove", REMOVE_ICON);
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MusicSheet ms = TempoChangeDialog.this.mainFrame.getMusicSheet();
@@ -102,31 +101,33 @@ public class TempoChangeDialog extends MyDialog{
         MusicSheet ms = mainFrame.getMusicSheet();
         selectedNote = ms.getSingleSelectedNote();
         Tempo tc = selectedNote.getTempoChange();
-        boolean tcnull = tc==null;
-        if(tcnull){
+        boolean tcnull = tc == null;
+
+        if (tcnull) {
             tc = new Tempo(144, Tempo.Type.CROTCHET, "Slower", true);
         }
-        indexOfSelectedNoteLabel.setText((ms.getComposition().indexOfLine(selectedNote.getLine())+1)+". line "+(selectedNote.getLine().getNoteIndex(selectedNote)+1)+". note");
+
+        indexOfSelectedNoteLabel.setText((ms.getComposition().indexOfLine(selectedNote.getLine()) + 1) + ". line " +
+                                         (selectedNote.getLine().getNoteIndex(selectedNote) + 1) + ". note");
         tempoTypeCombo.setSelectedIndex(tc.getTempoType().ordinal());
-        tempoSpinner.setValue(new Integer(tc.getVisibleTempo()));
+        tempoSpinner.setValue(tc.getVisibleTempo());
         tempoDescriptionCombo.setSelectedItem(tc.getTempoDescription());
         showOnlyDescriptionCheckBox.setSelected(!tc.isShowTempo());
 
         removeButton.setEnabled(!tcnull);
-        if(tcnull){
+
+        if (tcnull) {
             okButton.setText("Add");
             applyButton.setText("Apply addition");
-        }else{
+        }
+        else {
             okButton.setText("Modify");
             applyButton.setText("Apply modification");
         }
     }
 
     protected void setData() {
-        selectedNote.setTempoChange(new Tempo(
-                ((Integer) tempoSpinner.getValue()),
-                        (Tempo.Type)tempoTypeCombo.getSelectedItem(),
-                        (String)tempoDescriptionCombo.getSelectedItem(), !showOnlyDescriptionCheckBox.isSelected()));
+        selectedNote.setTempoChange(new Tempo(((Integer) tempoSpinner.getValue()), (Tempo.Type) tempoTypeCombo.getSelectedItem(), (String) tempoDescriptionCombo.getSelectedItem(), !showOnlyDescriptionCheckBox.isSelected()));
         mainFrame.getMusicSheet().getComposition().modifiedComposition();
     }
 }

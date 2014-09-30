@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on 2005.01.13., 21:32:45
+    Created on 2005.01.13., 21:32:45
 */
 
 package songscribe.music;
@@ -36,28 +36,45 @@ public enum NoteType {
     CROTCHET(new Crotchet(), "Quarter", KeyStroke.getKeyStroke(KeyEvent.VK_4, 0)),
     QUAVER(new Quaver(), "Eighth", KeyStroke.getKeyStroke(KeyEvent.VK_3, 0)),
     SEMIQUAVER(new Semiquaver(), "Sixteenth", KeyStroke.getKeyStroke(KeyEvent.VK_2, 0)),
-    DEMISEMIQUAVER(new Demisemiquaver(), "Thirtysecond", KeyStroke.getKeyStroke(KeyEvent.VK_1, 0)),
+    DEMI_SEMIQUAVER(new Demisemiquaver(), "Thirtysecond", KeyStroke.getKeyStroke(KeyEvent.VK_1, 0)),
 
-    SEMIBREVEREST(new SemibreveRest(), "Whole rest", KeyStroke.getKeyStroke(KeyEvent.VK_6, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    MINIMREST(new MinimRest(), "Half rest", KeyStroke.getKeyStroke(KeyEvent.VK_5, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    CROTCHETREST(new CrotchetRest(), "Quarter rest", KeyStroke.getKeyStroke(KeyEvent.VK_4, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    QUAVERREST(new QuaverRest(), "Eighth rest", KeyStroke.getKeyStroke(KeyEvent.VK_3, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    SEMIQUAVERREST(new SemiquaverRest(), "Sixteenth rest", KeyStroke.getKeyStroke(KeyEvent.VK_2, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    DEMISEMIQUAVERREST(new DemisemiquaverRest(), "Thirtysecond rest", KeyStroke.getKeyStroke(KeyEvent.VK_1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    SEMIBREVE_REST(new SemibreveRest(), "Whole rest", KeyStroke.getKeyStroke(KeyEvent.VK_6, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    MINIM_REST(new MinimRest(), "Half rest", KeyStroke.getKeyStroke(KeyEvent.VK_5, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    CROTCHET_REST(new CrotchetRest(), "Quarter rest", KeyStroke.getKeyStroke(KeyEvent.VK_4, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    QUAVER_REST(new QuaverRest(), "Eighth rest", KeyStroke.getKeyStroke(KeyEvent.VK_3, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    SEMIQUAVER_REST(new SemiquaverRest(), "Sixteenth rest", KeyStroke.getKeyStroke(KeyEvent.VK_2, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    DEMI_SEMIQUAVER_REST(new DemisemiquaverRest(), "Thirtysecond rest", KeyStroke.getKeyStroke(KeyEvent.VK_1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
 
-    GRACEQUAVER(new GraceQuaver(), "Grace Eighth", KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)),
-    GRACESEMIQUAVER(new GraceSemiQuaver(), "Grace Sixteenth", null),
-    GLISSANDO(Note.GLISSANDONOTE, "GlissandoNote", KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.SHIFT_MASK)),
-    REPEATLEFT(new RepeatLeft(), "Repeat left", KeyStroke.getKeyStroke(KeyEvent.VK_L, 0)),
-    REPEATRIGHT(new RepeatRight(), "Repeat right", KeyStroke.getKeyStroke(KeyEvent.VK_R, 0)),
-    REPEATLEFTRIGHT(new RepeatLeftRight(), null, null),
-    BREATHMARK(new BreathMark(), "Breath mark", null),
-    SINGLEBARLINE(new SingleBarLine(), "Single barline", null),
-    DOUBLEBARLINE(new DoubleBarLine(), "Double barline", null),
-    FINALDOUBLEBARLINE(new FinalDoubleBarLine(), "Final double barline", null),
+    GRACE_QUAVER(new GraceQuaver(), "Grace Eighth", KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)),
+    GRACE_SEMIQUAVER(new GraceSemiQuaver(), "Grace Sixteenth", null),
+    GLISSANDO(Note.GLISSANDO_NOTE, "GlissandoNote", KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.SHIFT_MASK)),
+    REPEAT_LEFT(new RepeatLeft(), "Repeat left", KeyStroke.getKeyStroke(KeyEvent.VK_L, 0)),
+    REPEAT_RIGHT(new RepeatRight(), "Repeat right", KeyStroke.getKeyStroke(KeyEvent.VK_R, 0)),
+    REPEAT_LEFT_RIGHT(new RepeatLeftRight(), null, null),
+    BREATH_MARK(new BreathMark(), "Breath mark", null),
+    SINGLE_BARLINE(new SingleBarLine(), "Single barline", null),
+    DOUBLE_BARLINE(new DoubleBarLine(), "Double barline", null),
+    FINAL_DOUBLE_BARLINE(new FinalDoubleBarLine(), "Final double barline", null),
 
-    PASTE(Note.PASTENOTE, null, null),
-    GRACESEMIQUAVEREDITSTEP1(new GraceSemiQuaverEditStep1(), null, null);
+    PASTE(Note.PASTE_NOTE, null, null),
+    GRACE_SEMIQUAVER_EDIT_STEP1(new GraceSemiQuaverEditStep1(), null, null),
+
+    // IO values
+    SEMIBREVEREST(NoteType.SEMIBREVE_REST),
+    MINIMREST(NoteType.MINIM_REST),
+    CROTCHETREST(NoteType.CROTCHET_REST),
+    QUAVERREST(NoteType.QUAVER_REST),
+    SEMIQUAVERREST(NoteType.SEMIQUAVER_REST),
+    DEMISEMIQUAVERREST(NoteType.DEMI_SEMIQUAVER_REST),
+    GRACEQUAVER(NoteType.GRACE_QUAVER),
+    GRACESEMIQUAVER(NoteType.GRACE_SEMIQUAVER),
+    REPEATLEFT(NoteType.REPEAT_LEFT),
+    REPEATRIGHT(NoteType.REPEAT_RIGHT),
+    REPEATLEFTRIGHT(NoteType.REPEAT_LEFT_RIGHT),
+    BREATHMARK(NoteType.BREATH_MARK),
+    SINGLEBARLINE(NoteType.SINGLE_BARLINE),
+    DOUBLEBARLINE(NoteType.DOUBLE_BARLINE),
+    FINALDOUBLEBARLINE(NoteType.FINAL_DOUBLE_BARLINE);
 
     private Note instance;
     private String name;
@@ -69,6 +86,47 @@ public enum NoteType {
         this.acceleratorKey = acceleratorKey;
     }
 
+    NoteType(NoteType note) {
+        this.instance = note.instance;
+        this.name = note.name;
+        this.acceleratorKey = note.acceleratorKey;
+    }
+
+    public static String getCompoundName(String name, KeyStroke acceleratorKey) {
+        StringBuilder sb = new StringBuilder(20);
+        sb.append(name);
+
+        if (acceleratorKey != null) {
+            sb.append(" (");
+
+            if ((acceleratorKey.getModifiers() & InputEvent.CTRL_MASK) != 0) {
+                sb.append("CTRL+");
+            }
+
+            if ((acceleratorKey.getModifiers() & InputEvent.META_MASK) != 0) {
+                sb.append("FUNCTION+");
+            }
+
+            if ((acceleratorKey.getModifiers() & InputEvent.ALT_MASK) != 0) {
+                sb.append("ALT+");
+            }
+
+            if ((acceleratorKey.getModifiers() & InputEvent.SHIFT_MASK) != 0) {
+                sb.append("SHIFT+");
+            }
+
+            if (acceleratorKey.getKeyCode() == KeyEvent.VK_ENTER) {
+                sb.append("ENTER");
+            }
+            else {
+                sb.append((char) acceleratorKey.getKeyCode());
+            }
+
+            sb.append(')');
+        }
+        return sb.toString();
+    }
+
     public Note getInstance() {
         return instance;
     }
@@ -77,39 +135,12 @@ public enum NoteType {
         return instance.clone();
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public String getCompoundName(){
+    public String getCompoundName() {
         return getCompoundName(name, acceleratorKey);
-    }
-
-    public static String getCompoundName(String name, KeyStroke acceleratorKey) {
-        StringBuilder sb = new StringBuilder(20);
-        sb.append(name);
-        if(acceleratorKey!=null){
-            sb.append(" (");
-            if((acceleratorKey.getModifiers() & InputEvent.CTRL_MASK)!=0){
-                sb.append("CTRL+");
-            }
-            if((acceleratorKey.getModifiers() & InputEvent.META_MASK)!=0){
-                sb.append("FUNCTION+");
-            }
-            if((acceleratorKey.getModifiers() & InputEvent.ALT_MASK)!=0){
-                sb.append("ALT+");
-            }
-            if((acceleratorKey.getModifiers() & InputEvent.SHIFT_MASK)!=0){
-                sb.append("SHIFT+");
-            }
-            if(acceleratorKey.getKeyCode()==KeyEvent.VK_ENTER){
-                sb.append("ENTER");
-            }else{
-                sb.append((char)acceleratorKey.getKeyCode());
-            }
-            sb.append(')');
-        }
-        return sb.toString();
     }
 
     public KeyStroke getAcceleratorKey() {
@@ -117,42 +148,42 @@ public enum NoteType {
     }
 
     public boolean isRealNote() {
-        return ordinal()>=SEMIBREVE.ordinal() && ordinal()<=DEMISEMIQUAVER.ordinal();
+        return ordinal() >= SEMIBREVE.ordinal() && ordinal() <= DEMI_SEMIQUAVER.ordinal();
     }
 
     public boolean isNote() {
         return isRealNote() || isGraceNote();
     }
-    
+
     public boolean isNoteWithStem() {
         return isNote() && this != SEMIBREVE;
     }
 
     public boolean isRest() {
-        return ordinal()>=SEMIBREVEREST.ordinal() && ordinal()<=DEMISEMIQUAVERREST.ordinal();
+        return ordinal() >= SEMIBREVE_REST.ordinal() && ordinal() <= DEMI_SEMIQUAVER_REST.ordinal();
     }
 
-    public boolean isBeamable(){
-        return this==QUAVER || this==SEMIQUAVER || this==DEMISEMIQUAVER;
+    public boolean isBeamable() {
+        return this == QUAVER || this == SEMIQUAVER || this == DEMI_SEMIQUAVER;
     }
 
-    public boolean isRepeat(){
-        return this==REPEATLEFT || this==REPEATRIGHT || this==REPEATLEFTRIGHT;
+    public boolean isRepeat() {
+        return this == REPEAT_LEFT || this == REPEAT_RIGHT || this == REPEAT_LEFT_RIGHT;
     }
-    
+
     public boolean isBarLine() {
-        return ordinal() >= SINGLEBARLINE.ordinal() && ordinal() <= FINALDOUBLEBARLINE.ordinal();
+        return ordinal() >= SINGLE_BARLINE.ordinal() && ordinal() <= FINAL_DOUBLE_BARLINE.ordinal();
     }
 
     public boolean isGraceNote() {
-        return this==GRACEQUAVER || this==GRACESEMIQUAVER;
+        return this == GRACE_QUAVER || this == GRACE_SEMIQUAVER;
     }
 
-    public boolean drawStaveLongitude(){
-        return this!=BREATHMARK && this!=GRACESEMIQUAVER;
+    public boolean drawStaveLongitude() {
+        return this != BREATH_MARK && this != GRACE_SEMIQUAVER;
     }
 
-    public boolean snapToEnd(){
-        return this==REPEATRIGHT || this==SINGLEBARLINE || this==DOUBLEBARLINE || this==FINALDOUBLEBARLINE;
+    public boolean snapToEnd() {
+        return this == REPEAT_RIGHT || this == SINGLE_BARLINE || this == DOUBLE_BARLINE || this == FINAL_DOUBLE_BARLINE;
     }
 }

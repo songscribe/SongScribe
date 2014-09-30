@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jun 26, 2006
+    Created on Jun 26, 2006
 */
 package songscribe.ui;
 
@@ -34,7 +34,7 @@ import java.awt.event.ActionListener;
 /**
  * @author Csaba Kávai
  */
-public class ResolutionDialog extends MyDialog implements ChangeListener{
+public class ResolutionDialog extends MyDialog implements ChangeListener {
     private boolean approved;
     private MainFrame mainFrame;
     private JPanel mainPanel;
@@ -68,34 +68,40 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
 
     protected void getData() {
         approved = false;
-        resolutionSpinner.setValue(Integer.parseInt(mainFrame.getProperties().getProperty(Constants.DPIPROP)));
+        resolutionSpinner.setValue(Integer.parseInt(mainFrame.getProperties().getProperty(Constants.DPI_PROP)));
         MusicSheet musicSheet = mainFrame.getMusicSheet();
         Composition composition = musicSheet.getComposition();
         msWidth = musicSheet.getSheetWidth();
         msHeight = musicSheet.getSheetHeight();
 
         String underLyrics = composition.getUnderLyrics();
-        String transletedLyrics = composition.getTranslatedLyrics();
+        String translatedLyrics = composition.getTranslatedLyrics();
         composition.setUnderLyrics("");
         composition.setTranslatedLyrics("");
-        msHeightWL = msHeight-musicSheet.getSheetHeight();
+        msHeightWL = msHeight - musicSheet.getSheetHeight();
         composition.setUnderLyrics(underLyrics);
-        composition.setTranslatedLyrics(transletedLyrics);
+        composition.setTranslatedLyrics(translatedLyrics);
 
         String songTitle = composition.getSongTitle();
         composition.setSongTitle("");
-        msHeightWT = msHeight-musicSheet.getSheetHeight();
+        msHeightWT = msHeight - musicSheet.getSheetHeight();
         composition.setSongTitle(songTitle);
 
-        if(underLyrics.length()==0 && transletedLyrics.length()==0){
+        if (underLyrics.length() == 0 && translatedLyrics.length() == 0) {
             withoutLyricsCheck.setSelected(false);
             withoutLyricsCheck.setEnabled(false);
-        }else withoutLyricsCheck.setEnabled(true);
+        }
+        else {
+            withoutLyricsCheck.setEnabled(true);
+        }
 
-        if(composition.getSongTitle().length()==0){
+        if (composition.getSongTitle().length() == 0) {
             exportWithoutTitleCheckBox.setSelected(false);
             exportWithoutTitleCheckBox.setEnabled(false);
-        }else exportWithoutTitleCheckBox.setEnabled(true);
+        }
+        else {
+            exportWithoutTitleCheckBox.setEnabled(true);
+        }
 
         borderPanel.setExpertBorder(false);
         stateChanged(null);
@@ -103,36 +109,43 @@ public class ResolutionDialog extends MyDialog implements ChangeListener{
 
     protected void setData() {
         approved = true;
-        mainFrame.getProperties().setProperty(Constants.DPIPROP, resolutionSpinner.getValue().toString());
+        mainFrame.getProperties().setProperty(Constants.DPI_PROP, resolutionSpinner.getValue().toString());
     }
 
     public boolean isApproved() {
         return approved;
     }
 
-    public int getResolution(){
-        return (Integer)resolutionSpinner.getValue();
+    public int getResolution() {
+        return (Integer) resolutionSpinner.getValue();
     }
 
-    public boolean isWithoutLyrics(){
+    public boolean isWithoutLyrics() {
         return withoutLyricsCheck.isSelected();
     }
 
-    public boolean isWithoutTitle(){
+    public boolean isWithoutTitle() {
         return exportWithoutTitleCheckBox.isSelected();
     }
 
-    public MyBorder getBorder(){
+    public MyBorder getBorder() {
         return borderPanel.getMyBorder();
     }
 
     public void stateChanged(ChangeEvent e) {
-        float scale = (float)getResolution()/(float)MusicSheet.RESOLUTION;
+        float scale = (float) getResolution() / (float) MusicSheet.RESOLUTION;
         MyBorder myBorder = borderPanel.getMyBorder();
-        widthField.setText(Integer.toString(Math.round(scale*msWidth)+myBorder.getWidth()));
+        widthField.setText(Integer.toString(Math.round(scale * msWidth) + myBorder.getWidth()));
         int height = msHeight;
-        if(withoutLyricsCheck.isSelected())height-=msHeightWL;
-        if(exportWithoutTitleCheckBox.isSelected())height-=msHeightWT;
-        heightField.setText(Integer.toString(Math.round(scale*height)+myBorder.getHeight()));
+
+        if (withoutLyricsCheck.isSelected()) {
+            height -= msHeightWL;
+        }
+
+        if (exportWithoutTitleCheckBox.isSelected()) {
+            height -= msHeightWT;
+        }
+
+        heightField.setText(Integer.toString(Math.round(scale * height) + myBorder.getHeight()));
     }
 }

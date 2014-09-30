@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Jan 3, 2007
+    Created on Jan 3, 2007
 */
 package songscribe.ui;
 
@@ -30,8 +30,7 @@ import java.awt.*;
 /**
  * @author Csaba Kávai
  */
-public class KeySignatureChangeDialog extends MyDialog{
-    Line selectedLine;
+public class KeySignatureChangeDialog extends MyDialog {
     JLabel indexOfSelectedNoteLabel = new JLabel();
     JComboBox keysCombo;
     SpinnerModel keysSpinner = new SpinnerNumberModel(4, 0, 7, 1);
@@ -53,9 +52,8 @@ public class KeySignatureChangeDialog extends MyDialog{
         center.add(infoPanel);
         center.add(Box.createRigidArea(large));
 
-
         JPanel keysPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        keysCombo = new JComboBox(new KeyType[]{KeyType.FLATS, KeyType.SHARPS});
+        keysCombo = new JComboBox(new KeyType[] { KeyType.FLATS, KeyType.SHARPS });
         keysCombo.setRenderer(new CompositionSettingsDialog.KeysImageListCellRenderer());
         keysPanel.add(keysCombo);
         JSpinner ts = new JSpinner(keysSpinner);
@@ -75,7 +73,7 @@ public class KeySignatureChangeDialog extends MyDialog{
     protected void getData() {
         MusicSheet ms = mainFrame.getMusicSheet();
         Line l = ms.getComposition().getLine(ms.getSelectedLine());
-        indexOfSelectedNoteLabel.setText(Integer.toString(ms.getComposition().indexOfLine(l)+1));
+        indexOfSelectedNoteLabel.setText(Integer.toString(ms.getComposition().indexOfLine(l) + 1));
         keysCombo.setSelectedItem(l.getKeyType());
         keysSpinner.setValue(l.getKeys());
     }

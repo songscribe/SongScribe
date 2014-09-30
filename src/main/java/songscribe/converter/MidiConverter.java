@@ -1,3 +1,22 @@
+/*
+    SongScribe song notation program
+    Copyright (C) 2014 Csaba Kavai
+
+    This file is part of SongScribe.
+
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package songscribe.converter;
 
 import songscribe.ui.Constants;
@@ -32,12 +51,13 @@ public class MidiConverter {
             System.out.println("The instrument must be in range of 0-127");
             return;
         }
-        if (tempoChange <=0 || tempoChange > 200) {
+
+        if (tempoChange <= 0 || tempoChange > 200) {
             System.out.println("The tempo change must be in range of 1-200");
             return;
         }
 
-        MainFrame mf = new MainFrame(){
+        MainFrame mf = new MainFrame() {
             @Override
             public void showErrorMessage(String message) {
                 System.out.println(message);
@@ -46,11 +66,11 @@ public class MidiConverter {
         mf.setMusicSheet(new MusicSheet(mf));
 
         Properties props = new Properties(mf.getProperties());
-        props.setProperty(Constants.WITHREPEATPROP, withRepeat ? Constants.TRUEVALUE : Constants.FALSEVALUE);
-        props.setProperty(Constants.INSTRUMENTPROP, Integer.toString(instrument));
-        props.setProperty(Constants.TEMPOCHANGEPROP, Integer.toString(tempoChange));
+        props.setProperty(Constants.WITH_REPEAT_PROP, withRepeat ? Constants.TRUE_VALUE : Constants.FALSE_VALUE);
+        props.setProperty(Constants.INSTRUMENT_PROP, Integer.toString(instrument));
+        props.setProperty(Constants.TEMPO_CHANGE_PROP, Integer.toString(tempoChange));
 
-        for (File file:files) {
+        for (File file : files) {
             try {
                 mf.getMusicSheet().setComposition(null);
                 mf.openMusicSheet(file, false);
@@ -58,12 +78,14 @@ public class MidiConverter {
                 String path = file.getCanonicalPath();
                 int dotPos = path.lastIndexOf('.');
 
-                if (dotPos > 0)
+                if (dotPos > 0) {
                     path = path.substring(0, dotPos);
+                }
 
                 MidiSystem.write(mf.getMusicSheet().getComposition().getSequence(), 1, new File(path + ".midi"));
-            } catch (IOException e) {
-                System.out.println("Could not convert "+file.getName());
+            }
+            catch (IOException e) {
+                System.out.println("Could not convert " + file.getName());
             }
         }
     }

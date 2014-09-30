@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Sep 23, 2006
+    Created on Sep 23, 2006
 */
 package songscribe.publisher.pagecomponents;
 
@@ -35,11 +35,11 @@ import java.io.File;
 /**
  * @author Csaba Kávai
  */
-public class Song extends PageComponent{
+public class Song extends PageComponent {
     private static SongDialog songDialog;
     private static JPopupMenu popupMenu;
-    private File songFile;
     MusicSheet musicSheet;
+    private File songFile;
 
     public Song(MusicSheet musicSheet, int xPos, int yPos, double resolution, File songFile) {
         super(new Rectangle(xPos, yPos, musicSheet.getSheetWidth(), musicSheet.getSheetHeight()), resolution);
@@ -47,7 +47,7 @@ public class Song extends PageComponent{
         this.songFile = songFile;
     }
 
-    public void paintComponent(Graphics2D g2){
+    public void paintComponent(Graphics2D g2) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         AffineTransform at = g2.getTransform();
@@ -56,10 +56,10 @@ public class Song extends PageComponent{
         g2.setTransform(at);
     }
 
-    public void reload(Publisher publisher){
+    public void reload(Publisher publisher) {
         musicSheet = publisher.openMusicSheet(songFile);
-        pos.width = (int)Math.round(musicSheet.getSheetWidth()*resolution);
-        pos.height = (int)Math.round(musicSheet.getSheetHeight()*resolution);
+        pos.width = (int) Math.round(musicSheet.getSheetWidth() * resolution);
+        pos.height = (int) Math.round(musicSheet.getSheetHeight() * resolution);
     }
 
     public MusicSheet getMusicSheet() {
@@ -75,16 +75,20 @@ public class Song extends PageComponent{
     }
 
     public MyDialog getPropertiesDialog(Publisher publisher) {
-        if(songDialog==null)songDialog = new SongDialog(publisher);
+        if (songDialog == null) {
+            songDialog = new SongDialog(publisher);
+        }
+
         return songDialog;
     }
 
     public JPopupMenu getPopupMenu(Publisher publisher) {
-        if(popupMenu==null){
+        if (popupMenu == null) {
             popupMenu = new JPopupMenu("Song");
             popupMenu.add(new SongEditAction(publisher));
             addCommonPopups(publisher, popupMenu);
         }
+
         return popupMenu;
     }
 }

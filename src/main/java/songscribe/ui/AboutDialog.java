@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on: 2006.03.18.
+    Created on: 2006.03.18.
 */
 package songscribe.ui;
 
@@ -33,29 +33,35 @@ import java.util.GregorianCalendar;
 /**
  * @author Csaba Kávai
  */
-public class AboutDialog extends MyDialog{
-    private static Logger logger = Logger.getLogger(AboutDialog.class);
+public class AboutDialog extends MyDialog {
     public static final String WEB = "http://www.songscribe.org";
     public static final String LICENSE = "GPL (General Public License)";
+    private static Logger logger = Logger.getLogger(AboutDialog.class);
 
     public AboutDialog(MainFrame mainFrame) {
         super(mainFrame, "About");
 
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.addTab("About", makeAboutPanel());
+
         try {
             tabPane.add("Read me", createTextPane("file:help/About.html"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Could not load readme file.", e);
         }
+
         try {
             tabPane.add("License agreement", createTextPane("file:license.txt"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Could not load license file.", e);
         }
+
         try {
             tabPane.add("Acknowledgements", createTextPane("file:help/Acknowledgements.html"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Could not load acknowledgement file.", e);
         }
 
@@ -65,7 +71,7 @@ public class AboutDialog extends MyDialog{
         dialogPanel.add(BorderLayout.SOUTH, southPanel);
     }
 
-    private Component createTextPane(String url) throws IOException{
+    private Component createTextPane(String url) throws IOException {
         JTextPane textPane = new JTextPane();
         textPane.setPage(url);
         textPane.setEditable(false);
@@ -107,7 +113,7 @@ public class AboutDialog extends MyDialog{
 
         progNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 30));
         progNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        progNameLabel.setText(mainFrame.PROGNAME);
+        progNameLabel.setText(mainFrame.PROG_NAME);
 
         versionLabel.setFont(new java.awt.Font("Arial", Font.BOLD, 14));
         versionLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -139,15 +145,18 @@ public class AboutDialog extends MyDialog{
 
         web.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
         web.setText(WEB);
-        if(MyDesktop.isDesktopSupported()){
+
+        if (MyDesktop.isDesktopSupported()) {
             web.setForeground(new java.awt.Color(0, 0, 204));
             web.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
                     webMouseClicked();
                 }
+
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     webMouseEntered();
                 }
+
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     webMouseExited();
                 }
@@ -159,16 +168,19 @@ public class AboutDialog extends MyDialog{
         emailLabel.setText("E-mail:");
 
         email.setFont(new java.awt.Font("Arial", 0, 12));
-        email.setText(ReportBugDialog.BUGEMAIL);
-        if(MyDesktop.isDesktopSupported()){
+        email.setText(ReportBugDialog.BUG_EMAIL);
+
+        if (MyDesktop.isDesktopSupported()) {
             email.setForeground(new java.awt.Color(0, 0, 204));
             email.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
                     emailMouseClicked();
                 }
+
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     webMouseEntered();
                 }
+
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     webMouseExited();
                 }
@@ -178,64 +190,8 @@ public class AboutDialog extends MyDialog{
         JPanel aboutPanel = new JPanel();
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(aboutPanel);
         aboutPanel.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(iconLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .add(6, 6, 6)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(versionLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(copyrightLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
-                            .add(licenseLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 82, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(webLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 82, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(emailLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 82, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(version, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                            .add(copyRight1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                            .add(license, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                            .add(copyRight2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                            .add(web, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                            .add(email, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)))
-                    .add(progNameLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(iconLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(progNameLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(versionLabel)
-                            .add(version))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(copyrightLabel)
-                            .add(copyRight1))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(copyRight2)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(licenseLabel)
-                            .add(license))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(webLabel)
-                            .add(web))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(emailLabel)
-                            .add(email))))
-                .addContainerGap())
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(layout.createSequentialGroup().addContainerGap().add(iconLabel).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING).add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup().add(6, 6, 6).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(versionLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(copyrightLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE).add(licenseLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 82, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).add(webLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 82, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).add(emailLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 82, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING).add(version, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE).add(copyRight1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE).add(license, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE).add(copyRight2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE).add(web, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE).add(email, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))).add(progNameLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)).addContainerGap()));
+        layout.setVerticalGroup(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(layout.createSequentialGroup().addContainerGap().add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(iconLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE).add(layout.createSequentialGroup().add(progNameLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE).add(versionLabel).add(version)).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE).add(copyrightLabel).add(copyRight1)).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(copyRight2).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE).add(licenseLabel).add(license)).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE).add(webLabel).add(web)).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE).add(emailLabel).add(email)))).addContainerGap()));
         return aboutPanel;
     }
 
@@ -253,7 +209,7 @@ public class AboutDialog extends MyDialog{
     }
 
     private void emailMouseClicked() {
-        Utilities.openEmail(mainFrame,ReportBugDialog.BUGEMAIL+"?SUBJECT=SongScribe comment");
+        Utilities.openEmail(mainFrame, ReportBugDialog.BUG_EMAIL + "?SUBJECT=SongScribe comment");
     }
 
     protected void getData() {

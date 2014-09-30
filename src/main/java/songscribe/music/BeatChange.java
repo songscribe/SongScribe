@@ -1,23 +1,23 @@
-/*  
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Nov 2, 2007
+    Created on Nov 2, 2007
 */
 package songscribe.music;
 
@@ -25,11 +25,11 @@ package songscribe.music;
  * @author Csaba Kávai
  */
 public enum BeatChange {
-    QUAVEREQUALSQUAVER(new Quaver(), new Quaver(), 1f),
-    DOTTEDCROCHETEQUALSMINIM(createDottedVersion(new Crotchet()), new Minim(), 3f/4f),
-    MINIMEQUALSDOTTEDCROCHET(new Minim(), createDottedVersion(new Crotchet()), 4f/3f),
-    CROTCHETQUALSDOTTEDCROCHET(new Crotchet(), createDottedVersion(new Crotchet()), 2f/3f),
-    DOTTEDCROCHETQUALSCROCHET(createDottedVersion(new Crotchet()), new Crotchet(), 3f/2f);
+    QUAVER_EQUALS_QUAVER(new Quaver(), new Quaver(), 1f),
+    DOTTED_CROCHET_EQUALS_MINIM(createDottedVersion(new Crotchet()), new Minim(), 3f / 4f),
+    MINIM_EQUALS_DOTTED_CROCHET(new Minim(), createDottedVersion(new Crotchet()), 4f / 3f),
+    CROTCHET_EQUALS_DOTTED_CROCHET(new Crotchet(), createDottedVersion(new Crotchet()), 2f / 3f),
+    DOTTED_CROCHET_EQUALS_CROCHET(createDottedVersion(new Crotchet()), new Crotchet(), 3f / 2f);
 
     private Note firstNote, secondNote;
     private float tempoChange;

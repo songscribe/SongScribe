@@ -1,23 +1,23 @@
-/*  
-Music of The Supreme song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Sep 12, 2007
+    Created on Sep 12, 2007
 */
 package songscribe;
 
@@ -33,42 +33,54 @@ import java.util.Properties;
  */
 public class UpdateMaker {
     public static void main(String[] args) throws IOException {
-        if(args.length!=1)return;
-        File base = new File(args[0]);        
+        if (args.length != 1) {
+            return;
+        }
+
+        File base = new File(args[0]);
         Properties props = new Properties();
         props.load(new FileInputStream("conf/defprops"));
-        String updateBaseURL = props.getProperty(Constants.UPDATEURL1);
+        String updateBaseURL = props.getProperty(Constants.UPDATE_URL1);
         HttpClient httpClient = new HttpClient();
-        GetMethod getChecksum = new GetMethod(updateBaseURL+ Constants.CHECKSUMSFILENAME);
-        getChecksum.addRequestHeader(Constants.MAXAGEHEADER);
+        GetMethod getChecksum = new GetMethod(updateBaseURL + Constants.CHECKSUMS_FILENAME);
+        getChecksum.addRequestHeader(Constants.MAX_AGE_HEADER);
         httpClient.executeMethod(getChecksum);
         BufferedReader br = new BufferedReader(new InputStreamReader(getChecksum.getResponseBodyAsStream()));
-        if(!br.readLine().equals(ChecksumMaker.HEADER)){
+
+        if (!br.readLine().equals(ChecksumMaker.HEADER)) {
             System.out.println("Hiba");
             return;
         }
+
         String line;
-        while((line=br.readLine())!=null){
+
+        while ((line = br.readLine()) != null) {
             int spacePos1 = line.lastIndexOf(' ');
-            int spacePos2 = line.lastIndexOf(' ', spacePos1-1);
+            int spacePos2 = line.lastIndexOf(' ', spacePos1 - 1);
             File file = new File(base, line.substring(0, spacePos2));
-            long remoteChecksum = Long.parseLong(line.substring(spacePos1+1));
+            long remoteChecksum = Long.parseLong(line.substring(spacePos1 + 1));
             long localChecksum = file.exists() ? ChecksumMaker.getChecksum(file) : -1;
-            if(localChecksum==remoteChecksum){
+
+            if (localChecksum == remoteChecksum) {
                 file.delete();
             }
-            System.out.println(file.getPath()+", "+file.length()+", "+line.substring(spacePos2+1, spacePos1));
+
+            System.out.println(file.getPath() + ", " + file.length() + ", " + line.substring(spacePos2 + 1, spacePos1));
         }
+
         br.close();
-        getChecksum.releaseConnection();        
+        getChecksum.releaseConnection();
         deleteIfEmpty(base);
     }
 
-    private static void deleteIfEmpty(File file){
-        for(File f:file.listFiles()){
-            if(f.isDirectory())deleteIfEmpty(f);
+    private static void deleteIfEmpty(File file) {
+        for (File f : file.listFiles()) {
+            if (f.isDirectory()) {
+                deleteIfEmpty(f);
+            }
         }
-        if(file.listFiles().length==0){
+
+        if (file.listFiles().length == 0) {
             file.delete();
         }
     }

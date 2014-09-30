@@ -1,6 +1,6 @@
 /*
 SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+Copyright (C) 2006 Csaba Kavai
 
 This file is part of SongScribe.
 
@@ -199,9 +199,9 @@ public class PImageDialog extends MyDialog {
             publisher.getBook().repaintWhole();
         }
         if(unitCombo.getSelectedItem()==INCH){
-            publisher.getProperties().setProperty(Constants.METRIC, Constants.FALSEVALUE);
+            publisher.getProperties().setProperty(Constants.METRIC, Constants.FALSE_VALUE);
         }else if(unitCombo.getSelectedItem()==MM){
-            publisher.getProperties().setProperty(Constants.METRIC, Constants.TRUEVALUE);
+            publisher.getProperties().setProperty(Constants.METRIC, Constants.TRUE_VALUE);
         }
     }
 

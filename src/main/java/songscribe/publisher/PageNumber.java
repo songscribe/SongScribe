@@ -1,6 +1,6 @@
-/*  
+/*
 SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+Copyright (C) 2006 Csaba Kavai
 
 This file is part of SongScribe.
 
@@ -31,8 +31,8 @@ public class PageNumber {
         LEFT("Left"),
         CENTER("Center"),
         RIGHT("Right"),
-        BOOKOUTER("Book - outer"),
-        BOOKINNER("Book - inner");
+        BOOK_OUTER("Book - outer"),
+        BOOK_INNER("Book - inner");
 
         private String description;
 
@@ -44,7 +44,7 @@ public class PageNumber {
             return description;
         }
     }
-    
+
     public enum Placement{
         TOP("Top"),
         BOTTOM("Bottom");
@@ -65,7 +65,7 @@ public class PageNumber {
     private Placement placement;
     private int fromPage;
     private int spaceFromMargin;
-    
+
     public Alignment getAlignment() {
         return alignment;
     }

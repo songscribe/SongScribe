@@ -1,6 +1,6 @@
 /*
 SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+Copyright (C) 2006 Csaba Kavai
 
 This file is part of SongScribe.
 
@@ -52,26 +52,26 @@ public class MaestroMsDrawer extends BaseMsDrawer{
         upNoteMap.put(NoteType.CROTCHET, "\uf071");
         upNoteMap.put(NoteType.QUAVER, "\uf065");
         upNoteMap.put(NoteType.SEMIQUAVER, "\uf078");
-        upNoteMap.put(NoteType.DEMISEMIQUAVER, "\uf078");
-        upNoteMap.put(NoteType.GRACEQUAVER, "\uf0c9");
+        upNoteMap.put(NoteType.DEMI_SEMIQUAVER, "\uf078");
+        upNoteMap.put(NoteType.GRACE_QUAVER, "\uf0c9");
 
         downNoteMap.put(NoteType.SEMIBREVE, "\uf077");
         downNoteMap.put(NoteType.MINIM, "\uf048");
         downNoteMap.put(NoteType.CROTCHET, "\uf051");
         downNoteMap.put(NoteType.QUAVER, "\uf045");
         downNoteMap.put(NoteType.SEMIQUAVER, "\uf058");
-        downNoteMap.put(NoteType.DEMISEMIQUAVER, "\uf058");
-        downNoteMap.put(NoteType.GRACEQUAVER, "\uf0c9");
+        downNoteMap.put(NoteType.DEMI_SEMIQUAVER, "\uf058");
+        downNoteMap.put(NoteType.GRACE_QUAVER, "\uf0c9");
 
-        noteMap.put(NoteType.SEMIBREVEREST, "\uf0ee");
-        noteMap.put(NoteType.MINIMREST, "\uf0ee");
-        noteMap.put(NoteType.CROTCHETREST, "\uf0ce");
-        noteMap.put(NoteType.QUAVERREST, "\uf0e4");
-        noteMap.put(NoteType.SEMIQUAVERREST, "\uf0c5");
-        noteMap.put(NoteType.DEMISEMIQUAVERREST, "\uf0a8");
-        noteMap.put(NoteType.REPEATLEFT, "\uf05d");
-        noteMap.put(NoteType.REPEATRIGHT, "\uf07d");
-        noteMap.put(NoteType.SINGLEBARLINE, "\uf05c");
+        noteMap.put(NoteType.SEMIBREVE_REST, "\uf0ee");
+        noteMap.put(NoteType.MINIM_REST, "\uf0ee");
+        noteMap.put(NoteType.CROTCHET_REST, "\uf0ce");
+        noteMap.put(NoteType.QUAVER_REST, "\uf0e4");
+        noteMap.put(NoteType.SEMIQUAVER_REST, "\uf0c5");
+        noteMap.put(NoteType.DEMI_SEMIQUAVER_REST, "\uf0a8");
+        noteMap.put(NoteType.REPEAT_LEFT, "\uf05d");
+        noteMap.put(NoteType.REPEAT_RIGHT, "\uf07d");
+        noteMap.put(NoteType.SINGLE_BARLINE, "\uf05c");
     }
 
     private static final String trebleclef = "\uf026";
@@ -87,7 +87,7 @@ public class MaestroMsDrawer extends BaseMsDrawer{
     public MaestroMsDrawer(MusicSheet ms) throws IOException {
         super(ms);
         crotchetWidth = 10;
-        if(Utilities.arrayIndexOf(MainFrame.FONTFAMILIES, "Maestro")==-1){
+        if(Utilities.arrayIndexOf(MainFrame.FONT_FAMILIES, "Maestro")==-1){
             throw new IOException();
         }
     }
@@ -100,9 +100,9 @@ public class MaestroMsDrawer extends BaseMsDrawer{
 
         //drawing the note
         int helpPos;
-        if(note.getNoteType()==NoteType.SINGLEBARLINE){
+        if(note.getNoteType()==NoteType.SINGLE_BARLINE){
             helpPos = ms.getNoteYPos(4, line);
-        }else if(note.getNoteType()==NoteType.SEMIBREVE || note.getNoteType()==NoteType.GRACEQUAVER || beamed || note.getNoteType().isRest()){
+        }else if(note.getNoteType()==NoteType.SEMIBREVE || note.getNoteType()==NoteType.GRACE_QUAVER || beamed || note.getNoteType().isRest()){
             helpPos = yPos;
         }else{
             helpPos = yPos+(int)size8;
@@ -120,16 +120,16 @@ public class MaestroMsDrawer extends BaseMsDrawer{
         if(note.getNoteType().isRepeat()){
             helpPos = ms.getNoteYPos(4, line);
             g2.setFont(fughetta);
-            if(note.getNoteType()==NoteType.REPEATLEFTRIGHT){
-                drawAntialiasedString(g2, noteMap.get(NoteType.REPEATRIGHT), xPos, helpPos);
-                drawAntialiasedString(g2, noteMap.get(NoteType.REPEATLEFT), xPos+10, helpPos);
+            if(note.getNoteType()==NoteType.REPEAT_LEFT_RIGHT){
+                drawAntialiasedString(g2, noteMap.get(NoteType.REPEAT_RIGHT), xPos, helpPos);
+                drawAntialiasedString(g2, noteMap.get(NoteType.REPEAT_LEFT), xPos+10, helpPos);
             }else{
                 drawAntialiasedString(g2, noteString, xPos, helpPos);
             }
             g2.setFont(maestro);
         }else{
             drawAntialiasedString(g2, noteString, xPos, helpPos);
-            if(note.getNoteType()==NoteType.DEMISEMIQUAVER && !beamed){
+            if(note.getNoteType()==NoteType.DEMI_SEMIQUAVER && !beamed){
                 if(note.isUpper()){
                     drawAntialiasedString(g2, extraFlagUp, xPos+9.625f, helpPos-27.125f);
                 }else{
@@ -142,13 +142,13 @@ public class MaestroMsDrawer extends BaseMsDrawer{
         //drawing the stave-longitude
         if (Math.abs(note.getYPos()) > 5) {
             for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1)); Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2)
-                g2.drawLine(xPos + Note.HOTSPOT.x - 9, ms.getNoteYPos(i, line),
-                        xPos + Note.HOTSPOT.x + 9, ms.getNoteYPos(i, line));
+                g2.drawLine(xPos + Note.HOT_SPOT.x - 9, ms.getNoteYPos(i, line),
+                        xPos + Note.HOT_SPOT.x + 9, ms.getNoteYPos(i, line));
         }
 
         //drawing the dottes
         for(int i=0;i<note.getDotted();i++){
-            drawAntialiasedString(g2, dot, xPos+13+i*6, (note.getYPos()%2==0 ? yPos+(note.isUpper()?-1:1)*(int)MusicSheet.HALFLINEDIST: yPos)+6);
+            drawAntialiasedString(g2, dot, xPos+13+i*6, (note.getYPos()%2==0 ? yPos+(note.isUpper()?-1:1)*(int)MusicSheet.HALF_LINE_DIST : yPos)+6);
         }
 
         //drawing prefixes
@@ -160,7 +160,7 @@ public class MaestroMsDrawer extends BaseMsDrawer{
                 drawAntialiasedString(g2, naturalFlatSharp[accidental.getComponent(0)], xPos-9, yPos);
             }
         }else if(accidental.getNb()==2){
-            if(accidental==Note.Accidental.DOUBLEFLAT){
+            if(accidental==Note.Accidental.DOUBLE_FLAT){
                 if(note.isAccidentalInParenthesis()){
                     drawAntialiasedString(g2, doubleFlatParenthesis, xPos-22, yPos);
                 }else{
@@ -176,14 +176,14 @@ public class MaestroMsDrawer extends BaseMsDrawer{
         //drawing the lengthening
         if(beamed){
             if(note.isUpper()){
-                g2.draw(new Line2D.Double(xPos+crotchetWidth, yPos-0.5f, xPos+crotchetWidth, yPos-Note.HOTSPOT.y-note.a.lengthening-1.5f));
+                g2.draw(new Line2D.Double(xPos+crotchetWidth, yPos-0.5f, xPos+crotchetWidth, yPos-Note.HOT_SPOT.y-note.a.lengthening-1.5f));
             }else{
-                g2.draw(new Line2D.Double(xPos, yPos+0.5f, xPos, yPos+Note.HOTSPOT.y-note.a.lengthening+1.5f));
+                g2.draw(new Line2D.Double(xPos, yPos+0.5f, xPos, yPos+Note.HOT_SPOT.y-note.a.lengthening+1.5f));
             }
         }
 
         //drawing the glissando
-        if(note.getGlissando()!=Note.NOGLISSANDO){
+        if(note.getGlissando()!=Note.NO_GLISSANDO){
             drawGlissando(g2, ms.getComposition().getLine(line).getNoteIndex(note), note.getGlissando(), line);
         }
 
@@ -196,14 +196,14 @@ public class MaestroMsDrawer extends BaseMsDrawer{
     protected int drawLineBeginning(Graphics2D g2, Line line, int l) {
         g2.setFont(maestro);
         //drawing the trebleClef
-        drawAntialiasedString(g2, trebleclef, 5, ms.getMiddleLine()+MusicSheet.LINEDIST+l*ms.getRowHeight());
+        drawAntialiasedString(g2, trebleclef, 5, ms.getMiddleLine()+MusicSheet.LINE_DIST +l*ms.getRowHeight());
 
         //drawing the leading sharps or flats
         if(line.getKeys()>0){
             int fsPos = ms.getLeadingKeysPos();
             int fs = line.getKeyType().ordinal();
             for(int i=0;i<line.getKeys();i++){
-                drawAntialiasedString(g2, naturalFlatSharp[fs], fsPos, ms.getNoteYPos(FLATSHARPORDER[fs][i%7], l));
+                drawAntialiasedString(g2, naturalFlatSharp[fs], fsPos, ms.getNoteYPos(FLAT_SHARP_ORDER[fs][i%7], l));
                 fsPos+=8;
             }
         }

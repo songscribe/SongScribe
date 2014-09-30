@@ -1,23 +1,23 @@
-/* 
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+/*
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Mar 26, 2006
+    Created on Mar 26, 2006
 */
 package songscribe.ui.adjustment;
 
@@ -31,7 +31,7 @@ import java.awt.event.MouseMotionListener;
 /**
  * @author Csaba Kávai
  */
-public abstract class Adjustment implements MouseListener, MouseMotionListener{
+public abstract class Adjustment implements MouseListener, MouseMotionListener {
     protected MusicSheet musicSheet;
     protected boolean enabled;
     protected boolean startedDrag;
@@ -53,15 +53,24 @@ public abstract class Adjustment implements MouseListener, MouseMotionListener{
     }
 
     public void mousePressed(MouseEvent e) {
-        if (!enabled) return;
+        if (!enabled) {
+            return;
+        }
+
         startedDrag = true;
         startPoint = e.getPoint();
         startedDrag();
-        if(startedDrag)musicSheet.setDragDisabled(true);
+
+        if (startedDrag) {
+            musicSheet.setDragDisabled(true);
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (!enabled) return;
+        if (!enabled) {
+            return;
+        }
+
         if (startedDrag) {
             startedDrag = false;
             finishedDrag();
@@ -76,10 +85,15 @@ public abstract class Adjustment implements MouseListener, MouseMotionListener{
     }
 
     public void mouseDragged(MouseEvent e) {
-        if (!enabled) return;        
-        if(startedDrag){
-            int realX = e.getX() < upLeftDragBounds.x ? upLeftDragBounds.x : e.getX() >= downRightDragBounds.x ? downRightDragBounds.x - 1 : e.getX();
-            int realY = e.getY() < upLeftDragBounds.y ? upLeftDragBounds.y : e.getY() >= downRightDragBounds.y ? downRightDragBounds.y - 1 : e.getY();
+        if (!enabled) {
+            return;
+        }
+
+        if (startedDrag) {
+            int realX = e.getX() < upLeftDragBounds.x ? upLeftDragBounds.x :
+                    e.getX() >= downRightDragBounds.x ? downRightDragBounds.x - 1 : e.getX();
+            int realY = e.getY() < upLeftDragBounds.y ? upLeftDragBounds.y :
+                    e.getY() >= downRightDragBounds.y ? downRightDragBounds.y - 1 : e.getY();
             endPoint.setLocation(realX, realY);
             drag();
         }
@@ -89,7 +103,10 @@ public abstract class Adjustment implements MouseListener, MouseMotionListener{
     }
 
     protected abstract void startedDrag();
+
     protected abstract void drag();
+
     protected abstract void finishedDrag();
+
     public abstract void repaint(Graphics2D g2);
 }

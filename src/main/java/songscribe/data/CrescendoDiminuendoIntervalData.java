@@ -1,15 +1,34 @@
+/*
+    SongScribe song notation program
+    Copyright (C) 2014 Csaba Kavai
+
+    This file is part of SongScribe.
+
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Created by Himadri on 2014.03.17
+*/
 package songscribe.data;
 
-/**
- * Created by Kávai on 2014.03.17..
- */
 public class CrescendoDiminuendoIntervalData {
     public static final String SEPARATOR = ",";
 
     public static int getX1Shift(Interval interval) {
         if (interval.getData() == null) {
             return 0;
-        } else {
+        }
+        else {
             return Integer.parseInt(interval.getData().split(SEPARATOR)[0]);
         }
     }
@@ -17,7 +36,8 @@ public class CrescendoDiminuendoIntervalData {
     public static int getX2Shift(Interval interval) {
         if (interval.getData() == null) {
             return 0;
-        } else {
+        }
+        else {
             return Integer.parseInt(interval.getData().split(SEPARATOR)[1]);
         }
     }
@@ -25,7 +45,8 @@ public class CrescendoDiminuendoIntervalData {
     public static int getYShift(Interval interval) {
         if (interval.getData() == null) {
             return 0;
-        } else {
+        }
+        else {
             return Integer.parseInt(interval.getData().split(SEPARATOR)[2]);
         }
     }

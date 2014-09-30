@@ -1,23 +1,23 @@
 /*
-SongScribe song notation program
-Copyright (C) 2006-2007 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on 2005.01.06., 21:49:39
+    Created on 2005.01.06., 21:49:39
 */
 
 package songscribe.music;
@@ -32,28 +32,38 @@ import java.util.ArrayList;
  * @author Csaba Kávai
  */
 public abstract class Note implements Cloneable {
-    public static final Point HOTSPOT = new Point(5, 27);
-    public static final int NORMALIMAGEWIDTH = 18;
-    public static final Dimension IMAGEDIM = new Dimension(19, 56);
-    private static final int[] PITCHES = {71, 72, 74, 76, 77, 79, 81};
-    private static final float[] DOTTEDLONGITUDE = {1.0f, 1.5f, 1.75f};
-
-    public static final Rectangle[] REALNATURALFLATSHARPRECT = {
-        new Rectangle(0, 17, 6, 22), new Rectangle(0, 15, 7, 19), new Rectangle(0, 17, 8, 22), new Rectangle(0, 23, 9, 10)
+    public static final Point HOT_SPOT = new Point(5, 27);
+    public static final int NORMAL_IMAGE_WIDTH = 18;
+    public static final Dimension IMAGE_DIM = new Dimension(19, 56);
+    public static final Rectangle[] REAL_NATURAL_FLAT_SHARP_RECT = {
+            new Rectangle(0, 17, 6, 22),
+            new Rectangle(0, 15, 7, 19),
+            new Rectangle(0, 17, 8, 22),
+            new Rectangle(0, 23, 9, 10)
     };
-    public static final Image[] NATURALFLATSHARPIMAGE = {MainFrame.getImage("natural.gif"), MainFrame.getImage("flat.gif"), MainFrame.getImage("sharp.gif"), MainFrame.getImage("doublesharp.gif")};
-    public static final Image DOTIMAGE = MainFrame.getImage("dot.gif");
-
-    public static final Note GLISSANDONOTE = new GlissandoNote();
-    public static final Note PASTENOTE = new PasteNote();
-
+    public static final Image[] NATURAL_FLAT_SHARP_IMAGE = {
+            MainFrame.getImage("natural.gif"),
+            MainFrame.getImage("flat.gif"),
+            MainFrame.getImage("sharp.gif"),
+            MainFrame.getImage("doublesharp.gif")
+    };
+    public static final Image DOT_IMAGE = MainFrame.getImage("dot.gif");
+    public static final Note GLISSANDO_NOTE = new GlissandoNote();
+    public static final Note PASTE_NOTE = new PasteNote();
+    public static final Glissando NO_GLISSANDO = new Glissando(Integer.MAX_VALUE);
+    protected Glissando glissando = NO_GLISSANDO;
+    private static final int[] PITCHES = { 71, 72, 74, 76, 77, 79, 81 };
+    private static final float[] DOTTED_DURATION = { 1.0f, 1.5f, 1.75f };
+    private static final int[] PREFIX_MODIFIER = { 0, 0, -1, 1, 0, -2, 2, -1, 1 };
+    private static ArrayList<ColoredNote> coloredNotes = new ArrayList<ColoredNote>();
+    private static ArrayList<ColoredImage> coloredImages = new ArrayList<ColoredImage>();
+    public final Acceleration a = new Acceleration();
     /**
-     * Strores the vertical position of the note in the line.
+     * The horizontal position of the note in the line.
      */
     protected int xPos;
-
     /**
-     * Stores the y position of the note in the sheet.
+     * The y position of the note in the sheet.
      * <table border="1">
      * <tr><th>Pitch<th>Value
      * <tr><td>...<td>...
@@ -66,102 +76,32 @@ public abstract class Note implements Cloneable {
      * </table>
      */
     protected int yPos;
-
     /**
-     * Stores how many dots the note has. Possible values are 0, 1, 2.
+     * How many dots the note has. Possible values are 0, 1, 2.
      */
     protected int dotted;
-
-    //prefixes
-    public enum Accidental {
-        NONE(0, -1, -1),
-        NATURAL(1, 0, -1), FLAT(1, 1, -1), SHARP(1, 2, -1),
-        DOUBLENATURAL(2, 0, 0), DOUBLEFLAT(2, 1, 1), DOUBLESHARP(1, 3, -1),
-        NATURALFLAT(2, 0, 1), NATURALSHARP(2, 0, 2);
-
-        private int nb;
-        private int components[] = new int[2];
-
-        Accidental(int nb, int firstComponent, int secondComponent) {
-            this.nb = nb;
-            components[0] = firstComponent;
-            components[1] = secondComponent;
-        }
-
-        public int getNb() {
-            return nb;
-        }
-
-        public int getComponent(int i) {
-            return components[i];
-        }
-    }
-
-    private static final int[] PREFIXMODIFIER = {0, 0, -1, 1, 0, -2, 2, -1, 1};
-
     protected Accidental accidental = Accidental.NONE;
     protected boolean isAccidentalInParenthesis;
-
-    //glissando
-    public static class Glissando{
-        public int pitch, x1Translate, x2Translate;
-
-        public Glissando(int pitch) {
-            this.pitch = pitch;
-        }
-    }
-    public static final Glissando NOGLISSANDO = new Glissando(Integer.MAX_VALUE);
-    protected Glissando glissando = NOGLISSANDO;
-
-    //tempochange
     protected Tempo tempoChange;
-
-    //beatchange
     protected BeatChange beatChange;
-
-    //annotation
     protected Annotation annotation;
-
-    //whether the note is upper or not
     protected boolean upper;
-
-    //articulations
     protected ForceArticulation forceArticulation;
     protected DurationArticulation durationArticulation;
-
-    //trill
     protected boolean trill;
-
-    //fermata
     protected boolean fermata;
-
     protected int syllableMovement;
-
     protected int syllableRelationMovement;
-
     protected boolean forceSyllable;
-
     protected boolean invertFractionBeamOrientation;
-
-    public enum SyllableRelation{NO, EXTENDER, DASH, ONEDASH}
-
-    public class Acceleration{
-        //lenghening for beaming
-        public int lengthening;
-        //lyrics
-        public String syllable;
-        public SyllableRelation syllableRelation;
-        public float longDashPosition;
-    }
-
-    public final Acceleration a = new Acceleration();
-
     /**
-     * Strores the line owned by the note.
+     * The line which owns this note.
      */
     protected Line line;
+    private StringBuilder pitchStringBuffer = new StringBuilder(10);
 
-    protected Note(){}
+    protected Note() {
+    }
 
     protected Note(Note note) {
         xPos = note.xPos;
@@ -183,6 +123,76 @@ public abstract class Note implements Cloneable {
         syllableRelationMovement = note.syllableRelationMovement;
         forceSyllable = note.forceSyllable;
         invertFractionBeamOrientation = note.invertFractionBeamOrientation;
+    }
+
+    public static Image getImage(NoteType noteType, boolean upImage) {
+        return upImage ? noteType.getInstance().getUpImage() : noteType.getInstance().getDownImage();
+    }
+
+    public static Image clipNoteImage(Image noteImage, Rectangle noteRect, Color borderColor, Dimension size) {
+        BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(Color.white);
+        g2.fillRect(0, 0, img.getWidth(), img.getHeight());
+        g2.drawImage(noteImage,
+                (img.getWidth() - noteRect.width) / 2 - noteRect.x,
+                (img.getHeight() - noteRect.height) / 2 - noteRect.y, null);
+        g2.setPaint(borderColor);
+        g2.drawRect(0, 0, img.getWidth() - 1, img.getHeight() - 1);
+        g2.dispose();
+        return img;
+    }
+
+    public static Image getColoredNote(NoteType noteType, Color color, boolean upper) {
+        for (ColoredNote cn : coloredNotes) {
+            if (noteType == cn.noteType && upper == cn.upper && color.equals(cn.color)) {
+                return cn.image;
+            }
+        }
+
+        // not found
+        Image ret = colorizeImage(getImage(noteType, upper), color);
+        coloredNotes.add(new ColoredNote(noteType, color, upper, ret));
+        return ret;
+    }
+
+    public static Image getColoredImage(Image originalImage, Color color) {
+        for (ColoredImage ci : coloredImages) {
+            if (originalImage == ci.originalImage && color == ci.color) {
+                return ci.coloredImage;
+            }
+        }
+
+        // not found
+        Image ret = colorizeImage(originalImage, color);
+        coloredImages.add(new ColoredImage(originalImage, color, ret));
+        return ret;
+    }
+
+    private static Image colorizeImage(Image img, Color color) {
+        BufferedImage result = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = result.createGraphics();
+        g2.drawImage(img, 0, 0, null);
+        int red = color.getRed();
+        int green = color.getGreen();
+        int blue = color.getBlue();
+
+        for (int y = 0; y < result.getHeight(); y++) {
+            for (int x = 0; x < result.getWidth(); x++) {
+                int rgb = result.getRGB(x, y);
+                int newRgb = rgb & 0xFF000000 |
+                             ((255 - red) * (rgb & 0xFF0000 >> 16) + red * red) / 255 << 16 |
+                             ((255 - green) * (rgb & 0xFF00 >> 8) + green * green) / 255 << 8 |
+                             ((255 - blue) * (rgb & 0xFF) + blue * blue) / 255;
+                if ((rgb & 0xFF000000) != 0) {
+                    // not transparent
+                    result.setRGB(x, y, newRgb);
+                }
+            }
+        }
+
+        return result;
     }
 
     public abstract Image getUpImage();
@@ -229,7 +239,7 @@ public abstract class Note implements Cloneable {
 
     public void setAccidental(Accidental accidental) {
         this.accidental = accidental;
-        isAccidentalInParenthesis&=getAccidental()!=Accidental.NONE;
+        isAccidentalInParenthesis &= getAccidental() != Accidental.NONE;
     }
 
     public boolean isAccidentalInParenthesis() {
@@ -237,7 +247,7 @@ public abstract class Note implements Cloneable {
     }
 
     public void setAccidentalInParenthesis(boolean accidentalInParenthesis) {
-        isAccidentalInParenthesis = getAccidental()!=Accidental.NONE && accidentalInParenthesis;
+        isAccidentalInParenthesis = getAccidental() != Accidental.NONE && accidentalInParenthesis;
     }
 
     public Glissando getGlissando() {
@@ -245,8 +255,12 @@ public abstract class Note implements Cloneable {
     }
 
     public void setGlissando(int pitch) {
-        if(glissando==NOGLISSANDO)glissando = new Glissando(pitch);
-        else glissando.pitch=pitch;
+        if (glissando == NO_GLISSANDO) {
+            glissando = new Glissando(pitch);
+        }
+        else {
+            glissando.pitch = pitch;
+        }
     }
 
     public Tempo getTempoChange() {
@@ -345,97 +359,128 @@ public abstract class Note implements Cloneable {
         this.invertFractionBeamOrientation = invertFractionBeamOrientation;
     }
 
-    public int getPitch(){
-        return PITCHES[getPitchType()]+12*((yPos<=0 ? -yPos : -yPos-6)/7)+
-                PREFIXMODIFIER[(accidental==Accidental.NONE?findLastPrefix():accidental).ordinal()];
+    public int getPitch() {
+        return PITCHES[getPitchType()] + 12 * ((yPos <= 0 ? -yPos : -yPos - 6) / 7) +
+               PREFIX_MODIFIER[(accidental == Accidental.NONE ? findLastPrefix() : accidental).ordinal()];
     }
 
-    public int getActiveNotePitch(Line line){
-        return PITCHES[getPitchType()]+12*((yPos<=0 ? -yPos : -yPos-6)/7)+
-                PREFIXMODIFIER[getActiveNotePrefix(line).ordinal()];
+    public int getActiveNotePitch(Line line) {
+        return PITCHES[getPitchType()] + 12 * ((yPos <= 0 ? -yPos : -yPos - 6) / 7) +
+               PREFIX_MODIFIER[getActiveNotePrefix(line).ordinal()];
     }
 
-    private Accidental getActiveNotePrefix(Line line){
-        return accidental==Accidental.NONE?(!line.existsKey(getPitchType()) ? Accidental.NONE :
-                    line.getKeyType()==KeyType.FLATS ? Accidental.FLAT : Accidental.SHARP):accidental;
+    private Accidental getActiveNotePrefix(Line line) {
+        return accidental == Accidental.NONE ? (!line.keyExists(getPitchType()) ? Accidental.NONE : line.getKeyType() ==
+                                                                                                    KeyType.FLATS ? Accidental.FLAT : Accidental.SHARP
+        ) : accidental;
     }
 
-    private StringBuilder pitchStringBuffer = new StringBuilder(10);
-    public String getActiveNotePitchString(Line line){
+    public String getActiveNotePitchString(Line line) {
         pitchStringBuffer.delete(0, pitchStringBuffer.length());
         Accidental p = getActiveNotePrefix(line);
-        if(p==Accidental.FLAT){
+
+        if (p == Accidental.FLAT) {
             pitchStringBuffer.append('b');
             pitchStringBuffer.append(' ');
-        }else if(p==Accidental.SHARP){
+        }
+        else if (p == Accidental.SHARP) {
             pitchStringBuffer.append('#');
             pitchStringBuffer.append(' ');
         }
-        pitchStringBuffer.append((char)((getPitchType()+1)%7+'A'));
-        if(yPos<0)pitchStringBuffer.append('\'');
-        else if(yPos>6)pitchStringBuffer.append(',');
+
+        pitchStringBuffer.append((char) ((getPitchType() + 1) % 7 + 'A'));
+
+        if (yPos < 0) {
+            pitchStringBuffer.append('\'');
+        }
+        else if (yPos > 6) {
+            pitchStringBuffer.append(',');
+        }
+
         return pitchStringBuffer.toString();
     }
 
     /**
      * @return 0 for B, 1 for C, 2 for D, ..., 6 for A
      */
-    public int getPitchType(){
-        return yPos<=0 ? -yPos % 7 : (7 - yPos % 7) % 7;
+    public int getPitchType() {
+        return yPos <= 0 ? -yPos % 7 : (7 - yPos % 7) % 7;
     }
 
-    public int getDefaultDurationWithDots(){
-        return (int)(getDefaultDuration() * DOTTEDLONGITUDE[dotted]);
+    public int getDefaultDurationWithDots() {
+        return (int) (getDefaultDuration() * DOTTED_DURATION[dotted]);
     }
 
-    public int getDuration(){
-        return (int)(getDefaultDurationWithDots() * (fermata?1.5f:1.0f));
-    }
-
-    public void setLine(Line line) {
-        this.line = line;
+    public int getDuration() {
+        return (int) (getDefaultDurationWithDots() * (fermata ? 1.5f : 1.0f));
     }
 
     public Line getLine() {
         return line;
     }
 
-    public Accidental findLastPrefix(){
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
+    public Accidental findLastPrefix() {
         int thisPitchType = getPitchType();
-        for(int i=line.getNoteIndex(this)-1;i>=0;i--){
+
+        for (int i = line.getNoteIndex(this) - 1; i >= 0; i--) {
             Note note = line.getNote(i);
-            if(note.getPitchType()==thisPitchType && note.getAccidental()!=Accidental.NONE){
+
+            if (note.getPitchType() == thisPitchType && note.getAccidental() != Accidental.NONE) {
                 return line.getNote(i).getAccidental();
             }
         }
-        return !line.existsKey(thisPitchType) ? Accidental.NONE :
-                    line.getKeyType()==KeyType.FLATS ? Accidental.FLAT : Accidental.SHARP;
+
+        return !line.keyExists(thisPitchType) ? Accidental.NONE :
+                line.getKeyType() == KeyType.FLATS ? Accidental.FLAT : Accidental.SHARP;
     }
 
-    public static Image getImage(NoteType noteType, boolean upImage) {
-        return upImage ? noteType.getInstance().getUpImage() : noteType.getInstance().getDownImage();
+    // prefixes
+    public enum Accidental {
+        NONE(0, -1, -1),
+        NATURAL(1, 0, -1), FLAT(1, 1, -1), SHARP(1, 2, -1),
+        DOUBLE_NATURAL(2, 0, 0), DOUBLE_FLAT(2, 1, 1), DOUBLE_SHARP(1, 3, -1),
+        NATURAL_FLAT(2, 0, 1), NATURAL_SHARP(2, 0, 2);
+
+        private int nb;
+        private int components[] = new int[2];
+
+        Accidental(int nb, int firstComponent, int secondComponent) {
+            this.nb = nb;
+            components[0] = firstComponent;
+            components[1] = secondComponent;
+        }
+
+        public int getNb() {
+            return nb;
+        }
+
+        public int getComponent(int i) {
+            return components[i];
+        }
     }
 
-    public static Image clipNoteImage(Image noteImage, Rectangle noteRect, Color borderColor, Dimension size) {
-        BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setPaint(Color.white);
-        g2.fillRect(0, 0, img.getWidth(), img.getHeight());
-        g2.drawImage(noteImage, (img.getWidth() - noteRect.width) / 2 - noteRect.x, (img.getHeight() - noteRect.height) / 2 - noteRect.y, null);
-        g2.setPaint(borderColor);
-        g2.drawRect(0, 0, img.getWidth() - 1, img.getHeight() - 1);
-        g2.dispose();
-        return img;
+    public enum SyllableRelation { NO, EXTENDER, DASH, ONE_DASH }
+
+    // glissando
+    public static class Glissando {
+        public int pitch, x1Translate, x2Translate;
+
+        public Glissando(int pitch) {
+            this.pitch = pitch;
+        }
     }
 
     private static class ColoredNote {
-        //key
+        // key
         NoteType noteType;
         Color color;
         boolean upper;
 
-        //value
+        // value
         Image image;
 
         public ColoredNote(NoteType noteType, Color color, boolean upper, Image image) {
@@ -446,27 +491,12 @@ public abstract class Note implements Cloneable {
         }
     }
 
-    private static ArrayList<ColoredNote> coloredNotes = new ArrayList<ColoredNote>();
-
-    public static Image getColoredNote(NoteType noteType, Color color, boolean upper) {
-        for (ColoredNote cn : coloredNotes) {
-            if (noteType == cn.noteType && upper == cn.upper && color.equals(cn.color)) {
-                return cn.image;
-            }
-        }
-
-        //not found
-        Image ret = colorizeImage(getImage(noteType, upper), color);
-        coloredNotes.add(new ColoredNote(noteType, color, upper, ret));
-        return ret;
-    }
-
     private static class ColoredImage {
-        //key
+        // key
         Image originalImage;
         Color color;
 
-        //value
+        // value
         Image coloredImage;
 
         public ColoredImage(Image originalImage, Color color, Image coloredImage) {
@@ -476,40 +506,12 @@ public abstract class Note implements Cloneable {
         }
     }
 
-    private static ArrayList<ColoredImage> coloredImages = new ArrayList<ColoredImage>();
-
-    public static Image getColoredImage(Image originalImage, Color color){
-        for (ColoredImage ci : coloredImages) {
-            if (originalImage == ci.originalImage && color == ci.color) {
-                return ci.coloredImage;
-            }
-        }
-
-        //not found
-        Image ret = colorizeImage(originalImage, color);
-        coloredImages.add(new ColoredImage(originalImage, color, ret));
-        return ret;
-    }
-
-    private static Image colorizeImage(Image img, Color color){
-        BufferedImage ret = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = ret.createGraphics();
-        g2.drawImage(img, 0, 0, null);
-        int red = color.getRed();
-        int green = color.getGreen();
-        int blue = color.getBlue();
-        for (int y = 0; y < ret.getHeight(); y++) {
-            for (int x = 0; x < ret.getWidth(); x++) {
-                int rgb = ret.getRGB(x, y);
-                int newRgb = rgb&0xFF000000|
-                        ((255-red)*(rgb&0xFF0000>>16)+red*red)/255<<16|
-                        ((255-green)*(rgb&0xFF00>>8)+green*green)/255<<8|
-                        ((255-blue)*(rgb&0xFF)+blue*blue)/255;
-                if ((rgb & 0xFF000000) != 0) {//not transparent
-                    ret.setRGB(x, y, newRgb);
-                }
-            }
-        }
-        return ret;
+    public class Acceleration {
+        // lengthening for beaming
+        public int lengthening;
+        // lyrics
+        public String syllable;
+        public SyllableRelation syllableRelation;
+        public float longDashPosition;
     }
 }

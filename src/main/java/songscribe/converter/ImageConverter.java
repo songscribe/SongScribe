@@ -1,3 +1,22 @@
+/*
+    SongScribe song notation program
+    Copyright (C) 2014 Csaba Kavai
+
+    This file is part of SongScribe.
+
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package songscribe.converter;
 
 import songscribe.data.MyBorder;
@@ -13,13 +32,13 @@ import java.io.IOException;
 public class ImageConverter {
 
     @ArgumentDescribe("The type of resulting image. Values: [ gif | jpg | png | bmp ]")
-    public String type="png";
+    public String type = "png";
 
     @ArgumentDescribe("Resolution in DPI")
-    public int resolution=100;
+    public int resolution = 100;
 
     @ArgumentDescribe("Suffix to add to filename")
-    public String suffix="";
+    public String suffix = "";
 
     @ArgumentDescribe("Export image without lyrics under the song")
     public boolean withoutLyrics;
@@ -28,67 +47,89 @@ public class ImageConverter {
     public boolean withoutSongTitle;
 
     @ArgumentDescribe("Margin around the image in pixels")
-    public int margin=10;
+    public int margin = 10;
 
     @ArgumentDescribe("Top margin. If not present, the size of margin parameter is applied.")
     @NoDefault
-    public int topmargin=-1;
+    public int topmargin = -1;
 
     @ArgumentDescribe("Left margin. If not present, the size of margin parameter is applied.")
     @NoDefault
-    public int leftmargin=-1;
+    public int leftmargin = -1;
 
     @ArgumentDescribe("Bottom margin. If not present, the size of margin parameter is applied.")
     @NoDefault
-    public int bottommargin=-1;
+    public int bottommargin = -1;
 
     @ArgumentDescribe("Right margin. If not present, the size of margin parameter is applied.")
     @NoDefault
-    public int rightmargin=-1;
+    public int rightmargin = -1;
 
     @FileArgument
     public File[] files;
 
     public static void main(String[] args) {
         ArgumentReader ar = new ArgumentReader(args, ImageConverter.class);
-        ((ImageConverter) ar.getObj()).convert();
+        ImageConverter converter = (ImageConverter) ar.getObj();
+        converter.convert();
     }
 
-    private void convert(){
-        MainFrame mf = new MainFrame(){
+    private void convert() {
+        MainFrame mf = new MainFrame() {
             @Override
             public void showErrorMessage(String message) {
                 System.out.println(message);
             }
         };
+
         mf.setMusicSheet(new MusicSheet(mf));
         MyBorder myBorder = new MyBorder(margin);
-        if(topmargin>-1)myBorder.setTop(topmargin);
-        if(leftmargin>-1)myBorder.setLeft(leftmargin);
-        if(bottommargin>-1)myBorder.setBottom(bottommargin);
-        if(rightmargin>-1)myBorder.setRight(rightmargin);
-        for(File file:files){
+
+        if (topmargin > -1) {
+            myBorder.setTop(topmargin);
+        }
+
+        if (leftmargin > -1) {
+            myBorder.setLeft(leftmargin);
+        }
+
+        if (bottommargin > -1) {
+            myBorder.setBottom(bottommargin);
+        }
+
+        if (rightmargin > -1) {
+            myBorder.setRight(rightmargin);
+        }
+
+        for (File file : files) {
             mf.getMusicSheet().setComposition(null);
             mf.openMusicSheet(file, false);
-            if(withoutLyrics){
+
+            if (withoutLyrics) {
                 mf.getMusicSheet().getComposition().setUnderLyrics("");
                 mf.getMusicSheet().getComposition().setTranslatedLyrics("");
             }
-            if(withoutSongTitle){
+
+            if (withoutSongTitle) {
                 mf.getMusicSheet().getComposition().setSongTitle("");
             }
-            BufferedImage image = mf.getMusicSheet().createMusicSheetImageForExport(Color.WHITE, (double)resolution/MusicSheet.RESOLUTION, myBorder);
+
+            BufferedImage image = mf.getMusicSheet().createMusicSheetImageForExport(Color.WHITE,
+                    (double) resolution / MusicSheet.RESOLUTION, myBorder);
+
             try {
                 String path = file.getCanonicalPath();
                 int dotPos = path.lastIndexOf('.');
 
-                if (dotPos > 0)
+                if (dotPos > 0) {
                     path = path.substring(0, dotPos);
+                }
 
                 path += suffix;
                 ImageIO.write(image, type.toUpperCase(), new File(path + "." + type.toLowerCase()));
-            } catch (IOException e) {
-                System.out.println("Could not convert "+file.getName());
+            }
+            catch (IOException e) {
+                System.out.println("Could not convert " + file.getName());
             }
         }
     }
