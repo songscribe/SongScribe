@@ -79,6 +79,7 @@ public class FughettaDrawer extends BaseMsDrawer {
     private static final double flagYLength = 7;
     private static final double graceNoteScale = 0.6;
     private static final float SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE = 5f;
+    private static final double LOWER_STEM_CROTCHET_Y1_OFFSET = 0.6f;
 
     private static final String trebleClef = "\uf026";
     //  NATURAL   FLAT      SHARP     DOUBLE-NATURAL  DOUBLE-FLAT     D-SHARP   NATURAL-FLAT    NATURAL-SHARP
@@ -206,7 +207,7 @@ public class FughettaDrawer extends BaseMsDrawer {
                             upperStem.y2 - note.a.lengthening + offset));
                 }
                 else {
-                    g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1, lowerStem.x2,
+                    g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1 + LOWER_STEM_CROTCHET_Y1_OFFSET, lowerStem.x2,
                             lowerStem.y2 - note.a.lengthening - offset));
                 }
             }
@@ -377,7 +378,7 @@ public class FughettaDrawer extends BaseMsDrawer {
         float noteHeadXPos = 0;
 
         if (nt.isNoteWithStem() && !upper) {
-            noteHeadXPos -= 0.4f;
+            noteHeadXPos -= stemStroke.getLineWidth() / 2;
         }
 
         g2.drawString(headStr, noteHeadXPos, 0f);
@@ -386,21 +387,28 @@ public class FughettaDrawer extends BaseMsDrawer {
 
         if (nt.isNoteWithStem()) {
             double stemLengthOffset = 0;
+            double stemYOffset = 0;
 
             if (isTempoNote) {
-                stemLengthOffset -= tempoStemShortening;
+                stemLengthOffset = -tempoStemShortening;
             }
             else if (beamed) {
-                stemLengthOffset -= beamStroke.getLineWidth();
+                stemLengthOffset = -beamStroke.getLineWidth();
+                stemYOffset = LOWER_STEM_CROTCHET_Y1_OFFSET;
             }
             else
             {
                 if (nt == NoteType.SEMIQUAVER) {
-                    stemLengthOffset += flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                    stemLengthOffset = flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
                 }
-
-                if (nt == NoteType.DEMI_SEMIQUAVER) {
-                    stemLengthOffset += 2 * flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                else if (nt == NoteType.DEMI_SEMIQUAVER) {
+                    stemLengthOffset = 2 * flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                }
+                else if (nt == NoteType.CROTCHET) {
+                    stemYOffset = LOWER_STEM_CROTCHET_Y1_OFFSET;
+                }
+                else if (nt == NoteType.MINIM) {
+                    stemYOffset = 0.1f;
                 }
             }
 
@@ -409,7 +417,7 @@ public class FughettaDrawer extends BaseMsDrawer {
                 g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2() - stemLengthOffset));
             }
             else {
-                g2.draw(new Line2D.Double(0d, lowerStem.getY1(), 0d, lowerStem.getY2() + stemLengthOffset));
+                g2.draw(new Line2D.Double(0d, lowerStem.getY1() + stemYOffset, 0d, lowerStem.getY2() + stemLengthOffset));
             }
         }
 
