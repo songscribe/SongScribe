@@ -35,11 +35,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class ExportLilypondAnnotationActionTest
 {
-    private ExportLilypondAnnotationAction action;
+    private ExportLilyPondAnnotationAction action;
 
     @Before public void setUp() throws Exception
     {
-        action = new ExportLilypondAnnotationAction(null);
+        action = new ExportLilyPondAnnotationAction(null);
     }
 
     @Test public void testTranslateArticulation() throws Exception

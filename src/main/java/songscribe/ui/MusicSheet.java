@@ -605,7 +605,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
                 return;
             }
 
-            //if the user tries to insert into triplet, he will get an error message
+            // if the user tries to insert into triplet, he will get an error message
             Interval iv = line.getTuplets().findInterval(xIndex - 1);
 
             if (iv != null && xIndex - 1 < iv.getB()) {
