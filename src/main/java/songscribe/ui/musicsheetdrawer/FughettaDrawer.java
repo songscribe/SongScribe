@@ -195,17 +195,19 @@ public class FughettaDrawer extends BaseMsDrawer {
 
         if (noteHead.containsKey(nt)) {
             paintSimpleNote(g2, note, beamed, note.isUpper(), false);
-            //draw the lengthening
+            // draw the lengthening
             g2.setStroke(stemStroke);
 
             if (beamed) {
+                double offset = beamStroke.getLineWidth() / 2;
+
                 if (note.isUpper()) {
                     g2.draw(new Line2D.Double(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX,
-                            upperStem.y2 - note.a.lengthening - 1));
+                            upperStem.y2 - note.a.lengthening + offset));
                 }
                 else {
                     g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1, lowerStem.x2,
-                            lowerStem.y2 - note.a.lengthening + 1));
+                            lowerStem.y2 - note.a.lengthening - offset));
                 }
             }
         }
@@ -383,26 +385,31 @@ public class FughettaDrawer extends BaseMsDrawer {
         g2.setStroke(stemStroke);
 
         if (nt.isNoteWithStem()) {
-            double stemLongitude = 0;
+            double stemLengthOffset = 0;
 
             if (isTempoNote) {
-                stemLongitude -= tempoStemShortening;
+                stemLengthOffset -= tempoStemShortening;
             }
-
-            if (nt == NoteType.SEMIQUAVER && !beamed) {
-                stemLongitude += flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+            else if (beamed) {
+                stemLengthOffset -= beamStroke.getLineWidth();
             }
+            else
+            {
+                if (nt == NoteType.SEMIQUAVER) {
+                    stemLengthOffset += flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                }
 
-            if (nt == NoteType.DEMI_SEMIQUAVER && !beamed) {
-                stemLongitude += 2 * flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                if (nt == NoteType.DEMI_SEMIQUAVER) {
+                    stemLengthOffset += 2 * flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                }
             }
 
             if (upper) {
                 double stemX = nt == NoteType.MINIM ? upperMinimStemX : upperCrotchetStemX;
-                g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2() - stemLongitude));
+                g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2() - stemLengthOffset));
             }
             else {
-                g2.draw(new Line2D.Double(0d, lowerStem.getY1(), 0d, lowerStem.getY2() + stemLongitude));
+                g2.draw(new Line2D.Double(0d, lowerStem.getY1(), 0d, lowerStem.getY2() + stemLengthOffset));
             }
         }
 

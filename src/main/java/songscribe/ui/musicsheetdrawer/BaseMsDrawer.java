@@ -206,10 +206,8 @@ public abstract class BaseMsDrawer {
                 }
 
                 // draw the note
-                boolean beamed =
-                        line.getBeamings().findInterval(n) != null && note.getNoteType() != NoteType.GRACE_QUAVER;
-                paintNote(g2, note, l, beamed,
-                        ms.isNoteSelected(n, l) && drawEditingComponents ? selectionColor : Color.black);
+                boolean beamed = line.getBeamings().findInterval(n) != null && note.getNoteType() != NoteType.GRACE_QUAVER;
+                paintNote(g2, note, l, beamed, ms.isNoteSelected(n, l) && drawEditingComponents ? selectionColor : Color.black);
 
                 // draw the tie if any
                 Interval tieVal = line.getTies().findInterval(n);
@@ -453,9 +451,9 @@ public abstract class BaseMsDrawer {
                 beamLine.setLine(
                         beamLine.x1 - 10,
                         beamLine.y1 + 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1),
-                        beamLine.x2 + 10, beamLine.y2 - 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1));
-                drawBeams(BEAM_LEVELS.length -
-                          1, interval.getA(), interval.getB(), line, beamLine, g2, interval.getA(), interval.getB(), false);
+                        beamLine.x2 + 10,
+                        beamLine.y2 - 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1));
+                drawBeams(BEAM_LEVELS.length - 1, interval.getA(), interval.getB(), line, beamLine, g2, interval.getA(), interval.getB(), false);
                 g2.setClip(clip);
             }
 
@@ -769,10 +767,8 @@ public abstract class BaseMsDrawer {
         }
         else {
             leftOriented = false;
-            double startBeamLineX = line.getNote(begin).getXPos() + (upper ? crotchetWidth : 0) + beamX1Correction -
-                                    stemStroke.getLineWidth() / 4f;
-            double endBeamLineX = line.getNote(end).getXPos() + (upper ? crotchetWidth : 0) - beamX2Correction +
-                                  stemStroke.getLineWidth() / 4f;
+            double startBeamLineX = line.getNote(begin).getXPos() + (upper ? crotchetWidth : 0) - stemStroke.getLineWidth() / 2f;
+            double endBeamLineX = line.getNote(end).getXPos() + (upper ? crotchetWidth : 0) + stemStroke.getLineWidth() / 2f;
             g2.setClip(new Rectangle2D.Double(startBeamLineX,
                     Math.min(beamLine.y1, beamLine.y2) - 3,
                     endBeamLineX - startBeamLineX, Math.abs(beamLine.y1 - beamLine.y2) + 6));
