@@ -102,7 +102,7 @@ public class Publisher extends MainFrame {
         hideSplash();
 
         if (Utilities.isMac()) {
-            MacAdapter.attachTo(pub, true);
+            new MacAdapter(pub, true);
         }
     }
 

@@ -19,62 +19,70 @@
 */
 package songscribe.ui;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
+import com.apple.eawt.*;
 
 import java.io.File;
+import java.util.List;
 
 
 /**
  * @author Aparajita Fishman
  */
 
-public class MacAdapter extends ApplicationAdapter {
+public class MacAdapter {
 
     private MainFrame frame;
 
-    public MacAdapter(MainFrame frame) {
+    public MacAdapter(MainFrame frame, boolean hasPrefs) {
         this.frame = frame;
-    }
-
-
-    // MacAdapter methods
-
-    public static void attachTo(MainFrame frame, boolean hasPrefs) {
         Application app = Application.getApplication();
-        app.setEnabledAboutMenu(true);
+        app.setAboutHandler(new MacAboutHandler());
 
-        if (hasPrefs)
-            app.setEnabledPreferencesMenu(true);
-        else
-            app.removePreferencesMenuItem();
+        if (hasPrefs) {
+            app.setPreferencesHandler(new MacPreferencesHandler());
+        }
 
-        app.addApplicationListener(new MacAdapter(frame));
+        app.setOpenFileHandler(new MacOpenFilesHandler());
+        app.setPrintFileHandler(new MacPrintFilesHanler());
+        app.setQuitHandler(new MacQuitHandler());
     }
 
-    public void handleAbout(ApplicationEvent event) {
-        this.frame.handleAbout();
-        event.setHandled(true);
+    private class MacAboutHandler implements AboutHandler {
+        public void handleAbout(AppEvent.AboutEvent event) {
+            frame.handleAbout();
+        }
     }
 
-    public void handlePreferences(ApplicationEvent event) {
-        this.frame.handlePrefs();
-        event.setHandled(true);
+    private class MacPreferencesHandler implements PreferencesHandler {
+        public void handlePreferences(AppEvent.PreferencesEvent event) {
+            frame.handlePrefs();
+        }
     }
 
-    public void handleQuit(ApplicationEvent event) {
-        boolean quit = this.frame.handleQuit();
+    private class MacQuitHandler implements QuitHandler {
+        public void handleQuitRequestWith(AppEvent.QuitEvent event, QuitResponse response) {
+            boolean shouldQuit = frame.handleQuit();
 
-        // Documentation says to set isHandled to false to reject the quit
-        event.setHandled(quit);
+            if (shouldQuit) {
+                response.performQuit();
+            }
+            else {
+                response.cancelQuit();
+            }
+        }
     }
 
-    public void handleOpenFile(ApplicationEvent event) {
-        this.frame.handleOpenFile(new File(event.getFilename()));
+    private class MacOpenFilesHandler implements OpenFilesHandler {
+        public void openFiles(AppEvent.OpenFilesEvent event) {
+            List<File> files = event.getFiles();
+            frame.handleOpenFile(files.get(0));
+        }
     }
 
-    public void handlePrintFile(ApplicationEvent event) {
-        this.frame.handlePrintFile(new File(event.getFilename()));
+    private class MacPrintFilesHanler implements PrintFilesHandler {
+        public void printFiles(AppEvent.PrintFilesEvent event) {
+            List<File> files = event.getFiles();
+            frame.handlePrintFile(files.get(0));
+        }
     }
 }

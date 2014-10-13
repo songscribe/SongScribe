@@ -230,7 +230,7 @@ public class MainFrame extends JFrame {
             }
 
             if (Utilities.isMac()) {
-                MacAdapter.attachTo(mf, true);
+                new MacAdapter(mf, true);
             }
 
             if (args.length > 0) {

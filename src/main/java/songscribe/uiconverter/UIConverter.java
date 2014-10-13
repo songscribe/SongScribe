@@ -97,7 +97,7 @@ public class UIConverter extends MainFrame {
         UIConverter ui = new UIConverter();
 
         if (Utilities.isMac()) {
-            MacAdapter.attachTo(ui, true);
+            new MacAdapter(ui, true);
         }
     }
 

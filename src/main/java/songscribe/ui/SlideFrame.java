@@ -100,7 +100,7 @@ public class SlideFrame extends MainFrame {
         hideSplash();
 
         if (Utilities.isMac()) {
-            MacAdapter.attachTo(sf, true);
+            new MacAdapter(sf, true);
         }
     }
 
