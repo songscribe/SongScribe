@@ -21,6 +21,8 @@
 */
 package songscribe.publisher;
 
+import com.bulenkov.iconloader.JBHiDPIScaledImage;
+import com.bulenkov.iconloader.util.UIUtil;
 import songscribe.publisher.pagecomponents.PageComponent;
 import songscribe.publisher.publisheractions.KeyAction;
 
@@ -54,7 +56,12 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
 
         while (true) {
             try {
-                accImage = new BufferedImage(accShape.width, accShape.height, BufferedImage.TYPE_INT_RGB);
+                if (UIUtil.isRetina()) {
+                    accImage = new JBHiDPIScaledImage(accShape.width, accShape.height, BufferedImage.TYPE_INT_RGB);
+                }
+                else {
+                    accImage = new BufferedImage(accShape.width, accShape.height, BufferedImage.TYPE_INT_RGB);
+                }
                 break;
             }
             catch (OutOfMemoryError e) {
@@ -267,16 +274,18 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         if (!currentAccRect.contains(scroll.getViewport().getViewRect().intersection(new Rectangle(size)))) {
             paintAcceleration();
         }
 
-        g2.drawImage(accImage, currentAccRect.x, currentAccRect.y, null);
+        UIUtil.drawImage(g2, accImage, currentAccRect.x, currentAccRect.y, null);
 
         // draw the selection
         if (selectedComponent != null) {
             g2.setPaint(Color.black);
+
             for (Rectangle2D sels : selectionRects) {
                 g2.fill(sels);
             }
@@ -316,7 +325,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
     private void paintStuff(Graphics2D g2, Rectangle view) {
         g2.translate(-view.x, -view.y);
         g2.scale(scale, scale);
-        //calculating the view
+        // calculate the view
         int firstPage = getPage(view.y);
         int lastPage = getPage(view.y + view.height);
         AffineTransform at = g2.getTransform();
