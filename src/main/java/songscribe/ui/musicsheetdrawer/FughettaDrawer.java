@@ -511,18 +511,22 @@ public class FughettaDrawer extends BaseMsDrawer {
         g2.setTransform(at);
     }
 
-    private void drawRepeat(Graphics2D g2, double thickStart, double direction, boolean drawThink) {
+    private void drawRepeat(Graphics2D g2, double thickStart, double direction, boolean drawThick) {
         AffineTransform at = g2.getTransform();
         g2.translate(thickStart, 0);
 
-        if (drawThink) {
+        // align repeat top/bottom with staff lines
+        double offset = lineStroke.getLineWidth() / 2;
+        Line2D.Double line = new Line2D.Double(verticalLine.x1, verticalLine.y1 - offset, verticalLine.x2, verticalLine.y2 + offset);
+
+        if (drawThick) {
             g2.setStroke(repeatHeavyStroke);
-            g2.draw(verticalLine);
+            g2.draw(line);
         }
 
         g2.setStroke(repeatThinStroke);
         g2.translate(repeatThickThinDiff * direction, 0);
-        g2.draw(verticalLine);
+        g2.draw(line);
         g2.translate(repeatThinCircleDiff * direction - repeatCircle1.width / 2, 0);
         g2.fill(repeatCircle1);
         g2.fill(repeatCircle2);
