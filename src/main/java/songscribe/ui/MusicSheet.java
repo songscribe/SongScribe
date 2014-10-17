@@ -151,22 +151,15 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         control = Control.valueOf(mainFrame.getProperties().getProperty(Constants.CONTROL_PROP));
 
         try {
-            drawers[0] = new ImageMsDrawer(this);
+            drawers[0] = new FughettaDrawer(this);
         }
         catch (Exception e) {
             mainFrame.showErrorMessage("Could not open a necessary font. The program cannot work without it.");
             System.exit(0);
         }
 
-        try {
-            drawers[1] = new FughettaDrawer(this);
-        }
-        catch (Exception e) {
-            drawers[1] = null;
-        }
-
         // We use the FughettaDrawer as the default now
-        drawer = drawers[1];
+        drawer = drawers[0];
         setFocusable(true);
     }
 
@@ -1457,7 +1450,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     }
 
     public BaseMsDrawer getBestDrawer() {
-        return drawers[drawers[1] == null ? 0 : 1];
+        return drawers[0];
     }
 
     public BaseMsDrawer getDrawer() {
