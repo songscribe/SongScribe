@@ -196,20 +196,22 @@ public class FughettaDrawer extends BaseMsDrawer {
 
         if (noteHead.containsKey(nt)) {
             paintSimpleNote(g2, note, beamed, note.isUpper(), false);
-            // draw the lengthening
-            g2.setStroke(stemStroke);
 
+            // if the note is beamed, draw the lengthened stem
             if (beamed) {
+                g2.setStroke(stemStroke);
                 double offset = beamStroke.getLineWidth() / 2;
 
                 if (note.isUpper()) {
-                    g2.draw(new Line2D.Double(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX,
-                            upperStem.y2 - note.a.lengthening + offset));
+                    note.a.stem.setLine(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX,
+                            upperStem.y2 - note.a.lengthening + offset);
                 }
                 else {
-                    g2.draw(new Line2D.Double(lowerStem.x1, lowerStem.y1 + LOWER_STEM_CROTCHET_Y1_OFFSET, lowerStem.x2,
-                            lowerStem.y2 - note.a.lengthening - offset));
+                    note.a.stem.setLine(lowerStem.x1, lowerStem.y1 + LOWER_STEM_CROTCHET_Y1_OFFSET, lowerStem.x2,
+                            lowerStem.y2 - note.a.lengthening - offset);
                 }
+
+                g2.draw(note.a.stem);
             }
         }
         else {
@@ -382,85 +384,84 @@ public class FughettaDrawer extends BaseMsDrawer {
         }
 
         g2.drawString(headStr, noteHeadXPos, 0f);
+
         // draw the stem
-        g2.setStroke(stemStroke);
+        if (!beamed) {
+            if (nt.isNoteWithStem()) {
+                double stemLengthOffset = 0;
+                double stemYOffset = 0;
 
-        if (nt.isNoteWithStem()) {
-            double stemLengthOffset = 0;
-            double stemYOffset = 0;
-
-            if (isTempoNote) {
-                stemLengthOffset = -tempoStemShortening;
-            }
-            else if (beamed) {
-                stemLengthOffset = -beamStroke.getLineWidth();
-                stemYOffset = LOWER_STEM_CROTCHET_Y1_OFFSET;
-            }
-            else
-            {
-                if (nt == NoteType.SEMIQUAVER) {
-                    stemLengthOffset = flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
-                }
-                else if (nt == NoteType.DEMI_SEMIQUAVER) {
-                    stemLengthOffset = 2 * flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
-                }
-                else if (nt == NoteType.CROTCHET) {
-                    stemYOffset = LOWER_STEM_CROTCHET_Y1_OFFSET;
-                }
-                else if (nt == NoteType.MINIM) {
-                    stemYOffset = 0.1f;
-                }
-            }
-
-            if (upper) {
-                double stemX = nt == NoteType.MINIM ? upperMinimStemX : upperCrotchetStemX;
-                g2.draw(new Line2D.Double(stemX, upperStem.getY1(), stemX, upperStem.getY2() - stemLengthOffset));
-            }
-            else {
-                g2.draw(new Line2D.Double(0d, lowerStem.getY1() + stemYOffset, 0d, lowerStem.getY2() + stemLengthOffset));
-            }
-        }
-
-        // draw the flag(s)
-        if (!beamed && nt.isBeamable()) {
-            float shortitude = nt == NoteType.QUAVER ? 0f : SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
-
-            if (upper) {
                 if (isTempoNote) {
-                    g2.translate(0, tempoStemShortening);
+                    stemLengthOffset = -tempoStemShortening;
                 }
-
-                g2.drawString(mainUpperFlag, (float) upperFlagX, (float) upperFlagY + shortitude);
-
-                if (nt != NoteType.QUAVER) {
-                    g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag2Y + shortitude);
-
-                    if (nt != NoteType.SEMIQUAVER) {
-                        g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag3Y + shortitude);
+                else {
+                    if (nt == NoteType.SEMIQUAVER) {
+                        stemLengthOffset = flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                    }
+                    else if (nt == NoteType.DEMI_SEMIQUAVER) {
+                        stemLengthOffset = 2 * flagYLength - SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                    }
+                    else if (nt == NoteType.CROTCHET) {
+                        stemYOffset = LOWER_STEM_CROTCHET_Y1_OFFSET;
+                    }
+                    else if (nt == NoteType.MINIM) {
+                        stemYOffset = 0.1f;
                     }
                 }
 
-                if (isTempoNote) {
-                    g2.translate(0, -tempoStemShortening);
+                if (upper) {
+                    double stemX = nt == NoteType.MINIM ? upperMinimStemX : upperCrotchetStemX;
+                    note.a.stem.setLine(stemX, upperStem.getY1(), stemX, upperStem.getY2() - stemLengthOffset);
                 }
+                else {
+                    note.a.stem.setLine(0d, lowerStem.getY1() + stemYOffset, 0d, lowerStem.getY2() + stemLengthOffset);
+                }
+
+                g2.setStroke(stemStroke);
+                g2.draw(note.a.stem);
             }
-            else {
-                if (isTempoNote) {
-                    g2.translate(0, -tempoStemShortening);
-                }
 
-                g2.drawString(mainLowerFlag, 0, (float) lowerFlagY - shortitude);
+            // draw the flag(s)
+            if (nt.isBeamable()) {
+                float shortitude = nt == NoteType.QUAVER ? 0f : SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
 
-                if (nt != NoteType.QUAVER) {
-                    g2.drawString(secondLowerFlag, 0, (float) lowerFlag2Y - shortitude);
+                if (upper) {
+                    if (isTempoNote) {
+                        g2.translate(0, tempoStemShortening);
+                    }
 
-                    if (nt != NoteType.SEMIQUAVER) {
-                        g2.drawString(secondLowerFlag, 0, (float) lowerFlag3Y - shortitude);
+                    g2.drawString(mainUpperFlag, (float) upperFlagX, (float) upperFlagY + shortitude);
+
+                    if (nt != NoteType.QUAVER) {
+                        g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag2Y + shortitude);
+
+                        if (nt != NoteType.SEMIQUAVER) {
+                            g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag3Y + shortitude);
+                        }
+                    }
+
+                    if (isTempoNote) {
+                        g2.translate(0, -tempoStemShortening);
                     }
                 }
+                else {
+                    if (isTempoNote) {
+                        g2.translate(0, -tempoStemShortening);
+                    }
 
-                if (isTempoNote) {
-                    g2.translate(0, tempoStemShortening);
+                    g2.drawString(mainLowerFlag, 0, (float) lowerFlagY - shortitude);
+
+                    if (nt != NoteType.QUAVER) {
+                        g2.drawString(secondLowerFlag, 0, (float) lowerFlag2Y - shortitude);
+
+                        if (nt != NoteType.SEMIQUAVER) {
+                            g2.drawString(secondLowerFlag, 0, (float) lowerFlag3Y - shortitude);
+                        }
+                    }
+
+                    if (isTempoNote) {
+                        g2.translate(0, tempoStemShortening);
+                    }
                 }
             }
         }

@@ -1111,8 +1111,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             }
 
             for (int right = i + 1; right <= endIndex; right++) {
-                if ((int) Math.round(k * line.getNote(right).getXPos() + n) * beaming > line.getNote(right).getYPos() *
-                                                                                        HALF_LINE_DIST * beaming) {
+                if ((int) Math.round(k * line.getNote(right).getXPos() + n) * beaming > line.getNote(right).getYPos() * HALF_LINE_DIST * beaming) {
                     continue outer;
                 }
             }
@@ -1129,15 +1128,17 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         for (int left = goodIndex - 1; left >= startIndex; left--) {
             note = line.getNote(left);
             note.setUpper(beaming == 1);
-            note.a.lengthening = !note.getNoteType().isGraceNote() ? (int) Math.round(
-                    note.getYPos() * HALF_LINE_DIST - (k * note.getXPos() + n)) : 0;
+            note.a.lengthening = !note.getNoteType().isGraceNote() ?
+                    (int) Math.round(note.getYPos() * HALF_LINE_DIST - (k * note.getXPos() + n)) :
+                    0;
         }
 
         for (int right = goodIndex + 1; right <= endIndex; right++) {
             note = line.getNote(right);
             note.setUpper(beaming == 1);
-            note.a.lengthening = !note.getNoteType().isGraceNote() ? (int) Math.round(
-                    note.getYPos() * HALF_LINE_DIST - (k * note.getXPos() + n)) : 0;
+            note.a.lengthening = !note.getNoteType().isGraceNote() ?
+                    (int) Math.round(note.getYPos() * HALF_LINE_DIST - (k * note.getXPos() + n)) :
+                    0;
         }
     }
 

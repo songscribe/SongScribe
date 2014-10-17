@@ -25,6 +25,7 @@ package songscribe.music;
 import songscribe.ui.MainFrame;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -509,6 +510,8 @@ public abstract class Note implements Cloneable {
     public class Acceleration {
         // lengthening for beaming
         public int lengthening;
+        // stem
+        public Line2D.Double stem = new Line2D.Double();
         // lyrics
         public String syllable;
         public SyllableRelation syllableRelation;

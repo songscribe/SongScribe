@@ -40,7 +40,9 @@ import java.util.ListIterator;
 public abstract class BaseMsDrawer {
     protected static final float size = 32;
     private static final double glissandoLength = size / 2.6666667;
-    protected static final BasicStroke beamStroke = new BasicStroke(4.167f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+    protected static final double INNER_BEAM_LENGTH = 11d;
+    protected static final double INNER_BEAM_OFFSET = 7d;
+    protected static final BasicStroke beamStroke = new BasicStroke(4.4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     protected static final BasicStroke lineStroke = new BasicStroke(0.694f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     protected static final BasicStroke stemStroke = new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     protected static final BasicStroke tenutoStroke = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
@@ -52,9 +54,9 @@ public abstract class BaseMsDrawer {
     protected static final float spaceBtwTwoAccidentals = 1.3f;
     protected static final float spaceBtwAccidentalAndParenthesis = 0f;
     protected static final float graceAccidentalResizeFactor = 0.65f;
-    private static final Logger logger = Logger.getLogger(FughettaDrawer.class);
-    private static final BasicStroke dashStroke = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-            10f, new float[] { 3.937f, 5.9055f }, 0f);
+    private static final BasicStroke dashStroke = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[] {
+            3.937f, 5.9055f
+    }, 0f);
     private static final BasicStroke longDashStroke = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final BasicStroke graceSemiQuaverStemStroke = new BasicStroke(0.6f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final BasicStroke graceSemiQuaverBeamStroke = new BasicStroke(2f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
@@ -62,14 +64,21 @@ public abstract class BaseMsDrawer {
     private static final BasicStroke underScoreStroke = new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final Ellipse2D.Float staccatoEllipse = new Ellipse2D.Float(0f, 0f, 3.5f, 3.5f);
     private static final Color selectionColor = new Color(254, 45, 125);
-    private static final float beamTranslateY = 7;
     private static final Font tupletFont = new Font(Font.SANS_SERIF, Font.BOLD, 12);
     private static final Font fsEndingFont = new Font(Font.SERIF, Font.BOLD, 14);
     private static final String GLISSANDO = "\uf07e";
     private static final String TRILL = "\uf0d9";
     private static final float longDashWidth = 7f;
-    private static final NoteType[] BEAM_LEVELS = { NoteType.DEMI_SEMIQUAVER, NoteType.SEMIQUAVER, NoteType.QUAVER };
-    protected final int[][] FLAT_SHARP_ORDER = { { }, { 0, -3, 1, -2, 2, -1, 3 }, { -4, -1, -5, -2, 1, -3, 0 } };
+    private static final NoteType[] BEAM_LEVELS = {
+            NoteType.DEMI_SEMIQUAVER,
+            NoteType.SEMIQUAVER,
+            NoteType.QUAVER
+    };
+    protected final int[][] FLAT_SHARP_ORDER = {
+            { },
+            { 0, -3, 1, -2, 2, -1, 3 },
+            { -4, -1, -5, -2, 1, -3, 0 }
+    };
     protected double crotchetWidth;
     protected double beamX1Correction, beamX2Correction;
     protected MusicSheet ms;
@@ -124,8 +133,7 @@ public abstract class BaseMsDrawer {
 
                 int titleWidth = g2.getFontMetrics().stringWidth(titleLine);
                 drawAntialiasedString(g2, titleLine,
-                        (composition.getLineWidth() - titleWidth) / 2,
-                        (i + 1) * composition.getSongTitleFont().getSize());
+                        (composition.getLineWidth() - titleWidth) / 2, (i + 1) * composition.getSongTitleFont().getSize());
                 i++;
             }
         }
@@ -134,12 +142,8 @@ public abstract class BaseMsDrawer {
         g2.setFont(composition.getGeneralFont());
 
         if (composition.getRightInfo().length() > 0) {
-            drawTextBox(
-                    g2,
-                    composition.getRightInfo(),
-                    composition.getRightInfoStartY() + composition.getGeneralFont().getSize(),
-                    Component.RIGHT_ALIGNMENT,
-                    -20);
+            drawTextBox(g2, composition.getRightInfo(),
+                    composition.getRightInfoStartY() + composition.getGeneralFont().getSize(), Component.RIGHT_ALIGNMENT, -20);
         }
 
         // draw the under lyrics and the translated lyrics
@@ -153,12 +157,9 @@ public abstract class BaseMsDrawer {
         }
 
         if (composition.getTranslatedLyrics().length() > 0) {
-            lyricsMaxY = drawTextBox(
-                    g2,
-                    composition.getTranslatedLyrics(),
-                    ms.getUnderLyricsYPos() + (Utilities.lineCount(composition.getUnderLyrics()) + 1) * g2.getFontMetrics().getAscent(),
-                    Component.CENTER_ALIGNMENT,
-                    0);
+            lyricsMaxY = drawTextBox(g2, composition.getTranslatedLyrics(), ms.getUnderLyricsYPos() +
+                                                                            (Utilities.lineCount(composition.getUnderLyrics()) + 1) *
+                                                                            g2.getFontMetrics().getAscent(), Component.CENTER_ALIGNMENT, 0);
         }
 
         // draw the tempo
@@ -223,8 +224,7 @@ public abstract class BaseMsDrawer {
                         gap -= 5;
                     }
 
-                    int yPos = ms.getNoteYPos(note.getYPos(), l) +
-                               (tieUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
+                    int yPos = ms.getNoteYPos(note.getYPos(), l) + (tieUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
                     g2.setStroke(lineStroke);
                     GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
                     tie.moveTo(xPos, yPos);
@@ -263,23 +263,22 @@ public abstract class BaseMsDrawer {
                     }
                 }
 
-                if (lyricsDrawn <= n && (note.a.syllableRelation != Note.SyllableRelation.NO ||
-                                         n == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER
-                )) {
-                    Note.SyllableRelation relation = note.a.syllableRelation !=
-                                                     Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
+                if (lyricsDrawn <= n &&
+                    (note.a.syllableRelation != Note.SyllableRelation.NO || n == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER
+                    )) {
+                    Note.SyllableRelation relation =
+                            note.a.syllableRelation != Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
                     int c;
 
                     if (relation == Note.SyllableRelation.DASH || relation == Note.SyllableRelation.ONE_DASH) {
-                        for (c = n + 1; c < line.noteCount() && (line.getNote(c).a.syllable.equals(Constants.UNDERSCORE) ||
-                                                                 line.getNote(c).a.syllable.isEmpty()
-                        ); c++) {
+                        for (c = n + 1;
+                             c < line.noteCount() && (line.getNote(c).a.syllable.equals(Constants.UNDERSCORE) || line.getNote(c).a.syllable.isEmpty()
+                             ); c++) {
                             ;
                         }
                     }
                     else {
-                        for (c = n; c < line.noteCount() && (line.getNote(c).a.syllableRelation == relation ||
-                                                             line.getNote(c).a.syllable.isEmpty()
+                        for (c = n; c < line.noteCount() && (line.getNote(c).a.syllableRelation == relation || line.getNote(c).a.syllable.isEmpty()
                         ); c++) {
                             ;
                         }
@@ -288,14 +287,12 @@ public abstract class BaseMsDrawer {
                     lyricsDrawn = c;
 
                     int startX = n == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER ?
-                            note.getXPos() - 10 :
-                            note.getXPos() + Note.HOT_SPOT.x + syllableWidth / 2 + note.getSyllableMovement() + 2;
+                            note.getXPos() - 10 : note.getXPos() + Note.HOT_SPOT.x + syllableWidth / 2 + note.getSyllableMovement() + 2;
                     int endX;
 
                     if (c ==
                         line.noteCount()/* || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO*/) {
-                        endX = relation == Note.SyllableRelation.ONE_DASH ?
-                                startX + (int) (longDashWidth * 2f) : composition.getLineWidth();
+                        endX = relation == Note.SyllableRelation.ONE_DASH ? startX + (int) (longDashWidth * 2f) : composition.getLineWidth();
                     }
                     else {
                         if (relation == Note.SyllableRelation.EXTENDER) {
@@ -305,8 +302,7 @@ public abstract class BaseMsDrawer {
                             endX = startX + (int) (longDashWidth * 2f);
                         }
                         else {
-                            endX = line.getNote(c).getXPos() + Note.HOT_SPOT.x -
-                                   g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable) / 2 +
+                            endX = line.getNote(c).getXPos() + Note.HOT_SPOT.x - g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable) / 2 +
                                    line.getNote(c).getSyllableMovement() - 2;
                         }
                     }
@@ -314,9 +310,8 @@ public abstract class BaseMsDrawer {
                     if (relation == Note.SyllableRelation.DASH) {
                         g2.setStroke(dashStroke);
                         float dashPhase = dashStroke.getDashArray()[0] + dashStroke.getDashArray()[1];
-                        int length = Math.round(
-                                (float) Math.floor((endX - startX - dashStroke.getDashArray()[1]) / dashPhase) *
-                                dashPhase + dashStroke.getDashArray()[0]);
+                        int length = Math.round((float) Math.floor((endX - startX - dashStroke.getDashArray()[1]) / dashPhase) * dashPhase +
+                                                dashStroke.getDashArray()[0]);
                         int gap = (endX - startX - length) / 2;
                         drawWithEmptySyllablesExclusion(g2, startX + gap, dashY, endX - gap, dashY, line, n, c + 1);
                     }
@@ -329,8 +324,7 @@ public abstract class BaseMsDrawer {
                         note.a.longDashPosition = (endX - startX) / 2f + startX;
                         float centerX = note.getSyllableRelationMovement() == 0 ? note.a.longDashPosition :
                                 note.getXPos() + note.getSyllableRelationMovement();
-                        g2.draw(new Line2D.Float(
-                                centerX - longDashWidth / 2f, dashY, centerX + longDashWidth / 2f, dashY));
+                        g2.draw(new Line2D.Float(centerX - longDashWidth / 2f, dashY, centerX + longDashWidth / 2f, dashY));
                     }
                 }
 
@@ -364,12 +358,7 @@ public abstract class BaseMsDrawer {
                     g2.drawString(TRILL, x, y);
 
                     if (n < trillEnd) {
-                        drawGlissando(
-                            g2,
-                            x + 18,
-                            y - 3,
-                            (int) Math.round(line.getNote(trillEnd).getXPos() + crotchetWidth),
-                            y - 3);
+                        drawGlissando(g2, x + 18, y - 3, (int) Math.round(line.getNote(trillEnd).getXPos() + crotchetWidth), y - 3);
                     }
                 }
             }
@@ -432,29 +421,27 @@ public abstract class BaseMsDrawer {
                 Note firstNote = line.getNote(interval.getA());
                 Note lastNote = line.getNote(interval.getB());
 
+                // TODO: maybe i should just pass the first/last note to drawBeams, that should be sufficient
                 if (firstNote.isUpper()) {
                     beamLine = new Line2D.Double(
                             firstNote.getXPos() + crotchetWidth,
                             ms.getNoteYPos(firstNote.getYPos(), l) - Note.HOT_SPOT.y - firstNote.a.lengthening,
-                            lastNote.getXPos() + crotchetWidth,
-                            ms.getNoteYPos(lastNote.getYPos(), l) - Note.HOT_SPOT.y - lastNote.a.lengthening);
+                            lastNote.getXPos() + crotchetWidth, ms.getNoteYPos(lastNote.getYPos(), l) - Note.HOT_SPOT.y - lastNote.a.lengthening);
                 }
                 else {
                     beamLine = new Line2D.Double(firstNote.getXPos(),
                             ms.getNoteYPos(firstNote.getYPos(), l) + Note.HOT_SPOT.y - firstNote.a.lengthening,
-                            lastNote.getXPos() + 1,
-                            ms.getNoteYPos(lastNote.getYPos(), l) + Note.HOT_SPOT.y - lastNote.a.lengthening);
+                            lastNote.getXPos() + 1, ms.getNoteYPos(lastNote.getYPos(), l) + Note.HOT_SPOT.y - lastNote.a.lengthening);
                 }
 
-                Shape clip = g2.getClip();
+                //Shape clip = g2.getClip();
                 g2.setStroke(beamStroke);
                 beamLine.setLine(
                         beamLine.x1 - 10,
                         beamLine.y1 + 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1),
-                        beamLine.x2 + 10,
-                        beamLine.y2 - 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1));
-                drawBeams(BEAM_LEVELS.length - 1, interval.getA(), interval.getB(), line, beamLine, g2, interval.getA(), interval.getB(), false);
-                g2.setClip(clip);
+                        beamLine.x2 + 10, beamLine.y2 - 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1));
+                drawBeams(g2, BEAM_LEVELS.length - 1, line, l, interval.getA(), interval.getB());
+                //g2.setClip(clip);
             }
 
             // draw tuplets
@@ -501,15 +488,11 @@ public abstract class BaseMsDrawer {
                 TupletCalc tc = new TupletCalc(lx, ly, rx, ry);
 
                 g2.draw(new QuadCurve2D.Float(lx, ly,
-                        (float) (cx - lx) / 4 + lx,
-                        tc.getRate((cx - lx) / 4 + lx) - 10, cx - 7, tc.getRate(cx - 7) - 8));
+                        (float) (cx - lx) / 4 + lx, tc.getRate((cx - lx) / 4 + lx) - 10, cx - 7, tc.getRate(cx - 7) - 8));
                 g2.draw(new QuadCurve2D.Float(
-                        cx + 7,
-                        tc.getRate(cx + 7) - 8,
-                        (float) (rx - cx) * 3 / 4 + cx, tc.getRate((rx - cx) * 3 / 4 + cx) - 10, rx, ry));
+                        cx + 7, tc.getRate(cx + 7) - 8, (float) (rx - cx) * 3 / 4 + cx, tc.getRate((rx - cx) * 3 / 4 + cx) - 10, rx, ry));
                 g2.setFont(tupletFont);
-                drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(iv)),
-                        cx - 3, tc.getRate(cx - 3) - 5);
+                drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(iv)), cx - 3, tc.getRate(cx - 3) - 5);
 
                 /*g2.setColor(Color.red);
                 g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
@@ -521,9 +504,9 @@ public abstract class BaseMsDrawer {
             }
 
             // draw key signature changes
-            if (l + 1 < composition.lineCount() && (composition.getLine(l + 1).getKeys() != line.getKeys() ||
-                                                    composition.getLine(l + 1).getKeyType() != line.getKeyType()
-            )) {
+            if (l + 1 < composition.lineCount() &&
+                (composition.getLine(l + 1).getKeys() != line.getKeys() || composition.getLine(l + 1).getKeyType() != line.getKeyType()
+                )) {
                 Line nextLine = composition.getLine(l + 1);
 
                 if (nextLine.getKeyType() == line.getKeyType()) {
@@ -572,14 +555,13 @@ public abstract class BaseMsDrawer {
                 }
 
                 if (iv.getA() < repeatRightPos || repeatRightPos == -1) {
-                    drawEndings(g2, l, line.getNote(iv.getA()).getXPos(), (repeatRightPos != -1 ? line.getNote(
-                            repeatRightPos - 1).getXPos() : line.getNote(iv.getB()).getXPos()
-                                                                          ) + 2 * (int) crotchetWidth, "1.");
+                    drawEndings(g2, l, line.getNote(iv.getA()).getXPos(),
+                            (repeatRightPos != -1 ? line.getNote(repeatRightPos - 1).getXPos() : line.getNote(iv.getB()).getXPos()
+                            ) + 2 * (int) crotchetWidth, "1.");
                 }
 
                 if (iv.getB() > repeatRightPos && repeatRightPos != -1) {
-                    drawEndings(g2, l, line.getNote(repeatRightPos + 1).getXPos(),
-                            line.getNote(iv.getB()).getXPos() + 2 * (int) crotchetWidth, "2.");
+                    drawEndings(g2, l, line.getNote(repeatRightPos + 1).getXPos(), line.getNote(iv.getB()).getXPos() + 2 * (int) crotchetWidth, "2.");
                 }
             }
 
@@ -645,8 +627,7 @@ public abstract class BaseMsDrawer {
                 intervalSet.removeInterval(i, i + 1);
             }
 
-            for (ListIterator<Interval> intervalListIterator = intervalSet.listIterator();
-                 intervalListIterator.hasNext(); ) {
+            for (ListIterator<Interval> intervalListIterator = intervalSet.listIterator(); intervalListIterator.hasNext(); ) {
                 Interval interval = intervalListIterator.next();
                 int drawX1 = interval.getA() == startIndex ? x1 : line.getNote(interval.getA()).getXPos();
                 int drawX2 = interval.getB() == endIndex ? x2 : line.getNote(interval.getB() - 1).getXPos() + 12;
@@ -719,80 +700,142 @@ public abstract class BaseMsDrawer {
         }
     }
 
-    private void drawBeams(int level, int begin, int end, Line line, Line2D.Double beamLine, Graphics2D g2, int prevBegin, int prevEnd, boolean isPrevLeft) {
+    private void drawBeams(Graphics2D g2, int level, Line line, int lineIndex, int beginIndex, int endIndex) {
+        Point outerNotes = new Point(beginIndex, endIndex);
+        doDrawBeams(g2, level, line, lineIndex, outerNotes, beginIndex, endIndex, beginIndex, endIndex, false, 0);
+    }
+
+    private void doDrawBeams(Graphics2D g2, int level, Line line, int lineIndex, Point outerNotes, int beginIndex, int endIndex, int prevBeginIndex, int prevEndIndex, boolean isPrevLeftOriented, int recursionLevel) {
         if (level == -1) {
             return;
         }
 
-        boolean upper = line.getNote(begin).isUpper();
-        // clipping
-        boolean leftOriented;
+        Note beginNote = line.getNote(beginIndex);
+        Note endNote = line.getNote(endIndex);
+        boolean isUpper = beginNote.isUpper();
+        boolean leftOriented = false;
 
-        if (begin == end) {
-            Note note = line.getNote(begin);
-
-            if (note.getNoteType().isGraceNote()) {
+        // half beam
+        if (beginIndex == endIndex) {
+            if (beginNote.getNoteType().isGraceNote()) {
                 return;
             }
 
-            double startBeamLineX;
-            double endBeamLineX;
-            leftOriented =
-                    prevBegin == prevEnd ? isPrevLeft : begin != prevBegin ^ note.isInvertFractionBeamOrientation();
+            // NOTE: left oriented actually means the beam is attached to the right hand note stem
+            leftOriented = prevBeginIndex == prevEndIndex ? isPrevLeftOriented :
+                    (beginIndex == prevBeginIndex) == beginNote.isInvertFractionBeamOrientation();
 
-            if (upper) {
-                if (leftOriented) {
-                    startBeamLineX = note.getXPos() - 1;
-                    endBeamLineX = note.getXPos() + crotchetWidth;
-                }
-                else {
-                    startBeamLineX = note.getXPos() + crotchetWidth;
-                    endBeamLineX = note.getXPos() + 2 * crotchetWidth + 2;
-                }
+            int begin, end;
+
+            if (leftOriented) {
+                begin = outerNotes.x;
+                end = endIndex;
             }
             else {
-                if (leftOriented) {
-                    startBeamLineX = note.getXPos() - crotchetWidth - 2;
-                    endBeamLineX = note.getXPos();
-                }
-                else {
-                    startBeamLineX = note.getXPos();
-                    endBeamLineX = note.getXPos() + crotchetWidth + 2;
-                }
+                begin = beginIndex;
+                end = outerNotes.y;
             }
 
-            g2.setClip(new Rectangle2D.Double(startBeamLineX,
-                    Math.min(beamLine.y1, beamLine.y2) - 3,
-                    endBeamLineX - startBeamLineX, Math.abs(beamLine.y1 - beamLine.y2) + 6));
+            BeamType type = leftOriented ? BeamType.ATTACH_RIGHT : BeamType.ATTACH_LEFT;
+            drawBeam(g2, line, lineIndex, begin, end, isUpper, type, recursionLevel);
         }
+
+        // top beam
         else {
-            leftOriented = false;
-            double startBeamLineX = line.getNote(begin).getXPos() + (upper ? crotchetWidth : 0) - stemStroke.getLineWidth() / 2f;
-            double endBeamLineX = line.getNote(end).getXPos() + (upper ? crotchetWidth : 0) + stemStroke.getLineWidth() / 2f;
-            g2.setClip(new Rectangle2D.Double(startBeamLineX,
-                    Math.min(beamLine.y1, beamLine.y2) - 3,
-                    endBeamLineX - startBeamLineX, Math.abs(beamLine.y1 - beamLine.y2) + 6));
+            drawBeam(g2, line, lineIndex, beginIndex, endIndex, isUpper, BeamType.FULL, recursionLevel);
         }
 
-        // draw beam
-        g2.draw(beamLine);
-
-        // recursive beams
-        float trans = upper ? beamTranslateY : -beamTranslateY;
-        Line2D.Double subBeamLine = new Line2D.Double(beamLine.x1,
-                beamLine.y1 + trans, beamLine.x2, beamLine.y2 + trans);
+        // sub-beams
+        --level;
         int startSubBeam = -1;
 
-        for (int i = begin; i <= end + 1; i++) {
-            if (i <= end && isNoteTypeInLevel(line, i, level - 1)) {
+        for (int i = beginIndex; i <= endIndex + 1; i++) {
+            if (i <= endIndex && isNoteTypeInLevel(line, i, level)) {
                 if (startSubBeam == -1) {
                     startSubBeam = i;
                 }
             }
             else if (startSubBeam != -1) {
-                drawBeams(level - 1, startSubBeam, i - 1, line, subBeamLine, g2, begin, end, leftOriented);
+                doDrawBeams(g2, level, line, lineIndex, outerNotes, startSubBeam, i - 1, beginIndex, endIndex, leftOriented, recursionLevel + 1);
                 startSubBeam = -1;
             }
+        }
+    }
+
+    private void drawBeam(Graphics2D g2, Line line, int lineIndex, int beginIndex, int endIndex, boolean isUpper, BeamType type, int recursionLevel) {
+        Note beginNote = line.getNote(beginIndex);
+        Note endNote = line.getNote(endIndex);
+        Line2D.Double firstStem = beginNote.a.stem;
+        Line2D.Double lastStem = endNote.a.stem;
+        double halfStemWidth = stemStroke.getLineWidth() / 2;
+        double halfBeamWidth = beamStroke.getLineWidth() / 2;
+
+        double noteX = beginNote.getXPos() - halfStemWidth;
+        double firstX = firstStem.x1 + noteX;
+
+        // overlap the beam with the stem by 1/3 beam width
+        double beamOverlap = beamStroke.getLineWidth() / -3d;
+        double yOffset = ((INNER_BEAM_OFFSET * recursionLevel) + beamOverlap) * (isUpper ? 1 : -1);
+        double noteY = ms.getNoteYPos(beginNote.getYPos(), lineIndex) + yOffset;
+        double firstY = noteY + firstStem.y1 - beginNote.a.lengthening;
+
+        if (isUpper) {
+            firstY += -Note.HOT_SPOT.y + halfBeamWidth;
+        }
+        else {
+            firstY += Note.HOT_SPOT.y - halfBeamWidth;
+        }
+
+        // bottom left
+        Path2D.Double beam = new Path2D.Double(Path2D.WIND_NON_ZERO, 4);
+        beam.moveTo(firstX, firstY + halfBeamWidth);
+        // top left
+        beam.lineTo(firstX, firstY - halfBeamWidth);
+
+        noteX = endNote.getXPos() + halfStemWidth;
+        noteY = ms.getNoteYPos(endNote.getYPos(), lineIndex) + yOffset;
+        double lastX = lastStem.x1 + noteX;
+        double lastY = noteY + lastStem.y1 - endNote.a.lengthening;
+
+        if (isUpper) {
+            lastY += -Note.HOT_SPOT.y + halfBeamWidth;
+        }
+        else {
+            lastY += Note.HOT_SPOT.y - halfBeamWidth;
+        }
+
+        // top right
+        beam.lineTo(lastX, lastY - halfBeamWidth);
+        // bottom right
+        beam.lineTo(lastX, lastY + halfBeamWidth);
+        beam.closePath();
+
+        Shape oldClip = null;
+        Rectangle2D clip = null;
+
+        if (type != BeamType.FULL) {
+            // If drawing an inner beam, clip the beam to the inner beam length, leaving slop on the stem side
+            // to account for inaccuracies when printing.
+            clip = beam.getBounds2D();
+            double clipSlop = 2d;
+            double x1, x2;
+
+            if (type == BeamType.ATTACH_LEFT) {
+                x1 = firstX - clipSlop;
+            }
+            else {  // type == BeamType.ATTACH_RIGHT
+                x1 = lastX - INNER_BEAM_LENGTH;
+            }
+
+            clip.setRect(x1, clip.getMinY() - clipSlop, INNER_BEAM_LENGTH + clipSlop, clip.getHeight() + (clipSlop * 2));
+            oldClip = g2.getClip();
+            g2.setClip(clip);
+        }
+
+        g2.fill(beam);
+
+        if (clip != null) {
+            g2.setClip(oldClip);
         }
     }
 
@@ -899,13 +942,11 @@ public abstract class BaseMsDrawer {
 
         tempoBuilder.append(tempo.getTempoDescription());
         g2.setFont(ms.getComposition().getGeneralFont());
-        drawAntialiasedString(
-                g2,
-                tempoBuilder.toString(),
-                n.getXPos() + (tempo.isShowTempo() ?
-                                   crotchetWidth + 5 + (tempoTypeNote.getDotted() == 1 ||
-                                                        tempoTypeNote.getNoteType() == NoteType.QUAVER ? 6 : 0) : 0),
-                yPos);
+        drawAntialiasedString(g2, tempoBuilder.toString(), n.getXPos() + (tempo.isShowTempo() ? crotchetWidth + 5 + (tempoTypeNote.getDotted() == 1 ||
+                                                                                                                     tempoTypeNote.getNoteType() ==
+                                                                                                                     NoteType.QUAVER ? 6 : 0
+        ) : 0
+        ), yPos);
     }
 
     private void drawBeatChange(Graphics2D g2, int line, Note note) {
@@ -974,8 +1015,8 @@ public abstract class BaseMsDrawer {
         }
         else if (note.getDurationArticulation() == DurationArticulation.TENUTO) {
             g2.setStroke(tenutoStroke);
-            double width = note.getNoteType() == NoteType.SEMIBREVE ||
-                           note.getNoteType() == NoteType.MINIM ? note.getRealUpNoteRect().width : crotchetWidth;
+            double width =
+                    note.getNoteType() == NoteType.SEMIBREVE || note.getNoteType() == NoteType.MINIM ? note.getRealUpNoteRect().width : crotchetWidth;
             g2.draw(new Line2D.Double(xPos, durY, xPos + width, durY));
         }
     }
@@ -1048,7 +1089,6 @@ public abstract class BaseMsDrawer {
         int y1Pos = ((GraceSemiQuaver) note).getY0Pos();
         int y2Pos = note.getYPos();
 
-        // draw the stem
         g2.setStroke(graceSemiQuaverStemStroke);
         int yHead1 = ms.getNoteYPos(y1Pos, line);
         int lengthening1 = Math.max(dir * (y2Pos - y1Pos) - 2, 0);
@@ -1101,6 +1141,10 @@ public abstract class BaseMsDrawer {
     protected abstract void drawKeySignatureChange(Graphics2D g2, int l, KeyType[] keyTypes, int[] keys, int[] froms, boolean[] isNatural);
 
     protected abstract void drawTempoChangeNote(Graphics2D g2, Note tempoNote, int x, int y);
+
+    protected static enum BeamType {
+        FULL, ATTACH_LEFT, ATTACH_RIGHT
+    }
 
     private class TupletCalc {
         int lx, ly, rx, ry;
