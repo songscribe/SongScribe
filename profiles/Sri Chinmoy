@@ -1,16 +1,16 @@
 #Fri Jun 16 23:21:38 CEST 2006
+Profile=1.0
 KeyType=FLATS
-TitleFont=Arial
 Tempo=120
 Keys=5
 TempoDescription=Moderate
-RightInformation=Words and Music\nby Sri Chinmoy\n
-TitleFontStyle=Plain
-TitleFontSize=26
-LyricsFontStyle=Plain
-LyricsFontSize=18
-Profile=1.0
-LyricsFont=Times New Roman
 TempoType=CROTCHET
-GeneralFont=Arial
+RightInformation=Words and Music\nby Sri Chinmoy\n
+TitleFont=Source Sans Pro
+TitleFontStyle=Bold
+TitleFontSize=30
+LyricsFont=Source Sans Pro
+LyricsFontStyle=Plain
+LyricsFontSize=16
+GeneralFont=Source Sans Pro
 GeneralFontSize=14
