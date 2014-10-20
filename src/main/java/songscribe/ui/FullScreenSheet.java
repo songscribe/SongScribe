@@ -26,6 +26,9 @@ import songscribe.music.Line;
 import songscribe.music.NoteType;
 import songscribe.ui.playsubmenu.PlaybackListener;
 
+import com.bulenkov.iconloader.JBHiDPIScaledImage;
+import com.bulenkov.iconloader.util.UIUtil;
+
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.swing.*;
@@ -42,19 +45,23 @@ import java.awt.image.BufferedImage;
  */
 public class FullScreenSheet extends JFrame implements MetaEventListener, PlaybackListener {
     private static final double MAX_ZOOM_RATIO = 2d;
+    private static final int MARGIN = 50;
     private static BufferedImage zoomedImage;
     private MainFrame mainFrame;
     private JSlider tempoChangeSlider;
     private JButton playPauseButton;
     private MusicSheetComponent musicSheetComponent = new MusicSheetComponent();
     private double zoom;
+    private int zoomedImageWidth;
+    private int zoomedImageHeight;
+    private Dimension sheetSize;
 
     public FullScreenSheet(MainFrame mainFrame, ChangeListener sliderChangeListener, Action... actions) throws HeadlessException {
         this.mainFrame = mainFrame;
         setUndecorated(true);
         getContentPane().add(BorderLayout.CENTER, musicSheetComponent);
-        Rectangle rec = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
-        setBounds(rec.x, rec.y, rec.width, rec.height);
+        Rectangle bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
         init(sliderChangeListener, actions);
         setMusicSheet();
 
@@ -135,20 +142,32 @@ public class FullScreenSheet extends JFrame implements MetaEventListener, Playba
 
     public void setMusicSheet() {
         MusicSheet musicSheet = mainFrame.getMusicSheet();
-        zoom = Math.min(Math.min(
-                (getWidth() - 50d) / musicSheet.getSheetWidth(),
-                (getHeight() - 50d) / musicSheet.getSheetHeight()), MAX_ZOOM_RATIO);
+        Component toolbar = getComponent(0);
+        sheetSize = new Dimension(
+                getWidth(),
+                getHeight() - toolbar.getPreferredSize().height);
 
-        if (zoomedImage == null || zoomedImage.getWidth() < getWidth() || zoomedImage.getHeight() < getHeight()) {
-            zoomedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        zoom = Math.min(
+                    ((double) sheetSize.width - (MARGIN * 2)) / musicSheet.getSheetWidth(),
+                    ((double) sheetSize.height - MARGIN) / musicSheet.getSheetHeight());
+        zoom = Math.min(zoom, MAX_ZOOM_RATIO);
+
+        if (zoomedImage == null || zoomedImageWidth < sheetSize.width || zoomedImageHeight < sheetSize.height) {
+            zoomedImageWidth = (int) (musicSheet.getSheetWidth() * zoom);
+            zoomedImageHeight = (int) (musicSheet.getSheetHeight() * zoom);
+
+            if (UIUtil.isRetina()) {
+                zoomedImage = new JBHiDPIScaledImage(zoomedImageWidth, zoomedImageHeight, BufferedImage.TYPE_INT_RGB);
+            }
+            else {
+                zoomedImage = new BufferedImage(zoomedImageWidth, zoomedImageHeight, BufferedImage.TYPE_INT_RGB);
+            }
         }
 
-        MyBorder border = new MyBorder(
-                (int) (zoomedImage.getWidth() - musicSheet.getSheetWidth() * zoom) / 2,
-                (int) (zoomedImage.getHeight() - musicSheet.getSheetHeight() * zoom) / 2);
-        musicSheetComponent.translate = new Point(border.getLeft(), border.getTop());
+        MyBorder border = new MyBorder(0, 0);
+        musicSheetComponent.translate = new Point(0, 0);
         musicSheet.createMusicSheetImageForExport(zoomedImage, getBackground(), zoom, border);
-        musicSheetComponent.setPreferredSize(new Dimension(zoomedImage.getWidth(), zoomedImage.getHeight()));
+        musicSheetComponent.setPreferredSize(new Dimension(sheetSize.width, sheetSize.height));
         repaint();
     }
 
@@ -189,8 +208,10 @@ public class FullScreenSheet extends JFrame implements MetaEventListener, Playba
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             if (zoomedImage != null) {
-                g2.translate((getWidth() - zoomedImage.getWidth()) / 2, (getHeight() - zoomedImage.getHeight()) / 2);
-                g2.drawImage(zoomedImage, 0, 0, null);
+                int xTranslate = Math.max((sheetSize.width - zoomedImageWidth) / 2, 0);
+                int yTranslate = Math.max((sheetSize.height - zoomedImageHeight) / 2, 0);
+                g2.translate(xTranslate, yTranslate);
+                UIUtil.drawImage(g2, zoomedImage, 0, 0, null);
             }
 
             // paint playing
