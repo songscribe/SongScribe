@@ -63,7 +63,7 @@ public abstract class BaseMsDrawer {
     private static final BasicStroke underScoreStroke = new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final Ellipse2D.Float staccatoEllipse = new Ellipse2D.Float(0f, 0f, 3.5f, 3.5f);
     private static final Color selectionColor = new Color(254, 45, 125);
-    private static final Font tupletFont = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+    private static final Font tupletFont = new Font(Font.SANS_SERIF, Font.BOLD + Font.ITALIC, 12);
     private static final Font fsEndingFont = new Font(Font.SERIF, Font.BOLD, 14);
     private static final String GLISSANDO = "\uf07e";
     private static final String TRILL = "\uf0d9";
