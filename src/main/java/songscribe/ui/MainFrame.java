@@ -261,7 +261,7 @@ public class MainFrame extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                g2.setFont(new Font("Serif", Font.BOLD, 20));
+                g2.setFont(new Font(Font.SERIF, Font.BOLD, 20));
                 g2.drawString("Version " + Utilities.getPublicVersion(), 20, 503);
                 g2.drawString("© 2006-" + Utilities.getYear() + " Himádri", 305, 503);
             }

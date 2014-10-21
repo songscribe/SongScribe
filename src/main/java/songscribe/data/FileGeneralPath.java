@@ -126,7 +126,7 @@ public class FileGeneralPath {
     }
 
     private static Shape getShape(char ch) {
-        Font maestro = new Font("Maestro", 0, 512);
+        Font maestro = new Font("Maestro", Font.PLAIN, 512);
         JFrame f = new JFrame();
         f.pack();
         Graphics2D g2 = (Graphics2D) f.getGraphics();
