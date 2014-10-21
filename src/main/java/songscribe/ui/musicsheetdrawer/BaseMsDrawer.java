@@ -100,6 +100,8 @@ public abstract class BaseMsDrawer {
     private boolean[] isNaturals = new boolean[2];
     private int height = 0;
     private Font oldGeneralFont, annotationFont;
+    private int lyricsMaxY = 0;
+    private int lyricsMaxDescent;
 
     public BaseMsDrawer(MusicSheet ms) {
         this.ms = ms;
@@ -118,9 +120,546 @@ public abstract class BaseMsDrawer {
             g2.translate(0, -ms.getStartY());
         }
 
-        // draw the title
         g2.setPaint(Color.black);
+        drawTitle(g2, composition);
+        drawRightInfo(g2, composition);
 
+        g2.setFont(composition.getLyricsFont());
+        FontMetrics lyricsMetrics = g2.getFontMetrics(composition.getLyricsFont());
+        lyricsMaxDescent = lyricsMetrics.getMaxDescent();
+
+        drawUnderLyrics(g2, composition);
+        drawTempo(g2, composition);
+        drawComposition(g2, drawEditingComponents, composition);
+
+        if (lyricsMaxY != 0) {
+            height = lyricsMaxY;
+        }
+    }
+
+    private void drawComposition(Graphics2D g2, boolean drawEditingComponents, Composition composition) {
+        for (int lineIndex = 0; lineIndex < composition.lineCount(); lineIndex++) {
+            Boolean lastLine = lineIndex == composition.lineCount() - 1;
+            drawStaffLines(g2, composition, lineIndex);
+
+            // drawing the treble clef and the leading keys
+            Line line = composition.getLine(lineIndex);
+            int maxY = drawLineBeginning(g2, line, lineIndex);
+
+            if (lyricsMaxY == 0) {
+                height = maxY;
+            }
+
+            // draw the notes
+            int lyricsDrawn = 0;
+
+            for (int noteIndex = 0; noteIndex < line.noteCount(); noteIndex++) {
+                Note note = line.getNote(noteIndex);
+
+                if (note.getTempoChange() != null) {
+                    drawTempoChange(g2, note.getTempoChange(), lineIndex, noteIndex);
+                }
+
+                if (note.getBeatChange() != null) {
+                    drawBeatChange(g2, lineIndex, note);
+                }
+
+                boolean beamed = line.getBeamings().findInterval(noteIndex) != null && note.getNoteType() != NoteType.GRACE_QUAVER;
+                paintNote(g2, note, lineIndex, beamed, ms.isNoteSelected(noteIndex, lineIndex) && drawEditingComponents ? selectionColor : Color.black);
+                drawTie(g2, lineIndex, line, noteIndex, note);
+                lyricsDrawn = drawLyrics(g2, composition, lineIndex, lastLine, line, lyricsDrawn, noteIndex, note);
+                drawAnnotation(g2, lineIndex, lastLine, note);
+                drawTrill(g2, lineIndex, line, noteIndex, note);
+            }
+
+            drawSlur(g2, lineIndex, line);
+            drawBeamsOnLine(g2, lineIndex, line);
+            drawTuplets(g2, lineIndex, line);
+            drawKeyChanges(g2, composition, lineIndex, line);
+            drawEndings(g2, lineIndex, line);
+            drawCrescendos(g2, lineIndex, line);
+            drawDiminuendos(g2, lineIndex, line);
+        }
+    }
+
+    private void drawDiminuendos(Graphics2D g2, int lineIndex, Line line) {
+        g2.setStroke(lineStroke);
+
+        for (ListIterator<Interval> li = line.getDiminuendo().listIterator(); li.hasNext(); ) {
+            Interval interval = li.next();
+            Note startNote = line.getNote(interval.getA());
+            Note endNote = line.getNote(interval.getB());
+            int x1 = startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(interval);
+            int yShift = CrescendoDiminuendoIntervalData.getYShift(interval);
+            int x2 = endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(interval);
+
+            g2.drawLine(
+                    x1,
+                    ms.getNoteYPos(5, lineIndex) + yShift,
+                    x2,
+                    ms.getNoteYPos(6, lineIndex) + yShift);
+            g2.drawLine(
+                    x1,
+                    ms.getNoteYPos(7, lineIndex) + yShift,
+                    x2,
+                    ms.getNoteYPos(6, lineIndex) + yShift);
+        }
+    }
+
+    private void drawCrescendos(Graphics2D g2, int lineIndex, Line line) {
+        g2.setStroke(lineStroke);
+
+        for (ListIterator<Interval> li = line.getCrescendo().listIterator(); li.hasNext(); ) {
+            Interval interval = li.next();
+            Note startNote = line.getNote(interval.getA());
+            Note endNote = line.getNote(interval.getB());
+            int x1 = startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(interval);
+            int yShift = CrescendoDiminuendoIntervalData.getYShift(interval);
+            int x2 = endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(interval);
+
+            g2.drawLine(
+                    x1,
+                    ms.getNoteYPos(6, lineIndex) + yShift,
+                    x2,
+                    ms.getNoteYPos(5, lineIndex) + yShift);
+            g2.drawLine(
+                    x1,
+                    ms.getNoteYPos(6, lineIndex) + yShift,
+                    x2,
+                    ms.getNoteYPos(7, lineIndex) + yShift);
+        }
+    }
+
+    private void drawEndings(Graphics2D g2, int lineIndex, Line line) {
+        for (ListIterator<Interval> li = line.getFsEndings().listIterator(); li.hasNext(); ) {
+            Interval iv = li.next();
+            int repeatRightPos = -1;
+
+            for (int i = iv.getA(); i <= iv.getB(); i++) {
+                if (line.getNote(i).getNoteType() == NoteType.REPEAT_RIGHT) {
+                    repeatRightPos = i;
+                    break;
+                }
+            }
+
+            if (iv.getA() < repeatRightPos || repeatRightPos == -1) {
+                int x2;
+
+                if (repeatRightPos != -1) {
+                    x2 = line.getNote(repeatRightPos - 1).getXPos();
+                }
+                else {
+                    x2 = line.getNote(iv.getB()).getXPos();
+                }
+
+                x2 += 2 * (int) crotchetWidth;
+
+                drawEnding(
+                        g2,
+                        lineIndex,
+                        line.getNote(iv.getA()).getXPos(),
+                        x2,
+                        "1.");
+            }
+
+            if (iv.getB() > repeatRightPos && repeatRightPos != -1) {
+                int x2 = line.getNote(iv.getB()).getXPos() + (2 * (int) crotchetWidth);
+
+                drawEnding(
+                        g2,
+                        lineIndex,
+                        line.getNote(repeatRightPos + 1).getXPos(),
+                        x2,
+                        "2.");
+            }
+        }
+    }
+
+    private void drawKeyChanges(Graphics2D g2, Composition composition, int lineIndex, Line line) {
+        if (lineIndex + 1 >= composition.lineCount()) {
+            return;
+        }
+
+        Line nextLine = composition.getLine(lineIndex + 1);
+
+        if (nextLine.getKeys() != line.getKeys() || nextLine.getKeyType() != line.getKeyType()) {
+            if (nextLine.getKeyType() == line.getKeyType()) {
+                keyTypes[0] = nextLine.getKeyType();
+                keys[0] = nextLine.getKeys();
+                froms[0] = 0;
+                isNaturals[0] = false;
+
+                if (nextLine.getKeys() > line.getKeys()) {
+                    keyTypes[1] = null;
+                    keys[1] = 0;
+                    froms[1] = 0;
+                    isNaturals[1] = false;
+                }
+                else {
+                    keyTypes[1] = line.getKeyType();
+                    keys[1] = line.getKeys() - nextLine.getKeys();
+                    froms[1] = nextLine.getKeys();
+                    isNaturals[1] = true;
+                }
+            }
+            else {
+                keyTypes[0] = line.getKeyType();
+                keys[0] = line.getKeys();
+                froms[0] = 0;
+                isNaturals[0] = true;
+                keyTypes[1] = nextLine.getKeyType();
+                keys[1] = nextLine.getKeys();
+                froms[1] = 0;
+                isNaturals[1] = false;
+            }
+
+            drawKeySignatureChange(g2, lineIndex, keyTypes, keys, froms, isNaturals);
+        }
+    }
+
+    private void drawTuplets(Graphics2D g2, int lineIndex, Line line) {
+        for (ListIterator<Interval> li = line.getTuplets().listIterator(); li.hasNext(); ) {
+            Interval interval = li.next();
+            boolean odd = (interval.getB() - interval.getA() + 1) % 2 == 1;
+            Note firstNote = line.getNote(interval.getA());
+            int upper = firstNote.isUpper() ? -1 : 0;
+            int lx = firstNote.getXPos() + (int) crotchetWidth;
+            int ly = (ms.getNoteYPos(firstNote.getYPos(), lineIndex) - Note.HOT_SPOT.y) + (upper * firstNote.a.lengthening);
+            ly -= 5;
+
+            int cx;
+
+            if (odd) {
+                Note centerNote = line.getNote((interval.getB() - interval.getA()) / 2 + interval.getA());
+                cx = centerNote.getXPos() + (int) crotchetWidth;
+            }
+            else {
+                Note cn1 = line.getNote((interval.getB() - interval.getA()) / 2 + interval.getA());
+                Note cn2 = line.getNote((interval.getB() - interval.getA()) / 2 + interval.getA() + 1);
+                cx = (cn2.getXPos() - cn1.getXPos()) / 2 + cn1.getXPos() + (int) crotchetWidth;
+            }
+
+            Note lastNote = line.getNote(interval.getB());
+            int rx = lastNote.getXPos() + (int) crotchetWidth;
+            int ry = ms.getNoteYPos(lastNote.getYPos(), lineIndex) - Note.HOT_SPOT.y + upper * lastNote.a.lengthening;
+            ry -= 5;
+
+            if (!firstNote.isUpper()) {
+                lx -= (int) crotchetWidth / 2;
+                ly += Note.HOT_SPOT.y - 3;
+                cx -= (int) crotchetWidth / 2;
+                rx -= (int) crotchetWidth / 2;
+                ry += Note.HOT_SPOT.y - 3;
+            }
+
+            if (TupletIntervalData.isVerticalAdjusted(interval)) {
+                ly += TupletIntervalData.getVerticalPosition(interval);
+                ry += TupletIntervalData.getVerticalPosition(interval);
+            }
+
+            g2.setStroke(lineStroke);
+            TupletCalc tc = new TupletCalc(lx, ly, rx, ry);
+
+            g2.draw(new QuadCurve2D.Float(lx, ly,
+                    (float) (cx - lx) / 4 + lx, tc.getRate((cx - lx) / 4 + lx) - 10, cx - 7, tc.getRate(cx - 7) - 8));
+            g2.draw(new QuadCurve2D.Float(
+                    cx + 7, tc.getRate(cx + 7) - 8, (float) (rx - cx) * 3 / 4 + cx, tc.getRate((rx - cx) * 3 / 4 + cx) - 10, rx, ry));
+            g2.setFont(tupletFont);
+            drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(interval)), cx - 3, tc.getRate(cx - 3) - 5);
+
+            /*g2.setColor(Color.red);
+            g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
+            g2.fill(new Rectangle2D.Double(triplet.getX2()-1, triplet.getY2()-1, 2, 2));
+            g2.setColor(Color.orange);
+            g2.fill(new Rectangle2D.Double(triplet.getCtrlX1()-1, triplet.getCtrlY1()-1, 2, 2));
+            g2.fill(new Rectangle2D.Double(triplet.getCtrlX2()-1, triplet.getCtrlY2()-1, 2, 2));
+            g2.setColor(Color.black);*/
+        }
+    }
+
+    private void drawBeamsOnLine(Graphics2D g2, int lineIndex, Line line) {
+        for (ListIterator<Interval> li = line.getBeamings().listIterator(); li.hasNext(); ) {
+            Interval interval = li.next();
+            Line2D.Double beamLine;
+            Note firstNote = line.getNote(interval.getA());
+            Note lastNote = line.getNote(interval.getB());
+
+            // TODO: maybe i should just pass the first/last note to drawBeams, that should be sufficient
+            if (firstNote.isUpper()) {
+                beamLine = new Line2D.Double(
+                        firstNote.getXPos() + crotchetWidth,
+                        ms.getNoteYPos(firstNote.getYPos(), lineIndex) - Note.HOT_SPOT.y - firstNote.a.lengthening,
+                        lastNote.getXPos() + crotchetWidth, ms.getNoteYPos(lastNote.getYPos(), lineIndex) - Note.HOT_SPOT.y - lastNote.a.lengthening);
+            }
+            else {
+                beamLine = new Line2D.Double(firstNote.getXPos(),
+                        ms.getNoteYPos(firstNote.getYPos(), lineIndex) + Note.HOT_SPOT.y - firstNote.a.lengthening,
+                        lastNote.getXPos() + 1, ms.getNoteYPos(lastNote.getYPos(), lineIndex) + Note.HOT_SPOT.y - lastNote.a.lengthening);
+            }
+
+            //Shape clip = g2.getClip();
+            g2.setStroke(beamStroke);
+            beamLine.setLine(
+                    beamLine.x1 - 10,
+                    beamLine.y1 + 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1),
+                    beamLine.x2 + 10, beamLine.y2 - 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1));
+            drawBeams(g2, BEAM_LEVELS.length - 1, line, lineIndex, interval.getA(), interval.getB());
+            //g2.setClip(clip);
+        }
+    }
+
+    private void drawSlur(Graphics2D g2, int lineIndex, Line line) {
+        for (ListIterator<Interval> li = line.getSlurs().listIterator(); li.hasNext(); ) {
+            Interval interval = li.next();
+            Note firstNote = line.getNote(interval.getA());
+            Note lastNote = line.getNote(interval.getB());
+            SlurData slurData;
+
+            // apply default values;
+            if (interval.getData() == null) {
+                boolean slurUpper = firstNote.isUpper();
+                int xPos1 = getHalfNoteWidthForTie(firstNote) + 2;
+                int xPos2 = getHalfNoteWidthForTie(lastNote) - 3;
+
+                if (firstNote.isUpper() != lastNote.isUpper() && firstNote.isUpper()) {
+                    slurUpper = false;
+                    xPos1 += 7;
+                    xPos2 -= 5;
+                }
+
+                int yPos1 = (slurUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
+                int yPos2 = (slurUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
+                int ctrlY = slurUpper ? 16 : -18;
+                slurData = new SlurData(xPos1, xPos2, yPos1, yPos2, ctrlY);
+                interval.setData(slurData.toString());
+            }
+            else {
+                slurData = new SlurData(interval.getData());
+            }
+
+            g2.setStroke(lineStroke);
+            GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
+            int xPos1 = firstNote.getXPos() + slurData.getXPos1();
+            int xPos2 = lastNote.getXPos() + slurData.getXPos2();
+            int yPos1 = ms.getNoteYPos(firstNote.getYPos(), lineIndex) + slurData.getYPos1();
+            int yPos2 = ms.getNoteYPos(lastNote.getYPos(), lineIndex) + slurData.getYPos2();
+            int ctrlY = (ms.getNoteYPos(firstNote.getYPos(), lineIndex) + ms.getNoteYPos(lastNote.getYPos(), lineIndex)) / 2 + slurData.getCtrlY();
+            int gap = xPos2 - xPos1;
+            tie.moveTo(xPos1, yPos1);
+            tie.quadTo(xPos1 + gap / 2, ctrlY, xPos1 + gap, yPos2);
+            tie.quadTo(xPos1 + gap / 2, ctrlY + 2, xPos1, yPos1);
+            tie.closePath();
+            g2.draw(tie);
+            g2.fill(tie);
+            /*g2.setPaint(Color.red);
+            g2.drawRect(xPos, yPos, 1, 1);
+            g2.setPaint(Color.green);
+            g2.drawRect(note.getXPos(), yPos, 1, 1);
+            g2.drawRect(note.getXPos()+note.getRealUpNoteRect().width, yPos, 1, 1);
+            g2.setPaint(Color.black);*/
+        }
+    }
+
+    private void drawTrill(Graphics2D g2, int lineIndex, Line line, int noteIndex, Note note) {
+        if (note.isTrill() && (noteIndex == 0 || !line.getNote(noteIndex - 1).isTrill())) {
+            int trillEnd = noteIndex + 1;
+
+            while (trillEnd < line.noteCount() && line.getNote(trillEnd).isTrill()) {
+                trillEnd++;
+            }
+
+            trillEnd--;
+            int x = note.getXPos();
+            int y = ms.getNoteYPos(0, lineIndex) + line.getTrillYPos();
+            g2.setFont(fughetta);
+            g2.drawString(TRILL, x, y);
+
+            if (noteIndex < trillEnd) {
+                drawGlissando(g2, x + 18, y - 3, (int) Math.round(line.getNote(trillEnd).getXPos() + crotchetWidth), y - 3);
+            }
+        }
+    }
+
+    private void drawAnnotation(Graphics2D g2, int lineIndex, Boolean lastLine, Note note) {
+        if (note.getAnnotation() != null) {
+            g2.setFont(getAnnotationFont());
+            int y = getAnnotationYPos(lineIndex, note);
+            drawAntialiasedString(g2, note.getAnnotation().getAnnotation(), getAnnotationXPos(g2, note), y);
+
+            if (lastLine && lyricsMaxY == 0) {
+                y += g2.getFontMetrics().getMaxDescent();
+
+                if (y > height) {
+                    height = y;
+                }
+            }
+        }
+    }
+
+    private int drawLyrics(Graphics2D g2, Composition composition, int lineIndex, Boolean lastLine, Line line, int lyricsDrawn, int noteIndex, Note note) {
+        int lyricsY = ms.getNoteYPos(0, lineIndex) + line.getLyricsYPos();
+
+        if (lastLine && lyricsMaxY == 0) {
+            height = lyricsY + lyricsMaxDescent;
+        }
+
+        int dashY = lyricsY - composition.getLyricsFont().getSize() / 4;
+        g2.setFont(composition.getLyricsFont());
+        int syllableWidth = 0;
+
+        if (note.a.syllable != null && !note.a.syllable.equals(Constants.UNDERSCORE)) {
+            syllableWidth = g2.getFontMetrics().stringWidth(note.a.syllable);
+            int lyricsX = note.getXPos() + Note.HOT_SPOT.x - syllableWidth / 2 + note.getSyllableMovement();
+            drawAntialiasedString(g2, note.a.syllable, lyricsX, lyricsY);
+
+            if (noteIndex == 0 && line.beginRelation == Note.SyllableRelation.ONE_DASH) {
+                g2.setStroke(longDashStroke);
+                g2.draw(new Line2D.Float(lyricsX - longDashWidth - 10, dashY, lyricsX - 10, dashY));
+            }
+        }
+
+        if (lyricsDrawn <= noteIndex &&
+            (note.a.syllableRelation != Note.SyllableRelation.NO || noteIndex == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER
+            )) {
+            Note.SyllableRelation relation =
+                    note.a.syllableRelation != Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
+            int c;
+
+            if (relation == Note.SyllableRelation.DASH || relation == Note.SyllableRelation.ONE_DASH) {
+                for (c = noteIndex + 1;
+                     c < line.noteCount() && (line.getNote(c).a.syllable.equals(Constants.UNDERSCORE) || line.getNote(c).a.syllable.isEmpty()
+                     ); c++) {
+                    ;
+                }
+            }
+            else {
+                for (c = noteIndex; c < line.noteCount() && (line.getNote(c).a.syllableRelation == relation || line.getNote(c).a.syllable.isEmpty()
+                ); c++) {
+                    ;
+                }
+            }
+
+            lyricsDrawn = c;
+
+            int startX = noteIndex == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER ?
+                    note.getXPos() - 10 : note.getXPos() + Note.HOT_SPOT.x + syllableWidth / 2 + note.getSyllableMovement() + 2;
+            int endX;
+
+            if (c ==
+                line.noteCount()/* || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO*/) {
+                endX = relation == Note.SyllableRelation.ONE_DASH ? startX + (int) (longDashWidth * 2f) : composition.getLineWidth();
+            }
+            else {
+                if (relation == Note.SyllableRelation.EXTENDER) {
+                    endX = line.getNote(c).getXPos() + 12;
+                }
+                else if (relation == Note.SyllableRelation.ONE_DASH && line.getNote(c).a.syllable.isEmpty()) {
+                    endX = startX + (int) (longDashWidth * 2f);
+                }
+                else {
+                    endX = line.getNote(c).getXPos() + Note.HOT_SPOT.x - g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable) / 2 +
+                           line.getNote(c).getSyllableMovement() - 2;
+                }
+            }
+
+            if (relation == Note.SyllableRelation.DASH) {
+                g2.setStroke(dashStroke);
+                float dashPhase = dashStroke.getDashArray()[0] + dashStroke.getDashArray()[1];
+                int length = Math.round((float) Math.floor((endX - startX - dashStroke.getDashArray()[1]) / dashPhase) * dashPhase +
+                                        dashStroke.getDashArray()[0]);
+                int gap = (endX - startX - length) / 2;
+                drawWithEmptySyllablesExclusion(g2, startX + gap, dashY, endX - gap, dashY, line, noteIndex, c + 1);
+            }
+            else if (relation == Note.SyllableRelation.EXTENDER) {
+                g2.setStroke(underScoreStroke);
+                drawWithEmptySyllablesExclusion(g2, startX, lyricsY, endX, lyricsY, line, noteIndex, c + 1);
+            }
+            else if (relation == Note.SyllableRelation.ONE_DASH) {
+                g2.setStroke(longDashStroke);
+                note.a.longDashPosition = (endX - startX) / 2f + startX;
+                float centerX = note.getSyllableRelationMovement() == 0 ? note.a.longDashPosition :
+                        note.getXPos() + note.getSyllableRelationMovement();
+                g2.draw(new Line2D.Float(centerX - longDashWidth / 2f, dashY, centerX + longDashWidth / 2f, dashY));
+            }
+        }
+
+        return lyricsDrawn;
+    }
+
+    private void drawTie(Graphics2D g2, int lineIndex, Line line, int noteIndex, Note note) {
+        Interval tieVal = line.getTies().findInterval(noteIndex);
+
+        if (tieVal != null && noteIndex != tieVal.getB()) {
+            boolean tieUpper = note.isUpper();
+            int xPos = note.getXPos() + getHalfNoteWidthForTie(note) + 2;
+            int gap = line.getNote(noteIndex + 1).getXPos() + getHalfNoteWidthForTie(line.getNote(noteIndex + 1)) - xPos - 3;
+
+            if (note.isUpper() != line.getNote(noteIndex + 1).isUpper() && note.isUpper()) {
+                tieUpper = false;
+                xPos += 7;
+                gap -= 5;
+            }
+
+            int yPos = ms.getNoteYPos(note.getYPos(), lineIndex) + (tieUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
+            g2.setStroke(lineStroke);
+            GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
+            tie.moveTo(xPos, yPos);
+            tie.quadTo(xPos + gap / 2, yPos + (tieUpper ? 6 : -6), xPos + gap, yPos);
+            tie.quadTo(xPos + gap / 2, yPos + (tieUpper ? 8 : -8), xPos, yPos);
+            tie.closePath();
+            g2.draw(tie);
+            g2.fill(tie);
+            /*g2.setPaint(Color.red);
+            g2.drawRect(xPos, yPos, 1, 1);
+            g2.setPaint(Color.green);
+            g2.drawRect(note.getXPos(), yPos, 1, 1);
+            g2.drawRect(note.getXPos()+note.getRealUpNoteRect().width, yPos, 1, 1);
+            g2.setPaint(Color.black);*/
+        }
+    }
+
+    private void drawStaffLines(Graphics2D g2, Composition composition, int lineIndex) {
+        g2.setPaint(lineIndex != ms.getSelectedLine() ? Color.black : selectionColor);
+        g2.setStroke(lineStroke);
+
+        // draw the lines
+        for (int i = -2; i <= 2; i++) {
+            g2.drawLine(0, ms.getNoteYPos(i * 2, lineIndex), composition.getLineWidth(), ms.getNoteYPos(i * 2, lineIndex));
+        }
+
+        g2.drawLine(0, ms.getNoteYPos(-4, lineIndex), 0, ms.getNoteYPos(4, lineIndex));
+
+        g2.setPaint(Color.black);
+    }
+
+    private void drawTempo(Graphics2D g2, Composition composition) {
+        if (composition.getLine(0).noteCount() > 0) {
+            drawTempoChange(g2, composition.getTempo(), 0, 0);
+        }
+    }
+
+    private void drawUnderLyrics(Graphics2D g2, Composition composition) {
+        if (composition.getUnderLyrics().length() > 0) {
+            lyricsMaxY = drawTextBox(g2, composition.getUnderLyrics(), ms.getUnderLyricsYPos(), Component.CENTER_ALIGNMENT, 0);
+        }
+
+        if (composition.getTranslatedLyrics().length() > 0) {
+            lyricsMaxY = drawTextBox(g2, composition.getTranslatedLyrics(), ms.getUnderLyricsYPos() +
+                                                                            (Utilities.lineCount(composition.getUnderLyrics()) + 1) *
+                                                                            g2.getFontMetrics().getAscent(), Component.CENTER_ALIGNMENT, 0);
+        }
+    }
+
+    private void drawRightInfo(Graphics2D g2, Composition composition) {
+        g2.setFont(composition.getGeneralFont());
+
+        if (composition.getRightInfo().length() > 0) {
+            drawTextBox(g2, composition.getRightInfo(),
+                    composition.getRightInfoStartY() + composition.getGeneralFont().getSize(), Component.RIGHT_ALIGNMENT, -20);
+        }
+    }
+
+    private void drawTitle(Graphics2D g2, Composition composition) {
         if (composition.getSongTitle().length() > 0) {
             g2.setFont(composition.getSongTitleFont());
             int i = 0;
@@ -135,473 +674,6 @@ public abstract class BaseMsDrawer {
                         (composition.getLineWidth() - titleWidth) / 2, (i + 1) * composition.getSongTitleFont().getSize());
                 i++;
             }
-        }
-
-        // draw the rightInfo
-        g2.setFont(composition.getGeneralFont());
-
-        if (composition.getRightInfo().length() > 0) {
-            drawTextBox(g2, composition.getRightInfo(),
-                    composition.getRightInfoStartY() + composition.getGeneralFont().getSize(), Component.RIGHT_ALIGNMENT, -20);
-        }
-
-        // draw the under lyrics and the translated lyrics
-        g2.setFont(composition.getLyricsFont());
-        FontMetrics lyricsMetrics = g2.getFontMetrics(composition.getLyricsFont());
-        int lyricsMaxDescent = lyricsMetrics.getMaxDescent();
-        int lyricsMaxY = 0;
-
-        if (composition.getUnderLyrics().length() > 0) {
-            lyricsMaxY = drawTextBox(g2, composition.getUnderLyrics(), ms.getUnderLyricsYPos(), Component.CENTER_ALIGNMENT, 0);
-        }
-
-        if (composition.getTranslatedLyrics().length() > 0) {
-            lyricsMaxY = drawTextBox(g2, composition.getTranslatedLyrics(), ms.getUnderLyricsYPos() +
-                                                                            (Utilities.lineCount(composition.getUnderLyrics()) + 1) *
-                                                                            g2.getFontMetrics().getAscent(), Component.CENTER_ALIGNMENT, 0);
-        }
-
-        // draw the tempo
-        if (composition.getLine(0).noteCount() > 0) {
-            drawTempoChange(g2, composition.getTempo(), 0, 0);
-        }
-
-        // drawing the composition
-        for (int l = 0; l < composition.lineCount(); l++) {
-            Boolean lastLine = l == composition.lineCount() - 1;
-            Line line = composition.getLine(l);
-            g2.setPaint(l != ms.getSelectedLine() ? Color.black : selectionColor);
-            g2.setStroke(lineStroke);
-
-            // draw the lines
-            for (int i = -2; i <= 2; i++) {
-                g2.drawLine(0, ms.getNoteYPos(i * 2, l), composition.getLineWidth(), ms.getNoteYPos(i * 2, l));
-            }
-
-            g2.drawLine(0, ms.getNoteYPos(-4, l), 0, ms.getNoteYPos(4, l));
-
-            g2.setPaint(Color.black);
-
-            // drawing the treble clef and the leading keys
-            int maxY = drawLineBeginning(g2, line, l);
-
-            if (lyricsMaxY == 0) {
-                height = maxY;
-            }
-
-            // draw the notes
-            int lyricsDrawn = 0;
-
-            for (int n = 0; n < line.noteCount(); n++) {
-                Note note = line.getNote(n);
-
-                // draw the tempo change
-                if (note.getTempoChange() != null) {
-                    drawTempoChange(g2, note.getTempoChange(), l, n);
-                }
-
-                // draw the beat change
-                if (note.getBeatChange() != null) {
-                    drawBeatChange(g2, l, note);
-                }
-
-                // draw the note
-                boolean beamed = line.getBeamings().findInterval(n) != null && note.getNoteType() != NoteType.GRACE_QUAVER;
-                paintNote(g2, note, l, beamed, ms.isNoteSelected(n, l) && drawEditingComponents ? selectionColor : Color.black);
-
-                // draw the tie if any
-                Interval tieVal = line.getTies().findInterval(n);
-
-                if (tieVal != null && n != tieVal.getB()) {
-                    boolean tieUpper = note.isUpper();
-                    int xPos = note.getXPos() + getHalfNoteWidthForTie(note) + 2;
-                    int gap = line.getNote(n + 1).getXPos() + getHalfNoteWidthForTie(line.getNote(n + 1)) - xPos - 3;
-
-                    if (note.isUpper() != line.getNote(n + 1).isUpper() && note.isUpper()) {
-                        tieUpper = false;
-                        xPos += 7;
-                        gap -= 5;
-                    }
-
-                    int yPos = ms.getNoteYPos(note.getYPos(), l) + (tieUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
-                    g2.setStroke(lineStroke);
-                    GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
-                    tie.moveTo(xPos, yPos);
-                    tie.quadTo(xPos + gap / 2, yPos + (tieUpper ? 6 : -6), xPos + gap, yPos);
-                    tie.quadTo(xPos + gap / 2, yPos + (tieUpper ? 8 : -8), xPos, yPos);
-                    tie.closePath();
-                    g2.draw(tie);
-                    g2.fill(tie);
-                    /*g2.setPaint(Color.red);
-                    g2.drawRect(xPos, yPos, 1, 1);
-                    g2.setPaint(Color.green);
-                    g2.drawRect(note.getXPos(), yPos, 1, 1);
-                    g2.drawRect(note.getXPos()+note.getRealUpNoteRect().width, yPos, 1, 1);
-                    g2.setPaint(Color.black);*/
-                }
-
-                // draw the lyrics
-                int lyricsY = ms.getNoteYPos(0, l) + line.getLyricsYPos();
-
-                if (lastLine && lyricsMaxY == 0) {
-                    height = lyricsY + lyricsMaxDescent;
-                }
-
-                int dashY = lyricsY - composition.getLyricsFont().getSize() / 4;
-                g2.setFont(composition.getLyricsFont());
-                int syllableWidth = 0;
-
-                if (note.a.syllable != null && !note.a.syllable.equals(Constants.UNDERSCORE)) {
-                    syllableWidth = g2.getFontMetrics().stringWidth(note.a.syllable);
-                    int lyricsX = note.getXPos() + Note.HOT_SPOT.x - syllableWidth / 2 + note.getSyllableMovement();
-                    drawAntialiasedString(g2, note.a.syllable, lyricsX, lyricsY);
-
-                    if (n == 0 && line.beginRelation == Note.SyllableRelation.ONE_DASH) {
-                        g2.setStroke(longDashStroke);
-                        g2.draw(new Line2D.Float(lyricsX - longDashWidth - 10, dashY, lyricsX - 10, dashY));
-                    }
-                }
-
-                if (lyricsDrawn <= n &&
-                    (note.a.syllableRelation != Note.SyllableRelation.NO || n == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER
-                    )) {
-                    Note.SyllableRelation relation =
-                            note.a.syllableRelation != Note.SyllableRelation.NO ? note.a.syllableRelation : line.beginRelation;
-                    int c;
-
-                    if (relation == Note.SyllableRelation.DASH || relation == Note.SyllableRelation.ONE_DASH) {
-                        for (c = n + 1;
-                             c < line.noteCount() && (line.getNote(c).a.syllable.equals(Constants.UNDERSCORE) || line.getNote(c).a.syllable.isEmpty()
-                             ); c++) {
-                            ;
-                        }
-                    }
-                    else {
-                        for (c = n; c < line.noteCount() && (line.getNote(c).a.syllableRelation == relation || line.getNote(c).a.syllable.isEmpty()
-                        ); c++) {
-                            ;
-                        }
-                    }
-
-                    lyricsDrawn = c;
-
-                    int startX = n == 0 && line.beginRelation == Note.SyllableRelation.EXTENDER ?
-                            note.getXPos() - 10 : note.getXPos() + Note.HOT_SPOT.x + syllableWidth / 2 + note.getSyllableMovement() + 2;
-                    int endX;
-
-                    if (c ==
-                        line.noteCount()/* || c==line.noteCount()-1 && l+1<composition.lineCount() && composition.getLine(l+1).beginRelation!=Note.SyllableRelation.NO*/) {
-                        endX = relation == Note.SyllableRelation.ONE_DASH ? startX + (int) (longDashWidth * 2f) : composition.getLineWidth();
-                    }
-                    else {
-                        if (relation == Note.SyllableRelation.EXTENDER) {
-                            endX = line.getNote(c).getXPos() + 12;
-                        }
-                        else if (relation == Note.SyllableRelation.ONE_DASH && line.getNote(c).a.syllable.isEmpty()) {
-                            endX = startX + (int) (longDashWidth * 2f);
-                        }
-                        else {
-                            endX = line.getNote(c).getXPos() + Note.HOT_SPOT.x - g2.getFontMetrics().stringWidth(line.getNote(c).a.syllable) / 2 +
-                                   line.getNote(c).getSyllableMovement() - 2;
-                        }
-                    }
-
-                    if (relation == Note.SyllableRelation.DASH) {
-                        g2.setStroke(dashStroke);
-                        float dashPhase = dashStroke.getDashArray()[0] + dashStroke.getDashArray()[1];
-                        int length = Math.round((float) Math.floor((endX - startX - dashStroke.getDashArray()[1]) / dashPhase) * dashPhase +
-                                                dashStroke.getDashArray()[0]);
-                        int gap = (endX - startX - length) / 2;
-                        drawWithEmptySyllablesExclusion(g2, startX + gap, dashY, endX - gap, dashY, line, n, c + 1);
-                    }
-                    else if (relation == Note.SyllableRelation.EXTENDER) {
-                        g2.setStroke(underScoreStroke);
-                        drawWithEmptySyllablesExclusion(g2, startX, lyricsY, endX, lyricsY, line, n, c + 1);
-                    }
-                    else if (relation == Note.SyllableRelation.ONE_DASH) {
-                        g2.setStroke(longDashStroke);
-                        note.a.longDashPosition = (endX - startX) / 2f + startX;
-                        float centerX = note.getSyllableRelationMovement() == 0 ? note.a.longDashPosition :
-                                note.getXPos() + note.getSyllableRelationMovement();
-                        g2.draw(new Line2D.Float(centerX - longDashWidth / 2f, dashY, centerX + longDashWidth / 2f, dashY));
-                    }
-                }
-
-                // draw the annotation
-                if (note.getAnnotation() != null) {
-                    g2.setFont(getAnnotationFont());
-                    int y = getAnnotationYPos(l, note);
-                    drawAntialiasedString(g2, note.getAnnotation().getAnnotation(), getAnnotationXPos(g2, note), y);
-
-                    if (lastLine && lyricsMaxY == 0) {
-                        y += g2.getFontMetrics().getMaxDescent();
-
-                        if (y > height) {
-                            height = y;
-                        }
-                    }
-                }
-
-                // draw the trill
-                if (note.isTrill() && (n == 0 || !line.getNote(n - 1).isTrill())) {
-                    int trillEnd = n + 1;
-
-                    while (trillEnd < line.noteCount() && line.getNote(trillEnd).isTrill()) {
-                        trillEnd++;
-                    }
-
-                    trillEnd--;
-                    int x = note.getXPos();
-                    int y = ms.getNoteYPos(0, l) + line.getTrillYPos();
-                    g2.setFont(fughetta);
-                    g2.drawString(TRILL, x, y);
-
-                    if (n < trillEnd) {
-                        drawGlissando(g2, x + 18, y - 3, (int) Math.round(line.getNote(trillEnd).getXPos() + crotchetWidth), y - 3);
-                    }
-                }
-            }
-
-            // draw the slur if any
-            for (ListIterator<Interval> li = line.getSlurs().listIterator(); li.hasNext(); ) {
-                Interval interval = li.next();
-                Note firstNote = line.getNote(interval.getA());
-                Note lastNote = line.getNote(interval.getB());
-                SlurData slurData;
-
-                // apply default values;
-                if (interval.getData() == null) {
-                    boolean slurUpper = firstNote.isUpper();
-                    int xPos1 = getHalfNoteWidthForTie(firstNote) + 2;
-                    int xPos2 = getHalfNoteWidthForTie(lastNote) - 3;
-
-                    if (firstNote.isUpper() != lastNote.isUpper() && firstNote.isUpper()) {
-                        slurUpper = false;
-                        xPos1 += 7;
-                        xPos2 -= 5;
-                    }
-
-                    int yPos1 = (slurUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
-                    int yPos2 = (slurUpper ? MusicSheet.LINE_DIST / 2 + 2 : -MusicSheet.LINE_DIST / 2 - 2);
-                    int ctrlY = slurUpper ? 16 : -18;
-                    slurData = new SlurData(xPos1, xPos2, yPos1, yPos2, ctrlY);
-                    interval.setData(slurData.toString());
-                }
-                else {
-                    slurData = new SlurData(interval.getData());
-                }
-
-                g2.setStroke(lineStroke);
-                GeneralPath tie = new GeneralPath(GeneralPath.WIND_NON_ZERO, 2);
-                int xPos1 = firstNote.getXPos() + slurData.getXPos1();
-                int xPos2 = lastNote.getXPos() + slurData.getXPos2();
-                int yPos1 = ms.getNoteYPos(firstNote.getYPos(), l) + slurData.getYPos1();
-                int yPos2 = ms.getNoteYPos(lastNote.getYPos(), l) + slurData.getYPos2();
-                int ctrlY = (ms.getNoteYPos(firstNote.getYPos(), l) + ms.getNoteYPos(lastNote.getYPos(), l)) / 2 + slurData.getCtrlY();
-                int gap = xPos2 - xPos1;
-                tie.moveTo(xPos1, yPos1);
-                tie.quadTo(xPos1 + gap / 2, ctrlY, xPos1 + gap, yPos2);
-                tie.quadTo(xPos1 + gap / 2, ctrlY + 2, xPos1, yPos1);
-                tie.closePath();
-                g2.draw(tie);
-                g2.fill(tie);
-                /*g2.setPaint(Color.red);
-                g2.drawRect(xPos, yPos, 1, 1);
-                g2.setPaint(Color.green);
-                g2.drawRect(note.getXPos(), yPos, 1, 1);
-                g2.drawRect(note.getXPos()+note.getRealUpNoteRect().width, yPos, 1, 1);
-                g2.setPaint(Color.black);*/
-            }
-
-            // draw beams
-            for (ListIterator<Interval> li = line.getBeamings().listIterator(); li.hasNext(); ) {
-                Interval interval = li.next();
-                Line2D.Double beamLine;
-                Note firstNote = line.getNote(interval.getA());
-                Note lastNote = line.getNote(interval.getB());
-
-                // TODO: maybe i should just pass the first/last note to drawBeams, that should be sufficient
-                if (firstNote.isUpper()) {
-                    beamLine = new Line2D.Double(
-                            firstNote.getXPos() + crotchetWidth,
-                            ms.getNoteYPos(firstNote.getYPos(), l) - Note.HOT_SPOT.y - firstNote.a.lengthening,
-                            lastNote.getXPos() + crotchetWidth, ms.getNoteYPos(lastNote.getYPos(), l) - Note.HOT_SPOT.y - lastNote.a.lengthening);
-                }
-                else {
-                    beamLine = new Line2D.Double(firstNote.getXPos(),
-                            ms.getNoteYPos(firstNote.getYPos(), l) + Note.HOT_SPOT.y - firstNote.a.lengthening,
-                            lastNote.getXPos() + 1, ms.getNoteYPos(lastNote.getYPos(), l) + Note.HOT_SPOT.y - lastNote.a.lengthening);
-                }
-
-                //Shape clip = g2.getClip();
-                g2.setStroke(beamStroke);
-                beamLine.setLine(
-                        beamLine.x1 - 10,
-                        beamLine.y1 + 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1),
-                        beamLine.x2 + 10, beamLine.y2 - 10 * (beamLine.y1 - beamLine.y2) / (beamLine.x2 - beamLine.x1));
-                drawBeams(g2, BEAM_LEVELS.length - 1, line, l, interval.getA(), interval.getB());
-                //g2.setClip(clip);
-            }
-
-            // draw tuplets
-            for (ListIterator<Interval> li = line.getTuplets().listIterator(); li.hasNext(); ) {
-                Interval iv = li.next();
-                boolean odd = (iv.getB() - iv.getA() + 1) % 2 == 1;
-                Note firstNote = line.getNote(iv.getA());
-                int upper = firstNote.isUpper() ? -1 : 0;
-                int lx = firstNote.getXPos() + (int) crotchetWidth;
-                int ly = ms.getNoteYPos(firstNote.getYPos(), l) - Note.HOT_SPOT.y + upper * firstNote.a.lengthening;
-                ly -= 5;
-
-                int cx;
-
-                if (odd) {
-                    Note centerNote = line.getNote((iv.getB() - iv.getA()) / 2 + iv.getA());
-                    cx = centerNote.getXPos() + (int) crotchetWidth;
-                }
-                else {
-                    Note cn1 = line.getNote((iv.getB() - iv.getA()) / 2 + iv.getA());
-                    Note cn2 = line.getNote((iv.getB() - iv.getA()) / 2 + iv.getA() + 1);
-                    cx = (cn2.getXPos() - cn1.getXPos()) / 2 + cn1.getXPos() + (int) crotchetWidth;
-                }
-
-                Note lastNote = line.getNote(iv.getB());
-                int rx = lastNote.getXPos() + (int) crotchetWidth;
-                int ry = ms.getNoteYPos(lastNote.getYPos(), l) - Note.HOT_SPOT.y + upper * lastNote.a.lengthening;
-                ry -= 5;
-
-                if (!firstNote.isUpper()) {
-                    lx -= (int) crotchetWidth / 2;
-                    ly += Note.HOT_SPOT.y - 3;
-                    cx -= (int) crotchetWidth / 2;
-                    rx -= (int) crotchetWidth / 2;
-                    ry += Note.HOT_SPOT.y - 3;
-                }
-
-                if (TupletIntervalData.isVerticalAdjusted(iv)) {
-                    ly += TupletIntervalData.getVerticalPosition(iv);
-                    ry += TupletIntervalData.getVerticalPosition(iv);
-                }
-
-                g2.setStroke(lineStroke);
-                TupletCalc tc = new TupletCalc(lx, ly, rx, ry);
-
-                g2.draw(new QuadCurve2D.Float(lx, ly,
-                        (float) (cx - lx) / 4 + lx, tc.getRate((cx - lx) / 4 + lx) - 10, cx - 7, tc.getRate(cx - 7) - 8));
-                g2.draw(new QuadCurve2D.Float(
-                        cx + 7, tc.getRate(cx + 7) - 8, (float) (rx - cx) * 3 / 4 + cx, tc.getRate((rx - cx) * 3 / 4 + cx) - 10, rx, ry));
-                g2.setFont(tupletFont);
-                drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(iv)), cx - 3, tc.getRate(cx - 3) - 5);
-
-                /*g2.setColor(Color.red);
-                g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
-                g2.fill(new Rectangle2D.Double(triplet.getX2()-1, triplet.getY2()-1, 2, 2));
-                g2.setColor(Color.orange);
-                g2.fill(new Rectangle2D.Double(triplet.getCtrlX1()-1, triplet.getCtrlY1()-1, 2, 2));
-                g2.fill(new Rectangle2D.Double(triplet.getCtrlX2()-1, triplet.getCtrlY2()-1, 2, 2));
-                g2.setColor(Color.black);*/
-            }
-
-            // draw key signature changes
-            if (l + 1 < composition.lineCount() &&
-                (composition.getLine(l + 1).getKeys() != line.getKeys() || composition.getLine(l + 1).getKeyType() != line.getKeyType()
-                )) {
-                Line nextLine = composition.getLine(l + 1);
-
-                if (nextLine.getKeyType() == line.getKeyType()) {
-                    keyTypes[0] = nextLine.getKeyType();
-                    keys[0] = nextLine.getKeys();
-                    froms[0] = 0;
-                    isNaturals[0] = false;
-
-                    if (nextLine.getKeys() > line.getKeys()) {
-                        keyTypes[1] = null;
-                        keys[1] = 0;
-                        froms[1] = 0;
-                        isNaturals[1] = false;
-                    }
-                    else {
-                        keyTypes[1] = line.getKeyType();
-                        keys[1] = line.getKeys() - nextLine.getKeys();
-                        froms[1] = nextLine.getKeys();
-                        isNaturals[1] = true;
-                    }
-                }
-                else {
-                    keyTypes[0] = line.getKeyType();
-                    keys[0] = line.getKeys();
-                    froms[0] = 0;
-                    isNaturals[0] = true;
-                    keyTypes[1] = nextLine.getKeyType();
-                    keys[1] = nextLine.getKeys();
-                    froms[1] = 0;
-                    isNaturals[1] = false;
-                }
-
-                drawKeySignatureChange(g2, l, keyTypes, keys, froms, isNaturals);
-            }
-
-            // draw first-second endings
-            for (ListIterator<Interval> li = line.getFsEndings().listIterator(); li.hasNext(); ) {
-                Interval iv = li.next();
-                int repeatRightPos = -1;
-
-                for (int i = iv.getA(); i <= iv.getB(); i++) {
-                    if (line.getNote(i).getNoteType() == NoteType.REPEAT_RIGHT) {
-                        repeatRightPos = i;
-                        break;
-                    }
-                }
-
-                if (iv.getA() < repeatRightPos || repeatRightPos == -1) {
-                    drawEndings(g2, l, line.getNote(iv.getA()).getXPos(),
-                            (repeatRightPos != -1 ? line.getNote(repeatRightPos - 1).getXPos() : line.getNote(iv.getB()).getXPos()
-                            ) + 2 * (int) crotchetWidth, "1.");
-                }
-
-                if (iv.getB() > repeatRightPos && repeatRightPos != -1) {
-                    drawEndings(g2, l, line.getNote(repeatRightPos + 1).getXPos(), line.getNote(iv.getB()).getXPos() + 2 * (int) crotchetWidth, "2.");
-                }
-            }
-
-            // draw crescendo and diminuendo
-            g2.setStroke(lineStroke);
-
-            for (ListIterator<Interval> li = line.getCrescendo().listIterator(); li.hasNext(); ) {
-                Interval iv = li.next();
-                Note startNote = line.getNote(iv.getA());
-                Note endNote = line.getNote(iv.getB());
-                g2.drawLine(
-                        startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
-                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
-                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
-                        ms.getNoteYPos(5, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
-                g2.drawLine(
-                        startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
-                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
-                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
-                        ms.getNoteYPos(7, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
-            }
-
-            for (ListIterator<Interval> li = line.getDiminuendo().listIterator(); li.hasNext(); ) {
-                Interval iv = li.next();
-                Note startNote = line.getNote(iv.getA());
-                Note endNote = line.getNote(iv.getB());
-                g2.drawLine(
-                        startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
-                        ms.getNoteYPos(5, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
-                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
-                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
-                g2.drawLine(
-                        startNote.getXPos() + CrescendoDiminuendoIntervalData.getX1Shift(iv),
-                        ms.getNoteYPos(7, l) + CrescendoDiminuendoIntervalData.getYShift(iv),
-                        endNote.getXPos() + (int) crotchetWidth + CrescendoDiminuendoIntervalData.getX2Shift(iv),
-                        ms.getNoteYPos(6, l) + CrescendoDiminuendoIntervalData.getYShift(iv));
-            }
-        }
-
-        if (lyricsMaxY != 0) {
-            height = lyricsMaxY;
         }
     }
 
@@ -962,7 +1034,7 @@ public abstract class BaseMsDrawer {
         drawTempoChangeNote(g2, beatChange.getSecondNote(), (int) Math.round(eqXPos + 12), yPos);
     }
 
-    private void drawEndings(Graphics2D g2, int line, int x1, int x2, String str) {
+    private void drawEnding(Graphics2D g2, int line, int x1, int x2, String str) {
         int y = ms.getNoteYPos(0, line) + ms.getComposition().getLine(line).getFsEndingYPos();
         int height = fsEndingFont.getSize() + 2;
         g2.setStroke(stemStroke);
