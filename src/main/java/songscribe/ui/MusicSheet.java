@@ -33,7 +33,6 @@ import songscribe.ui.adjustment.VerticalAdjustment;
 import songscribe.ui.mainframeactions.PlayActiveNoteThread;
 import songscribe.ui.musicsheetdrawer.BaseMsDrawer;
 import songscribe.ui.musicsheetdrawer.FughettaDrawer;
-import songscribe.ui.musicsheetdrawer.ImageMsDrawer;
 
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;

@@ -21,7 +21,6 @@
 */
 package songscribe.ui.musicsheetdrawer;
 
-import org.apache.log4j.Logger;
 import songscribe.data.*;
 import songscribe.music.*;
 import songscribe.ui.Constants;
