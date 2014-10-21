@@ -35,9 +35,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -45,11 +43,13 @@ import java.util.zip.ZipOutputStream;
  * @author Csaba Kávai
  */
 public class Utilities {
+    public static String[] fontFamilyNames;
     private static Logger logger = Logger.getLogger(Utilities.class);
     private static boolean isMac;
     private static boolean isWindows;
     private static boolean isLinux;
-    // An array of every actual font in the system, including all stylistic variations.
+    // An array of every actual font in the system, plus those included with SongScribe,
+    // with all stylistic variations.
     private static Font[] systemFonts;
     // An array of base font names for each font in systemFonts.
     // For example, if the systemFont name is "MyriadPro-It", the base name is "MyriadPro".
@@ -62,20 +62,65 @@ public class Utilities {
     private static String[] boldFontSuffixNames = { "Bold", "Semibold", "Demibold", "BoldMT" };
 
     static {
-        isMac = System.getProperty("os.name").toLowerCase().contains("mac");
-        isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
-        isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+        String os = System.getProperty("os.name").toLowerCase();
+        isMac = os.contains("mac");
+        isWindows = os.contains("windows");
+        isLinux = os.contains("linux");
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         systemFonts = ge.getAllFonts();
+        ArrayList<Font> sortedFonts = new ArrayList<Font>(systemFonts.length);
+        sortedFonts.addAll(Arrays.asList(systemFonts));
+
+        // Alphabetical order, the fonts will be inserted into sortedFonts
+        String suffixes[] = {
+                "Regular", "Italic", "Bold", "BoldItalic"
+        };
+
+        int styles[] = {
+                Font.PLAIN, Font.ITALIC, Font.BOLD, Font.BOLD + Font.ITALIC
+        };
+
+        for (int i = 0; i < styles.length; ++i) {
+            String name = "";
+
+            try {
+                name = "SourceSansPro-" + suffixes[i];
+                Font font = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/" + name + ".ttf"));
+                sortedFonts.add(font);
+            }
+            catch (Exception e) {
+                throw new RuntimeException("Cannot load font " + name, e);
+            }
+        }
+
+        systemFonts = sortedFonts.toArray(new Font[sortedFonts.size()]);
+        Arrays.sort(systemFonts, new Comparator<Font>() {
+            public int compare(Font font, Font font2) {
+                return font.getPSName().compareTo(font2.getPSName());
+            }
+        });
         systemFontBaseNames = new String[systemFonts.length];
+        ArrayList<String> familyNames = new ArrayList<String>();
 
         for (int i = 0; i < systemFonts.length; ++i) {
             Font font = systemFonts[i];
             String name = font.getPSName();
             String[] parts = name.split("-");
             systemFontBaseNames[i] = parts[0];
+            String familyName = font.getFamily();
+
+            if (!familyNames.contains(familyName)) {
+                familyNames.add(familyName);
+            }
         }
+
+        fontFamilyNames = familyNames.toArray(new String[familyNames.size()]);
+        Arrays.sort(fontFamilyNames, new Comparator<String>() {
+            public int compare(String name1, String name2) {
+                return name1.compareTo(name2);
+            }
+        });
     }
 
     public static String getSongTitleFileNameForFileChooser(MusicSheet musicSheet) {

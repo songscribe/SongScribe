@@ -80,7 +80,7 @@ public class PageNumberDialog extends MyDialog {
         JSpinner fromPageSpinner;
 
         fontLabel = new JLabel();
-        fontComboBox = new JComboBox(Publisher.FONT_FAMILIES);
+        fontComboBox = new JComboBox(songscribe.ui.Utilities.fontFamilyNames);
         sizeSpinner = new JSpinner();
         sizeLabel = new JLabel();
         boldButton = new JToggleButton();

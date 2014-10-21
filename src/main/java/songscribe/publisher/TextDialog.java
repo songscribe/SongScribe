@@ -25,6 +25,7 @@ import songscribe.data.MyJTextArea;
 import songscribe.publisher.pagecomponents.PageComponent;
 import songscribe.publisher.pagecomponents.Text;
 import songscribe.ui.MyDialog;
+import songscribe.ui.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +42,7 @@ public class TextDialog extends MyDialog {
 
     public TextDialog(Publisher publisher, boolean isInsert) {
         super(publisher, isInsert ? "Insert text" : "Text properties");
-        fontCombo = new JComboBox(Publisher.FONT_FAMILIES);
+        fontCombo = new JComboBox(Utilities.fontFamilyNames);
         fontSizeSpinner = new SpinnerNumberModel(12, 1, 256, 1);
         boldToggle = new JToggleButton("<html><b>B</b></html>");
         italicToggle = new JToggleButton("<html><i>I</i></html>");

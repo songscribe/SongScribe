@@ -55,7 +55,6 @@ public class MainFrame extends JFrame {
     public static final Dimension OUTER_SELECTION_PANEL_IMAGE_DIM = new Dimension(34, 38);
     public static final Color OUTER_SELECTION_IMAGE_BORDER_COLOR = new Color(51, 102, 102);
     public static final Point CENTER_POINT = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-    public static final String[] FONT_FAMILIES = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
     public static final String COULD_NOT_SAVE_MESSAGE = "Could not save the file. Check if you have the permission to create a file in this directory or the overwrited file may be write-protected.";
     public static final File SS_HOME = new File(System.getProperty("user.home"), ".songscribe");
 

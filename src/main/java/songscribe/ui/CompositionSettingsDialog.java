@@ -198,9 +198,9 @@ public class CompositionSettingsDialog extends MyDialog {
         fontCenter.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         fontCenter.setLayout(new BoxLayout(fontCenter, BoxLayout.Y_AXIS));
 
-        titleFontCombo = new JComboBox(MainFrame.FONT_FAMILIES);
-        lyricsFontCombo = new JComboBox(MainFrame.FONT_FAMILIES);
-        generalFontCombo = new JComboBox(MainFrame.FONT_FAMILIES);
+        titleFontCombo = new JComboBox(Utilities.fontFamilyNames);
+        lyricsFontCombo = new JComboBox(Utilities.fontFamilyNames);
+        generalFontCombo = new JComboBox(Utilities.fontFamilyNames);
         titleFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
         lyricsFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
         generalFontSizeSpinner = new SpinnerNumberModel(1, 1, 256, 1);
