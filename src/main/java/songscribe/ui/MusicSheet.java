@@ -835,6 +835,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             line.getSlurs().removeInterval(selectionBegin, selectionEnd);
         }
 
+        composition.modifiedComposition();
         repaintImage = true;
         repaint();
 
@@ -857,6 +858,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         IntervalSet intervalSet = crescendoOrDiminuendo ? line.getCrescendo() : line.getDiminuendo();
         intervalSet.addInterval(selectionBegin, selectionEnd);
 
+        composition.modifiedComposition();
         repaintImage = true;
         repaint();
     }
@@ -891,6 +893,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             return;
         }
 
+        composition.modifiedComposition();
         repaintImage = true;
         repaint();
     }
@@ -1157,6 +1160,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         mainFrame.getPlayMenu().getStopAction().actionPerformed(null);
         selectedNotesLine = -1;
         setLineWidth(composition.getLineWidth());
+
         // global calculate lengthening
         for (int l = 0; l < composition.lineCount(); l++) {
             Line line = composition.getLine(l);
