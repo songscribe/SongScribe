@@ -1,23 +1,23 @@
 /*
-Music of The Supreme song notation program
-Copyright (C) 2006 Csaba Kavai
+    SongScribe song notation program
+    Copyright (C) 2006 Csaba Kavai
 
-This file is part of SongScribe.
+    This file is part of SongScribe.
 
-SongScribe is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+    SongScribe is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-SongScribe is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    SongScribe is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Created on Sep 26, 2007
+    Created on Sep 26, 2007
 */
 package songscribe.publisher;
 
@@ -45,17 +45,23 @@ public class StatusBar extends JPanel {
         JPanel pagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pagePanel.setPreferredSize(size);
         pagePanel.setMaximumSize(size);
-        pagePanel.add(new LittleJButton("2leftarrow.png", new ActionListener(){
+        pagePanel.add(new LittleJButton("2leftarrow.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(StatusBar.this.publisher.isBookNull())return;
+                if (StatusBar.this.publisher.isBookNull()) {
+                    return;
+                }
+
                 currentPage.setText("1");
                 currentPageAction.actionPerformed(null);
             }
         }));
-        pagePanel.add(new LittleJButton("1leftarrow.png", new ActionListener(){
+        pagePanel.add(new LittleJButton("1leftarrow.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(StatusBar.this.publisher.isBookNull())return;
-                currentPage.setText(Integer.toString(Integer.parseInt(currentPage.getText())-1));
+                if (StatusBar.this.publisher.isBookNull()) {
+                    return;
+                }
+
+                currentPage.setText(Integer.toString(Integer.parseInt(currentPage.getText()) - 1));
                 currentPageAction.actionPerformed(null);
             }
         }));
@@ -66,30 +72,44 @@ public class StatusBar extends JPanel {
         totalPage.setToolTipText("Total page");
         totalPage.setEditable(false);
         add(pagePanel);
-        pagePanel.add(new LittleJButton("1rightarrow.png", new ActionListener(){
+        pagePanel.add(new LittleJButton("1rightarrow.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(StatusBar.this.publisher.isBookNull())return;
-                currentPage.setText(Integer.toString(Integer.parseInt(currentPage.getText())+1));
+                if (StatusBar.this.publisher.isBookNull()) {
+                    return;
+                }
+
+                currentPage.setText(Integer.toString(Integer.parseInt(currentPage.getText()) + 1));
                 currentPageAction.actionPerformed(null);
             }
         }));
-        pagePanel.add(new LittleJButton("2rightarrow.png", new ActionListener(){
+        pagePanel.add(new LittleJButton("2rightarrow.png", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(StatusBar.this.publisher.isBookNull())return;
+                if (StatusBar.this.publisher.isBookNull()) {
+                    return;
+                }
+
                 currentPage.setText(totalPage.getText());
                 currentPageAction.actionPerformed(null);
             }
         }));
         add(createSeparator());
         add(Box.createGlue());
-        currentPageAction = new ActionListener(){
+        currentPageAction = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(StatusBar.this.publisher.isBookNull())return;
+                if (StatusBar.this.publisher.isBookNull()) {
+                    return;
+                }
+
                 Book book = StatusBar.this.publisher.getBook();
                 int page = 1;
-                try{
+
+                try {
                     page = Integer.parseInt(currentPage.getText());
-                }catch(NumberFormatException ex){}
+                }
+                catch (NumberFormatException ex) {
+                    // pass
+                }
+
                 book.goToPage(page);
                 book.requestFocusInWindow();
             }
@@ -103,15 +123,15 @@ public class StatusBar extends JPanel {
         return separator;
     }
 
-    public void setCurrentPage(int page){
+    public void setCurrentPage(int page) {
         currentPage.setText(Integer.toString(page));
     }
 
-    public void setTotalPage(int page){
+    public void setTotalPage(int page) {
         totalPage.setText(Integer.toString(page));
     }
 
-    private static class LittleJButton extends JButton{
+    private static class LittleJButton extends JButton {
         private static final Dimension preferredSize = new Dimension(20, 20);
 
         public LittleJButton(String icon, ActionListener actionListener) {
