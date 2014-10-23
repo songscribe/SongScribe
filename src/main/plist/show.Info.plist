@@ -46,7 +46,7 @@
 		<key>ClassPath</key>
 		<string>$APP_PACKAGE/Contents/Resources/Java/SongScribe.jar</string>
 		<key>JVMVersion</key>
-		<string>1.5+</string>
+		<string>1.8+</string>
 		<key>MainClass</key>
 		<string>songscribe.Runner</string>
 		<key>VMOptionArray</key>
