@@ -527,15 +527,16 @@ public abstract class BaseMsDrawer {
 
             if (relation == Note.SyllableRelation.DASH || relation == Note.SyllableRelation.ONE_DASH) {
                 for (c = noteIndex + 1;
-                     c < line.noteCount() && (line.getNote(c).a.syllable.equals(Constants.UNDERSCORE) || line.getNote(c).a.syllable.isEmpty()
-                     ); c++) {
-                    ;
+                     c < line.noteCount() && (line.getNote(c).a.syllable.equals(Constants.UNDERSCORE) || line.getNote(c).a.syllable.isEmpty());
+                    ) {
+                    c++;
                 }
             }
             else {
-                for (c = noteIndex; c < line.noteCount() && (line.getNote(c).a.syllableRelation == relation || line.getNote(c).a.syllable.isEmpty()
-                ); c++) {
-                    ;
+                for (c = noteIndex;
+                     c < line.noteCount() && (line.getNote(c).a.syllableRelation == relation || line.getNote(c).a.syllable.isEmpty());
+                    ) {
+                    c++;
                 }
             }
 
@@ -782,7 +783,6 @@ public abstract class BaseMsDrawer {
         }
 
         Note beginNote = line.getNote(beginIndex);
-        Note endNote = line.getNote(endIndex);
         boolean isUpper = beginNote.isUpper();
         boolean leftOriented = false;
 
@@ -834,19 +834,24 @@ public abstract class BaseMsDrawer {
     }
 
     private void drawBeam(Graphics2D g2, Line line, int lineIndex, int beginIndex, int endIndex, boolean isUpper, BeamType type, int recursionLevel) {
+        /*
+            We draw beams using a Path2D. Because of rendering inaccuracies with antialiasing,
+            we first stroke the path with the stem stroke so that the antialiasing at the edge
+            will match the stem antialiasing, then we fill the path.
+        */
         Note beginNote = line.getNote(beginIndex);
         Note endNote = line.getNote(endIndex);
         Line2D.Double firstStem = beginNote.a.stem;
         Line2D.Double lastStem = endNote.a.stem;
-        double halfStemWidth = stemStroke.getLineWidth() / 2;
-        double halfBeamWidth = beamStroke.getLineWidth() / 2;
 
-        double noteX = beginNote.getXPos() - halfStemWidth;
+        // Reduce the height top and bottom by half the stem stroke width since we stroke the path
+        double halfStemWidth = stemStroke.getLineWidth() / 2;
+        double halfBeamWidth = (beamStroke.getLineWidth() / 2) - halfStemWidth;
+
+        double noteX = beginNote.getXPos();
         double firstX = firstStem.x1 + noteX;
 
-        // overlap the beam with the stem by 1/3 beam width
-        double beamOverlap = beamStroke.getLineWidth() / -3d;
-        double yOffset = ((INNER_BEAM_OFFSET * recursionLevel) + beamOverlap) * (isUpper ? 1 : -1);
+        double yOffset = INNER_BEAM_OFFSET * recursionLevel * (isUpper ? 1 : -1);
         double noteY = ms.getNoteYPos(beginNote.getYPos(), lineIndex) + yOffset;
         double firstY = noteY + firstStem.y1 - beginNote.a.lengthening;
 
@@ -863,7 +868,7 @@ public abstract class BaseMsDrawer {
         // top left
         beam.lineTo(firstX, firstY - halfBeamWidth);
 
-        noteX = endNote.getXPos() + halfStemWidth;
+        noteX = endNote.getXPos();
         noteY = ms.getNoteYPos(endNote.getYPos(), lineIndex) + yOffset;
         double lastX = lastStem.x1 + noteX;
         double lastY = noteY + lastStem.y1 - endNote.a.lengthening;
@@ -885,11 +890,11 @@ public abstract class BaseMsDrawer {
         Rectangle2D clip = null;
 
         if (type != BeamType.FULL) {
-            // If drawing an inner beam, clip the beam to the inner beam length, leaving slop on the stem side
-            // to account for inaccuracies when printing.
+            // If drawing an inner beam, clip the beam to the inner beam length,
+            // leaving slop on the stem side to account for inaccuracies when printing.
             clip = beam.getBounds2D();
             double clipSlop = 2d;
-            double x1, x2;
+            double x1;
 
             if (type == BeamType.ATTACH_LEFT) {
                 x1 = firstX - clipSlop;
@@ -903,7 +908,11 @@ public abstract class BaseMsDrawer {
             g2.setClip(clip);
         }
 
+        Stroke stroke = g2.getStroke();
+        g2.setStroke(stemStroke);
+        g2.draw(beam);
         g2.fill(beam);
+        g2.setStroke(stroke);
 
         if (clip != null) {
             g2.setClip(oldClip);

@@ -200,7 +200,9 @@ public class FughettaDrawer extends BaseMsDrawer {
             // if the note is beamed, draw the lengthened stem
             if (beamed) {
                 g2.setStroke(stemStroke);
-                double offset = beamStroke.getLineWidth() / 2;
+
+                // decrease the length a little so the stem does not extend past an angled beam
+                double offset = beamStroke.getLineWidth() * 0.1;
 
                 if (note.isUpper()) {
                     note.a.stem.setLine(upperCrotchetStemX, upperStem.y1, upperCrotchetStemX,
