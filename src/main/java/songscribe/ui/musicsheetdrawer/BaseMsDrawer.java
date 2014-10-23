@@ -1046,9 +1046,14 @@ public abstract class BaseMsDrawer {
     private void drawEnding(Graphics2D g2, int line, int x1, int x2, String str) {
         int y = ms.getNoteYPos(0, line) + ms.getComposition().getLine(line).getFsEndingYPos();
         int height = fsEndingFont.getSize() + 2;
+
+        Path2D.Double bracket = new Path2D.Double();
+        bracket.moveTo(x1, y);
+        bracket.lineTo(x1, y - height);
+        bracket.lineTo(x2, y - height);
+
         g2.setStroke(stemStroke);
-        g2.drawLine(x1, y, x1, y - height);
-        g2.drawLine(x1, y - height, x2, y - height);
+        g2.draw(bracket);
         g2.setFont(fsEndingFont);
         drawAntialiasedString(g2, str, x1 + 4, y);
     }
