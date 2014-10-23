@@ -518,9 +518,9 @@ public class FughettaDrawer extends BaseMsDrawer {
         AffineTransform at = g2.getTransform();
         g2.translate(thickStart, 0);
 
-        // align repeat top/bottom with staff lines
+        // align repeat bottom with staff line
         double offset = lineStroke.getLineWidth() / 2;
-        Line2D.Double line = new Line2D.Double(verticalLine.x1, verticalLine.y1 - offset, verticalLine.x2, verticalLine.y2 + offset);
+        Line2D.Double line = new Line2D.Double(verticalLine.x1, verticalLine.y1, verticalLine.x2, verticalLine.y2 + offset);
 
         if (drawThick) {
             g2.setStroke(repeatHeavyStroke);
