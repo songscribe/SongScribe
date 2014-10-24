@@ -89,12 +89,6 @@ public class FughettaDrawer extends BaseMsDrawer {
     private static final String[] accidentalParenthesis = {
             "", "\uf04e", "\uf041", "\uf061", "\uf06e\uf06e", "\uf08c", "\uf081", "\uf06e\uf062", "\uf06e\uf023"
     };
-    private static final String[] graceNoteAccidentals = {
-            "", "\uf0e9", "\uf069", "\uf049", "\uf0e9\uf0e9", "\uf069\uf069", "\uf0dc", "\uf0e9\uf069", "\uf0e9\uf049"
-    };
-    private static final String[] graceNoteAccidentalsParenthesis = {
-            "", "\uf0e9", "\uf07b", "\uf05b", "\uf0e9\uf0e9", "\uf069\uf069", "\uf081", "\uf0e9\uf069", "\uf0e9\uf049"
-    };
     private static final double manualParenthesisY = size / 3.5068493d;
     private static final String beginParenthesis = "\uf028";
     private static final String endParenthesis = "\uf029";
@@ -143,7 +137,8 @@ public class FughettaDrawer extends BaseMsDrawer {
     }
 
     public static void calculateAccidentalWidths(Graphics2D g2) {
-        if (baseAccidentalWidths == null) {//firstcall
+        //firstcall
+        if (baseAccidentalWidths == null) {
             FontMetrics fm = g2.getFontMetrics(fughetta);
             Note.Accidental[] accArray = Note.Accidental.values();
             baseAccidentalWidths = new float[accidentals.length];
@@ -286,7 +281,9 @@ public class FughettaDrawer extends BaseMsDrawer {
         // draw the stave-longitude
         if (Math.abs(note.getYPos()) > 5 && note.getNoteType().drawStaveLongitude()) {
             for (int i = note.getYPos() + (note.getYPos() % 2 == 0 ? 0 : (note.getYPos() > 0 ? -1 : 1));
-                 Math.abs(i) > 5; i += note.getYPos() > 0 ? -2 : 2) {
+                 Math.abs(i) > 5;
+                 i += note.getYPos() > 0 ? -2 : 2)
+            {
                 int y1 = (i - note.getYPos()) * (int) size / 8;
                 float x2 = Note.HOT_SPOT.x + 8;
 
@@ -299,7 +296,6 @@ public class FughettaDrawer extends BaseMsDrawer {
 
                 g2.draw(new Line2D.Float(Note.HOT_SPOT.x - 8, y1, x2, y1));
             }
-
         }
 
         // draw accidental
@@ -377,8 +373,9 @@ public class FughettaDrawer extends BaseMsDrawer {
 
     private void paintSimpleNote(Graphics2D g2, Note note, boolean beamed, boolean upper, boolean isTempoNote) {
         NoteType nt = note.getNoteType();
+
+        // draw the note head
         String headStr = noteHead.get(nt);
-        // drawing the note head
         float noteHeadXPos = 0;
 
         if (nt.isNoteWithStem() && !upper) {
@@ -425,20 +422,20 @@ public class FughettaDrawer extends BaseMsDrawer {
 
             // draw the flag(s)
             if (nt.isBeamable()) {
-                float shortitude = nt == NoteType.QUAVER ? 0f : SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
+                float offset = nt == NoteType.QUAVER ? 0f : SEMIQUAVER_AND_DEMI_SEMIQUAVER_FLAG_COLLAPSE;
 
                 if (upper) {
                     if (isTempoNote) {
                         g2.translate(0, tempoStemShortening);
                     }
 
-                    g2.drawString(mainUpperFlag, (float) upperFlagX, (float) upperFlagY + shortitude);
+                    g2.drawString(mainUpperFlag, (float) upperFlagX, (float) upperFlagY + offset);
 
                     if (nt != NoteType.QUAVER) {
-                        g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag2Y + shortitude);
+                        g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag2Y + offset);
 
                         if (nt != NoteType.SEMIQUAVER) {
-                            g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag3Y + shortitude);
+                            g2.drawString(secondUpperFlag, (float) upperFlagX, (float) upperFlag3Y + offset);
                         }
                     }
 
@@ -451,13 +448,13 @@ public class FughettaDrawer extends BaseMsDrawer {
                         g2.translate(0, -tempoStemShortening);
                     }
 
-                    g2.drawString(mainLowerFlag, 0, (float) lowerFlagY - shortitude);
+                    g2.drawString(mainLowerFlag, 0, (float) lowerFlagY - offset);
 
                     if (nt != NoteType.QUAVER) {
-                        g2.drawString(secondLowerFlag, 0, (float) lowerFlag2Y - shortitude);
+                        g2.drawString(secondLowerFlag, 0, (float) lowerFlag2Y - offset);
 
                         if (nt != NoteType.SEMIQUAVER) {
-                            g2.drawString(secondLowerFlag, 0, (float) lowerFlag3Y - shortitude);
+                            g2.drawString(secondLowerFlag, 0, (float) lowerFlag3Y - offset);
                         }
                     }
 
@@ -538,7 +535,8 @@ public class FughettaDrawer extends BaseMsDrawer {
 
     protected int drawLineBeginning(Graphics2D g2, Line line, int l) {
         g2.setFont(fughetta);
-        // draw the trebleClef
+
+        // draw the treble clef
         int baseline = ms.getMiddleLine() + MusicSheet.LINE_DIST + l * ms.getRowHeight();
         drawAntialiasedString(g2, trebleClef, 5, baseline);
         FontMetrics metrics = g2.getFontMetrics();
@@ -574,9 +572,13 @@ public class FughettaDrawer extends BaseMsDrawer {
             int fs = keyTypes[kt].ordinal();
 
             for (int i = 0; i < keys[kt]; i++) {
-                drawAntialiasedString(g2, accidentals[(isNatural[kt] ? 0 : fs) +
-                                                      1], fsPos, ms.getNoteYPos(FLAT_SHARP_ORDER[fs][(i + froms[kt]) %
-                                                                                                     7], l));
+                drawAntialiasedString(
+                        g2,
+                        accidentals[(isNatural[kt] ? 0 : fs) + 1],
+                        fsPos,
+                        ms.getNoteYPos(FLAT_SHARP_ORDER[fs][(i + froms[kt]) % 7], l)
+                );
+
                 fsPos += 8;
             }
         }
