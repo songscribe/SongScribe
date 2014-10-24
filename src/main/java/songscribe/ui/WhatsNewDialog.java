@@ -21,7 +21,6 @@
 */
 package songscribe.ui;
 
-import org.apache.log4j.Logger;
 import songscribe.Version;
 import songscribe.data.DoNotShowException;
 
