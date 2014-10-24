@@ -36,6 +36,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -69,8 +71,17 @@ public class Utilities {
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         systemFonts = ge.getAllFonts();
-        ArrayList<Font> sortedFonts = new ArrayList<Font>(systemFonts.length);
+
+        List<Font> sortedFonts = new ArrayList<>(systemFonts.length);
         sortedFonts.addAll(Arrays.asList(systemFonts));
+
+        // Remove any system occurrences of Source Sans Pro
+        sortedFonts.removeIf(new Predicate<Font>() {
+            @Override
+            public boolean test(Font font) {
+                return font.getFamily().equals("Source Sans Pro");
+            }
+        });
 
         // Alphabetical order, the fonts will be inserted into sortedFonts
         String suffixes[] = {
@@ -96,12 +107,13 @@ public class Utilities {
 
         systemFonts = sortedFonts.toArray(new Font[sortedFonts.size()]);
         Arrays.sort(systemFonts, new Comparator<Font>() {
-            public int compare(Font font, Font font2) {
-                return font.getPSName().compareTo(font2.getPSName());
+            @Override
+            public int compare(Font font1, Font font2) {
+                return font1.getPSName().compareTo(font2.getPSName());
             }
         });
         systemFontBaseNames = new String[systemFonts.length];
-        ArrayList<String> familyNames = new ArrayList<String>();
+        List<String> familyNames = new ArrayList<>();
 
         for (int i = 0; i < systemFonts.length; ++i) {
             Font font = systemFonts[i];
