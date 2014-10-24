@@ -40,9 +40,9 @@ public abstract class BaseMsDrawer {
     protected static final float size = 32;
     private static final double glissandoLength = size / 2.6666667;
     protected static final double INNER_BEAM_LENGTH = 11d;
-    protected static final double INNER_BEAM_OFFSET = 7d;
-    protected static final BasicStroke beamStroke = new BasicStroke(4.4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
-    protected static final BasicStroke lineStroke = new BasicStroke(0.694f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+    protected static final double INNER_BEAM_OFFSET = 6d;
+    protected static final BasicStroke beamStroke = new BasicStroke(4.04f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+    protected static final BasicStroke lineStroke = new BasicStroke(0.63f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     protected static final BasicStroke stemStroke = new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     protected static final BasicStroke tenutoStroke = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     protected static final Font fughetta;
