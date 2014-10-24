@@ -57,11 +57,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.apple</groupId>
-            <artifactId>AppleJavaExtensions</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
@@ -118,6 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
                     <finalName>${jarName}</finalName>
                     <archive>
@@ -233,6 +229,7 @@
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
+                <version>1.5</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -259,6 +256,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>ideauidesigner-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
@@ -277,15 +275,23 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
+                    <fork>true</fork>
                     <encoding>UTF-8</encoding>
                     <generatedSourcesDirectory>${project.generated.sources.directory}</generatedSourcesDirectory>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <verbose>true</verbose>
+                    <!--
+                    This arg prevents OS X javac 1.8 from using symbol mapping for jre/lib/rt.jar,
+                    which prevents the com.apple.eawt classes from being found.
+                    -->
+                    <compilerArgument>-XDignore.symbol.file=true</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.8</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
