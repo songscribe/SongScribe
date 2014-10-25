@@ -63,8 +63,8 @@ public abstract class BaseMsDrawer {
     private static final BasicStroke underScoreStroke = new BasicStroke(0.836f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private static final Ellipse2D.Float staccatoEllipse = new Ellipse2D.Float(0f, 0f, 3.5f, 3.5f);
     private static final Color selectionColor = new Color(254, 45, 125);
-    private static final Font tupletFont = new Font(Font.SANS_SERIF, Font.BOLD + Font.ITALIC, 12);
-    private static final Font fsEndingFont = new Font(Font.SERIF, Font.BOLD, 14);
+    private static final Font tupletFont;
+    private static final Font fsEndingFont;
     private static final String GLISSANDO = "\uf07e";
     private static final String TRILL = "\uf0d9";
     private static final float longDashWidth = 7f;
@@ -83,13 +83,20 @@ public abstract class BaseMsDrawer {
     protected MusicSheet ms;
 
     static {
+        String fontName = "Fughetta";
+
         try {
-            Font fughettaBaseFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/fughetta.ttf"));
-            fughetta = fughettaBaseFont.deriveFont(size);
-            fughettaGrace = fughettaBaseFont.deriveFont(size * graceAccidentalResizeFactor);
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/" + fontName + ".ttf"));
+            fughetta = font.deriveFont(size);
+            fughettaGrace = font.deriveFont(size * graceAccidentalResizeFactor);
+
+            fontName = "TupletNumbers";
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/" + fontName + ".ttf"));
+            tupletFont = font.deriveFont(13f);
+            fsEndingFont = tupletFont;
         }
         catch (Exception e) {
-            throw new RuntimeException("Cannot load fughetta font", e);
+            throw new RuntimeException("Cannot load a required font (" + fontName + ")", e);
         }
     }
 
@@ -230,50 +237,7 @@ public abstract class BaseMsDrawer {
         }
     }
 
-    private void drawEndings(Graphics2D g2, int lineIndex, Line line) {
-        for (ListIterator<Interval> li = line.getFsEndings().listIterator(); li.hasNext(); ) {
-            Interval iv = li.next();
-            int repeatRightPos = -1;
-
-            for (int i = iv.getA(); i <= iv.getB(); i++) {
-                if (line.getNote(i).getNoteType() == NoteType.REPEAT_RIGHT) {
-                    repeatRightPos = i;
-                    break;
-                }
-            }
-
-            if (iv.getA() < repeatRightPos || repeatRightPos == -1) {
-                int x2;
-
-                if (repeatRightPos != -1) {
-                    x2 = line.getNote(repeatRightPos - 1).getXPos();
-                }
-                else {
-                    x2 = line.getNote(iv.getB()).getXPos();
-                }
-
-                x2 += 2 * (int) crotchetWidth;
-
-                drawEnding(
-                        g2,
-                        lineIndex,
-                        line.getNote(iv.getA()).getXPos(),
-                        x2,
-                        "1.");
-            }
-
-            if (iv.getB() > repeatRightPos && repeatRightPos != -1) {
-                int x2 = line.getNote(iv.getB()).getXPos() + (2 * (int) crotchetWidth);
-
-                drawEnding(
-                        g2,
-                        lineIndex,
-                        line.getNote(repeatRightPos + 1).getXPos(),
-                        x2,
-                        "2.");
-            }
-        }
-    }
+    abstract protected void drawEndings(Graphics2D g2, int lineIndex, Line line);
 
     private void drawKeyChanges(Graphics2D g2, Composition composition, int lineIndex, Line line) {
         if (lineIndex + 1 >= composition.lineCount()) {
@@ -1043,8 +1007,8 @@ public abstract class BaseMsDrawer {
         drawTempoChangeNote(g2, beatChange.getSecondNote(), (int) Math.round(eqXPos + 12), yPos);
     }
 
-    private void drawEnding(Graphics2D g2, int line, int x1, int x2, String str) {
-        int y = ms.getNoteYPos(0, line) + ms.getComposition().getLine(line).getFsEndingYPos();
+    protected void drawEnding(Graphics2D g2, Line line, int lineIndex, double x1, double x2, int number) {
+        double y = ms.getNoteYPos(0, lineIndex) + line.getFsEndingYPos();
         int height = fsEndingFont.getSize() + 2;
 
         Path2D.Double bracket = new Path2D.Double();
@@ -1052,10 +1016,15 @@ public abstract class BaseMsDrawer {
         bracket.lineTo(x1, y - height);
         bracket.lineTo(x2, y - height);
 
+        if (number == 1) {
+            bracket.lineTo(x2, y);
+        }
+
         g2.setStroke(stemStroke);
         g2.draw(bracket);
+
         g2.setFont(fsEndingFont);
-        drawAntialiasedString(g2, str, x1 + 4, y);
+        drawAntialiasedString(g2, "" + number, x1 + 4, y - 3);
     }
 
     protected void drawArticulation(Graphics2D g2, Note note, int line) {

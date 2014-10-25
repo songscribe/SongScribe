@@ -23,6 +23,7 @@ package songscribe.ui.musicsheetdrawer;
 
 import org.apache.log4j.Logger;
 import songscribe.data.FileGeneralPath;
+import songscribe.data.Interval;
 import songscribe.music.*;
 import songscribe.ui.MusicSheet;
 
@@ -34,6 +35,7 @@ import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -137,7 +139,7 @@ public class FughettaDrawer extends BaseMsDrawer {
     }
 
     public static void calculateAccidentalWidths(Graphics2D g2) {
-        //firstcall
+        // first call
         if (baseAccidentalWidths == null) {
             FontMetrics fm = g2.getFontMetrics(fughetta);
             Note.Accidental[] accArray = Note.Accidental.values();
@@ -187,9 +189,9 @@ public class FughettaDrawer extends BaseMsDrawer {
         g2.setPaint(color);
 
         // draw the note
-        NoteType nt = note.getNoteType();
+        NoteType type = note.getNoteType();
 
-        if (noteHead.containsKey(nt)) {
+        if (noteHead.containsKey(type)) {
             paintSimpleNote(g2, note, beamed, note.isUpper(), false);
 
             // if the note is beamed, draw the lengthened stem
@@ -212,7 +214,7 @@ public class FughettaDrawer extends BaseMsDrawer {
             }
         }
         else {
-            switch (nt) {
+            switch (type) {
                 case GRACE_QUAVER:
                     g2.scale(graceNoteScale, graceNoteScale);
                     g2.drawString(noteHead.get(NoteType.QUAVER), 0, 0);
@@ -264,7 +266,7 @@ public class FughettaDrawer extends BaseMsDrawer {
                 case FINAL_DOUBLE_BARLINE:
                 case DOUBLE_BARLINE:
                 case SINGLE_BARLINE:
-                    drawBarLine(g2, nt);
+                    drawBarLine(g2, type);
                     break;
 
                 case BREATH_MARK:
@@ -491,15 +493,15 @@ public class FughettaDrawer extends BaseMsDrawer {
         g2.setTransform(at);
     }
 
-    private void drawBarLine(Graphics2D g2, NoteType nt) {
+    private void drawBarLine(Graphics2D g2, NoteType type) {
         AffineTransform at = g2.getTransform();
 
-        if (nt == NoteType.DOUBLE_BARLINE) {
+        if (type == NoteType.DOUBLE_BARLINE) {
             g2.setStroke(thinLineStroke);
             g2.draw(barLine);
             g2.translate(-barLineSpace - thinLineStroke.getLineWidth(), 0);
         }
-        else if (nt == NoteType.FINAL_DOUBLE_BARLINE) {
+        else if (type == NoteType.FINAL_DOUBLE_BARLINE) {
             g2.setStroke(heavyLineStroke);
             g2.translate(-heavyLineStroke.getLineWidth() / 2f, 0);
             g2.draw(barLine);
@@ -508,6 +510,7 @@ public class FughettaDrawer extends BaseMsDrawer {
 
         g2.setStroke(thinLineStroke);
         g2.draw(barLine);
+
         g2.setTransform(at);
     }
 
@@ -527,6 +530,7 @@ public class FughettaDrawer extends BaseMsDrawer {
         g2.setStroke(repeatThinStroke);
         g2.translate(repeatThickThinDiff * direction, 0);
         g2.draw(line);
+
         g2.translate(repeatThinCircleDiff * direction - repeatCircle1.width / 2, 0);
         g2.fill(repeatCircle1);
         g2.fill(repeatCircle2);
@@ -591,5 +595,112 @@ public class FughettaDrawer extends BaseMsDrawer {
         g2.scale(tempoChangeZoomX, tempoChangeZoomY);
         paintSimpleNote(g2, tempoNote, false, true, true);
         g2.setTransform(at);
+    }
+
+    protected void drawEndings(Graphics2D g2, int lineIndex, Line line) {
+        for (ListIterator<Interval> li = line.getFsEndings().listIterator(); li.hasNext(); ) {
+            Interval interval = li.next();
+            int repeatRightPos = -1;
+
+            int start = interval.getA();
+            int end = interval.getB();
+
+            for (int i = start; i <= end; i++) {
+                if (line.getNote(i).getNoteType() == NoteType.REPEAT_RIGHT) {
+                    repeatRightPos = i;
+                    break;
+                }
+            }
+
+            double repeatX = 0;
+            Note startNote = line.getNote(start);
+
+            if (start > 0) {
+                Note previousNote = line.getNote(start - 1);
+
+                if (previousNote.getNoteType() == NoteType.SINGLE_BARLINE) {
+                    --start;
+                    startNote = previousNote;
+                }
+            }
+
+            Note endNote = line.getNote(end);
+
+            if (start < repeatRightPos || repeatRightPos == -1) {
+                double x2;
+
+                if (repeatRightPos != -1) {
+                    // The right edge of the bracket should align with the thin line of the repeat
+                    repeatX = line.getNote(repeatRightPos).getXPos() + repeatRightThickX;
+                    x2 = repeatX - repeatThickThinDiff;
+                }
+                else {
+                    // This should never happen, but does now because inserting notes doesn't recalc endings.
+                    // In that case go halfway to the left edge of the next note.
+                    double nextX = line.getNote(end + 1).getXPos();
+                    x2 = endNote.getXPos();
+                    x2 += (nextX - x2) / 2d;
+                }
+
+                double x1 = startNote.getXPos();
+
+                // If the first ending starts on a bar line, align with the line.
+                // Otherwise go halfway to the right edge of the previous note.
+                if (startNote.getNoteType() == NoteType.SINGLE_BARLINE) {
+                    x1 += barLine.getX1();
+                }
+                else if (start > 0) {
+                    Note previousNote = line.getNote(start - 1);
+                    double previousX = previousNote.getXPos() + previousNote.getRealUpNoteRect().width;
+                    x1 -= (x1 - previousX) / 2d;
+                }
+
+                drawEnding(g2, line, lineIndex, x1, x2, 1);
+            }
+
+            if (repeatRightPos != -1 && end > repeatRightPos) {
+                double x2 = endNote.getXPos();
+                NoteType type = endNote.getNoteType();
+
+                // If the end note is not a bar line and the next note is, extend to that
+                if (type != NoteType.SINGLE_BARLINE && type != NoteType.DOUBLE_BARLINE && (end + 1) < line.noteCount()) {
+                    Note nextNote = line.getNote(end + 1);
+                    NoteType nextType = nextNote.getNoteType();
+
+                    if (nextType == NoteType.SINGLE_BARLINE || nextType == NoteType.DOUBLE_BARLINE) {
+                        ++end;
+                        type = nextType;
+                        x2 = nextNote.getXPos();
+                    }
+                }
+
+                // The right edge of the second ending bracket should align with the left line
+                // of a double bar line.
+                if (type == NoteType.SINGLE_BARLINE || type == NoteType.DOUBLE_BARLINE) {
+                    x2 += barLine.getX1();
+
+                    if (type == NoteType.DOUBLE_BARLINE) {
+                        x2 -= barLineSpace;
+                    }
+                }
+                else {
+                    // Otherwise go halfway to the next note if there is one,
+                    // or a note width beyond the right edge of the note if not.
+
+                    // Move to right edge of end note
+                    Note nextNote = line.getNote(end + 1);
+                    x2 += nextNote.getRealUpNoteRect().width;
+
+                    if (end < line.noteCount()) {
+                        x2 += (nextNote.getXPos() - x2) / 2d;
+                    }
+                    else {
+                        x2 += nextNote.getRealUpNoteRect().width;
+                    }
+                }
+
+                drawEnding(g2, line, lineIndex, repeatX + repeatThickThinDiff, x2, 2);
+            }
+        }
     }
 }

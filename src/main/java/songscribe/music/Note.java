@@ -35,7 +35,6 @@ import java.util.ArrayList;
 public abstract class Note implements Cloneable {
     public static final Point HOT_SPOT = new Point(5, 27);
     public static final int NORMAL_IMAGE_WIDTH = 18;
-    public static final Dimension IMAGE_DIM = new Dimension(19, 56);
     public static final Rectangle[] REAL_NATURAL_FLAT_SHARP_RECT = {
             new Rectangle(0, 17, 6, 22),
             new Rectangle(0, 15, 7, 19),
