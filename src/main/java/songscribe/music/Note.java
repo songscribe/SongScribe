@@ -424,17 +424,15 @@ public abstract class Note implements Cloneable {
     }
 
     public Accidental findLastPrefix() {
-        int thisPitchType = getPitchType();
-
         for (int i = line.getNoteIndex(this) - 1; i >= 0; i--) {
             Note note = line.getNote(i);
 
-            if (note.getPitchType() == thisPitchType && note.getAccidental() != Accidental.NONE) {
+            if (note.getYPos() == yPos && note.getAccidental() != Accidental.NONE) {
                 return line.getNote(i).getAccidental();
             }
         }
 
-        return !line.keyExists(thisPitchType) ? Accidental.NONE :
+        return !line.keyExists(getPitchType()) ? Accidental.NONE :
                 line.getKeyType() == KeyType.FLATS ? Accidental.FLAT : Accidental.SHARP;
     }
 
