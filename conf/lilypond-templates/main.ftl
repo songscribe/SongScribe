@@ -74,6 +74,7 @@ PartPOneVoiceOne =  \absolute {
     \override Glissando #'style = #'trill
     \override Glissando.minimum-length = #4
     \override Glissando.springs-and-rods = #ly:spanner::set-spacing-rods
+    \override TupletBracket #'bracket-visibility = ##t
     
 
         ${tempo}

@@ -77,6 +77,13 @@
             <version>1.0.3</version>
         </dependency>
         <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
+            <version>1.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/AppleJavaExtensions.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.jtechlabs</groupId>
             <artifactId>jdirectorychooser</artifactId>
             <version>1.1.0</version>

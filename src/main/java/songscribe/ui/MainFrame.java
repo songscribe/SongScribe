@@ -422,7 +422,7 @@ public class MainFrame extends JFrame {
         ExportPDFAction exportPDFAction = new ExportPDFAction(this);
         fileMenu.add(exportPDFAction);
         fileMenu.add(new ExportABCAnnotationAction(this));
-        fileMenu.add(new ExportLilyPondAnnotationAction(this));
+        fileMenu.add(new ExportLilypondAnnotationAction(this));
         fileMenu.addSeparator();
         printAction = new PrintAction(this);
         fileMenu.add(printAction);

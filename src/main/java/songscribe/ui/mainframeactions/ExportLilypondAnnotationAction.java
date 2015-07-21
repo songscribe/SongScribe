@@ -42,16 +42,16 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExportLilyPondAnnotationAction extends AbstractAction {
+public class ExportLilypondAnnotationAction extends AbstractAction {
 
     // left http://www.lilypond.org/doc/v2.18/Documentation/learning-big-page#fundamental-concepts
     private static final String[] PITCH_TYPES = { "c", "des", "d", "es", "e", "f", "ges", "g", "aes", "a", "bes", "b" };
-    private Logger logger = Logger.getLogger(ExportLilyPondAnnotationAction.class);
+    private Logger logger = Logger.getLogger(ExportLilypondAnnotationAction.class);
     private MainFrame mainFrame;
     private PlatformFileDialog pfd;
     private Configuration cfg = new Configuration();
 
-    public ExportLilyPondAnnotationAction(MainFrame mainFrame) {
+    public ExportLilypondAnnotationAction(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         putValue(Action.NAME, "Export as LilyPond Notation...");
         pfd = new PlatformFileDialog(mainFrame, "Export as LilyPond Notation", false, new MyAcceptFilter("LilyPond Files", "ly"));
