@@ -46,6 +46,9 @@ public class ImageConverter {
     @ArgumentDescribe("Export image without song title")
     public boolean withoutSongTitle;
 
+    @ArgumentDescribe("Export image without song copyright info and date")
+    public boolean withoutCopyright;
+
     @ArgumentDescribe("Margin around the image in pixels")
     public int margin = 10;
 
@@ -112,6 +115,10 @@ public class ImageConverter {
 
             if (withoutSongTitle) {
                 mf.getMusicSheet().getComposition().setSongTitle("");
+            }
+
+            if (withoutCopyright) {
+                mf.getMusicSheet().getComposition().setRightInfo("");
             }
 
             BufferedImage image = mf.getMusicSheet().createMusicSheetImageForExport(Color.WHITE,
