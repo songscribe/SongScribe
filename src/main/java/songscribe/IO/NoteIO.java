@@ -26,6 +26,8 @@ import songscribe.music.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Csaba Kávai
@@ -57,6 +59,17 @@ public class NoteIO {
     private static final String XML_GRACE_SEMIQUAVER_Y0_POS = "y0pos";
     private static final String XML_GRACE_SEMIQUAVER_X2_DIFFPOS = "x2diffpos";
     private static final String XML_INVERT_FRACTION_BEAM_ORIENTATION = "invertfractionbeamorientation";
+    private static final Map<String, Note.Accidental> NOTE_ACCIDENTAL_MAP = new HashMap<>();
+
+    static {
+        for (Note.Accidental accidental: Note.Accidental.values()) {
+            String accidentalName = accidental.name();
+            NOTE_ACCIDENTAL_MAP.put(accidentalName, accidental);
+            if (accidentalName.contains("_")) {
+                NOTE_ACCIDENTAL_MAP.put(accidentalName.replace("_", ""), accidental);
+            }
+        }
+    }
 
     public static void writeNote(Note n, PrintWriter pw) throws IOException {
         pw.println("          <" + XML_NOTE + " " + XML_TYPE + "=\"" + n.getNoteType().name() + "\">");
@@ -248,7 +261,7 @@ public class NoteIO {
                         note.setDotted(Integer.valueOf(str));
                     }
                     else if (lastTag.equals(XML_PREFIX)) {
-                        note.setAccidental(Note.Accidental.valueOf(str));
+                        note.setAccidental(NOTE_ACCIDENTAL_MAP.get(str));
                     }
                     else if (lastTag.equals(XML_PREFIX_IN_PARENTHESIS)) {
                         note.setAccidentalInParenthesis(true);
