@@ -60,6 +60,7 @@ public class NoteIO {
     private static final String XML_GRACE_SEMIQUAVER_X2_DIFFPOS = "x2diffpos";
     private static final String XML_INVERT_FRACTION_BEAM_ORIENTATION = "invertfractionbeamorientation";
     private static final Map<String, Note.Accidental> NOTE_ACCIDENTAL_MAP = new HashMap<>();
+    private static final Map<String, BeatChange> BEAT_CHANGE_MAP = new HashMap<>();
 
     static {
         for (Note.Accidental accidental: Note.Accidental.values()) {
@@ -69,6 +70,15 @@ public class NoteIO {
                 NOTE_ACCIDENTAL_MAP.put(accidentalName.replace("_", ""), accidental);
             }
         }
+        for (BeatChange beatChange: BeatChange.values()) {
+            BEAT_CHANGE_MAP.put(beatChange.name(), beatChange);
+        }
+        // OLD NAMES
+        BEAT_CHANGE_MAP.put("QUAVEREQUALSQUAVER", BeatChange.QUAVER_EQUALS_QUAVER);
+        BEAT_CHANGE_MAP.put("DOTTEDCROCHETEQUALSMINIM", BeatChange.DOTTED_CROCHET_EQUALS_MINIM);
+        BEAT_CHANGE_MAP.put("MINIMEQUALSDOTTEDCROCHET", BeatChange.MINIM_EQUALS_DOTTED_CROCHET);
+        BEAT_CHANGE_MAP.put("CROTCHETQUALSDOTTEDCROCHET", BeatChange.CROTCHET_EQUALS_DOTTED_CROCHET);
+        BEAT_CHANGE_MAP.put("DOTTEDCROCHETQUALSCROCHET", BeatChange.DOTTED_CROCHET_EQUALS_CROCHET);
     }
 
     public static void writeNote(Note n, PrintWriter pw) throws IOException {
@@ -306,7 +316,7 @@ public class NoteIO {
                         note.setInvertFractionBeamOrientation(true);
                     }
                     else if (lastTag.equals(XML_BEAT_CHANGE)) {
-                        note.setBeatChange(BeatChange.valueOf(str));
+                        note.setBeatChange(BEAT_CHANGE_MAP.get(str));
                     }
                     else if (lastTag.equals(XML_GRACE_SEMIQUAVER_Y0_POS)) {
                         ((GraceSemiQuaver) note).setY0Pos(Integer.valueOf(str));
