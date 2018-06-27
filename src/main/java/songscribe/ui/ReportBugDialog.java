@@ -34,7 +34,7 @@ import java.io.File;
  * @author Csaba Kávai
  */
 public class ReportBugDialog extends MyDialog {
-    public static final String BUG_EMAIL = "songscribe@vasudevaserver.org";
+    public static final String BUG_EMAIL = "himadri81@zoho.com";
     private static final Logger logger = Logger.getLogger(ReportBugDialog.class);
 
     public ReportBugDialog(MainFrame mainFrame) {
@@ -63,7 +63,7 @@ public class ReportBugDialog extends MyDialog {
             sendBug.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int answer = JOptionPane.showOptionDialog(dialogPanel, "What would you like to send?", mf.PROG_NAME, JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {
-                            "Bug", "Wish", "Cancel"
+                            "Bug", "Request", "Cancel"
                     }, null);
 
                     if (answer == 2 || answer == JOptionPane.CLOSED_OPTION) {
@@ -73,7 +73,7 @@ public class ReportBugDialog extends MyDialog {
                     StringBuilder sb = new StringBuilder();
                     sb.append(BUG_EMAIL);
                     sb.append("?SUBJECT=SongScribe ");
-                    sb.append(answer == 0 ? "bug" : "wish");
+                    sb.append(answer == 0 ? "bug" : "request");
 
                     if (answer == 0) {
                         sb.append("&ATTACHMENT=\"");
