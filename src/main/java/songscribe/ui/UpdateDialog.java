@@ -29,16 +29,12 @@ import songscribe.Version;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 /**
  * @author Csaba Kávai
  */
 public class UpdateDialog extends MyDialog {
     private static final Logger logger = Logger.getLogger(UpdateDialog.class);
-    private static final String VERSION_FILE = "version";
-    DecimalFormat df = new DecimalFormat("0.##");
-    private boolean downloadCancelled;
 
     public UpdateDialog(MainFrame mainFrame) {
         super(mainFrame, "Update", true);
@@ -78,6 +74,9 @@ public class UpdateDialog extends MyDialog {
                 GetMethod versionGetMethod = new GetMethod(Constants.VERSION_URL);
                 versionGetMethod.addRequestHeader(Constants.MAX_AGE_HEADER);
                 httpClient.executeMethod(versionGetMethod);
+                if (versionGetMethod.getStatusCode() != 200) {
+                    throw new IOException("Invalid status code: " + versionGetMethod.getStatusCode());
+                }
                 String remoteVersion = versionGetMethod.getResponseBodyAsString();
 
                 if (remoteVersion != null) {
@@ -96,7 +95,7 @@ public class UpdateDialog extends MyDialog {
                             "New version available! Please go to https://songscribe.himadri.eu to download the latest version", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
                     }
                     if (!automatic) {
-                        dialogPanel.setVisible(false);
+                        setVisible(false);
                     }
                 }
 
@@ -106,7 +105,7 @@ public class UpdateDialog extends MyDialog {
                 if (!automatic) {
                     JOptionPane.showMessageDialog(dialogPanel,
                         "Could not connect to the download site. Visit the SongScribe website and download the latest version.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
-                    dialogPanel.setVisible(false);
+                    setVisible(false);
                 }
             }
         }

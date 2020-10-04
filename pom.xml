@@ -18,6 +18,7 @@
     <properties>
         <build.version>${maven.build.timestamp}</build.version>
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
+        <project.download.directory>${project.build.directory}/download</project.download.directory>
         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
         <jarName>${project.artifactId}</jarName>
     </properties>
@@ -234,6 +235,7 @@
                 <version>1.5</version>
                 <executions>
                     <execution>
+                        <id>generate-Version-java</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>execute</goal>
@@ -249,6 +251,22 @@
                                     out.println '   public static final String PUBLIC_VERSION="${project.version}";'
                                     out.println '   public static final String BUILD_VERSION="${build.version}";'
                                     out.println '}'
+                                }
+                            </source>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-build-version</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                File dir = new File("${project.download.directory}")
+                                dir.mkdirs()
+                                new File(dir, "version").withWriter { out ->
+                                    out.println '${build.version}'
                                 }
                             </source>
                         </configuration>
@@ -298,10 +316,11 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
+                        <phase>package</phase>
                     </execution>
                 </executions>
                 <configuration>
-                    <executable>/Library/Java/JavaVirtualMachines/adoptopenjdk-15.jdk/Contents/Home/bin/jpackage</executable>
+                    <executable>jpackage</executable>
                     <arguments>
                         <argument>--input</argument>
                         <argument>${project.dist.directory}</argument>
@@ -325,6 +344,10 @@
                         <argument>Himadri</argument>
                         <argument>--copyright</argument>
                         <argument>GNU General Public License</argument>
+                        <argument>--license-file</argument>
+                        <argument>${project.dist.directory}/LICENSE</argument>
+                        <argument>--dest</argument>
+                        <argument>${project.download.directory}</argument>
                    </arguments>
                 </configuration>
             </plugin>
