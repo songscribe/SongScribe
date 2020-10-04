@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.xml.sax.SAXException;
 import songscribe.IO.SliderIO;
+import songscribe.SongScribe;
 import songscribe.data.FileExtensions;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
@@ -94,7 +95,7 @@ public class SlideFrame extends MainFrame {
 
     public static void main(String[] args) {
         showSplash("sssplash.png");
-        PropertyConfigurator.configure("conf/logger.properties");
+        PropertyConfigurator.configure(SongScribe.basePath + "/conf/logger.properties");
         openMidi();
         SlideFrame sf = new SlideFrame();
         hideSplash();
@@ -261,12 +262,18 @@ public class SlideFrame extends MainFrame {
         }
     }
 
+    @Override
     public void handleOpenFile(File file) {
         if (!showSaveDialog()) {
             return;
         }
 
         openSlide(file);
+    }
+
+    @Override
+    public void handlePrefs() throws IllegalStateException {
+        getPreferencesDialog().setVisible(true);
     }
 
     private class AddAction extends AbstractAction {

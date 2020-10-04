@@ -22,6 +22,7 @@
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.data.MyDesktop;
 
 import javax.swing.*;
@@ -45,7 +46,7 @@ public class AboutDialog extends MyDialog {
         tabPane.addTab("About", makeAboutPanel());
 
         try {
-            tabPane.add("Read me", createTextPane("file:help/About.html"));
+            tabPane.add("Read me", createTextPane("file:" + SongScribe.basePath + "/help/About.html"));
         }
         catch (IOException e) {
             logger.error("Could not load readme file.", e);
@@ -59,7 +60,7 @@ public class AboutDialog extends MyDialog {
         }
 
         try {
-            tabPane.add("Acknowledgements", createTextPane("file:help/Acknowledgements.html"));
+            tabPane.add("Acknowledgements", createTextPane("file:" + SongScribe.basePath + "/help/Acknowledgements.html"));
         }
         catch (IOException e) {
             logger.error("Could not load acknowledgement file.", e);

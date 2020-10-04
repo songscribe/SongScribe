@@ -26,18 +26,31 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.xml.sax.SAXException;
 import songscribe.IO.CompositionIO;
+import songscribe.SongScribe;
 import songscribe.Version;
 import songscribe.data.PropertyChangeListener;
-import songscribe.music.*;
+import songscribe.music.Crotchet;
+import songscribe.music.CrotchetRest;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.RepeatLeft;
 import songscribe.ui.mainframeactions.*;
 import songscribe.ui.playsubmenu.PlayMenu;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,7 +64,6 @@ import java.util.Properties;
  * @author Csaba Kávai
  */
 public class MainFrame extends JFrame {
-    public static final String PACKAGE_NAME = "SongScribe";
     public static final Dimension OUTER_SELECTION_PANEL_IMAGE_DIM = new Dimension(34, 38);
     public static final Color OUTER_SELECTION_IMAGE_BORDER_COLOR = new Color(51, 102, 102);
     public static final Point CENTER_POINT = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
@@ -60,19 +72,18 @@ public class MainFrame extends JFrame {
 
     static {
         if (!SS_HOME.exists() && !SS_HOME.mkdir()) {
-            JOptionPane.showMessageDialog(null, "Cannot make \".songscribe\" directory in the user home. Please give proper permissions.\nUntil then the program cannot save properties.", PACKAGE_NAME, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Cannot make \".songscribe\" directory in the user home. Please give proper permissions.\nUntil then the program cannot save properties.", Constants.PACKAGE_NAME, JOptionPane.ERROR_MESSAGE);
         }
 
         File logFile = new File(SS_HOME, "log");
 
-        if (logFile.length() > 1000000l) {
+        if (logFile.length() > 1000000L) {
             // noinspection ResultOfMethodCallIgnored
             logFile.delete();
         }
     }
 
     private static final File PROPS_FILE = new File(SS_HOME, "props");
-    private static final File DEF_PROPS_FILE = new File("conf/defprops");
     public static Sequencer sequencer;
     public static Receiver receiver;
     public static Synthesizer synthesizer;
@@ -84,7 +95,7 @@ public class MainFrame extends JFrame {
 
     {
         try {
-            defaultProps.load(new FileInputStream(DEF_PROPS_FILE));
+            defaultProps.load(new FileInputStream(SongScribe.basePath + "/conf/defprops"));
             LOG.debug(
                     "Default properties loaded e.g showmemusage=" + defaultProps.getProperty(Constants.SHOW_MEM_USAGE));
         }
@@ -184,7 +195,7 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(null, String.format(
                             "You may be already running %s or another program that uses sound.\n" +
                             "Please try to quit them and restart %s.\n" +
-                            "In this session playback will be disabled.", PACKAGE_NAME, PACKAGE_NAME), PACKAGE_NAME, JOptionPane.WARNING_MESSAGE);
+                            "In this session playback will be disabled.", Constants.PACKAGE_NAME, Constants.PACKAGE_NAME), Constants.PACKAGE_NAME, JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -204,7 +215,7 @@ public class MainFrame extends JFrame {
 
     public static void main(String[] args) {
         showSplash("swsplash.png");
-        PropertyConfigurator.configure("conf/logger.properties");
+        PropertyConfigurator.configure(SongScribe.basePath + "/conf/logger.properties");
         openMidi();
 
         try {
@@ -251,7 +262,7 @@ public class MainFrame extends JFrame {
     protected static void showSplash(String splashScreen) {
         splashWindow = new JWindow((Frame) null);
         JLabel splashLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().createImage(
-                "images/" + splashScreen)));
+            SongScribe.basePath + "/images/" + splashScreen)));
         splashWindow.getContentPane().add(splashLabel);
         splashWindow.pack();
         splashWindow.setLocation(
@@ -293,7 +304,7 @@ public class MainFrame extends JFrame {
     }
 
     public static Image getImage(String fileName) {
-        Image img = Toolkit.getDefaultToolkit().createImage("images/" + fileName);
+        Image img = Toolkit.getDefaultToolkit().createImage(SongScribe.basePath + "/images/" + fileName);
 
         if (img == null) {
             return null;
@@ -649,6 +660,10 @@ public class MainFrame extends JFrame {
         return (CompositionSettingsDialog) compositionSettingsAction.getDialog();
     }
 
+    public PreferencesDialog getPreferencesDialog() {
+        return (PreferencesDialog) prefAction.getDialog();
+    }
+
     public StatusBar getStatusBar() {
         return statusBar;
     }
@@ -782,7 +797,7 @@ public class MainFrame extends JFrame {
     }
 
     public void handlePrefs() throws IllegalStateException {
-        prefAction.actionPerformed(null);
+        getCompositionSettingsDialog().setVisible(true);
     }
 
     public boolean handleQuit() {

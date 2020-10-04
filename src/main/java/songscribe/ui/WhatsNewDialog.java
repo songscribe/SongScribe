@@ -21,6 +21,7 @@
 */
 package songscribe.ui;
 
+import songscribe.SongScribe;
 import songscribe.Version;
 import songscribe.data.DoNotShowException;
 
@@ -32,7 +33,7 @@ import java.io.IOException;
  * @author Csaba Kávai
  */
 public class WhatsNewDialog extends MyDialog {
-    public static final String WHATS_NEW_FILE = "help/release-notes-" + Version.PUBLIC_VERSION + ".html";
+    public static final String WHATS_NEW_FILE = SongScribe.basePath + "/help/release-notes-" + Version.PUBLIC_VERSION + ".html";
     private boolean noReleaseNotes;
 
     public WhatsNewDialog(MainFrame mainFrame) {

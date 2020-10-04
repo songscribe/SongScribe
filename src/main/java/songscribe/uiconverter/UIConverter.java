@@ -21,6 +21,7 @@ package songscribe.uiconverter;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import songscribe.SongScribe;
 import songscribe.data.FileExtensions;
 import songscribe.ui.MacAdapter;
 import songscribe.ui.MainFrame;
@@ -92,12 +93,12 @@ public class UIConverter extends MainFrame {
     }
 
     public static void main(String[] args) {
-        PropertyConfigurator.configure("conf/logger.properties");
+        PropertyConfigurator.configure(SongScribe.basePath + "/conf/logger.properties");
         openMidi();
         UIConverter ui = new UIConverter();
 
         if (Utilities.isMac()) {
-            new MacAdapter(ui, true);
+            new MacAdapter(ui, false);
         }
     }
 

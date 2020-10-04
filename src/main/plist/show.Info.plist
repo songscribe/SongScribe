@@ -48,7 +48,7 @@
 		<key>JVMVersion</key>
 		<string>1.8+</string>
 		<key>MainClass</key>
-		<string>songscribe.Runner</string>
+		<string>songscribe.SongScribe</string>
 		<key>VMOptionArray</key>
 		<array>
 			<string>-Dsongscribe=ss</string>

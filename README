@@ -15,23 +15,23 @@ After packaging the application, enter the directory target/dist.
 
 Application chooser:
 
-${MAIN_DIR}/target/dist> java -jar songscribe.jar
+${MAIN_DIR}/target/dist> java -jar SongScribe.jar
 
 A window will appear where you can select which application you want to start.
 
 Specifically you can use the following commands to start the different applications:
 
 1. Song Writer is the main application for creating, converting and playing songs:
-   ${MAIN_DIR}/target/dist> java -Dsongscribe=sw -jar songscribe.jar
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=sw -jar SongScribe.jar
 
 2. Song Show for full-screen song slideshow:
-   ${MAIN_DIR}/target/dist> java -Dsongscribe=ss -jar songscribe.jar
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=ss -jar SongScribe.jar
 
 3. Song Book for creating nice looking PDF of Songs, Images and Text
-   ${MAIN_DIR}/target/dist> java -Dsongscribe=sb -jar songscribe.jar
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=sb -jar SongScribe.jar
 
 4. UiConverter for converting image and midi files from songs in batch
-   ${MAIN_DIR}/target/dist> java -Dsongscribe=ui_converter -jar songscribe.jar
+   ${MAIN_DIR}/target/dist> java -Dsongscribe=ui_converter -jar SongScribe.jar
 
 ------------------------------------------------------------------
 Command line tools:

@@ -24,6 +24,7 @@ package songscribe.publisher;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.xml.sax.SAXException;
+import songscribe.SongScribe;
 import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.newsteps.PaperSizeDialog;
 import songscribe.publisher.publisheractions.*;
@@ -96,7 +97,7 @@ public class Publisher extends MainFrame {
 
     public static void main(String[] args) {
         showSplash("sbsplash.png");
-        PropertyConfigurator.configure("conf/logger.properties");
+        PropertyConfigurator.configure(SongScribe.basePath + "/conf/logger.properties");
         openMidi();
         Publisher pub = new Publisher();
         hideSplash();
@@ -326,5 +327,10 @@ public class Publisher extends MainFrame {
 
         openBook(file);
         unmodifiedDocument();
+    }
+
+    @Override
+    public void handlePrefs() throws IllegalStateException {
+        getPreferencesDialog().setVisible(true);
     }
 }

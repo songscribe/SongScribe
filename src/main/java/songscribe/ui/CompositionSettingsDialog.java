@@ -22,8 +22,13 @@
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.data.MyJTextArea;
-import songscribe.music.*;
+import songscribe.music.Composition;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.Tempo;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -168,7 +173,7 @@ public class CompositionSettingsDialog extends MyDialog {
         upperTempoPanel.add(ts);
         upperTempoPanel.add(new JLabel("Description:"));
         tempoDescriptionCombo.setEditable(true);
-        Utilities.readComboValuesFromFile(tempoDescriptionCombo, new File("conf/tempos"));
+        Utilities.readComboValuesFromFile(tempoDescriptionCombo, new File(SongScribe.basePath + "/conf/tempos"));
         upperTempoPanel.add(tempoDescriptionCombo);
         upperTempoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         showOnlyDescriptionCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -599,7 +604,7 @@ public class CompositionSettingsDialog extends MyDialog {
             if (answer == JOptionPane.YES_OPTION) {
                 String selected = (String) profileCombo.getSelectedItem();
 
-                if (new File(ProfileManager.DEFAULT_DIR, selected).delete()) {
+                if (new File(SongScribe.basePath + "/profiles", selected).delete()) {
                     profileCombo.removeItem(selected);
 
                     if (selected.equals(mainFrame.getProfileManager().getDefaultProfileName())) {

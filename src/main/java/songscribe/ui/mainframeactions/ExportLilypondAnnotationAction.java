@@ -26,11 +26,19 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.TupletIntervalData;
-import songscribe.music.*;
+import songscribe.music.Composition;
+import songscribe.music.Crotchet;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.Tempo;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
@@ -57,7 +65,7 @@ public class ExportLilypondAnnotationAction extends AbstractAction {
         pfd = new PlatformFileDialog(mainFrame, "Export as LilyPond Notation", false, new MyAcceptFilter("LilyPond Files", "ly"));
 
         try {
-            cfg.setDirectoryForTemplateLoading(new File("conf/lilypond-templates"));
+            cfg.setDirectoryForTemplateLoading(new File(SongScribe.basePath + "/conf/lilypond-templates"));
         }
         catch (IOException e) {
             logger.error("Template directory does not exists", e);

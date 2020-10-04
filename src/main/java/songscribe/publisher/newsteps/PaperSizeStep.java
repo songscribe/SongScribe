@@ -22,6 +22,7 @@
 package songscribe.publisher.newsteps;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.publisher.Utilities;
 import songscribe.ui.Constants;
 
@@ -59,7 +60,7 @@ public class PaperSizeStep extends Step {
         super(data);
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader("conf/papertemplates"));
+            BufferedReader br = new BufferedReader(new FileReader(SongScribe.basePath + "/conf/papertemplates"));
             String line;
 
             while ((line = br.readLine()) != null && line.length() > 0) {

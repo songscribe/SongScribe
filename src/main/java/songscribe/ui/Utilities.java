@@ -22,6 +22,7 @@
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.Version;
 import songscribe.data.GifEncoder;
 import songscribe.data.MyDesktop;
@@ -31,12 +32,23 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -97,7 +109,7 @@ public class Utilities {
 
             try {
                 name = "SourceSansPro-" + suffixes[i];
-                Font font = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/" + name + ".ttf"));
+                Font font = Font.createFont(Font.TRUETYPE_FONT, new File(SongScribe.basePath + "/fonts/" + name + ".ttf"));
                 sortedFonts.add(font);
             }
             catch (Exception e) {
@@ -218,11 +230,11 @@ public class Utilities {
             br.close();
         }
         catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Could not open a necessary file. Please reinstall the software.", MainFrame.PACKAGE_NAME, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Could not open a necessary file. Please reinstall the software.", Constants.PACKAGE_NAME, JOptionPane.ERROR_MESSAGE);
             logger.error("readComboValuesFromFile open", e);
         }
         catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Could not open a necessary file. Please reinstall the software.", MainFrame.PACKAGE_NAME, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Could not open a necessary file. Please reinstall the software.", Constants.PACKAGE_NAME, JOptionPane.ERROR_MESSAGE);
             logger.error("readComboValuesFromFile open", e);
         }
     }
@@ -478,10 +490,6 @@ public class Utilities {
 
     public static String getPublicVersion() {
         return Version.PUBLIC_VERSION;
-    }
-
-    public static String getFullVersion() {
-        return Version.PUBLIC_VERSION + "." + Version.BUILD_VERSION;
     }
 
     public static int getYear() {

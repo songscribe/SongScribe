@@ -21,6 +21,7 @@
 */
 package songscribe.ui;
 
+import songscribe.SongScribe;
 import songscribe.music.Annotation;
 import songscribe.music.Note;
 
@@ -61,7 +62,7 @@ public class AnnotationDialog extends MyDialog {
         annotationLabel.setText("Annotation:");
 
         annotationCombo.setEditable(true);
-        Utilities.readComboValuesFromFile(annotationCombo, new File("conf/annotations"));
+        Utilities.readComboValuesFromFile(annotationCombo, new File(SongScribe.basePath + "/conf/annotations"));
 
         xPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Alignment for note"));
         Alignment.left.button.setText("Left");

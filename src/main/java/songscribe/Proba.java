@@ -74,7 +74,7 @@ public class Proba {
             setPreferredSize(new Dimension(600, 600));
 
             try {
-                fughetta = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/fughetta.ttf")).deriveFont((float) s);
+                fughetta = Font.createFont(Font.TRUETYPE_FONT, new File(SongScribe.basePath + "/fonts/fughetta.ttf")).deriveFont((float) s);
             }
             catch (Exception e) {
                 e.printStackTrace();

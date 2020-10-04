@@ -21,14 +21,25 @@
 */
 package songscribe.ui.musicsheetdrawer;
 
-import songscribe.data.*;
+import songscribe.SongScribe;
+import songscribe.data.CrescendoDiminuendoIntervalData;
+import songscribe.data.Interval;
+import songscribe.data.IntervalSet;
+import songscribe.data.SlurData;
+import songscribe.data.TupletIntervalData;
 import songscribe.music.*;
 import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.Utilities;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.QuadCurve2D;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -86,12 +97,12 @@ public abstract class BaseMsDrawer {
         String fontName = "Fughetta";
 
         try {
-            Font font = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/" + fontName + ".ttf"));
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(SongScribe.basePath + "/fonts/" + fontName + ".ttf"));
             fughetta = font.deriveFont(size);
             fughettaGrace = font.deriveFont(size * graceAccidentalResizeFactor);
 
             fontName = "TupletNumbers";
-            font = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/" + fontName + ".ttf"));
+            font = Font.createFont(Font.TRUETYPE_FONT, new File(SongScribe.basePath + "/fonts/" + fontName + ".ttf"));
             tupletFont = font.deriveFont(13f);
             fsEndingFont = tupletFont;
         }

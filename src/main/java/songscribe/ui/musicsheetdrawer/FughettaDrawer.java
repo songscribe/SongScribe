@@ -22,9 +22,14 @@
 package songscribe.ui.musicsheetdrawer;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.data.FileGeneralPath;
 import songscribe.data.Interval;
-import songscribe.music.*;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
 import songscribe.ui.MusicSheet;
 
 import java.awt.*;
@@ -134,8 +139,8 @@ public class FughettaDrawer extends BaseMsDrawer {
         crotchetWidth = upperCrotchetStemX;
         beamX1Correction = 0.3d;
         beamX2Correction = 0.3d;
-        breathMark = FileGeneralPath.readGeneralPath(new File("fonts/bm"));
-        fermata = FileGeneralPath.readGeneralPath(new File("fonts/fm"));
+        breathMark = FileGeneralPath.readGeneralPath(new File(SongScribe.basePath + "/fonts/bm"));
+        fermata = FileGeneralPath.readGeneralPath(new File(SongScribe.basePath + "/fonts/fm"));
     }
 
     public static void calculateAccidentalWidths(Graphics2D g2) {

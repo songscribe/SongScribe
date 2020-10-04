@@ -22,6 +22,7 @@
 
 package songscribe.ui.mainframeactions;
 
+import songscribe.SongScribe;
 import songscribe.data.MyDesktop;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
@@ -34,7 +35,7 @@ import java.io.File;
  * @author Csaba Kávai
  */
 public class PDFTutorialOpenAction extends AbstractAction {
-    public static final File TUTORIAL_FILE = new File("help/tutorial.pdf");
+    public static final File TUTORIAL_FILE = new File(SongScribe.basePath + "/help/tutorial.pdf");
     private MainFrame mainFrame;
 
     public PDFTutorialOpenAction(MainFrame mainFrame, String name, String icon) {

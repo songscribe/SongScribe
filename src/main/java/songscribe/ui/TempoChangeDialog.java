@@ -21,6 +21,7 @@
 */
 package songscribe.ui;
 
+import songscribe.SongScribe;
 import songscribe.music.Note;
 import songscribe.music.Tempo;
 
@@ -68,8 +69,8 @@ public class TempoChangeDialog extends MyDialog {
         tempoPanel.add(ts);
         tempoPanel.add(new JLabel("Description:"));
         tempoDescriptionCombo.setEditable(true);
-        Utilities.readComboValuesFromFile(tempoDescriptionCombo, new File("conf/tempochanges"));
-        Utilities.readComboValuesFromFile(tempoDescriptionCombo, new File("conf/tempos"));
+        Utilities.readComboValuesFromFile(tempoDescriptionCombo, new File(SongScribe.basePath + "/conf/tempochanges"));
+        Utilities.readComboValuesFromFile(tempoDescriptionCombo, new File(SongScribe.basePath + "/conf/tempos"));
         tempoPanel.add(tempoDescriptionCombo);
         tempoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         center.add(tempoPanel);

@@ -22,6 +22,7 @@
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 import songscribe.music.KeyType;
 import songscribe.music.Tempo;
 
@@ -38,7 +39,6 @@ import java.util.Properties;
  */
 public class ProfileManager {
     public static final String PROFILE = "Profile";
-    public static final File DEFAULT_DIR = new File("profiles");
     private static final String PROFILE_VERSION = "1.0";
 
     private static final String PLAIN = "Plain";
@@ -64,7 +64,7 @@ public class ProfileManager {
         }
         else {
             mainFrame.showErrorMessage(
-                    "There is not a single profile in your installation. Try reinstalling " + MainFrame.PACKAGE_NAME);
+                    "There is not a single profile in your installation. Try reinstalling " + Constants.PACKAGE_NAME);
             logger.fatal("There is not a single profile among profiles!", new IllegalStateException());
             System.exit(-1);
         }
@@ -88,7 +88,7 @@ public class ProfileManager {
 
     public ArrayList<String> enumerateProfiles() {
         ArrayList<String> profiles = new ArrayList<String>();
-        File[] files = DEFAULT_DIR.listFiles();
+        File[] files = new File(SongScribe.basePath + "/profiles").listFiles();
 
         if (files != null) {
             for (File file : files) {
@@ -104,7 +104,7 @@ public class ProfileManager {
     public Properties getProfile(String name) {
         try {
             Properties props = new Properties();
-            props.load(new FileInputStream(new File(DEFAULT_DIR, name)));
+            props.load(new FileInputStream(new File(SongScribe.basePath + "/profiles", name)));
 
             if (!PROFILE_VERSION.equals(props.getProperty(PROFILE))) {
                 return null;
@@ -136,7 +136,7 @@ public class ProfileManager {
         props.setProperty(ProfileKey.LYRICS_FONT.getKey(), csd.lyricsFontCombo.getSelectedItem().toString());
         props.setProperty(ProfileKey.LYRICS_FONT_SIZE.getKey(), csd.lyricsFontSizeSpinner.getValue().toString());
         props.setProperty(ProfileKey.LYRICS_FONT_STYLE.getKey(), stringFontStyle(csd.lyricsBoldToggle.isSelected(), csd.lyricsItalicToggle.isSelected()));
-        props.store(new FileOutputStream(new File(DEFAULT_DIR, name)), null);
+        props.store(new FileOutputStream(new File(SongScribe.basePath + "/profiles", name)), null);
     }
 
     public void setDefaultProfile(String defaultProfileName) {

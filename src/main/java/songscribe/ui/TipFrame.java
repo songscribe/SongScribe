@@ -21,6 +21,8 @@
 */
 package songscribe.ui;
 
+import songscribe.SongScribe;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,7 +39,7 @@ import java.io.IOException;
  */
 public class TipFrame extends JFrame {
     private MainFrame mainFrame;
-    private File tipFile = new File("help/tips");
+    private File tipFile = new File(SongScribe.basePath + "/help/tips");
     private int index;
     private StringBuilder tipBuffer = new StringBuilder(256);
 

@@ -19,11 +19,18 @@
 */
 package songscribe.data;
 
+import songscribe.SongScribe;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Properties;
 
 public class FileGeneralPath {
@@ -136,7 +143,7 @@ public class FileGeneralPath {
     }
 
     public static void main(String[] args) throws IOException {
-        writeGeneralPath(fermataChar, new File("fonts/fm"));
+        writeGeneralPath(fermataChar, new File(SongScribe.basePath + "/fonts/fm"));
         //final GeneralPath gm = readGeneralPath(new File("fm"));
         //showInWindow(FughettaDrawer.breathMark);
     }

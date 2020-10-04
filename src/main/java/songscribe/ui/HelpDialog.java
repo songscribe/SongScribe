@@ -22,6 +22,7 @@
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -111,7 +112,7 @@ public class HelpDialog extends MyDialog implements ListCellRenderer, ListSelect
         }
         else {
             try {
-                editorPane.setPage("file:help/" + ((ListObject) theList.getSelectedValue()).html);
+                editorPane.setPage("file:" + SongScribe.basePath + "/help/" + ((ListObject) theList.getSelectedValue()).html);
             }
             catch (IOException e1) {
                 mainFrame.showErrorMessage("Could not open the help file.");

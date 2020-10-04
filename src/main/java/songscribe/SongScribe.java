@@ -27,22 +27,32 @@ import songscribe.converter.ImageConverter;
 import songscribe.converter.MidiConverter;
 import songscribe.converter.PDFConverter;
 import songscribe.publisher.Publisher;
+import songscribe.ui.Constants;
 import songscribe.ui.MainFrame;
 import songscribe.ui.SlideFrame;
-import songscribe.ui.Utilities;
 import songscribe.uiconverter.UIConverter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * @author Csaba Kávai
  */
-public class Runner {
+public class SongScribe {
+    public static String basePath = ".";
+
     public static void main(String[] args) {
-        PropertyConfigurator.configure("conf/logger.properties");
+        for (String entry: System.getProperty("java.class.path").split(File.pathSeparator)) {
+            if (!entry.equals(Constants.SONG_SCRIBE_JAR) && entry.endsWith(Constants.SONG_SCRIBE_JAR)) {
+                basePath = entry.substring(0, entry.length() - Constants.SONG_SCRIBE_JAR.length() - 1);
+            }
+        }
+
+
+        PropertyConfigurator.configure(basePath + "/conf/logger.properties");
         String ss = System.getProperty("songscribe");
 
         // look and feel
@@ -77,16 +87,14 @@ public class Runner {
         else if ("abc_converter".equals(ss)) {
             AbcConverter.main(args);
         }
-        else if ("version".equals(ss)) {
-            System.out.println(Utilities.getFullVersion());
-        }
         else {
-            startFrame(args);
+            //startFrame(args);
+            MainFrame.main(args);
         }
     }
 
     private static void startFrame(final String[] args) {
-        final JFrame frame = new JFrame(MainFrame.PACKAGE_NAME);
+        final JFrame frame = new JFrame(Constants.PACKAGE_NAME);
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

@@ -20,7 +20,6 @@
         <project.dist.directory>${project.build.directory}/dist</project.dist.directory>
         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
         <jarName>${project.artifactId}</jarName>
-        <project.generated.sources.directory>${project.build.directory}/generated-sources/java/</project.generated.sources.directory>
     </properties>
 
     <scm>
@@ -32,12 +31,12 @@
     <developers>
         <developer>
             <id>Himadri</id>
-            <name>Cs. Kavai</name>
+            <name>Himadri Kavai</name>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
             </roles>
-            <url>http://www.kavaiszoftvermernok.hu/</url>
+            <url>https://songscribe.himadri.eu/</url>
         </developer>
         <developer>
             <id>Aparajita</id>
@@ -125,7 +124,7 @@
                     <finalName>${jarName}</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>songscribe.Runner</mainClass>
+                            <mainClass>songscribe.SongScribe</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs</classpathPrefix>
                         </manifest>
@@ -207,10 +206,6 @@
                                     <targetPath>thirdpartylicenses</targetPath>
                                 </resource>
                                 <resource>
-                                    <directory>${project.basedir}/src/main/plist</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                                <resource>
                                     <directory>${project.basedir}/src/main/config</directory>
                                     <filtering>true</filtering>
                                 </resource>
@@ -245,9 +240,9 @@
                         </goals>
                         <configuration>
                             <source>
-                                File dir = new File("${project.generated.sources.directory}/songscribe/")
+                                File dir = new File("${project.build.sourceDirectory}/songscribe/")
                                 dir.mkdirs()
-                                File file = new File(dir, "Version.java").withWriter { out ->
+                                new File(dir, "Version.java").withWriter { out ->
                                     out.println '// This is an auto generated code. DO NOT MODIFY!'
                                     out.println 'package songscribe;'
                                     out.println 'public final class Version {'
@@ -284,7 +279,6 @@
                 <configuration>
                     <fork>true</fork>
                     <encoding>UTF-8</encoding>
-                    <generatedSourcesDirectory>${project.generated.sources.directory}</generatedSourcesDirectory>
                     <source>1.8</source>
                     <target>1.8</target>
                     <verbose>true</verbose>
@@ -297,53 +291,42 @@
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
-                        <goals><goal>add-source</goal></goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.generated.sources.directory}</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>prepare-update</id>
-                        <phase>install</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>exec</goal>
                         </goals>
-                        <configuration>
-                            <target>
-                                <property name="update.dir" value="${project.build.directory}/update"/>
-                                <property name="songscribe.jar" value="${project.build.directory}/${jarName}.${project.packaging}"/>
-                                <!--Copy the whole dist to a temporary working directory-->
-                                <copy todir="${update.dir}">
-                                    <fileset dir="${project.dist.directory}" />
-                                </copy>
-                                <!--Create the checksums file-->
-                                <java classname="songscribe.ChecksumMaker" dir="${update.dir}" fork="true">
-                                    <classpath location="${songscribe.jar}"/>
-                                </java>
-                                <!--Synchronizing with the server content-->
-                                <java classname="songscribe.UpdateMaker">
-                                    <classpath location="${songscribe.jar}"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <arg value="${update.dir}"/>
-                                </java>
-                            </target>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <executable>/Library/Java/JavaVirtualMachines/adoptopenjdk-15.jdk/Contents/Home/bin/jpackage</executable>
+                    <arguments>
+                        <argument>--input</argument>
+                        <argument>${project.dist.directory}</argument>
+                        <argument>--name</argument>
+                        <argument>${project.artifactId}</argument>
+                        <argument>--main-jar</argument>
+                        <argument>${jarName}.${project.packaging}</argument>
+                        <argument>--main-class</argument>
+                        <argument>songscribe.SongScribe</argument>
+                        <argument>--type</argument>
+                        <argument>pkg</argument>
+                        <argument>--icon</argument>
+                        <argument>images/swicon.icns</argument>
+                        <argument>--mac-package-identifier</argument>
+                        <argument>${project.artifactId}</argument>
+                        <argument>--mac-package-name</argument>
+                        <argument>${project.artifactId}</argument>
+                        <argument>--app-version</argument>
+                        <argument>${project.version}</argument>
+                        <argument>--vendor</argument>
+                        <argument>Himadri</argument>
+                        <argument>--copyright</argument>
+                        <argument>GNU General Public License</argument>
+                   </arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

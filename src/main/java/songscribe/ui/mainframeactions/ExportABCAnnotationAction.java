@@ -22,7 +22,11 @@
 package songscribe.ui.mainframeactions;
 
 import org.apache.log4j.Logger;
-import songscribe.data.*;
+import songscribe.data.Fraction;
+import songscribe.data.Interval;
+import songscribe.data.MyAcceptFilter;
+import songscribe.data.PlatformFileDialog;
+import songscribe.data.TupletIntervalData;
 import songscribe.music.*;
 import songscribe.ui.Constants;
 import songscribe.ui.MainFrame;
@@ -139,7 +143,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         Composition composition = mainFrame.getMusicSheet().getComposition();
         compositionUnitLength = determineCompositionUnitLength(composition);
         writer.println("%abc-2.1");
-        writer.println("I:abc-creator " + MainFrame.PACKAGE_NAME + " " + Utilities.getPublicVersion());
+        writer.println("I:abc-creator " + Constants.PACKAGE_NAME + " " + Utilities.getPublicVersion());
         writer.println();
 
         // tune header

@@ -22,6 +22,7 @@
 package songscribe.ui;
 
 import org.apache.log4j.Logger;
+import songscribe.SongScribe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +60,7 @@ public class HTMLDialog extends MyDialog {
 
     protected void setPage(String htmlPage) {
         try {
-            editorPane.setPage("file:help/" + htmlPage);
+            editorPane.setPage("file:" + SongScribe.basePath + "/help/" + htmlPage);
         }
         catch (IOException e) {
             mainFrame.showErrorMessage("Could not open the help file.");

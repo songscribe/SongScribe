@@ -49,15 +49,15 @@ public class Constants {
     public static final String HYPHEN = "-";
     public static final String SHOW_MEM_USAGE = "showmemusage";
     public static final String SHOW_PUBLISHER_NEW_INFO = "showpublishernewinfo";
-    public static final String UPDATE_URL1 = "updateurl1";
-    public static final String UPDATE_URL2 = "updateurl2";
+    public static final String UPDATE_URL = "updateurl";
     public static final String LAST_AUTO_UPDATE = "lastautoupdate";
     public static final String AUTO_UPDATE_PERIOD = "autoupdateperiod";
     public static final String METRIC = "metric";
     public static final String FIRST_RUN = "firstrun";
-    public static final String BOOK_UPLOAD_URL = "bookuploadurl";
     public static final String CHECKSUMS_FILENAME = "checksums";
-    public static final String VERSION_FILENAME = "version";
+    public static final String VERSION_URL = "https://songscribe.himadri.eu/download/version";
     public static final Header MAX_AGE_HEADER = new Header("Cache-Control", "max-age=0");
     public static final String NON_BREAKING_HYPHEN = Character.toString('\u00AD');
+    public static final String PACKAGE_NAME = "SongScribe";
+    public static final String SONG_SCRIBE_JAR = PACKAGE_NAME + ".jar";
 }

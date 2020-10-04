@@ -17,8 +17,7 @@ instrument=0
 showpublishernewinfo=true
 metric=false
 #the update urls must ends with '/'
-updateurl1=http://www.songscribe.org/files/update/ss/
-updateurl2=http://www.vasudevaservice.com/c_/contributors/csaba_kavai/ss/
+updateurl=http://www.songscribe.org/files/update/ss/
 lastautoupdate=0
 autoupdateperiod=604800000
 firstrun=true
