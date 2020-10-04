@@ -99,10 +99,6 @@ public class SlideFrame extends MainFrame {
         openMidi();
         SlideFrame sf = new SlideFrame();
         hideSplash();
-
-        if (Utilities.isMac()) {
-            new MacAdapter(sf, true);
-        }
     }
 
     private void initComponents() {
@@ -206,7 +202,7 @@ public class SlideFrame extends MainFrame {
 
         menuBar.add(fileMenu);
         menuBar.add(helpMenu);
-        setJMenuBar(menuBar);
+        setupDesktopHandlers(true, menuBar);
     }
 
     public void setMode(MusicSheet.Mode mode) {

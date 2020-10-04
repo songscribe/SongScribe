@@ -175,7 +175,9 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                exitAction.actionPerformed(null);
+                if (handleQuit()) {
+                    System.exit(0);
+                }
             }
         });
     }
@@ -239,10 +241,6 @@ public class MainFrame extends JFrame {
                 }
             }
 
-            if (Utilities.isMac()) {
-                new MacAdapter(mf, true);
-            }
-
             if (args.length > 0) {
                 File f = new File(args[0]);
 
@@ -257,6 +255,29 @@ public class MainFrame extends JFrame {
         }
 
         hideSplash();
+    }
+
+    protected void setupDesktopHandlers(boolean hasPrefs, JMenuBar menuBar) {
+        Desktop app = Desktop.getDesktop();
+        app.setAboutHandler(event -> handleAbout());
+
+        if (hasPrefs) {
+            app.setPreferencesHandler(event -> handlePrefs());
+        }
+
+        app.setOpenFileHandler(event -> handleOpenFile(event.getFiles().get(0)));
+        app.setPrintFileHandler(event -> handlePrintFile(event.getFiles().get(0)));
+        app.setQuitHandler((event, response) -> {
+            if (handleQuit()) {
+                response.performQuit();
+            }
+            else {
+                response.cancelQuit();
+            }
+        });
+        if (menuBar != null) {
+            app.setDefaultMenuBar(menuBar);
+        }
     }
 
     protected static void showSplash(String splashScreen) {
@@ -517,7 +538,7 @@ public class MainFrame extends JFrame {
         menuBar.add(playMenu);
         menuBar.add(compositionMenu);
         menuBar.add(helpMenu);
-        setJMenuBar(menuBar);
+        setupDesktopHandlers(true, menuBar);
 
         // TOOLBAR
         Dimension separator = new Dimension(10, 0);
@@ -854,7 +875,6 @@ public class MainFrame extends JFrame {
             }
 
             closeMidi();
-            System.exit(0);
         }
     }
 

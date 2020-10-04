@@ -26,7 +26,6 @@ import songscribe.SongScribe;
 import songscribe.Version;
 import songscribe.data.GifEncoder;
 import songscribe.data.MyDesktop;
-import sun.font.Font2D;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -39,16 +38,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -281,53 +276,6 @@ public class Utilities {
     }
 
     /*
-        Major hack alert!
-
-        There is a bug in Oracle Java's Font2D.setStyle method
-        that does not set the style of the Font2D correctly for
-        some fonts, because the style matching algorithm is broken.
-        This method forces the Font2D style to be the requested style.
-    */
-    public static void fixFont2DStyle(Font font, int style) {
-        Map<String, Object> result = get2DStyleFieldForFont(font);
-
-        if (result != null) {
-            try {
-                Field styleField = (Field) result.get("field");
-                Font2D font2d = (Font2D) result.get("font");
-                styleField.setInt(font2d, style);
-            }
-            catch (Exception ex) {
-                // Oh well, we tried
-            }
-        }
-    }
-
-    public static Map<String, Object> get2DStyleFieldForFont(Font font) {
-        try {
-            Class<?>[] params = new Class[0];
-            Method method = font.getClass().getDeclaredMethod("getFont2D", params);
-            method.setAccessible(true);
-            Font2D font2d = (Font2D) method.invoke(font);
-
-            if (font2d != null) {
-                // The style field we want to set is in the Font2D class, get that class
-                Field styleField = Font2D.class.getDeclaredField("style");
-                styleField.setAccessible(true);
-                Map<String, Object> result = new HashMap<String, Object>();
-                result.put("font", font2d);
-                result.put("field", styleField);
-                return result;
-            }
-        }
-        catch (Exception ex) {
-            // Oh well, we tried
-        }
-
-        return null;
-    }
-
-    /*
         The built in Java font matching algorithms are pretty useless.
         This method will return the closest matching font for a given style.
         If bold+italic is requested, it will fall back to bold if available.
@@ -397,8 +345,7 @@ public class Utilities {
         else {
             // Always use plain for the style, if we get here we have
             // a styled font variant already.
-            foundFont = foundFont.deriveFont(Font.PLAIN, (float) size);
-            fixFont2DStyle(foundFont, style);
+            foundFont = foundFont.deriveFont(style, (float) size);
         }
 
         return foundFont;
@@ -406,59 +353,43 @@ public class Utilities {
 
     public static boolean fontHasStyle(Font font, int style) {
         boolean isBold = false, isItalic = false;
-        Map<String, Object> result = get2DStyleFieldForFont(font);
 
-        if (result != null) {
-            try {
-                Font2D font2d = (Font2D) result.get("font");
-                Field styleField = (Field) result.get("field");
-                int style2d = styleField.getInt(font2d);
-                isBold = (style2d & Font.BOLD) != 0;
-                isItalic = (style2d & Font.ITALIC) != 0;
+        String fontName = font.getPSName();
+        boolean hasDash = fontName.indexOf("-") > 0;
+
+        for (String suffix : boldFontSuffixNames) {
+            if (isBold) {
+                break;
             }
-            catch (Exception ex) {
-                result = null;
+
+            if (hasDash) {
+                suffix = "-" + suffix;
+            }
+
+            if (fontName.endsWith(suffix)) {
+                isBold = true;
+                break;
+            }
+            else {
+                for (String italicSuffix : italicFontSuffixNames) {
+                    if (fontName.endsWith(suffix + italicSuffix)) {
+                        isBold = true;
+                        isItalic = true;
+                        break;
+                    }
+                }
             }
         }
 
-        if (result == null) {
-            String fontName = font.getPSName();
-            boolean hasDash = fontName.indexOf("-") > 0;
-
-            for (String suffix : boldFontSuffixNames) {
-                if (isBold) {
-                    break;
-                }
-
+        if (!isBold) {
+            for (String suffix : italicFontSuffixNames) {
                 if (hasDash) {
                     suffix = "-" + suffix;
                 }
 
                 if (fontName.endsWith(suffix)) {
-                    isBold = true;
+                    isItalic = true;
                     break;
-                }
-                else {
-                    for (String italicSuffix : italicFontSuffixNames) {
-                        if (fontName.endsWith(suffix + italicSuffix)) {
-                            isBold = true;
-                            isItalic = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (!isBold) {
-                for (String suffix : italicFontSuffixNames) {
-                    if (hasDash) {
-                        suffix = "-" + suffix;
-                    }
-
-                    if (fontName.endsWith(suffix)) {
-                        isItalic = true;
-                        break;
-                    }
                 }
             }
         }

@@ -28,10 +28,8 @@ import songscribe.SongScribe;
 import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.newsteps.PaperSizeDialog;
 import songscribe.publisher.publisheractions.*;
-import songscribe.ui.MacAdapter;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
-import songscribe.ui.Utilities;
 import songscribe.ui.mainframeactions.DialogOpenAction;
 
 import javax.swing.*;
@@ -101,10 +99,6 @@ public class Publisher extends MainFrame {
         openMidi();
         Publisher pub = new Publisher();
         hideSplash();
-
-        if (Utilities.isMac()) {
-            new MacAdapter(pub, true);
-        }
     }
 
     public static FontMetrics getStaticFontMetrics(Font font) {
@@ -170,7 +164,7 @@ public class Publisher extends MainFrame {
         makeCommonHelpMenu(helpMenu);
         menuBar.add(helpMenu);
 
-        setJMenuBar(menuBar);
+        setupDesktopHandlers(true, menuBar);
 
         // default popup
         defaultPopup = new JPopupMenu();
