@@ -10,7 +10,7 @@ This will compile, package the application into target/dist.
 ---------------------------------------------------------------
 Launching SongScribe
 ---------------------------------------------------------------
-SongScribe needs Java 5 to run.
+SongScribe needs Java 8 to run.
 After packaging the application, enter the directory target/dist.
 
 Application chooser:
@@ -41,3 +41,8 @@ Midi Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar -help
 PDF Converter: java -Dsongscribe=pdf_converter -jar SongScribe.jar -help
 ABC Annotation Converter: java -Dsongscribe=midi_converter -jar SongScribe.jar <mssw_file>
 Version Info: java -Dsongscribe=version -jar SongScribe.jar
+
+----------------------------
+Upload:
+mvn package
+scp -r target/download/ root@himadri.eu:/var/www/songscribe.himadri.eu
