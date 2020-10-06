@@ -776,16 +776,7 @@ public class MainFrame extends JFrame {
     }
 
     protected void automaticCheckForUpdate() {
-        try {
-            if (System.currentTimeMillis() - Long.parseLong(properties.getProperty(Constants.LAST_AUTO_UPDATE)) >
-                Long.parseLong(properties.getProperty(Constants.AUTO_UPDATE_PERIOD))) {
-                new UpdateDialog(this).new UpdateInternetThread(true).start();
-                properties.setProperty(Constants.LAST_AUTO_UPDATE, Long.toString(System.currentTimeMillis()));
-            }
-        }
-        catch (NumberFormatException nf) {
-            LOG.error("Lastupdate property is not a number.");
-        }
+        new UpdateDialog(this).new UpdateInternetThread(true).start();
     }
 
     public void openMusicSheet(File openFile, boolean setTitle) {
