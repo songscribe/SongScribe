@@ -29,6 +29,34 @@
         <url>https://github.com/songscribe/SongScribe</url>
     </scm>
 
+    <profiles>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <os.family.name>mac</os.family.name>
+                <jpackage.build.type>pkg</jpackage.build.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <os.family.name>windows</os.family.name>
+                <jpackage.build.type>msi</jpackage.build.type>
+            </properties>
+        </profile>
+
+    </profiles>
+
     <developers>
         <developer>
             <id>Himadri</id>
@@ -258,8 +286,8 @@
                             <source>
                                 File dir = new File("${project.download.directory}")
                                 dir.mkdirs()
-                                new File(dir, "version").withWriter { out ->
-                                    out.println '${build.version}'
+                                new File(dir, "version-${os.family.name}.json").withWriter { out ->
+                                    out.println '{"downloadFile": "${project.artifactId}-${project.version}.${jpackage.build.type}","buildVersion": "${build.version}"}'
                                 }
                             </source>
                         </configuration>
@@ -301,7 +329,7 @@
                         <argument>--main-class</argument>
                         <argument>songscribe.SongScribe</argument>
                         <argument>--type</argument>
-                        <argument>pkg</argument>
+                        <argument>${jpackage.build.type}</argument>
                         <argument>--icon</argument>
                         <argument>images/swicon.icns</argument>
                         <argument>--mac-package-identifier</argument>

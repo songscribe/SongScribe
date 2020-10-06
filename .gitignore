@@ -7,3 +7,4 @@
 #No maven stuff
 target/
 out/
+jpackage
