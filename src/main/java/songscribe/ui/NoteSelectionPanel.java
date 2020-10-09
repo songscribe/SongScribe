@@ -34,10 +34,6 @@ import java.awt.image.BufferedImage;
  * @author Csaba Kávai
  */
 public final class NoteSelectionPanel extends SelectionPanel {
-    private JToggleButton dotButton = new JToggleButton();
-    private JToggleButton naturalButton = new JToggleButton();
-    private JToggleButton flatButton = new JToggleButton();
-    private JToggleButton accentButton = new JToggleButton();
 
     public NoteSelectionPanel(MainFrame mainFrame) {
         super(mainFrame);
@@ -81,6 +77,7 @@ public final class NoteSelectionPanel extends SelectionPanel {
                 (dotImage.getWidth() - Crotchet.REAL_UP_NOTE_RECT.width) / 2,
                 (dotImage.getHeight() - Crotchet.REAL_UP_NOTE_RECT.height) / 2, null);
         g2.dispose();
+        JToggleButton dotButton = new JToggleButton();
         dotButton.setIcon(new ImageIcon(dotImage));
         dotButton.setToolTipText("Dot (.)");
         dotButton.setActionCommand("DOT");
@@ -89,11 +86,13 @@ public final class NoteSelectionPanel extends SelectionPanel {
         addSelectionComponent(dotButton);
 
         // make the accidental buttons
+        JToggleButton naturalButton = new JToggleButton();
         naturalButton.setToolTipText("Natural (N)");
         naturalButton.setIcon(new ImageIcon(Note.clipNoteImage(MainFrame.getImage("natural.gif"), Note.REAL_NATURAL_FLAT_SHARP_RECT[0], Color.orange, SELECTION_IMAGE_DIM)));
         naturalButton.addActionListener(this);
         naturalButton.setActionCommand(Note.Accidental.NATURAL.name());
         addSelectionComponent(naturalButton);
+        JToggleButton flatButton = new JToggleButton();
         flatButton.setToolTipText("Flat (F)");
         flatButton.setIcon(new ImageIcon(Note.clipNoteImage(MainFrame.getImage("flat.gif"), Note.REAL_NATURAL_FLAT_SHARP_RECT[1], Color.orange, SELECTION_IMAGE_DIM)));
         flatButton.addActionListener(this);
@@ -111,6 +110,7 @@ public final class NoteSelectionPanel extends SelectionPanel {
         g2.drawLine(0, 0, vid.width - 1, vid.height / 2 - 1);
         g2.drawLine(0, vid.height - 1, vid.width - 1, vid.height / 2 - 1);
         g2.dispose();
+        JToggleButton accentButton = new JToggleButton();
         accentButton.setIcon(new ImageIcon(Note.clipNoteImage(louderImage, new Rectangle(vid), Color.orange, SELECTION_IMAGE_DIM)));
         accentButton.setToolTipText("Accent (>)");
         accentButton.setActionCommand("ACCENT");
@@ -118,21 +118,5 @@ public final class NoteSelectionPanel extends SelectionPanel {
         addSelectionComponent(accentButton);
 
         ((AbstractButton) getComponent(2)).setSelected(true);
-    }
-
-    public void setDotSelected(boolean selected) {
-        dotButton.setSelected(selected);
-    }
-
-    public void setAccentSelected(boolean selected) {
-        accentButton.setSelected(selected);
-    }
-
-    public void setNaturalSelected(boolean selected) {
-        naturalButton.setSelected(selected);
-    }
-
-    public void setFlatSelected(boolean selected) {
-        flatButton.setSelected(selected);
     }
 }

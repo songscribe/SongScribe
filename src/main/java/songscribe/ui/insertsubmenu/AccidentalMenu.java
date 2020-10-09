@@ -29,12 +29,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 /**
  * @author Csaba Kávai
  */
 public class AccidentalMenu extends InsertSubMenu {
-    private JMenuItem naturalButton, flatButton;
     private JCheckBoxMenuItem parenthesisButton;
 
     public AccidentalMenu(MainFrame mainFrame) {
@@ -55,6 +55,12 @@ public class AccidentalMenu extends InsertSubMenu {
                 "Natural sharp"
         };
 
+        Map<Note.Accidental, KeyStroke> keyStrokeMap = Map.of(
+            Note.Accidental.NATURAL, KeyStroke.getKeyStroke(KeyEvent.VK_N, 0),
+            Note.Accidental.FLAT, KeyStroke.getKeyStroke(KeyEvent.VK_F, 0),
+            Note.Accidental.SHARP, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0)
+        );
+
         for (Note.Accidental accidental : Note.Accidental.values()) {
             if (accidental == Note.Accidental.NONE) {
                 continue;
@@ -69,24 +75,9 @@ public class AccidentalMenu extends InsertSubMenu {
             }
 
             g2.dispose();
-            JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(names[accidental.ordinal() - 1], new ImageIcon(img));
-            cbmi.setActionCommand(accidental.name());
-            cbmi.addActionListener(this);
-            add(cbmi);
-
-            if (accidental == Note.Accidental.NATURAL) {
-                naturalButton = cbmi;
-            }
-            else if (accidental == Note.Accidental.FLAT) {
-                flatButton = cbmi;
-            }
-            else if (accidental == Note.Accidental.SHARP) {
-                cbmi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0));
-            }
+            createCheckBoxMenuItem(names[accidental.ordinal() - 1], accidental.name(), new ImageIcon(img), keyStrokeMap.get(accidental));
         }
 
-        naturalButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, 0));
-        flatButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0));
         addSeparator();
         parenthesisButton = new JCheckBoxMenuItem(new ParenthesisAction());
         add(parenthesisButton);
@@ -108,8 +99,6 @@ public class AccidentalMenu extends InsertSubMenu {
 
     public void updateState(Note note) {
         selectItem(note.getAccidental().name());
-        mainFrame.getNoteSelectionPanel().setNaturalSelected(naturalButton.isSelected());
-        mainFrame.getNoteSelectionPanel().setFlatSelected(flatButton.isSelected());
         parenthesisButton.setSelected(note.isAccidentalInParenthesis());
     }
 

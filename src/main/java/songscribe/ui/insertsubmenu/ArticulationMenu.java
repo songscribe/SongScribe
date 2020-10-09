@@ -32,11 +32,9 @@ import javax.swing.*;
  * @author Csaba Kávai
  */
 public class ArticulationMenu extends InsertSubMenu {
-    JCheckBoxMenuItem accentButton;
-
     public ArticulationMenu(MainFrame mainFrame) {
         super(mainFrame, "Articulations", "accent22.gif", null);
-        accentButton = createCheckBoxMenuItem("Accent", ForceArticulation.ACCENT.name(), "accent16.gif", KeyStroke.getKeyStroke('>'));
+        createCheckBoxMenuItem("Accent", ForceArticulation.ACCENT.name(), "accent16.gif", KeyStroke.getKeyStroke('>'));
         addSeparator();
         createCheckBoxMenuItem("Staccato", DurationArticulation.STACCATO.name(), "staccato16.gif", null);
         createCheckBoxMenuItem("Tenuto", DurationArticulation.TENUTO.name(), "tenuto16.gif", null);
@@ -69,8 +67,6 @@ public class ArticulationMenu extends InsertSubMenu {
         if (note.getDurationArticulation() != null) {
             selectItem(note.getDurationArticulation().name());
         }
-
-        mainFrame.getNoteSelectionPanel().setAccentSelected(accentButton.isSelected());
     }
 
     public void dotPrefixNote(Note note) {

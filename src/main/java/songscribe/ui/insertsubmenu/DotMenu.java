@@ -64,8 +64,6 @@ public class DotMenu extends InsertSubMenu {
         else if (note.getDotted() == 2) {
             doubleDotButton.setSelected(true);
         }
-
-        mainFrame.getNoteSelectionPanel().setDotSelected(dotButton.isSelected());
     }
 
     public void dotPrefixNote(Note note) {

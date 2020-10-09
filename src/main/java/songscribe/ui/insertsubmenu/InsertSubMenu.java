@@ -100,15 +100,31 @@ public abstract class InsertSubMenu extends JMenu implements ActionListener {
     public abstract void dotPrefixNote(Note note);
 
     protected JCheckBoxMenuItem createCheckBoxMenuItem(String name, String actionCommand, String icon, KeyStroke acceleratorKey) {
+        ImageIcon imageIcon = null;
+        if (icon != null) {
+            imageIcon = new ImageIcon(MainFrame.getImage(icon));
+        }
+        return createCheckBoxMenuItem(name, actionCommand, imageIcon, acceleratorKey);
+    }
+
+    protected JCheckBoxMenuItem createCheckBoxMenuItem(String name, String actionCommand, ImageIcon icon, KeyStroke acceleratorKey) {
         JCheckBoxMenuItem checkboxButton = new JCheckBoxMenuItem(name);
         checkboxButton.setActionCommand(actionCommand);
 
         if (icon != null) {
-            checkboxButton.setIcon(new ImageIcon(MainFrame.getImage(icon)));
+            checkboxButton.setIcon(icon);
         }
 
         if (acceleratorKey != null) {
             checkboxButton.setAccelerator(acceleratorKey);
+            Object o = new Object();
+            mainFrame.getMusicSheet().getInputMap(JComponent.WHEN_FOCUSED).put(acceleratorKey, o);
+            mainFrame.getMusicSheet().getActionMap().put(o, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    realActionPerformed(actionCommand);
+                }
+            });
         }
 
         checkboxButton.addActionListener(this);
