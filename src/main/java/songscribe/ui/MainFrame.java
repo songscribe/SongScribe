@@ -259,23 +259,30 @@ public class MainFrame extends JFrame {
 
     protected void setupDesktopHandlers(boolean hasPrefs, JMenuBar menuBar) {
         Desktop app = Desktop.getDesktop();
-        app.setAboutHandler(event -> handleAbout());
+        if (app.isSupported(Desktop.Action.APP_ABOUT)) {
+            app.setAboutHandler(event -> handleAbout());
+        }
 
-        if (hasPrefs) {
+        if (hasPrefs && app.isSupported(Desktop.Action.APP_PREFERENCES)) {
             app.setPreferencesHandler(event -> handlePrefs());
         }
 
-        app.setOpenFileHandler(event -> handleOpenFile(event.getFiles().get(0)));
-        app.setPrintFileHandler(event -> handlePrintFile(event.getFiles().get(0)));
-        app.setQuitHandler((event, response) -> {
-            if (handleQuit()) {
-                response.performQuit();
-            }
-            else {
-                response.cancelQuit();
-            }
-        });
-        if (menuBar != null) {
+        if (app.isSupported(Desktop.Action.APP_OPEN_FILE)) {
+            app.setOpenFileHandler(event -> handleOpenFile(event.getFiles().get(0)));
+        }
+        if (app.isSupported(Desktop.Action.APP_PRINT_FILE)) {
+            app.setPrintFileHandler(event -> handlePrintFile(event.getFiles().get(0)));
+        }
+        if (app.isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
+            app.setQuitHandler((event, response) -> {
+                if (handleQuit()) {
+                    response.performQuit();
+                } else {
+                    response.cancelQuit();
+                }
+            });
+        }
+        if (menuBar != null && app.isSupported(Desktop.Action.APP_MENU_BAR)) {
             app.setDefaultMenuBar(menuBar);
         }
     }
