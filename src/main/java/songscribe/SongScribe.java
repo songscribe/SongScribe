@@ -55,14 +55,6 @@ public class SongScribe {
         PropertyConfigurator.configure(basePath + "/conf/logger.properties");
         String ss = System.getProperty("songscribe");
 
-        // look and feel
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (Exception e) {
-            // pass
-        }
-
         if ("sw".equals(ss)) {
             MainFrame.main(args);
         }
