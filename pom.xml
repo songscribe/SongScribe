@@ -40,6 +40,11 @@
             <properties>
                 <os.family.name>mac</os.family.name>
                 <jpackage.build.type>pkg</jpackage.build.type>
+                <icon>images/swicon.icns</icon>
+                <platformarguments1>--mac-package-identifier</platformarguments1>
+                <platformarguments2>${project.artifactId}</platformarguments2>
+                <platformarguments3>--mac-package-name</platformarguments3>
+                <platformarguments4>${project.artifactId}</platformarguments4>
             </properties>
         </profile>
         <profile>
@@ -52,6 +57,11 @@
             <properties>
                 <os.family.name>windows</os.family.name>
                 <jpackage.build.type>msi</jpackage.build.type>
+                <icon>images/swicon.ico</icon>
+                <platformarguments1>--win-menu</platformarguments1>
+                <platformarguments2>--win-shortcut</platformarguments2>
+                <platformarguments3/>
+                <platformarguments4/>
             </properties>
         </profile>
 
@@ -336,11 +346,11 @@
                         <argument>--type</argument>
                         <argument>${jpackage.build.type}</argument>
                         <argument>--icon</argument>
-                        <argument>images/swicon.icns</argument>
-                        <argument>--mac-package-identifier</argument>
-                        <argument>${project.artifactId}</argument>
-                        <argument>--mac-package-name</argument>
-                        <argument>${project.artifactId}</argument>
+                        <argument>${icon}</argument>
+                        <argument>${platformarguments1}</argument>
+                        <argument>${platformarguments2}</argument>
+                        <argument>${platformarguments3}</argument>
+                        <argument>${platformarguments4}</argument>
                         <argument>--app-version</argument>
                         <argument>${project.version}</argument>
                         <argument>--vendor</argument>

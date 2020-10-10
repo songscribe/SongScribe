@@ -110,7 +110,6 @@ public class UpdateDialog extends MyDialog {
 
                     if (remoteVersion.currentVersion.compareTo(Version.BUILD_VERSION) <= 0) {
                         label.setText("No update is available. You already have the latest version.");
-                        pack();
                     } else {
                         label.setText("New version available!");
                         downloadUri = remoteVersion.downloadUrl;

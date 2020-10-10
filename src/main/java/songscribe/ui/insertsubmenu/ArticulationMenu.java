@@ -49,10 +49,12 @@ public class ArticulationMenu extends InsertSubMenu {
         }
 
         if (ForceArticulation.isExists(actionCommand)) {
-            activeNote.setForceArticulation(ForceArticulation.valueOf(actionCommand));
+            ForceArticulation forceArticulation = ForceArticulation.valueOf(actionCommand);
+            activeNote.setForceArticulation(activeNote.getForceArticulation() == forceArticulation ? null : forceArticulation);
         }
         else {
-            activeNote.setDurationArticulation(DurationArticulation.valueOf(actionCommand));
+            DurationArticulation durationArticulation = DurationArticulation.valueOf(actionCommand);
+            activeNote.setDurationArticulation(activeNote.getDurationArticulation() == durationArticulation ? null : durationArticulation);
         }
 
         updateState(activeNote);
