@@ -282,8 +282,12 @@ public class MainFrame extends JFrame {
                 }
             });
         }
-        if (menuBar != null && app.isSupported(Desktop.Action.APP_MENU_BAR)) {
-            app.setDefaultMenuBar(menuBar);
+        if (menuBar != null) {
+            if (app.isSupported(Desktop.Action.APP_MENU_BAR)) {
+                app.setDefaultMenuBar(menuBar);
+            } else {
+                setJMenuBar(menuBar);
+            }
         }
     }
 
