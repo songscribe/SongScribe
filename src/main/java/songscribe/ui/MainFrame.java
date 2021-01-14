@@ -29,28 +29,16 @@ import songscribe.IO.CompositionIO;
 import songscribe.SongScribe;
 import songscribe.Version;
 import songscribe.data.PropertyChangeListener;
-import songscribe.music.Crotchet;
-import songscribe.music.CrotchetRest;
-import songscribe.music.Note;
-import songscribe.music.NoteType;
-import songscribe.music.RepeatLeft;
+import songscribe.music.*;
 import songscribe.ui.mainframeactions.*;
 import songscribe.ui.playsubmenu.PlayMenu;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Synthesizer;
+import javax.sound.midi.*;
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -534,6 +522,10 @@ public class MainFrame extends JFrame {
         compositionMenu.add(new DialogOpenAction(this, "Lyrics...", "edit.png", KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), LyricsDialog.class));
         compositionMenu.add(new DialogOpenAction(this, "Line width...", "changelinewidth.png", LineWidthChangeDialog.class));
 
+        JMenu launchMenu = new JMenu("Launch");
+        launchMenu.add(new LaunchAction(LaunchAction.App.SONGBOOK));
+        launchMenu.add(new LaunchAction(LaunchAction.App.SONGSHOW));
+
         JMenu helpMenu = new JMenu("Help");
         helpMenu.add(new DialogOpenAction(this, "Basic Tutorial", "kontact_contacts.png", TutorialDialog.class));
         helpMenu.add(new PDFTutorialOpenAction(this, "Extended Tutorial (PDF)", "blockdevice.png"));
@@ -548,6 +540,7 @@ public class MainFrame extends JFrame {
         menuBar.add(new NotesMenu(this));
         menuBar.add(playMenu);
         menuBar.add(compositionMenu);
+        menuBar.add(launchMenu);
         menuBar.add(helpMenu);
         setupDesktopHandlers(true, menuBar);
 

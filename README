@@ -45,4 +45,4 @@ Version Info: java -Dsongscribe=version -jar SongScribe.jar
 ----------------------------
 Upload:
 mvn package
-scp -r target/download/ root@himadri.eu:/var/www/songscribe.himadri.eu
+scp -r target/download/* root@himadri.eu:/var/www/songscribe.himadri.eu/download

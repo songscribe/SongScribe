@@ -51,9 +51,13 @@ public class SongScribe {
             }
         }
 
-
         PropertyConfigurator.configure(basePath + "/conf/logger.properties");
-        String ss = System.getProperty("songscribe");
+        String ss;
+        if (args.length > 0) {
+            ss = args[0];
+        } else {
+            ss = System.getProperty("songscribe");
+        }
 
         if ("sw".equals(ss)) {
             MainFrame.main(args);
