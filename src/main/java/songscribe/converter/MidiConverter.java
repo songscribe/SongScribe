@@ -73,7 +73,7 @@ public class MidiConverter {
         for (File file : files) {
             try {
                 mf.getMusicSheet().setComposition(null);
-                mf.openMusicSheet(file, false);
+                mf.getMusicSheet().openMusicSheet(mf, file, false);
                 mf.getMusicSheet().getComposition().musicChanged(props);
                 String path = file.getCanonicalPath();
                 int dotPos = path.lastIndexOf('.');

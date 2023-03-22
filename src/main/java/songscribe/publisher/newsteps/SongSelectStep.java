@@ -25,6 +25,7 @@ import songscribe.data.FileExtensions;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.publisher.Publisher;
+import songscribe.ui.MainFrame;
 import songscribe.ui.MyDialog;
 
 import javax.swing.*;
@@ -130,7 +131,8 @@ class SongSelectStep extends Step {
         public AddAction() {
             putValue(Action.NAME, "Add");
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("add.png")));
-            pfd = new PlatformFileDialog(data.mainFrame, "Open song", true, new MyAcceptFilter("SongScribe song files", FileExtensions.SONGWRITER.substring(1)));
+            MainFrame mainFrame = data.mainFrame instanceof MainFrame ? (MainFrame) data.mainFrame : null;
+            pfd = new PlatformFileDialog(mainFrame, "Open song", true, new MyAcceptFilter("SongScribe song files", FileExtensions.SONGWRITER.substring(1)));
             pfd.setMultiSelectionEnabled(true);
         }
 
@@ -152,7 +154,8 @@ class SongSelectStep extends Step {
         public AddFolderAction() {
             putValue(Action.NAME, "Add Folder");
             putValue(Action.SMALL_ICON, new ImageIcon(Publisher.getImage("addfolder.png")));
-            pfd = new PlatformFileDialog(data.mainFrame, "Open folder", true, new MyAcceptFilter("Folders"), true);
+            MainFrame mainFrame = data.mainFrame instanceof MainFrame ? (MainFrame) data.mainFrame : null;
+            pfd = new PlatformFileDialog(mainFrame, "Open folder", true, new MyAcceptFilter("Folders"), true);
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -169,7 +172,7 @@ class SongSelectStep extends Step {
                 int answ = JOptionPane.NO_OPTION;
 
                 if (isThereDir) {
-                    answ = JOptionPane.showConfirmDialog(data.mainFrame, "All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?", data.mainFrame.PROG_NAME, JOptionPane.YES_NO_CANCEL_OPTION);
+                    answ = data.mainFrame.showConfirmDialog("All song files will be added from the selected folder.\nDo you want to add songs from its subfolders, too?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
                     if (answ == JOptionPane.CANCEL_OPTION) {
                         return;

@@ -25,6 +25,8 @@ package songscribe.ui;
 import com.bulenkov.iconloader.JBHiDPIScaledImage;
 import com.bulenkov.iconloader.util.UIUtil;
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+import songscribe.IO.CompositionIO;
 import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
 import songscribe.data.MyBorder;
@@ -47,6 +49,8 @@ import songscribe.ui.musicsheetdrawer.FughettaDrawer;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.swing.*;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -56,6 +60,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
@@ -124,13 +130,14 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     PasteAction pasteAction;
     // music sheet image acceleration
     private boolean repaintImage = true;
+    private SAXParser saxParser;
     private BufferedImage msImage;
     private int playingLine = -1, playingNote = -1;
     private boolean playInsertingNote;
     private NoteXPosAdjustment noteXPosAdjustment;
     private VerticalAdjustment verticalAdjustment;
     private LyricsAdjustment lyricsAdjustment;
-    private MainFrame mainFrame;
+    private IMainFrame mainFrame;
     private Mode mode = Mode.NOTE_EDIT;
     private boolean dragDisabled;
     private Control control;
@@ -165,15 +172,25 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
     private ArrayList<Object> focusLostExceptions = new ArrayList<Object>();
     private int selectedNoteStorage[] = new int[3];
 
-    public MusicSheet(MainFrame mainFrame) {
+    public MusicSheet(IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        control = Control.valueOf(mainFrame.getProperties().getProperty(Constants.CONTROL_PROP));
+        String property = mainFrame.getProperties().getProperty(Constants.CONTROL_PROP);
+        control = property != null ? Control.valueOf(property) : Control.MOUSE;
 
         try {
             drawers[0] = new FughettaDrawer(this);
         }
         catch (Exception e) {
             mainFrame.showErrorMessage("Could not open a necessary font. The program cannot work without it.");
+            System.exit(0);
+        }
+
+        try {
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+        }
+        catch (Exception e) {
+            mainFrame.showErrorMessage(Constants.PACKAGE_NAME + " cannot start because of an initialization error.");
+            LOG.error("SaxParser configuration", e);
             System.exit(0);
         }
 
@@ -260,7 +277,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
 
         int[] beamKeyCodes = { KeyEvent.VK_B, KeyEvent.VK_T, KeyEvent.VK_T };
-        int[] beamKeyMasks = { 0, 0, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() };
+        int[] beamKeyMasks = { 0, 0, NoteType.getMenuShortcutKeyMask() };
         BeamingType beamingTypes[] = { BeamingType.BEAM, BeamingType.TRIPLET, BeamingType.TIE };
 
         for (int i = 0; i < beamKeyCodes.length; i++) {
@@ -275,7 +292,33 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             MainFrame.sequencer.addMetaEventListener(this);
         }
 
-        mainFrame.unmodifiedDocument();
+        mainFrame.setModifiedDocument(false);
+    }
+
+    public void openMusicSheet(IMainFrame mainFrame, File openFile, boolean setTitle) {
+        boolean previousModifiedDocument = mainFrame.isModifiedDocument();
+        mainFrame.setModifiedDocument(true);
+
+        try {
+            CompositionIO.DocumentReader dr = new CompositionIO.DocumentReader(mainFrame);
+            saxParser.parse(openFile, dr);
+            setComposition(dr.getComposition());
+            mainFrame.setFrameSize();
+            if (setTitle) {
+                mainFrame.setSaveFile(openFile);
+            }
+        }
+        catch (SAXException e1) {
+            mainFrame.showErrorMessage("Could not open the file " + openFile.getName() + ", because it is damaged.");
+            LOG.error("SaxParser parse", e1);
+        }
+        catch (IOException e1) {
+            mainFrame.showErrorMessage(
+                    "Could not open the file " + openFile.getName() + ". Check if you have the permission to open it.");
+            LOG.error("Song open", e1);
+        }
+
+        mainFrame.setModifiedDocument(previousModifiedDocument);
     }
 
     public void musicChanged(Properties props) {
@@ -703,9 +746,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void beamSelectedNotes(boolean beam) {
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame,
+            mainFrame.showInfoMessage(
                     "You must select more than one note first to " + (beam ? "beam" : "unbeam") +
-                    " them.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                    " them.");
             return;
         }
 
@@ -715,8 +758,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             NoteType nt = line.getNote(i).getNoteType();
 
             if (!nt.isBeamable() && !nt.isGraceNote()) {
-                JOptionPane.showMessageDialog(mainFrame, "You can " + (beam ? "beam" : "unbeam") +
-                                                         " only quavers, semiquavers and demisemiquavers.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                mainFrame.showInfoMessage("You can " + (beam ? "beam" : "unbeam") +
+                                                         " only quavers, semiquavers and demisemiquavers.");
                 return;
             }
         }
@@ -738,7 +781,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void untupletSelectedNotes() {
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to remove a tuplet.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select more than one note first to remove a tuplet.");
             return;
         }
 
@@ -747,7 +790,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         Interval end = line.getTuplets().findInterval(selectionEnd);
 
         if (begin == null || begin != end) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select exactly the notes that are in one tuplet to remove it.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select exactly the notes that are in one tuplet to remove it.");
             return;
         }
 
@@ -759,7 +802,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void tupletSelectedNotes(int numeral) {
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to make a tuplet.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select more than one note first to make a tuplet.");
             return;
         }
 
@@ -771,7 +814,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             Interval iv = line.getTuplets().findInterval(i);
 
             if (iv != null) {
-                JOptionPane.showMessageDialog(mainFrame, "You cannot tuplet notes that already are tuplet.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                mainFrame.showInfoMessage("You cannot tuplet notes that already are tuplet.");
                 return;
             }
 
@@ -794,9 +837,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void tieSelectedNotes(boolean tie) {
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame,
+            mainFrame.showInfoMessage(
                     "You must select more than one note first to " + (tie ? "tie" : "untie") +
-                    " them.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                    " them.");
             return;
         }
 
@@ -805,8 +848,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
         for (int i = selectionBegin + 1; i <= selectionEnd; i++) {
             if (line.getNote(i).getPitch() != pitch) {
-                JOptionPane.showMessageDialog(mainFrame, "The selected notes must be of the same pitch.\n" +
-                                                         "If you want to tie multiple notes of different pitches, please use Slur.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                mainFrame.showInfoMessage("The selected notes must be of the same pitch.\n" +
+                                                         "If you want to tie multiple notes of different pitches, please use Slur.");
                 return;
             }
         }
@@ -825,9 +868,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void slurSelectedNotes(boolean slur) {
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame,
+            mainFrame.showInfoMessage(
                     "You must select more than one note first to " + (slur ? "make" : "remove") +
-                    " slur.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                    " slur.");
             return;
         }
 
@@ -838,13 +881,13 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             Interval endSlur = line.getSlurs().findInterval(selectionEnd);
 
             if (beginSlur == null || beginSlur != endSlur) {
-                JOptionPane.showMessageDialog(mainFrame, "Please select a slur or part of it to remove.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                mainFrame.showInfoMessage("Please select a slur or part of it to remove.");
                 return;
             }
         }
         else if (selectionEnd - selectionBegin == 1 &&
                  line.getNote(selectionBegin).getPitch() == line.getNote(selectionEnd).getPitch()) {
-            JOptionPane.showMessageDialog(mainFrame, "You cannot slur two notes of the same pitch. Use Tie instead.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You cannot slur two notes of the same pitch. Use Tie instead.");
             return;
         }
 
@@ -860,8 +903,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         repaint();
 
         if (slur) {
-            JOptionPane.showMessageDialog(mainFrame, Constants.PACKAGE_NAME +
-                                                     " recommends to change to Vertical Alignment Mode in Mode menu to align this slur.", "Tip", JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage(Constants.PACKAGE_NAME +
+                 " recommends to change to Vertical Alignment Mode in Mode menu to align this slur.");
         }
     }
 
@@ -869,8 +912,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         String typeString = crescendoOrDiminuendo ? "crescendo" : "diminuendo";
 
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select more than one note first to create " +
-                                                     typeString, mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select more than one note first to create " + typeString);
             return;
         }
 
@@ -885,7 +927,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void removeCrescendoOrDiminuendoSelectedNotes() {
         if (selectedNotesLine == -1) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select at least one note first to remove crescendo and diminuendo", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select at least one note first to remove crescendo and diminuendo");
             return;
         }
 
@@ -909,7 +951,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
         }
 
         if (!removed) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select a note which is part of a crescendo and diminuendo", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select a note which is part of a crescendo and diminuendo");
             return;
         }
 
@@ -920,9 +962,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void makeFsEndingOnSelectedNotes(boolean fsEnding) {
         if (selectedNotesLine == -1 || selectionBegin == selectionEnd) {
-            JOptionPane.showMessageDialog(mainFrame,
+            mainFrame.showInfoMessage(
                     "You must select more than one note first to " + (fsEnding ? "make" : "remove") +
-                    " first-second endings.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                    " first-second endings.");
             return;
         }
 
@@ -939,7 +981,8 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             }
 
             if (!existsRepeat) {
-                int answ = JOptionPane.showConfirmDialog(mainFrame, "It does not make sense to create a first-second ending without a right side repeat.\nDo you want to continue anyway?", mainFrame.PROG_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                int answ = mainFrame.showConfirmDialog("It does not make sense to create a first-second ending without a right side repeat.\nDo you want to continue anyway?",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
                 if (answ == JOptionPane.NO_OPTION) {
                     return;
@@ -961,9 +1004,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
 
     public void makeTrillOnSelectedNotes(boolean trill) {
         if (selectedNotesLine == -1) {
-            JOptionPane.showMessageDialog(mainFrame,
+            mainFrame.showInfoMessage(
                     "You must select at least one note first to " + (trill ? "make a" : "remove") +
-                    " trill.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+                    " trill.");
             return;
         }
 
@@ -999,7 +1042,7 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             repaint();
         }
         catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select one rest to allow / disallow lyrics.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select one rest to allow / disallow lyrics.");
         }
     }
 
@@ -1023,13 +1066,13 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             repaint();
         }
         catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select one beamed note to invert fraction beam orientation.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select one beamed note to invert fraction beam orientation.");
         }
     }
 
     public void invertStemDirectionOnSelectedNotes() {
         if (selectedNotesLine == -1) {
-            JOptionPane.showMessageDialog(mainFrame, "You must select at least one note to invert its/their stem direction.", mainFrame.PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showInfoMessage("You must select at least one note to invert its/their stem direction.");
             return;
         }
 
@@ -1177,7 +1220,9 @@ public final class MusicSheet extends JComponent implements MouseListener, Mouse
             return;
         }
 
-        mainFrame.getPlayMenu().getStopAction().actionPerformed(null);
+        if ( mainFrame.getPlayMenu().getStopAction() != null) {
+            mainFrame.getPlayMenu().getStopAction().actionPerformed(null);
+        }
         selectedNotesLine = -1;
         setLineWidth(composition.getLineWidth());
 

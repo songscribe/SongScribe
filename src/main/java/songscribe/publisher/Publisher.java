@@ -27,7 +27,29 @@ import org.xml.sax.SAXException;
 import songscribe.SongScribe;
 import songscribe.publisher.IO.BookIO;
 import songscribe.publisher.newsteps.PaperSizeDialog;
-import songscribe.publisher.publisheractions.*;
+import songscribe.publisher.publisheractions.AlignToCenter;
+import songscribe.publisher.publisheractions.ExportBatchSongsImages;
+import songscribe.publisher.publisheractions.ExportBatchSongsMidi;
+import songscribe.publisher.publisheractions.ExportPDFAction;
+import songscribe.publisher.publisheractions.ExportPortableAction;
+import songscribe.publisher.publisheractions.ImportPortableAction;
+import songscribe.publisher.publisheractions.InsertImageAction;
+import songscribe.publisher.publisheractions.InsertPageAction;
+import songscribe.publisher.publisheractions.InsertSelectedPageAction;
+import songscribe.publisher.publisheractions.InsertSongAction;
+import songscribe.publisher.publisheractions.InsertTextAction;
+import songscribe.publisher.publisheractions.LowerComponentAction;
+import songscribe.publisher.publisheractions.NewAction;
+import songscribe.publisher.publisheractions.OpenAction;
+import songscribe.publisher.publisheractions.PropertiesAction;
+import songscribe.publisher.publisheractions.RaiseComponentAction;
+import songscribe.publisher.publisheractions.RefreshAction;
+import songscribe.publisher.publisheractions.RemoveAction;
+import songscribe.publisher.publisheractions.SaveAction;
+import songscribe.publisher.publisheractions.SaveAsAction;
+import songscribe.publisher.publisheractions.ToBottomComponentAction;
+import songscribe.publisher.publisheractions.ToTopComponentAction;
+import songscribe.publisher.publisheractions.ZoomAction;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.mainframeactions.DialogOpenAction;
@@ -240,7 +262,7 @@ public class Publisher extends MainFrame {
 
     public MusicSheet openMusicSheet(File openFile) {
         musicSheet = new MusicSheet(this);
-        super.openMusicSheet(openFile, false);
+        musicSheet.openMusicSheet(this, openFile, false);
         return musicSheet;
     }
 
@@ -320,7 +342,7 @@ public class Publisher extends MainFrame {
         }
 
         openBook(file);
-        unmodifiedDocument();
+        setModifiedDocument(false);
     }
 
     @Override

@@ -184,7 +184,7 @@ public class NewDialog extends JDialog {
             processDialog.dispose();
             publisher.setBook(book);
             dispose();
-            publisher.modifiedDocument();
+            publisher.setModifiedDocument(true);
         }
     }
 }

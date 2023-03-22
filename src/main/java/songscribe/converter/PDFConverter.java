@@ -20,7 +20,6 @@
 package songscribe.converter;
 
 import songscribe.publisher.newsteps.Data;
-import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.mainframeactions.ExportPDFAction;
 
@@ -74,7 +73,7 @@ public class PDFConverter {
         ((PDFConverter) ar.getObj()).convert();
     }
 
-    private void convert() {
+    public void convert() {
         paperSize = paperSize.toLowerCase();
 
         if (paperSize.equals("a4")) {
@@ -100,14 +99,9 @@ public class PDFConverter {
             return;
         }
 
-        MainFrame mf = new MainFrame() {
-            @Override
-            public void showErrorMessage(String message) {
-                System.out.println(message);
-            }
-        };
-
+        ConverterMainFrame mf = new ConverterMainFrame();
         mf.setMusicSheet(new MusicSheet(mf));
+
         Data data = new Data();
         data.paperWidth = paperWidth;
         data.paperHeight = paperHeight;
@@ -132,7 +126,7 @@ public class PDFConverter {
 
         for (File file : files) {
             mf.getMusicSheet().setComposition(null);
-            mf.openMusicSheet(file, false);
+            mf.getMusicSheet().openMusicSheet(mf, file, false);
 
             if (withoutLyrics) {
                 mf.getMusicSheet().getComposition().setUnderLyrics("");

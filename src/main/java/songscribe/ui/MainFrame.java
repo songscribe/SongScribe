@@ -24,21 +24,52 @@ package songscribe.ui;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.xml.sax.SAXException;
-import songscribe.IO.CompositionIO;
 import songscribe.SongScribe;
 import songscribe.Version;
 import songscribe.data.PropertyChangeListener;
-import songscribe.music.*;
-import songscribe.ui.mainframeactions.*;
+import songscribe.music.Crotchet;
+import songscribe.music.CrotchetRest;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.RepeatLeft;
+import songscribe.ui.mainframeactions.AddLineAction;
+import songscribe.ui.mainframeactions.AnnotationAction;
+import songscribe.ui.mainframeactions.BeatChangeAction;
+import songscribe.ui.mainframeactions.ControlAction;
+import songscribe.ui.mainframeactions.DialogOpenAction;
+import songscribe.ui.mainframeactions.ExportABCAnnotationAction;
+import songscribe.ui.mainframeactions.ExportLilypondAnnotationAction;
+import songscribe.ui.mainframeactions.ExportMidiAction;
+import songscribe.ui.mainframeactions.ExportMusicSheetImageAction;
+import songscribe.ui.mainframeactions.ExportPDFAction;
+import songscribe.ui.mainframeactions.ExportSVGAction;
+import songscribe.ui.mainframeactions.FullScreenAction;
+import songscribe.ui.mainframeactions.InsertLineAction;
+import songscribe.ui.mainframeactions.KeySignatureChangeAction;
+import songscribe.ui.mainframeactions.LaunchAction;
+import songscribe.ui.mainframeactions.ModeAction;
+import songscribe.ui.mainframeactions.NewAction;
+import songscribe.ui.mainframeactions.OpenAction;
+import songscribe.ui.mainframeactions.PDFTutorialOpenAction;
+import songscribe.ui.mainframeactions.PrintAction;
+import songscribe.ui.mainframeactions.SaveAction;
+import songscribe.ui.mainframeactions.SaveAsAction;
+import songscribe.ui.mainframeactions.TempoChangeAction;
+import songscribe.ui.mainframeactions.TipAction;
 import songscribe.ui.playsubmenu.PlayMenu;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 import javax.swing.*;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,10 +82,12 @@ import java.util.Properties;
 /**
  * @author Csaba Kávai
  */
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements IMainFrame {
     public static final Dimension OUTER_SELECTION_PANEL_IMAGE_DIM = new Dimension(34, 38);
     public static final Color OUTER_SELECTION_IMAGE_BORDER_COLOR = new Color(51, 102, 102);
-    public static final Point CENTER_POINT = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+    public static final Point CENTER_POINT = !GraphicsEnvironment.isHeadless()
+            ? GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint()
+            : new Point();
     public static final String COULD_NOT_SAVE_MESSAGE = "Could not save the file. Check if you have the permission to create a file in this directory or the overwrited file may be write-protected.";
     public static final File SS_HOME = new File(System.getProperty("user.home"), ".songscribe");
 
@@ -116,7 +149,6 @@ public class MainFrame extends JFrame {
     protected AbstractAction saveAsAction;
     protected ExitAction exitAction = new ExitAction();
     protected File previousDirectory;
-    private SAXParser saxParser;
     private JPanel subWestToolsHolder;
     private ButtonGroup mainWestGroup;
     private boolean modifiedDocument;
@@ -149,15 +181,6 @@ public class MainFrame extends JFrame {
 
         if (previousDirectory.getName().length() == 0 || !previousDirectory.exists()) {
             previousDirectory = new File(new JFileChooser().getCurrentDirectory(), "SongScribe");
-        }
-
-        try {
-            saxParser = SAXParserFactory.newInstance().newSAXParser();
-        }
-        catch (Exception e) {
-            showErrorMessage(PROG_NAME + " cannot start because of an initialization error.");
-            LOG.error("SaxParser configuration", e);
-            System.exit(0);
         }
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -452,6 +475,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(exportMusicSheetImageAction);
         ExportPDFAction exportPDFAction = new ExportPDFAction(this);
         fileMenu.add(exportPDFAction);
+        fileMenu.add(new ExportSVGAction(this));
         fileMenu.add(new ExportABCAnnotationAction(this));
         fileMenu.add(new ExportLilypondAnnotationAction(this));
         fileMenu.addSeparator();
@@ -580,7 +604,7 @@ public class MainFrame extends JFrame {
         insertMenu.doClickNote(NoteType.CROTCHET.name());
     }
 
-    private void setFrameSize() {
+    public void setFrameSize() {
         Dimension size = getLayout().preferredLayoutSize(this);
         int scrollBarWidth = ((Integer) UIManager.get("ScrollBar.width"));
         Rectangle mxBound = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -641,12 +665,14 @@ public class MainFrame extends JFrame {
         return answer != JOptionPane.CANCEL_OPTION;
     }
 
-    public void modifiedDocument() {
-        modifiedDocument = true;
+    @Override
+    public boolean isModifiedDocument() {
+        return modifiedDocument;
     }
 
-    public void unmodifiedDocument() {
-        modifiedDocument = false;
+    @Override
+    public void setModifiedDocument(boolean modifiedDocument) {
+        this.modifiedDocument = modifiedDocument;
     }
 
     public MusicSheet getMusicSheet() {
@@ -725,14 +751,26 @@ public class MainFrame extends JFrame {
         }
     }
 
+    @Override
     public void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(this, message, PROG_NAME, JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public void showInfoMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, PROG_NAME, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public int showConfirmDialog(String message, int optionType, int messageType) {
+        return JOptionPane.showConfirmDialog(this, message, PROG_NAME, optionType, messageType);
     }
 
     public File getSaveFile() {
         return saveFile;
     }
 
+    @Override
     public void setSaveFile(File saveFile) {
         this.saveFile = saveFile;
 
@@ -783,31 +821,6 @@ public class MainFrame extends JFrame {
         new UpdateDialog(this).new UpdateInternetThread(true).start();
     }
 
-    public void openMusicSheet(File openFile, boolean setTitle) {
-        boolean previousModifiedDocument = modifiedDocument;
-
-        try {
-            CompositionIO.DocumentReader dr = new CompositionIO.DocumentReader(this);
-            saxParser.parse(openFile, dr);
-            musicSheet.setComposition(dr.getComposition());
-            setFrameSize();
-            if (setTitle) {
-                setSaveFile(openFile);
-            }
-        }
-        catch (SAXException e1) {
-            showErrorMessage("Could not open the file " + openFile.getName() + ", because it is damaged.");
-            LOG.error("SaxParser parse", e1);
-        }
-        catch (IOException e1) {
-            showErrorMessage(
-                    "Could not open the file " + openFile.getName() + ". Check if you have the permission to open it.");
-            LOG.error("Song open", e1);
-        }
-
-        modifiedDocument = previousModifiedDocument;
-    }
-
     public void handleAbout() {
         aboutAction.actionPerformed(null);
     }
@@ -826,10 +839,10 @@ public class MainFrame extends JFrame {
             return;
         }
 
-        openMusicSheet(file, true);
+        musicSheet.openMusicSheet(this, file, true);
         setSelectedTool(selectSelectionPanel);
         selectSelectionPanel.setActive();
-        unmodifiedDocument();
+        setModifiedDocument(false);
     }
 
     public void handlePrintFile(File file) {

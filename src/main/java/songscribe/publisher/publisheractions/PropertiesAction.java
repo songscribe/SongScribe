@@ -54,7 +54,7 @@ public class PropertiesAction extends AbstractAction {
                 publisher.showErrorMessage("No properties window yet.");
             }
 
-            publisher.modifiedDocument();
+            publisher.setModifiedDocument(true);
         }
         else if (publisher.getBook().getSelectedPage() > -1) {
             publisher.getPaperSizeDialogOpenAction().actionPerformed(null);

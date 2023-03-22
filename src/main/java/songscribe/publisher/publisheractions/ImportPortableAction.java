@@ -29,7 +29,11 @@ import songscribe.publisher.Publisher;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -143,7 +147,7 @@ public class ImportPortableAction extends AbstractAction {
 
                     if (songBook != null) {
                         publisher.openBook(songBook);
-                        publisher.unmodifiedDocument();
+                        publisher.setModifiedDocument(false);
                     }
                 }
 

@@ -242,7 +242,7 @@ public class SlideFrame extends MainFrame {
                 listModel.addElement(getListName(file.getName()));
             }
 
-            unmodifiedDocument();
+            setModifiedDocument(false);
         }
         catch (FileNotFoundException e1) {
             showErrorMessage("Could not open the file. Check if you have the permission to open it.");
@@ -291,7 +291,7 @@ public class SlideFrame extends MainFrame {
                     listModel.addElement(getListName(of.getName()));
                 }
 
-                modifiedDocument();
+                setModifiedDocument(true);
             }
         }
     }
@@ -314,7 +314,7 @@ public class SlideFrame extends MainFrame {
                 }
 
                 addSongFiles(pfd.getFile(), answ == JOptionPane.YES_OPTION);
-                modifiedDocument();
+                setModifiedDocument(true);
             }
         }
 
@@ -341,7 +341,7 @@ public class SlideFrame extends MainFrame {
             if (list.getSelectedIndex() != -1) {
                 files.remove(list.getSelectedIndex());
                 listModel.remove(list.getSelectedIndex());
-                modifiedDocument();
+                setModifiedDocument(true);
             }
         }
     }
@@ -363,7 +363,7 @@ public class SlideFrame extends MainFrame {
                 listModel.set(sel, listModel.get(sel - 1));
                 listModel.set(sel - 1, o);
                 list.setSelectedIndex(sel - 1);
-                modifiedDocument();
+                setModifiedDocument(true);
             }
         }
     }
@@ -385,7 +385,7 @@ public class SlideFrame extends MainFrame {
                 listModel.set(sel, listModel.get(sel + 1));
                 listModel.set(sel + 1, o);
                 list.setSelectedIndex(sel + 1);
-                modifiedDocument();
+                setModifiedDocument(true);
             }
         }
     }
@@ -410,7 +410,7 @@ public class SlideFrame extends MainFrame {
                     currentSlide = 0;
                 }
 
-                openMusicSheet(files.get(currentSlide), false);
+                musicSheet.openMusicSheet(SlideFrame.this, files.get(currentSlide), false);
                 fullScreenSheet = new FullScreenSheet(SlideFrame.this, new SliderTempoChangeListener(), firstAction, backwardAction, forwardAction, lastAction);
                 fullScreenSheet.setVisible(true);
             }
@@ -437,7 +437,7 @@ public class SlideFrame extends MainFrame {
         public void actionPerformed(ActionEvent e) {
             int next = currentSlide + direction;
             if (next >= 0 && next < listModel.size()) {
-                openMusicSheet(files.get(next), false);
+                musicSheet.openMusicSheet(SlideFrame.this, files.get(next), false);
                 fullScreenSheet.setMusicSheet();
                 currentSlide = next;
             }
@@ -453,7 +453,7 @@ public class SlideFrame extends MainFrame {
 
         public void actionPerformed(ActionEvent e) {
             currentSlide = 0;
-            openMusicSheet(files.get(currentSlide), false);
+            musicSheet.openMusicSheet(SlideFrame.this, files.get(currentSlide), false);
             fullScreenSheet.setMusicSheet();
         }
     }
@@ -467,7 +467,7 @@ public class SlideFrame extends MainFrame {
 
         public void actionPerformed(ActionEvent e) {
             currentSlide = listModel.size() - 1;
-            openMusicSheet(files.get(currentSlide), false);
+            musicSheet.openMusicSheet(SlideFrame.this, files.get(currentSlide), false);
             fullScreenSheet.setMusicSheet();
         }
     }
@@ -494,7 +494,7 @@ public class SlideFrame extends MainFrame {
             setSaveFile(null);
             files.clear();
             listModel.clear();
-            unmodifiedDocument();
+            setModifiedDocument(false);
         }
     }
 
@@ -513,7 +513,7 @@ public class SlideFrame extends MainFrame {
 
             try {
                 SliderIO.writeSlider(files.listIterator(), saveFile);
-                unmodifiedDocument();
+                setModifiedDocument(false);
             }
             catch (IOException e1) {
                 showErrorMessage(COULD_NOT_SAVE_MESSAGE);

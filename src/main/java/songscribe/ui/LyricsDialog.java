@@ -45,7 +45,7 @@ public class LyricsDialog extends MyDialog {
         {'\u0102', '\u0100', '\u00d1', '\u00c2', '\u0168', '\u00c3'}
     };
     final static char[][] specCharsMap = {{'a', 'a', 'n', 'a', 'u', 'a'}, {'A', 'A', 'N', 'A', 'U', 'A'}};
-    static final int MENU_SHORTCUT_KEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    static final int MENU_SHORTCUT_KEY_MASK = NoteType.getMenuShortcutKeyMask();
     final KeyStroke[][] specCharStroke = {
         {
             KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU_SHORTCUT_KEY_MASK),
@@ -133,7 +133,7 @@ public class LyricsDialog extends MyDialog {
         composition.setUnderLyrics(underSongArea.getText());
         composition.setTranslatedLyrics(translatedArea.getText());
         mainFrame.getMusicSheet().spellLyrics();
-        mainFrame.modifiedDocument();
+        mainFrame.setModifiedDocument(true);
         mainFrame.getLyricsModePanel().getData();
     }
 

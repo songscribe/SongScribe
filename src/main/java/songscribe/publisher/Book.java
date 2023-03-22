@@ -433,7 +433,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         movingRelPoint.y = (int) (pc.getPos().height * scale / 2);
         dragging = Dragging.MOVING;
         insertMoving = true;
-        publisher.modifiedDocument();
+        publisher.setModifiedDocument(true);
     }
 
     public void removeSelected() {
@@ -444,14 +444,14 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
                 selectedComponent = null;
             }
 
-            publisher.modifiedDocument();
+            publisher.setModifiedDocument(true);
         }
         else if (selection == Selection.PAGES && selectedPage != -1) {
             pages.remove(selectedPage);
             selectedPage = -1;
             sizeChanged(null);
             publisher.getPStatusBar().setTotalPage(pages.size());
-            publisher.modifiedDocument();
+            publisher.setModifiedDocument(true);
         }
     }
 
@@ -535,7 +535,7 @@ public class Book extends JComponent implements MouseListener, MouseMotionListen
         );
         selectedComponent.setPosition(getAbsoluteCoordinates(adjusted, page));
         repaintSelectedComponent();
-        publisher.modifiedDocument();
+        publisher.setModifiedDocument(true);
     }
 
     public void mouseEntered(MouseEvent e) {

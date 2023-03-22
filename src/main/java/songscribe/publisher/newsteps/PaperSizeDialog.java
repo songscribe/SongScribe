@@ -63,7 +63,7 @@ public class PaperSizeDialog extends MyDialog {
         Publisher publisher = (Publisher) mainFrame;
         paperSizePanel.end();
         publisher.getBook().setPageSize(paperSizeData.paperWidth, paperSizeData.paperHeight, paperSizeData.leftInnerMargin, paperSizeData.rightOuterMargin, paperSizeData.topMargin, paperSizeData.bottomMargin, paperSizeData.mirrored);
-        paperSizeData.mainFrame.modifiedDocument();
+        paperSizeData.mainFrame.setModifiedDocument(true);
         publisher.getBook().repaintWhole();
     }
 }

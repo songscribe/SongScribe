@@ -58,6 +58,6 @@ public class InsertSelectedPageAction extends AbstractAction {
 
         publisher.getBook().setSelectedPage(selectedPage + 1 - shift);
         publisher.getBook().addPage(selectedPage + shift);
-        publisher.modifiedDocument();
+        publisher.setModifiedDocument(true);
     }
 }

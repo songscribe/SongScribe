@@ -55,7 +55,7 @@ public class OpenAction extends AbstractAction {
         if (pfd.showDialog()) {
             File openFile = pfd.getFile();
             publisher.openBook(openFile);
-            publisher.unmodifiedDocument();
+            publisher.setModifiedDocument(false);
         }
     }
 }

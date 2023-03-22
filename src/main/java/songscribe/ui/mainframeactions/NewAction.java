@@ -51,6 +51,6 @@ public class NewAction extends AbstractAction {
         mainFrame.getMusicSheet().setComposition(new Composition(mainFrame));
         mainFrame.setSelectedTool(mainFrame.getNoteSelectionPanel());
         mainFrame.getNoteSelectionPanel().setActive();
-        mainFrame.unmodifiedDocument();
+        mainFrame.setModifiedDocument(false);
     }
 }

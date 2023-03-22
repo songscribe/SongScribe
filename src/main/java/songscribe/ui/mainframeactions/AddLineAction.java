@@ -47,7 +47,7 @@ public class AddLineAction extends AbstractTextFocusRejectingAction {
 
     public void doActionPerformed(ActionEvent e) {
         mainFrame.getMusicSheet().getComposition().addLine(new Line());
-        mainFrame.modifiedDocument();
+        mainFrame.setModifiedDocument(true);
         mainFrame.getMusicSheet().setRepaintImage(true);
         mainFrame.getMusicSheet().repaint();
     }

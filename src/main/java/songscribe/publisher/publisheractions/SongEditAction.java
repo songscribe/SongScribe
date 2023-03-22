@@ -69,7 +69,7 @@ public class SongEditAction extends AbstractAction {
 
         editFrame.setVisible(true);
         song = (Song) publisher.getBook().getSelectedComponent();
-        editFrame.openMusicSheet(song.getSongFile(), true);
+        editFrame.getMusicSheet().openMusicSheet(editFrame, song.getSongFile(), true);
         editFrame.setSelectedTool(editFrame.getSelectSelectionPanel());
         editFrame.getSelectSelectionPanel().setActive();
     }

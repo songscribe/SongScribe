@@ -28,16 +28,16 @@ import java.awt.event.ActionEvent;
  * @author Csaba Kávai
  */
 public abstract class AbstractTextFocusRejectingAction extends AbstractAction {
-    private final MainFrame mainFrame;
+    private final IMainFrame mainFrame;
 
-    protected AbstractTextFocusRejectingAction(MainFrame mainFrame) {
+    protected AbstractTextFocusRejectingAction(IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
     }
 
     public final void actionPerformed(ActionEvent e) {
         Component focusOwner = mainFrame.getFocusOwner();
 
-        if (focusOwner == null || !(focusOwner instanceof JTextComponent)) {
+        if (!(focusOwner instanceof JTextComponent)) {
             // we don't want to receive actions when the focus is on text panels
             doActionPerformed(e);
         }

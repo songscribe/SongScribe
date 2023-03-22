@@ -24,8 +24,13 @@ package songscribe.IO;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import songscribe.music.*;
-import songscribe.ui.MainFrame;
+import songscribe.music.Composition;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.ParsonsCodeGenerator;
+import songscribe.music.Tempo;
+import songscribe.ui.IMainFrame;
 import songscribe.ui.MusicSheet;
 
 import java.io.IOException;
@@ -152,9 +157,9 @@ public class CompositionIO {
         private ViewIO.ViewReader viewReader;
         private Composition composition;
         private int majorVersion, minorVersion;
-        private MainFrame mainFrame;
+        private IMainFrame mainFrame;
 
-        public DocumentReader(MainFrame mainFrame) {
+        public DocumentReader(IMainFrame mainFrame) {
             this.mainFrame = mainFrame;
         }
 

@@ -54,10 +54,10 @@ public class OpenAction extends AbstractAction {
 
         if (pfd.showDialog()) {
             File openFile = pfd.getFile();
-            mainFrame.openMusicSheet(openFile, true);
+            mainFrame.getMusicSheet().openMusicSheet(mainFrame, openFile, true);
             mainFrame.setSelectedTool(mainFrame.getSelectSelectionPanel());
             mainFrame.getSelectSelectionPanel().setActive();
-            mainFrame.unmodifiedDocument();
+            mainFrame.setModifiedDocument(false);
         }
     }
 }

@@ -21,7 +21,7 @@
 */
 package songscribe.publisher.newsteps;
 
-import songscribe.ui.MainFrame;
+import songscribe.ui.IMainFrame;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,5 +34,5 @@ public class Data {
     public int paperWidth, paperHeight, leftInnerMargin, rightOuterMargin, topMargin, bottomMargin;
     public boolean mirrored;
     public int songsPerPage = 2;
-    public MainFrame mainFrame;
+    public IMainFrame mainFrame;
 }

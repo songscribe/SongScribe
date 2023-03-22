@@ -23,9 +23,18 @@ package songscribe.music;
 
 import org.apache.log4j.Logger;
 import songscribe.data.Interval;
-import songscribe.ui.*;
+import songscribe.ui.Constants;
+import songscribe.ui.IMainFrame;
+import songscribe.ui.MusicSheet;
+import songscribe.ui.ProfileManager;
+import songscribe.ui.Utilities;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Track;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -72,9 +81,9 @@ public final class Composition {
     private int manualTempoChange;
     private boolean colorizeNote;
     private boolean userSetTopSpace;
-    private MainFrame mainFrame;
+    private IMainFrame mainFrame;
 
-    public Composition(MainFrame mainFrame) {
+    public Composition(IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
         ProfileManager pm = mainFrame.getProfileManager();
@@ -491,7 +500,7 @@ public final class Composition {
 
     public void modifiedComposition() {
         modifiedComposition = true;
-        mainFrame.modifiedDocument();
+        mainFrame.setModifiedDocument(true);
     }
 
     public void addLine(Line line) {

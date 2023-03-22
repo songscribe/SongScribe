@@ -30,7 +30,9 @@ import org.apache.log4j.Logger;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.publisher.newsteps.Data;
+import songscribe.ui.Constants;
 import songscribe.ui.ExportPDFDialog;
+import songscribe.ui.IMainFrame;
 import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.Utilities;
@@ -64,9 +66,9 @@ public class ExportPDFAction extends AbstractAction {
         float resolution = 72f / MusicSheet.RESOLUTION;
         float paperWidth = data.paperWidth * resolution;
         float paperHeight = data.paperHeight * resolution;
-        MainFrame mainFrame = data.mainFrame;
+        IMainFrame mainFrame = data.mainFrame;
         Document document = new Document(new Rectangle(0, 0, paperWidth, paperHeight), 0, 0, 0, 0);
-        document.addCreator(mainFrame.PROG_NAME);
+        document.addCreator(Constants.PACKAGE_NAME);
         document.addTitle(mainFrame.getMusicSheet().getComposition().getSongTitle());
 
         // Scale to fit

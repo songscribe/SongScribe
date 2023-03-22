@@ -106,7 +106,7 @@ public class ImageConverter {
 
         for (File file : files) {
             mf.getMusicSheet().setComposition(null);
-            mf.openMusicSheet(file, false);
+            mf.getMusicSheet().openMusicSheet(mf, file, false);
 
             if (withoutLyrics) {
                 mf.getMusicSheet().getComposition().setUnderLyrics("");

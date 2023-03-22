@@ -46,7 +46,7 @@ public class InsertLineAction extends AbstractAction {
             mainFrame.getMusicSheet().getComposition().addLine(
                     mainFrame.getMusicSheet().getSelectedLine() + shift, new Line());
             mainFrame.getMusicSheet().unSetNoteSelections();
-            mainFrame.modifiedDocument();
+            mainFrame.setModifiedDocument(true);
             mainFrame.getMusicSheet().setRepaintImage(true);
             mainFrame.getMusicSheet().repaint();
         }

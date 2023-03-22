@@ -46,7 +46,7 @@ public class AbcConverter {
         ExportABCAnnotationAction exportABCAnnotation = new ExportABCAnnotationAction(mf);
 
         mf.getMusicSheet().setComposition(null);
-        mf.openMusicSheet(file, false);
+        mf.getMusicSheet().openMusicSheet(mf, file, false);
 
         PrintWriter writer = new PrintWriter(System.out);
         exportABCAnnotation.writeABC(writer);

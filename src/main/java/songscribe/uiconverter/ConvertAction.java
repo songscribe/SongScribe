@@ -32,7 +32,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.zip.ZipOutputStream;
 
@@ -125,7 +130,7 @@ public class ConvertAction extends AbstractAction {
                 for (File songFile : songFiles) {
                     // load file
                     uiConverter.getMusicSheet().setComposition(null);
-                    uiConverter.openMusicSheet(songFile, false);
+                    uiConverter.getMusicSheet().openMusicSheet(uiConverter, songFile, false);
                     MusicSheet musicSheet = uiConverter.getMusicSheet();
                     Composition composition = musicSheet.getComposition();
 

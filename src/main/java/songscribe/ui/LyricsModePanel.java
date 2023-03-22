@@ -109,7 +109,7 @@ public class LyricsModePanel extends LyricsDialog {
                         sheet.spellLyrics();
                     }
 
-                    mainFrame.modifiedDocument();
+                    mainFrame.setModifiedDocument(true);
                     sheet.setRepaintImage(true);
                     sheet.repaint();
                 }

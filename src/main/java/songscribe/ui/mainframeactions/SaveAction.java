@@ -62,6 +62,6 @@ public class SaveAction extends AbstractAction {
             logger.error("Saving song", e1);
         }
 
-        mainFrame.unmodifiedDocument();
+        mainFrame.setModifiedDocument(false);
     }
 }

@@ -57,7 +57,7 @@ public class InsertPageAction extends AbstractAction {
             publisher.getBook().addPage();
         }
 
-        publisher.modifiedDocument();
+        publisher.setModifiedDocument(true);
     }
 
     public enum Where { BEGINNING, END }

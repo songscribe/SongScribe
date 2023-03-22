@@ -57,7 +57,7 @@ public class SaveAction extends AbstractAction {
 
         try {
             BookIO.writeBook(publisher.getBook(), publisher.getSaveFile(), true);
-            publisher.unmodifiedDocument();
+            publisher.setModifiedDocument(false);
         }
         catch (IOException e1) {
             publisher.showErrorMessage(Publisher.COULD_NOT_SAVE_MESSAGE);

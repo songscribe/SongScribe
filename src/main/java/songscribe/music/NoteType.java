@@ -38,12 +38,12 @@ public enum NoteType {
     SEMIQUAVER(new Semiquaver(), "Sixteenth", KeyStroke.getKeyStroke(KeyEvent.VK_2, 0)),
     DEMI_SEMIQUAVER(new Demisemiquaver(), "Thirtysecond", KeyStroke.getKeyStroke(KeyEvent.VK_1, 0)),
 
-    SEMIBREVE_REST(new SemibreveRest(), "Whole rest", KeyStroke.getKeyStroke(KeyEvent.VK_6, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    MINIM_REST(new MinimRest(), "Half rest", KeyStroke.getKeyStroke(KeyEvent.VK_5, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    CROTCHET_REST(new CrotchetRest(), "Quarter rest", KeyStroke.getKeyStroke(KeyEvent.VK_4, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    QUAVER_REST(new QuaverRest(), "Eighth rest", KeyStroke.getKeyStroke(KeyEvent.VK_3, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    SEMIQUAVER_REST(new SemiquaverRest(), "Sixteenth rest", KeyStroke.getKeyStroke(KeyEvent.VK_2, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
-    DEMI_SEMIQUAVER_REST(new DemisemiquaverRest(), "Thirtysecond rest", KeyStroke.getKeyStroke(KeyEvent.VK_1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())),
+    SEMIBREVE_REST(new SemibreveRest(), "Whole rest", KeyStroke.getKeyStroke(KeyEvent.VK_6, getMenuShortcutKeyMask())),
+    MINIM_REST(new MinimRest(), "Half rest", KeyStroke.getKeyStroke(KeyEvent.VK_5, getMenuShortcutKeyMask())),
+    CROTCHET_REST(new CrotchetRest(), "Quarter rest", KeyStroke.getKeyStroke(KeyEvent.VK_4, getMenuShortcutKeyMask())),
+    QUAVER_REST(new QuaverRest(), "Eighth rest", KeyStroke.getKeyStroke(KeyEvent.VK_3, getMenuShortcutKeyMask())),
+    SEMIQUAVER_REST(new SemiquaverRest(), "Sixteenth rest", KeyStroke.getKeyStroke(KeyEvent.VK_2, getMenuShortcutKeyMask())),
+    DEMI_SEMIQUAVER_REST(new DemisemiquaverRest(), "Thirtysecond rest", KeyStroke.getKeyStroke(KeyEvent.VK_1, getMenuShortcutKeyMask())),
 
     GRACE_QUAVER(new GraceQuaver(), "Grace Eighth", KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)),
     GRACE_SEMIQUAVER(new GraceSemiQuaver(), "Grace Sixteenth", null),
@@ -75,6 +75,12 @@ public enum NoteType {
     SINGLEBARLINE(NoteType.SINGLE_BARLINE),
     DOUBLEBARLINE(NoteType.DOUBLE_BARLINE),
     FINALDOUBLEBARLINE(NoteType.FINAL_DOUBLE_BARLINE);
+
+    public static int getMenuShortcutKeyMask() {
+        return !GraphicsEnvironment.isHeadless()
+                ? Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                : 0;
+    }
 
     private Note instance;
     private String name;

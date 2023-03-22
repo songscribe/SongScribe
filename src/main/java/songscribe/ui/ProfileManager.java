@@ -45,11 +45,11 @@ public class ProfileManager {
     private static final String BOLD = "Bold";
     private static final String ITALIC = "Italic";
     private static Logger logger = Logger.getLogger(ProfileManager.class);
-    private MainFrame mainFrame;
+    private IMainFrame mainFrame;
     private String defaultProfileName;
     private Properties defaultProfile;
 
-    public ProfileManager(MainFrame mainFrame) {
+    public ProfileManager(IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
         ArrayList<String> existingProfiles = enumerateProfiles();
 

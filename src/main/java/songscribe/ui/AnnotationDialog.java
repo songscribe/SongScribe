@@ -120,7 +120,7 @@ public class AnnotationDialog extends MyDialog {
                 setVisible(false);
                 ms.setRepaintImage(true);
                 ms.repaint();
-                AnnotationDialog.this.mainFrame.modifiedDocument();
+                AnnotationDialog.this.mainFrame.setModifiedDocument(true);
             }
         });
         south.add(okButton);
@@ -208,7 +208,7 @@ public class AnnotationDialog extends MyDialog {
         }
 
         selectedNote.setAnnotation(annotation);
-        mainFrame.modifiedDocument();
+        mainFrame.setModifiedDocument(true);
     }
 
     private enum Alignment {

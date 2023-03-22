@@ -441,12 +441,12 @@ public class Utilities {
         fos.close();
     }
 
-    public static void openExportFile(MainFrame mainFrame, File file) {
+    public static void openExportFile(IMainFrame mainFrame, File file) {
         if (MyDesktop.isDesktopSupported()) {
             MyDesktop desktop = MyDesktop.getDesktop();
 
-            if (JOptionPane.showConfirmDialog(mainFrame, "Do you want to open the file?", mainFrame.PROG_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) ==
-                JOptionPane.YES_OPTION) {
+            int answer = mainFrame.showConfirmDialog("Do you want to open the file?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (answer == JOptionPane.YES_OPTION) {
                 try {
                     desktop.open(file);
                 }

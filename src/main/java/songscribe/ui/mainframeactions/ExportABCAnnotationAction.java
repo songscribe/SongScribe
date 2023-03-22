@@ -27,7 +27,18 @@ import songscribe.data.Interval;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
 import songscribe.data.TupletIntervalData;
-import songscribe.music.*;
+import songscribe.music.Annotation;
+import songscribe.music.Composition;
+import songscribe.music.DurationArticulation;
+import songscribe.music.ForceArticulation;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.Quaver;
+import songscribe.music.Semiquaver;
+import songscribe.music.Tempo;
 import songscribe.ui.Constants;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
@@ -44,7 +55,7 @@ import java.util.Map;
 /**
  * The following features are not supported in abc 2.1
  * 1. Accidentals in parenthesis. I opened a forum for this topic (with no answer yet): http://abcnotation.com/forums/viewtopic.php?f=7&t=260
- * 2. Beat change.
+ * 2. Beat change. - implemented now
  * 3. Glissandos. I substituted them with slurs for now.
  * 4. On syllabified lyrics no long hyphen between compound words (like God-Realisation)
  * 5. Syllables under grace notes. Solution: put together with the syllable of next note with \
