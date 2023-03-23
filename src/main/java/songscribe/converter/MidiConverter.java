@@ -20,7 +20,6 @@
 package songscribe.converter;
 
 import songscribe.ui.Constants;
-import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 
 import javax.sound.midi.MidiSystem;
@@ -57,12 +56,7 @@ public class MidiConverter {
             return;
         }
 
-        MainFrame mf = new MainFrame() {
-            @Override
-            public void showErrorMessage(String message) {
-                System.out.println(message);
-            }
-        };
+        ConverterMainFrame mf = new ConverterMainFrame();
         mf.setMusicSheet(new MusicSheet(mf));
 
         Properties props = new Properties(mf.getProperties());

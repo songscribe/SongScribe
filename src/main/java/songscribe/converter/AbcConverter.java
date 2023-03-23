@@ -19,7 +19,6 @@
 */
 package songscribe.converter;
 
-import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.mainframeactions.ExportABCAnnotationAction;
 
@@ -32,24 +31,17 @@ public class AbcConverter {
 
     public static void main(String[] args) {
         ArgumentReader am = new ArgumentReader(args, AbcConverter.class);
-        ((AbcConverter) am.getObj()).convert();
+        ((AbcConverter) am.getObj()).convert(new PrintWriter(System.out));
     }
 
-    public void convert() {
-        MainFrame mf = new MainFrame() {
-            @Override
-            public void showErrorMessage(String message) {
-                System.out.println(message);
-            }
-        };
+    public void convert(PrintWriter writer) {
+        ConverterMainFrame mf = new ConverterMainFrame();
         mf.setMusicSheet(new MusicSheet(mf));
-        ExportABCAnnotationAction exportABCAnnotation = new ExportABCAnnotationAction(mf);
 
         mf.getMusicSheet().setComposition(null);
         mf.getMusicSheet().openMusicSheet(mf, file, false);
 
-        PrintWriter writer = new PrintWriter(System.out);
-        exportABCAnnotation.writeABC(writer);
+        ExportABCAnnotationAction.writeABC(mf.getMusicSheet().getComposition(), writer);
         writer.close();
     }
 }

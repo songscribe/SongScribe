@@ -64,7 +64,6 @@ import java.util.Map;
  * @author Csaba Kávai
  */
 public class ExportABCAnnotationAction extends AbstractAction {
-    int compositionUnitLength;
     private Logger logger = Logger.getLogger(ExportABCAnnotationAction.class);
     private PlatformFileDialog pfd;
     private MainFrame mainFrame;
@@ -97,7 +96,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
 
             try {
                 writer = new PrintWriter(saveFile);
-                writeABC(writer);
+                writeABC(mainFrame.getMusicSheet().getComposition(), writer);
             }
             catch (IOException e1) {
                 mainFrame.showErrorMessage(MainFrame.COULD_NOT_SAVE_MESSAGE);
@@ -111,7 +110,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         }
     }
 
-    int determineCompositionUnitLength(Composition composition) {
+    static int determineCompositionUnitLength(Composition composition) {
         Map<Integer, Integer> unitLengths = new HashMap<Integer, Integer>();
 
         for (int l = 0; l < composition.lineCount(); l++) {
@@ -150,9 +149,8 @@ public class ExportABCAnnotationAction extends AbstractAction {
         }
     }
 
-    public void writeABC(PrintWriter writer) {
-        Composition composition = mainFrame.getMusicSheet().getComposition();
-        compositionUnitLength = determineCompositionUnitLength(composition);
+    public static void writeABC(Composition composition, PrintWriter writer) {
+        int compositionUnitLength = determineCompositionUnitLength(composition);
         writer.println("%abc-2.1");
         writer.println("I:abc-creator " + Constants.PACKAGE_NAME + " " + Utilities.getPublicVersion());
         writer.println();
@@ -165,10 +163,10 @@ public class ExportABCAnnotationAction extends AbstractAction {
         writer.println("Q:" + translateTempo(composition.getTempo()));
         writer.println("L:" + translateUnitLength(compositionUnitLength, Composition.PPQ * 4).asAbcString());
         writer.println("K:" + translateKey(composition.getDefaultKeyType(), composition.getDefaultKeys())); //last
-        translateComposition(writer, composition);
+        translateComposition(writer, composition, compositionUnitLength);
     }
 
-    String translateKey(KeyType keyType, int number) {
+    static String translateKey(KeyType keyType, int number) {
         String[] sharpKeys = { "C", "G", "D", "A", "E", "B", "F#", "C#" };
         String[] flatKeys = { "C", "F", "Bb", "Eb", "Ab", "Db", "Gb", "Cb" };
         String key;
@@ -183,7 +181,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return key + " major";
     }
 
-    String translateTempo(Tempo tempo) {
+    static String translateTempo(Tempo tempo) {
         if (!tempo.isShowTempo()) {
             return "\"" + tempo.getTempoDescription() + "\"";
         }
@@ -193,7 +191,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         }
     }
 
-    Fraction translateUnitLength(int duration, int unitLength) {
+    static Fraction translateUnitLength(int duration, int unitLength) {
         int upper = duration;
         int lower = unitLength;
 
@@ -207,7 +205,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return new Fraction(upper, lower);
     }
 
-    String translatePitch(int yPos) {
+    static String translatePitch(int yPos) {
         StringBuilder sb = new StringBuilder();
         char letter = (char) ((getPitchType(yPos) + 1) % 7 + (yPos >= 0 ? 'A' : 'a'));
         sb.append(letter);
@@ -226,11 +224,11 @@ public class ExportABCAnnotationAction extends AbstractAction {
     /**
      * @return 0 for B, 1 for C, 2 for D, ..., 6 for A
      */
-    int getPitchType(int yPos) {
+    static int getPitchType(int yPos) {
         return yPos <= 0 ? -yPos % 7 : (7 - yPos % 7) % 7;
     }
 
-    String translateAccidental(Note.Accidental accidental) {
+    static String translateAccidental(Note.Accidental accidental) {
         // TODO no accidental in parenthesis
         String[] accidentalMap = { "=", "_", "^", "^^" };
         StringBuilder sb = new StringBuilder();
@@ -242,7 +240,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return sb.toString();
     }
 
-    String translateNoteLength(int duration) {
+    static String translateNoteLength(int duration, int compositionUnitLength) {
         Fraction fraction = translateUnitLength(duration, compositionUnitLength);
 
         if (fraction.getNumerator() == 1 && fraction.getDenominator() == 1) {
@@ -260,7 +258,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return fraction.asAbcString();
     }
 
-    String translateRepeatAndBarLine(NoteType noteType) {
+    static String translateRepeatAndBarLine(NoteType noteType) {
         switch (noteType) {
             case REPEAT_LEFT:
                 return "|:";
@@ -285,7 +283,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         }
     }
 
-    String translateDecorations(Note note) {
+    static String translateDecorations(Note note) {
         StringBuilder sb = new StringBuilder();
 
         if (note.getForceArticulation() == ForceArticulation.ACCENT) {
@@ -311,7 +309,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return sb.toString();
     }
 
-    String translateAnnotation(Annotation annotation) {
+    static String translateAnnotation(Annotation annotation) {
         if (annotation != null) {
             int aboveDiff = Math.abs(annotation.getYPos() - Annotation.ABOVE);
             int belowDiff = Math.abs(annotation.getYPos() - Annotation.BELOW);
@@ -321,7 +319,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return "";
     }
 
-    String translateNote(Note note) {
+    static String translateNote(Note note, int compositionUnitLength) {
         StringBuilder sb = new StringBuilder();
 
         if (note.getTempoChange() != null) {
@@ -341,7 +339,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
 
             if (note.getNoteType() == NoteType.GRACE_SEMIQUAVER) {
                 sb.append(translatePitch(((GraceSemiQuaver) note).getY0Pos()));
-                sb.append(translateNoteLength(new Semiquaver().getDefaultDuration()));
+                sb.append(translateNoteLength(new Semiquaver().getDefaultDuration(), compositionUnitLength));
             }
 
             sb.append(translatePitch(note.getYPos()));
@@ -360,7 +358,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
                     duration = note.getDefaultDurationWithDots();
             }
 
-            sb.append(translateNoteLength(duration));
+            sb.append(translateNoteLength(duration, compositionUnitLength));
 
             if (noteType.isGraceNote()) {
                 sb.append("}");
@@ -368,7 +366,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         }
 
         if (noteType.isRest()) {
-            sb.append("z").append(translateNoteLength(note.getDefaultDurationWithDots()));
+            sb.append("z").append(translateNoteLength(note.getDefaultDurationWithDots(), compositionUnitLength));
         }
 
         if (noteType.isRepeat() || noteType.isBarLine()) {
@@ -382,7 +380,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return sb.toString();
     }
 
-    String translateLine(Line line) {
+    static String translateLine(Line line, int compositionUnitLength) {
         StringBuilder sb = new StringBuilder();
 
         for (int n = 0; n < line.noteCount(); n++) {
@@ -404,7 +402,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
                 sb.append("(");
             }
 
-            sb.append(translateNote(line.getNote(n)));
+            sb.append(translateNote(line.getNote(n), compositionUnitLength));
 
             if (line.getNote(n).getNoteType() == NoteType.REPEAT_RIGHT && line.getFsEndings().isInsideAnyInterval(n)) {
                 sb.append("[2 ");
@@ -432,17 +430,17 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return sb.toString().replace("  ", " ");
     }
 
-    boolean isSlurOrGlissandoBegin(Line line, int n) {
+    static boolean isSlurOrGlissandoBegin(Line line, int n) {
         // TODO Glissandos are handled as slurs, but this is not ideal as abc 2.1 doesn't allow glissandos
         return line.getSlurs().isStartOfAnyInterval(n) || line.getNote(n).getGlissando() != Note.NO_GLISSANDO;
     }
 
-    boolean isSlurOrGlissandoEnd(Line line, int n) {
+    static boolean isSlurOrGlissandoEnd(Line line, int n) {
         return line.getSlurs().isEndOfAnyInterval(n) ||
                (n > 0 && line.getNote(n - 1).getGlissando() != Note.NO_GLISSANDO);
     }
 
-    String translateLyrics(Line line) {
+    static String translateLyrics(Line line) {
         StringBuilder sb = new StringBuilder();
 
         for (int n = 0; n < line.noteCount(); n++) {
@@ -476,7 +474,7 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return sb.toString();
     }
 
-    String translateSyllable(String syllable) {
+    static String translateSyllable(String syllable) {
         if (Constants.UNDERSCORE.equals(syllable) || Constants.HYPHEN.equals(syllable)) {
             return "";
         }
@@ -484,10 +482,10 @@ public class ExportABCAnnotationAction extends AbstractAction {
         return syllable.replace(Constants.NON_BREAKING_HYPHEN, "\\-");
     }
 
-    void translateComposition(PrintWriter writer, Composition composition) {
+    static void translateComposition(PrintWriter writer, Composition composition, int compositionUnitLength) {
         for (int l = 0; l < composition.lineCount(); l++) {
             Line line = composition.getLine(l);
-            writer.println(translateLine(line));
+            writer.println(translateLine(line, compositionUnitLength));
             writer.println("w:" + translateLyrics(line));
         }
     }

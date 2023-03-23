@@ -3,7 +3,16 @@ package songscribe.ui.mainframeactions;
 import org.junit.Before;
 import org.junit.Test;
 import songscribe.data.Fraction;
-import songscribe.music.*;
+import songscribe.music.Composition;
+import songscribe.music.Crotchet;
+import songscribe.music.Demisemiquaver;
+import songscribe.music.KeyType;
+import songscribe.music.Minim;
+import songscribe.music.Note;
+import songscribe.music.Quaver;
+import songscribe.music.Semibreve;
+import songscribe.music.Semiquaver;
+import songscribe.music.Tempo;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -95,36 +104,36 @@ public class ExportABCAnnotationActionTest {
 
     @Test
     public void testTranslateNoteLength() {
-        action.compositionUnitLength = Composition.PPQ * 4;
-        assertEquals("/32", action.translateNoteLength(new Demisemiquaver().getDuration()));
-        assertEquals("3/64", action.translateNoteLength(makeDotted(new Demisemiquaver(), 1).getDuration()));
-        assertEquals("7/128", action.translateNoteLength(makeDotted(new Demisemiquaver(), 2).getDuration()));
+        int compositionUnitLength = Composition.PPQ * 4;
+        assertEquals("/32", action.translateNoteLength(new Demisemiquaver().getDuration(), compositionUnitLength));
+        assertEquals("3/64", action.translateNoteLength(makeDotted(new Demisemiquaver(), 1).getDuration(), compositionUnitLength));
+        assertEquals("7/128", action.translateNoteLength(makeDotted(new Demisemiquaver(), 2).getDuration(), compositionUnitLength));
 
-        assertEquals("/16", action.translateNoteLength(new Semiquaver().getDuration()));
-        assertEquals("3/32", action.translateNoteLength(makeDotted(new Semiquaver(), 1).getDuration()));
-        assertEquals("7/64", action.translateNoteLength(makeDotted(new Semiquaver(), 2).getDuration()));
+        assertEquals("/16", action.translateNoteLength(new Semiquaver().getDuration(), compositionUnitLength));
+        assertEquals("3/32", action.translateNoteLength(makeDotted(new Semiquaver(), 1).getDuration(), compositionUnitLength));
+        assertEquals("7/64", action.translateNoteLength(makeDotted(new Semiquaver(), 2).getDuration(), compositionUnitLength));
 
-        assertEquals("/8", action.translateNoteLength(new Quaver().getDuration()));
-        assertEquals("3/16", action.translateNoteLength(makeDotted(new Quaver(), 1).getDuration()));
-        assertEquals("7/32", action.translateNoteLength(makeDotted(new Quaver(), 2).getDuration()));
+        assertEquals("/8", action.translateNoteLength(new Quaver().getDuration(), compositionUnitLength));
+        assertEquals("3/16", action.translateNoteLength(makeDotted(new Quaver(), 1).getDuration(), compositionUnitLength));
+        assertEquals("7/32", action.translateNoteLength(makeDotted(new Quaver(), 2).getDuration(), compositionUnitLength));
 
-        assertEquals("/4", action.translateNoteLength(new Crotchet().getDuration()));
-        assertEquals("3/8", action.translateNoteLength(makeDotted(new Crotchet(), 1).getDuration()));
-        assertEquals("7/16", action.translateNoteLength(makeDotted(new Crotchet(), 2).getDuration()));
+        assertEquals("/4", action.translateNoteLength(new Crotchet().getDuration(), compositionUnitLength));
+        assertEquals("3/8", action.translateNoteLength(makeDotted(new Crotchet(), 1).getDuration(), compositionUnitLength));
+        assertEquals("7/16", action.translateNoteLength(makeDotted(new Crotchet(), 2).getDuration(), compositionUnitLength));
 
-        assertEquals("/2", action.translateNoteLength(new Minim().getDuration()));
-        assertEquals("3/4", action.translateNoteLength(makeDotted(new Minim(), 1).getDuration()));
-        assertEquals("7/8", action.translateNoteLength(makeDotted(new Minim(), 2).getDuration()));
+        assertEquals("/2", action.translateNoteLength(new Minim().getDuration(), compositionUnitLength));
+        assertEquals("3/4", action.translateNoteLength(makeDotted(new Minim(), 1).getDuration(), compositionUnitLength));
+        assertEquals("7/8", action.translateNoteLength(makeDotted(new Minim(), 2).getDuration(), compositionUnitLength));
 
-        assertEquals("", action.translateNoteLength(new Semibreve().getDuration()));
-        assertEquals("3/2", action.translateNoteLength(makeDotted(new Semibreve(), 1).getDuration()));
-        assertEquals("7/4", action.translateNoteLength(makeDotted(new Semibreve(), 2).getDuration()));
+        assertEquals("", action.translateNoteLength(new Semibreve().getDuration(), compositionUnitLength));
+        assertEquals("3/2", action.translateNoteLength(makeDotted(new Semibreve(), 1).getDuration(), compositionUnitLength));
+        assertEquals("7/4", action.translateNoteLength(makeDotted(new Semibreve(), 2).getDuration(), compositionUnitLength));
 
-        action.compositionUnitLength = Composition.PPQ;
-        assertEquals("4", action.translateNoteLength(new Semibreve().getDuration()));
-        assertEquals("2", action.translateNoteLength(new Minim().getDuration()));
-        assertEquals("", action.translateNoteLength(new Crotchet().getDuration()));
-        assertEquals("/2", action.translateNoteLength(new Quaver().getDuration()));
+        compositionUnitLength = Composition.PPQ;
+        assertEquals("4", action.translateNoteLength(new Semibreve().getDuration(), compositionUnitLength));
+        assertEquals("2", action.translateNoteLength(new Minim().getDuration(), compositionUnitLength));
+        assertEquals("", action.translateNoteLength(new Crotchet().getDuration(), compositionUnitLength));
+        assertEquals("/2", action.translateNoteLength(new Quaver().getDuration(), compositionUnitLength));
     }
 
     private Note makeDotted(Note note, int dotted) {

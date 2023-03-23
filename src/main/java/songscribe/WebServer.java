@@ -7,8 +7,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WebServer {
     public static void main(String[] args) {
         SpringApplication.run(WebServer.class, args);
-//        SpringApplicationBuilder builder = new SpringApplicationBuilder(WebServer.class);
-//        builder.headless(false);
-//        builder.run(args);
     }
 }

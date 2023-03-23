@@ -26,6 +26,7 @@ import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUtils;
 import songscribe.data.MyAcceptFilter;
 import songscribe.data.PlatformFileDialog;
+import songscribe.ui.IMainFrame;
 import songscribe.ui.MainFrame;
 import songscribe.ui.Utilities;
 
@@ -48,7 +49,7 @@ public class ExportSVGAction extends AbstractAction {
         pfd = new PlatformFileDialog(mainFrame, "Export as SVG", false, new MyAcceptFilter("Portable Document Format", "svg"));
     }
 
-    public static void createSVG(MainFrame mainFrame, File outputFile, Boolean isGUI) {
+    public static void createSVG(IMainFrame mainFrame, File outputFile, Boolean isGUI) {
         try {
             SVGGraphics2D g2 = new SVGGraphics2D(mainFrame.getMusicSheet().getSheetWidth(), mainFrame.getMusicSheet().getSheetHeight());
             mainFrame.getMusicSheet().getBestDrawer().drawMusicSheet(g2, false, 1d);

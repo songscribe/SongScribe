@@ -20,7 +20,6 @@
 package songscribe.converter;
 
 import songscribe.data.MyBorder;
-import songscribe.ui.MainFrame;
 import songscribe.ui.MusicSheet;
 
 import javax.imageio.ImageIO;
@@ -78,13 +77,7 @@ public class ImageConverter {
     }
 
     private void convert() {
-        MainFrame mf = new MainFrame() {
-            @Override
-            public void showErrorMessage(String message) {
-                System.out.println(message);
-            }
-        };
-
+        ConverterMainFrame mf = new ConverterMainFrame();
         mf.setMusicSheet(new MusicSheet(mf));
         MyBorder myBorder = new MyBorder(margin);
 
