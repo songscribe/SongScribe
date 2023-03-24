@@ -27,12 +27,23 @@ import songscribe.data.Interval;
 import songscribe.data.IntervalSet;
 import songscribe.data.SlurData;
 import songscribe.data.TupletIntervalData;
-import songscribe.music.*;
+import songscribe.music.Annotation;
+import songscribe.music.BeatChange;
+import songscribe.music.Composition;
+import songscribe.music.DurationArticulation;
+import songscribe.music.ForceArticulation;
+import songscribe.music.GraceSemiQuaver;
+import songscribe.music.KeyType;
+import songscribe.music.Line;
+import songscribe.music.Note;
+import songscribe.music.NoteType;
+import songscribe.music.Tempo;
 import songscribe.ui.Constants;
 import songscribe.ui.MusicSheet;
 import songscribe.ui.Utilities;
 
 import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
@@ -120,6 +131,8 @@ public abstract class BaseMsDrawer {
     private Font oldGeneralFont, annotationFont;
     private int lyricsMaxY = 0;
     private int lyricsMaxDescent;
+
+    private boolean drawStringWithShapes = true;
 
     public BaseMsDrawer(MusicSheet ms) {
         this.ms = ms;
@@ -340,7 +353,7 @@ public abstract class BaseMsDrawer {
             g2.draw(new QuadCurve2D.Float(
                     cx + 7, tc.getRate(cx + 7) - 8, (float) (rx - cx) * 3 / 4 + cx, tc.getRate((rx - cx) * 3 / 4 + cx) - 10, rx, ry));
             g2.setFont(tupletFont);
-            drawAntialiasedString(g2, Integer.toString(TupletIntervalData.getGrade(interval)), cx - 3, tc.getRate(cx - 3) - 5);
+            drawString(g2, Integer.toString(TupletIntervalData.getGrade(interval)), cx - 3, tc.getRate(cx - 3) - 5);
 
             /*g2.setColor(Color.red);
             g2.fill(new Rectangle2D.Double(triplet.getX1()-1, triplet.getY1()-1, 2, 2));
@@ -447,7 +460,7 @@ public abstract class BaseMsDrawer {
             int x = note.getXPos();
             int y = ms.getNoteYPos(0, lineIndex) + line.getTrillYPos();
             g2.setFont(fughetta);
-            g2.drawString(TRILL, x, y);
+            drawString(g2, TRILL, x, y);
 
             if (noteIndex < trillEnd) {
                 drawGlissando(g2, x + 18, y - 3, (int) Math.round(line.getNote(trillEnd).getXPos() + crotchetWidth), y - 3);
@@ -975,7 +988,7 @@ public abstract class BaseMsDrawer {
         g2.scale(scale, 1d);
 
         for (int i = 0; i < m; i++) {
-            drawAntialiasedString(g2, GLISSANDO, (int) Math.round(i * glissandoLength), 0);
+            drawString(g2, GLISSANDO, (int) Math.round(i * glissandoLength), 0);
         }
 
         g2.setTransform(at);
@@ -1096,15 +1109,27 @@ public abstract class BaseMsDrawer {
         g2.drawString(str, (float) x, (float) y);
     }
 
-    protected void drawAntialiasedStringZoomed(Graphics2D g2, String str, int x, int y, float zoom) {
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.drawString(str, x / zoom, y / zoom);
+    protected void drawString(Graphics2D g2, String str, float x, float y) {
+        if (!drawStringWithShapes) {
+            g2.drawString(str, x, y);
+        } else {
+            GlyphVector glyphVector = g2.getFont().createGlyphVector(g2.getFontRenderContext(), str);
+            g2.translate(x, y);
+            g2.fill(glyphVector.getOutline());
+            g2.translate(-x, -y);
+        }
+    }
+    protected void drawString(Graphics2D g2, String str, int x, int y) {
+        if (!drawStringWithShapes) {
+            g2.drawString(str, x, y);
+        } else {
+            GlyphVector glyphVector = g2.getFont().createGlyphVector(g2.getFontRenderContext(), str);
+            g2.translate(x, y);
+            g2.fill(glyphVector.getOutline());
+            g2.translate(-x, -y);
+        }
     }
 
-    protected void drawAntialiasedStringZoomed(Graphics2D g2, String str, float x, float y, float zoom) {
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.drawString(str, x / zoom, y / zoom);
-    }
 
     private int drawTextBox(Graphics2D g2, String str, int y, float xAlignment, int xTranslate) {
         ArrayList<String> rightVector = new ArrayList<String>(4);
